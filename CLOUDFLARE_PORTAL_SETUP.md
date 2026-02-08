@@ -23,7 +23,7 @@ Updates can land within ~15 minutes by triggering a rebuild on a schedule.
 
 1. Create a Google Sheet for portal content.
 2. Extensions -> Apps Script.
-3. Paste `/Users/sirchristopherdemarkus/Desktop/Downloads/Chrome Vault/vault/Vault54membership1/NPHC1/apps-script/Code.gs`
+3. Paste `apps-script/Code.gs`
 4. Run `setupSheets()` once to create all tabs/headers.
 5. Set `API_TOKEN` in Apps Script (optional but recommended).
 6. Deploy -> New deployment -> Web app.

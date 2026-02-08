@@ -22,10 +22,19 @@ This folder contains a drop-in Apps Script you can paste into a Google Spreadshe
 
 ## Wire The Frontend To It
 
-In `/Users/sirchristopherdemarkus/Desktop/Downloads/Chrome Vault/vault/Vault54membership1/NPHC1/src/app/data/config.ts`:
+This portal does not call Apps Script from the browser. Instead, it pulls Sheet data at build time (see `scripts/sync_sheets.mjs`).
 
-- Set `DATA_SOURCE` to `"google-sheets"`
-- Set `APPS_SCRIPT_URL` to your deployment URL
+Set environment variables in your hosting provider:
+- `APPS_SCRIPT_URL` = your Apps Script Web App `/exec` URL
+- `APPS_SCRIPT_TOKEN` = your `API_TOKEN` (if set)
+
+To test locally with Sheet content:
+
+```bash
+export APPS_SCRIPT_URL="https://script.google.com/macros/s/XXX/exec"
+export APPS_SCRIPT_TOKEN="your-token"
+npm run build
+```
 
 ## Zero Manual Input: Use Google Forms
 
@@ -36,4 +45,3 @@ For tabs you update often (Updates, Events, SignupForms), the simplest workflow 
 3. Your portal updates automatically because it reads the sheet.
 
 This avoids hand-editing rows while keeping Sheets as your source of truth.
-

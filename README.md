@@ -1,16 +1,30 @@
+# Council Command (Members Portal)
 
-  # Intranet Microsite Redesign
+Private members-only portal UI built with Vite + React.
 
-  This is a code bundle for Intranet Microsite Redesign. The original project is available at https://www.figma.com/design/FRbDzcCQTh9NjZ4f0XHTkO/Intranet-Microsite-Redesign.
+## Local Development
 
-## Running the code
+1. Install deps:
+   - `npm i`
+2. Run dev server:
+   - `npm run dev`
 
-Run `npm i` to install the dependencies.
+## Content (Google Sheets)
 
-Run `npm run dev` to start the development server.
+Content is authored in Google Sheets and baked into the build output.
 
-## GitHub Pages
+- Apps Script backend lives in `apps-script/`
+- Build-time sync script lives at `scripts/sync_sheets.mjs`
 
-This project can be deployed as a static site using GitHub Pages (automatic via GitHub Actions).
-See `GOOGLE_SITES_EMBED.md` for how to embed the deployed site in Google Sites.
-  
+To deploy with live content, set these environment variables in your hosting provider:
+- `APPS_SCRIPT_URL` = your Apps Script Web App `/exec` URL
+- `APPS_SCRIPT_TOKEN` = your `API_TOKEN` (optional but recommended)
+
+Docs:
+- `CLOUDFLARE_PORTAL_SETUP.md` (recommended hosting + privacy)
+- `apps-script/README.md` (Sheets/API setup)
+- `CONTENT_GUIDE.md` (which tabs/columns map to which pages)
+
+## GitHub Pages Note
+
+GitHub Pages is public hosting. Do not use it for the members-only portal unless you are intentionally making the portal public.
