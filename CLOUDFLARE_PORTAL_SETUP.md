@@ -36,7 +36,7 @@ Note: even though the Apps Script web app is "Anyone", we do NOT call it from th
 ## Step 3: Cloudflare Pages Project
 
 1. In Cloudflare Dashboard -> Pages -> Create a project -> Connect to Git.
-2. Select the repo `vault54nyc-spec/Nphc1`.
+2. Select the repo `nphcofhc-org/council-command`.
 3. Build settings:
    - Framework preset: Vite (or none)
    - Build command: `npm run build`
@@ -76,4 +76,3 @@ Cloudflare Pages supports "Deploy hooks". Create one and then trigger it from Gi
 
 - Do not enable GitHub Pages for this repo if the portal must be private.
 - If you later want a public site, put that in a separate public repo and deploy via GitHub Pages or Cloudflare Pages without Access.
-
