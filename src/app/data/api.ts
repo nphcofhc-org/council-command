@@ -1,0 +1,315 @@
+/**
+ * =============================================================================
+ * NPHC Hudson County — Data API Service
+ * =============================================================================
+ *
+ * This is the single data-fetching layer for the entire site. Every page
+ * calls these functions to get its data. Right now they return static data.
+ * When you connect Google Sheets, flip DATA_SOURCE in config.ts to
+ * "google-sheets" and these functions will fetch live data instead.
+ *
+ * ARCHITECTURE:
+ * ─────────────────────────────────────────────────────────────────────────────
+ *   Page Component  →  useSiteData() hook  →  api.ts  →  static-data.ts
+ *                                                    OR →  Google Sheets API
+ * ─────────────────────────────────────────────────────────────────────────────
+ *
+ * ADDING A NEW DATA SOURCE:
+ * ─────────────────────────────────────────────────────────────────────────────
+ *   1. Add a new case in fetchSheetTab() for your source
+ *   2. Or replace the Google Sheets fetch with any REST API
+ *   3. The return types stay the same — components don't change at all
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+import { DATA_SOURCE, APPS_SCRIPT_URL, SHEET_TABS, CACHE_TTL_MS } from "./config";
+import * as staticData from "./static-data";
+import type {
+  HomePageData,
+  ChapterInfoPageData,
+  MeetingsPageData,
+  ProgramsPageData,
+  ResourcesPageData,
+  CouncilAdminPageData,
+  SiteConfig,
+} from "./types";
+
+// ── Simple in-memory cache ──────────────────────────────────────────────────
+
+const cache: Record<string, { data: unknown; timestamp: number }> = {};
+
+function getCached<T>(key: string): T | null {
+  const entry = cache[key];
+  if (!entry) return null;
+  if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
+    delete cache[key];
+    return null;
+  }
+  return entry.data as T;
+}
+
+function setCache(key: string, data: unknown): void {
+  cache[key] = { data, timestamp: Date.now() };
+}
+
+// ── Core fetch function for Google Sheets ───────────────────────────────────
+
+async function fetchSheetTab<T>(tabName: string): Promise<T[]> {
+  const cacheKey = `sheet:${tabName}`;
+  const cached = getCached<T[]>(cacheKey);
+  if (cached) return cached;
+
+  try {
+    const url = `${APPS_SCRIPT_URL}?tab=${encodeURIComponent(tabName)}`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Failed to fetch tab "${tabName}": ${response.status}`);
+    const data = await response.json();
+    setCache(cacheKey, data);
+    return data as T[];
+  } catch (error) {
+    console.error(`[NPHC API] Error fetching "${tabName}":`, error);
+    throw error;
+  }
+}
+
+// ── Page-level data fetchers ────────────────────────────────────────────────
+
+/**
+ * Fetch all data needed for the HomePage.
+ * The banner image URL is handled separately via figma:asset import.
+ */
+export async function fetchHomePageData(): Promise<HomePageData> {
+  if (DATA_SOURCE === "static") {
+    return {
+      config: staticData.siteConfig,
+      quickLinks: staticData.quickLinks,
+      updates: staticData.updates,
+    };
+  }
+
+  // Google Sheets: fetch each tab in parallel
+  const [configRows, quickLinks, updates] = await Promise.all([
+    fetchSheetTab(SHEET_TABS.siteConfig),
+    fetchSheetTab(SHEET_TABS.quickLinks),
+    fetchSheetTab(SHEET_TABS.updates),
+  ]);
+
+  // SiteConfig is a single-row key-value sheet — transform it
+  const config = transformSiteConfig(configRows as Record<string, string>[]);
+
+  return {
+    config,
+    quickLinks: quickLinks as HomePageData["quickLinks"],
+    updates: updates as HomePageData["updates"],
+  };
+}
+
+export async function fetchChapterInfoData(): Promise<ChapterInfoPageData> {
+  if (DATA_SOURCE === "static") {
+    return {
+      officers: staticData.officers,
+      delegates: staticData.delegates,
+      governingDocuments: staticData.governingDocuments,
+    };
+  }
+
+  const [officers, delegates, governingDocuments] = await Promise.all([
+    fetchSheetTab(SHEET_TABS.officers),
+    fetchSheetTab(SHEET_TABS.delegates),
+    fetchSheetTab(SHEET_TABS.governingDocs),
+  ]);
+
+  return {
+    officers: officers as ChapterInfoPageData["officers"],
+    delegates: delegates as ChapterInfoPageData["delegates"],
+    governingDocuments: governingDocuments as ChapterInfoPageData["governingDocuments"],
+  };
+}
+
+export async function fetchMeetingsData(): Promise<MeetingsPageData> {
+  if (DATA_SOURCE === "static") {
+    return {
+      upcomingMeetings: staticData.upcomingMeetings,
+      meetingRecords: staticData.meetingRecords,
+      delegateReports: staticData.delegateReports,
+    };
+  }
+
+  const [upcomingMeetings, meetingRecords, delegateReports] = await Promise.all([
+    fetchSheetTab(SHEET_TABS.upcomingMeetings),
+    fetchSheetTab(SHEET_TABS.meetingRecords),
+    fetchSheetTab(SHEET_TABS.delegateReports),
+  ]);
+
+  return {
+    upcomingMeetings: upcomingMeetings as MeetingsPageData["upcomingMeetings"],
+    meetingRecords: meetingRecords as MeetingsPageData["meetingRecords"],
+    delegateReports: delegateReports as MeetingsPageData["delegateReports"],
+  };
+}
+
+export async function fetchProgramsData(): Promise<ProgramsPageData> {
+  if (DATA_SOURCE === "static") {
+    return {
+      upcomingEvents: staticData.upcomingEvents,
+      archivedEvents: staticData.archivedEvents,
+      eventFlyers: staticData.eventFlyers,
+      signupForms: staticData.signupForms,
+    };
+  }
+
+  const [upcomingEvents, archivedEvents, eventFlyers, signupForms] = await Promise.all([
+    fetchSheetTab(SHEET_TABS.events),
+    fetchSheetTab(SHEET_TABS.eventArchive),
+    fetchSheetTab(SHEET_TABS.eventFlyers),
+    fetchSheetTab(SHEET_TABS.signupForms),
+  ]);
+
+  return {
+    upcomingEvents: upcomingEvents as ProgramsPageData["upcomingEvents"],
+    archivedEvents: archivedEvents as ProgramsPageData["archivedEvents"],
+    eventFlyers: eventFlyers as ProgramsPageData["eventFlyers"],
+    signupForms: signupForms as ProgramsPageData["signupForms"],
+  };
+}
+
+export async function fetchResourcesData(): Promise<ResourcesPageData> {
+  if (DATA_SOURCE === "static") {
+    return {
+      sharedForms: staticData.sharedForms,
+      nationalOrgs: staticData.nationalOrgs,
+      trainingResources: staticData.trainingResources,
+    };
+  }
+
+  const [sharedFormsRaw, nationalOrgs, trainingResources] = await Promise.all([
+    fetchSheetTab(SHEET_TABS.sharedForms),
+    fetchSheetTab(SHEET_TABS.nationalOrgs),
+    fetchSheetTab(SHEET_TABS.trainingResources),
+  ]);
+
+  // SharedForms come as flat rows from Sheets — group by category
+  const sharedForms = groupFormsByCategory(sharedFormsRaw as Record<string, string>[]);
+
+  return {
+    sharedForms,
+    nationalOrgs: nationalOrgs as ResourcesPageData["nationalOrgs"],
+    trainingResources: trainingResources as ResourcesPageData["trainingResources"],
+  };
+}
+
+export async function fetchCouncilAdminData(): Promise<CouncilAdminPageData> {
+  if (DATA_SOURCE === "static") {
+    return {
+      internalDocuments: staticData.internalDocuments,
+      tasks: staticData.tasks,
+    };
+  }
+
+  const [internalDocsRaw, tasks] = await Promise.all([
+    fetchSheetTab(SHEET_TABS.internalDocs),
+    fetchSheetTab(SHEET_TABS.tasks),
+  ]);
+
+  // InternalDocs come as flat rows — group by category
+  const internalDocuments = groupDocsByCategory(internalDocsRaw as Record<string, string>[]);
+
+  return {
+    internalDocuments,
+    tasks: tasks as CouncilAdminPageData["tasks"],
+  };
+}
+
+/**
+ * Fetch just the site config (used by MainLayout for nav / footer).
+ */
+export async function fetchSiteConfig(): Promise<SiteConfig> {
+  if (DATA_SOURCE === "static") {
+    return staticData.siteConfig;
+  }
+
+  const configRows = await fetchSheetTab(SHEET_TABS.siteConfig);
+  return transformSiteConfig(configRows as Record<string, string>[]);
+}
+
+// ── Transform helpers (Google Sheets → typed data) ──────────────────────────
+
+/**
+ * SiteConfig in Sheets is stored as key-value rows:
+ *   | key                | value                              |
+ *   | councilName        | National Pan-Hellenic Council...   |
+ *   | presidentMessage_1 | First paragraph...                 |
+ *   | presidentMessage_2 | Second paragraph...                |
+ */
+function transformSiteConfig(rows: Record<string, string>[]): SiteConfig {
+  const kv: Record<string, string> = {};
+  for (const row of rows) {
+    kv[row.key] = row.value;
+  }
+
+  // Collect presidentMessage paragraphs (presidentMessage_1, _2, _3, ...)
+  const messageParagraphs: string[] = [];
+  let i = 1;
+  while (kv[`presidentMessage_${i}`]) {
+    messageParagraphs.push(kv[`presidentMessage_${i}`]);
+    i++;
+  }
+
+  return {
+    councilName: kv.councilName || "",
+    subtitle: kv.subtitle || "",
+    footerText: kv.footerText || "",
+    footerSubtext: kv.footerSubtext || "",
+    presidentName: kv.presidentName || "",
+    presidentTitle: kv.presidentTitle || "",
+    presidentChapter: kv.presidentChapter || "",
+    presidentImageUrl: kv.presidentImageUrl || "",
+    presidentMessage: messageParagraphs,
+    presidentClosing: kv.presidentClosing || "",
+    bannerImageUrl: kv.bannerImageUrl || "",
+  };
+}
+
+/**
+ * SharedForms in Sheets is a flat table:
+ *   | category       | id      | name             | description      | link |
+ *   | Event Planning | form-1  | Event Proposal.. | Submit propos... | #    |
+ *
+ * Groups rows by category into SharedFormCategory[].
+ */
+function groupFormsByCategory(rows: Record<string, string>[]) {
+  const grouped: Record<string, { category: string; forms: { id: string; name: string; description: string; link: string }[] }> = {};
+  for (const row of rows) {
+    const cat = row.category || "Uncategorized";
+    if (!grouped[cat]) grouped[cat] = { category: cat, forms: [] };
+    grouped[cat].forms.push({
+      id: row.id || `form-${Date.now()}`,
+      name: row.name || "",
+      description: row.description || "",
+      link: row.link || "#",
+    });
+  }
+  return Object.values(grouped);
+}
+
+/**
+ * InternalDocs in Sheets is a flat table:
+ *   | category  | iconName   | id      | name              | updated          | status |
+ *   | Financial | DollarSign | idoc-1  | FY 2026 Budget... | January 10, 2026 | Active |
+ *
+ * Groups rows by category into InternalDocSection[].
+ */
+function groupDocsByCategory(rows: Record<string, string>[]) {
+  const grouped: Record<string, { category: string; iconName: string; documents: { id: string; name: string; updated: string; status: string }[] }> = {};
+  for (const row of rows) {
+    const cat = row.category || "Uncategorized";
+    if (!grouped[cat]) grouped[cat] = { category: cat, iconName: row.iconName || "FileText", documents: [] };
+    grouped[cat].documents.push({
+      id: row.id || `idoc-${Date.now()}`,
+      name: row.name || "",
+      updated: row.updated || "",
+      status: row.status || "",
+    });
+  }
+  return Object.values(grouped);
+}
