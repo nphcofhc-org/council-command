@@ -56,7 +56,7 @@ export const siteConfig: SiteConfig = {
     "I encourage all officers, delegates, and chapter representatives to utilize this platform regularly, stay informed of council activities, and engage fully in our shared work. Together, we strengthen the legacy of the Divine Nine in Hudson County and beyond.",
   ],
   presidentClosing: "In Unity and Service,",
-  bannerImageUrl: "", // Populated by figma:asset import in HomePage
+  bannerImageUrl: "", // Banner is imported as a local asset in HomePage
 };
 
 // ═════════════════════════════════════════════════════════════════════════════

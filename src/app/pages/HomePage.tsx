@@ -1,6 +1,6 @@
 import { Card, CardContent } from "../components/ui/card";
 import { Clock } from "lucide-react";
-import googleBanner from "figma:asset/08f5f2f8147d555bb4793ae6a060e3d0c28be71f.png";
+import googleBanner from "../../assets/08f5f2f8147d555bb4793ae6a060e3d0c28be71f.png";
 import { motion } from "motion/react";
 import { useHomePageData } from "../hooks/use-site-data";
 import { DynamicIcon } from "../components/icon-resolver";

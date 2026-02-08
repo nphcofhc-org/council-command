@@ -23,7 +23,7 @@
  */
 
 import { DATA_SOURCE, APPS_SCRIPT_URL, SHEET_TABS, CACHE_TTL_MS } from "./config";
-import * as staticData from "./static-data";
+import * as staticData from "./generated-data";
 import type {
   HomePageData,
   ChapterInfoPageData,
@@ -76,7 +76,7 @@ async function fetchSheetTab<T>(tabName: string): Promise<T[]> {
 
 /**
  * Fetch all data needed for the HomePage.
- * The banner image URL is handled separately via figma:asset import.
+ * The banner image is handled separately via a local asset import in HomePage.
  */
 export async function fetchHomePageData(): Promise<HomePageData> {
   if (DATA_SOURCE === "static") {

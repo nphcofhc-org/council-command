@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createHashRouter } from "react-router";
 import { MainLayout } from "./components/MainLayout";
 import { HomePage } from "./pages/HomePage";
 import { ChapterInfoPage } from "./pages/ChapterInfoPage";
@@ -7,7 +7,9 @@ import { ProgramsPage } from "./pages/ProgramsPage";
 import { ResourcesPage } from "./pages/ResourcesPage";
 import { CouncilAdminPage } from "./pages/CouncilAdminPage";
 
-export const router = createBrowserRouter([
+// Hash routing is the most reliable option for static hosting + Google Sites embedding
+// (no server-side rewrite rules needed to handle deep links).
+export const router = createHashRouter([
   {
     path: "/",
     Component: MainLayout,
