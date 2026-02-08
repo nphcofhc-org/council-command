@@ -25,6 +25,7 @@ const argv = process.argv.slice(2);
 const modeArg = argv.find((a) => a.startsWith("--mode="));
 const MODE = (modeArg ? modeArg.split("=")[1] : "upsert").toLowerCase(); // upsert | replace
 const DRY_RUN = argv.includes("--dry-run");
+const VERBOSE = argv.includes("--verbose");
 
 const SEED_FILE = path.resolve("scripts/seed-data.json");
 const seed = JSON.parse(fs.readFileSync(SEED_FILE, "utf8"));
@@ -75,6 +76,13 @@ async function post(action, tab, data) {
   }
   if (!res.ok) throw new Error(`POST failed (${res.status}) for ${tab}: ${text}`);
   if (json && json.ok === false) throw new Error(`POST error for ${tab}: ${JSON.stringify(json)}`);
+
+  if (VERBOSE) {
+    console.log(`[ok] ${action} ${tab}: ${data.length} rows ->`, json || text);
+  } else {
+    console.log(`[ok] ${action} ${tab}: ${data.length} rows`);
+  }
+
   return json || { ok: true };
 }
 
@@ -119,6 +127,12 @@ async function main() {
     throw new Error(`Invalid --mode. Expected upsert|replace, got: ${MODE}`);
   }
 
+  console.log("Seeding Google Sheet via Apps Script...");
+  console.log(`- mode: ${MODE}`);
+  console.log(`- dry-run: ${DRY_RUN ? "yes" : "no"}`);
+  console.log(`- apps script url: ${APPS_SCRIPT_URL ? "set" : "MISSING"}`);
+  console.log(`- apps script token: ${APPS_SCRIPT_TOKEN ? "set" : "not set"}`);
+
   // Always replace SiteConfig to keep it deterministic.
   await post("replace", TABS.SiteConfig, siteConfigToRows(seed.siteConfig));
 
@@ -142,10 +156,11 @@ async function main() {
 
   await write(TABS.InternalDocs, flattenInternalDocs(seed.internalDocuments));
   await write(TABS.Tasks, seed.tasks);
+
+  console.log("Seed complete. Open your Google Sheet and confirm tabs have rows.");
 }
 
 main().catch((err) => {
   console.error(err);
   process.exit(1);
 });
-
