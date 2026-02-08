@@ -194,10 +194,29 @@ export function ResourcesPage() {
                             </div>
                           </div>
                         </div>
-                        <Button variant="outline" size="sm" className="gap-2 border-gray-200 hover:border-black hover:bg-black hover:text-white w-full sm:w-auto lg:ml-4 transition-all duration-200">
-                          <FileText className="size-3.5" />
-                          View
-                        </Button>
+                        {resource.fileUrl ? (
+                          <Button
+                            asChild
+                            variant="outline"
+                            size="sm"
+                            className="gap-2 border-gray-200 hover:border-black hover:bg-black hover:text-white w-full sm:w-auto lg:ml-4 transition-all duration-200"
+                          >
+                            <a href={resource.fileUrl} target="_blank" rel="noreferrer">
+                              <FileText className="size-3.5" />
+                              View
+                            </a>
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled
+                            className="gap-2 border-gray-200 w-full sm:w-auto lg:ml-4"
+                          >
+                            <FileText className="size-3.5" />
+                            View
+                          </Button>
+                        )}
                       </motion.div>
                     ))}
                   </div>

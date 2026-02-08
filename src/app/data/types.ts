@@ -88,6 +88,7 @@ export interface GoverningDocument {
   type: string;
   lastUpdated: string;
   status: string;
+  fileUrl?: string;
 }
 
 // ── MeetingsPage ─────────────────────────────────────────────────────────────
@@ -193,6 +194,7 @@ export interface InternalDoc {
   name: string;
   updated: string;
   status: string;
+  fileUrl?: string;
 }
 
 export interface InternalDocSection {

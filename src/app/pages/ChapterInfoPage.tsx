@@ -209,34 +209,61 @@ export function ChapterInfoPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    {documents.map((doc, index) => (
-                      <motion.div
-                        key={doc.id}
-                        initial={{ x: -15, opacity: 0 }}
-                        whileInView={{ x: 0, opacity: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: index * 0.05, duration: 0.3 }}
-                        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-lg border border-gray-100 hover:bg-gray-50 transition-all duration-200 group cursor-pointer"
-                      >
-                        <div className="flex items-start gap-3 flex-1 min-w-0">
-                          <div className="p-2 bg-black/5 rounded flex-shrink-0 group-hover:bg-black/10 transition-colors">
-                            <FileText className="size-4 sm:size-5 text-black" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h3 className="text-black mb-1 text-sm sm:text-base">{doc.title}</h3>
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-xs sm:text-sm text-gray-500">
-                              <span>{doc.type}</span>
-                              <span className="hidden sm:inline text-gray-300">&middot;</span>
-                              <span className="flex items-center gap-1">
-                                <Calendar className="size-3" />
-                                Updated {doc.lastUpdated}
-                              </span>
+                    {documents.map((doc, index) => {
+                      const motionProps = {
+                        initial: { x: -15, opacity: 0 },
+                        whileInView: { x: 0, opacity: 1 },
+                        viewport: { once: true },
+                        transition: { delay: index * 0.05, duration: 0.3 },
+                      } as const;
+
+                      const content = (
+                        <>
+                          <div className="flex items-start gap-3 flex-1 min-w-0">
+                            <div className="p-2 bg-black/5 rounded flex-shrink-0 group-hover:bg-black/10 transition-colors">
+                              <FileText className="size-4 sm:size-5 text-black" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <h3 className="text-black mb-1 text-sm sm:text-base">{doc.title}</h3>
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-xs sm:text-sm text-gray-500">
+                                <span>{doc.type}</span>
+                                <span className="hidden sm:inline text-gray-300">&middot;</span>
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="size-3" />
+                                  Updated {doc.lastUpdated}
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <StatusBadge status={doc.status} />
-                      </motion.div>
-                    ))}
+                          <StatusBadge status={doc.status} />
+                        </>
+                      );
+
+                      if (doc.fileUrl) {
+                        return (
+                          <motion.a
+                            key={doc.id}
+                            href={doc.fileUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            {...motionProps}
+                            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-lg border border-gray-100 hover:bg-gray-50 transition-all duration-200 group"
+                          >
+                            {content}
+                          </motion.a>
+                        );
+                      }
+
+                      return (
+                        <motion.div
+                          key={doc.id}
+                          {...motionProps}
+                          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-lg border border-gray-100 bg-gray-50/40 hover:bg-gray-50/60 transition-colors duration-200 group"
+                        >
+                          {content}
+                        </motion.div>
+                      );
+                    })}
                   </div>
                 </CardContent>
               </Card>

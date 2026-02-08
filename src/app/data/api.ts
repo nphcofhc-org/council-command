@@ -300,7 +300,7 @@ function groupFormsByCategory(rows: Record<string, string>[]) {
  * Groups rows by category into InternalDocSection[].
  */
 function groupDocsByCategory(rows: Record<string, string>[]) {
-  const grouped: Record<string, { category: string; iconName: string; documents: { id: string; name: string; updated: string; status: string }[] }> = {};
+  const grouped: Record<string, { category: string; iconName: string; documents: { id: string; name: string; updated: string; status: string; fileUrl?: string }[] }> = {};
   for (const row of rows) {
     const cat = row.category || "Uncategorized";
     if (!grouped[cat]) grouped[cat] = { category: cat, iconName: row.iconName || "FileText", documents: [] };
@@ -309,6 +309,7 @@ function groupDocsByCategory(rows: Record<string, string>[]) {
       name: row.name || "",
       updated: row.updated || "",
       status: row.status || "",
+      fileUrl: row.fileUrl || undefined,
     });
   }
   return Object.values(grouped);

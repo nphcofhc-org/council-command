@@ -112,6 +112,7 @@ function groupDocsByCategory(rows) {
       name: String(row?.name || ""),
       updated: String(row?.updated || ""),
       status: String(row?.status || ""),
+      fileUrl: row?.fileUrl ? String(row.fileUrl) : undefined,
     });
   }
   return Object.values(grouped);
@@ -168,6 +169,11 @@ async function main() {
   ]);
 
   const siteConfig = transformSiteConfig(siteConfigRows);
+  // Normalize: Sheets can't store nulls cleanly; treat blank imageUrl as null.
+  const officersNormalized = (officers || []).map((o) => ({
+    ...o,
+    imageUrl: o?.imageUrl ? String(o.imageUrl) : null,
+  }));
   const sharedForms = groupFormsByCategory(sharedFormsRaw);
   const internalDocuments = groupDocsByCategory(internalDocsRaw);
 
@@ -207,7 +213,7 @@ async function main() {
     `export const quickLinks: QuickLink[] = ${asTs(quickLinks)};`,
     `export const updates: Update[] = ${asTs(updates)};`,
     "",
-    `export const officers: Officer[] = ${asTs(officers)};`,
+    `export const officers: Officer[] = ${asTs(officersNormalized)};`,
     `export const delegates: Delegate[] = ${asTs(delegates)};`,
     `export const governingDocuments: GoverningDocument[] = ${asTs(governingDocuments)};`,
     "",
@@ -236,4 +242,3 @@ main().catch((err) => {
   console.error(err);
   process.exit(1);
 });
-

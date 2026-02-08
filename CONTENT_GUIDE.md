@@ -20,14 +20,14 @@ Examples:
 
 ## Home
 
-- `QuickLinks`: `id`, `label`, `iconName`, `url`, `row`
-- `Updates`: `id`, `title`, `date`, `type`
+- `QuickLinks`: `id`, `icon`, `label`, `shortLabel`, `url`, `row`
+- `Updates`: `id`, `date`, `title`, `type`
 
 ## Chapter Info
 
-- `Officers`: `id`, `name`, `title`, `chapter`, `email`, `phone`, `status`
-- `Delegates`: `id`, `name`, `chapter`, `role`, `email`, `phone`, `status`
-- `GoverningDocs`: `id`, `title`, `type`, `updated`, `fileUrl`
+- `Officers`: `id`, `name`, `title`, `chapter`, `email`, `imageUrl`
+- `Delegates`: `id`, `chapter`, `representative`, `delegate`, `term`
+- `GoverningDocs`: `id`, `title`, `type`, `lastUpdated`, `status`, `fileUrl`
 
 ## Meetings
 
@@ -50,7 +50,7 @@ Examples:
 
 ## Council Admin
 
-- `InternalDocs`: `category`, `iconName`, `id`, `name`, `updated`, `status`
+- `InternalDocs`: `category`, `iconName`, `id`, `name`, `updated`, `status`, `fileUrl`
 - `Tasks`: `id`, `task`, `assignedTo`, `dueDate`, `priority`, `status`
 
 ## What Happens After You Edit The Sheet

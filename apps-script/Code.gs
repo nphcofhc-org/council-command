@@ -231,11 +231,12 @@ function setupSheets() {
 
   var schema = {
     "SiteConfig": ["key", "value"],
-    "QuickLinks": ["id", "label", "iconName", "url", "row"],
-    "Updates": ["id", "title", "date", "type"],
-    "Officers": ["id", "name", "title", "chapter", "email", "phone", "status"],
-    "Delegates": ["id", "name", "chapter", "role", "email", "phone", "status"],
-    "GoverningDocs": ["id", "title", "type", "updated", "fileUrl"],
+    // Match frontend types in `src/app/data/types.ts`
+    "QuickLinks": ["id", "icon", "label", "shortLabel", "url", "row"],
+    "Updates": ["id", "date", "title", "type"],
+    "Officers": ["id", "name", "title", "chapter", "email", "imageUrl"],
+    "Delegates": ["id", "chapter", "representative", "delegate", "term"],
+    "GoverningDocs": ["id", "title", "type", "lastUpdated", "status", "fileUrl"],
     "UpcomingMeetings": ["id", "title", "date", "time", "location", "type"],
     "MeetingRecords": ["id", "date", "title", "agendaFile", "minutesFile", "status"],
     "DelegateReports": ["id", "meetingCycle", "chapter", "submittedBy", "dateSubmitted", "status"],
@@ -246,7 +247,7 @@ function setupSheets() {
     "SharedForms": ["category", "id", "name", "description", "link"],
     "NationalOrgs": ["id", "name", "website", "founded"],
     "TrainingResources": ["id", "title", "description", "type", "updated", "fileUrl"],
-    "InternalDocs": ["category", "iconName", "id", "name", "updated", "status"],
+    "InternalDocs": ["category", "iconName", "id", "name", "updated", "status", "fileUrl"],
     "Tasks": ["id", "task", "assignedTo", "dueDate", "priority", "status"]
   };
 
