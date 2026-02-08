@@ -78,9 +78,16 @@ export function ResourcesPage() {
                               <p className="text-sm text-gray-500">{form.description}</p>
                             </div>
                           </div>
-                          <Button variant="outline" size="sm" className="gap-2 border-gray-200 hover:border-black hover:bg-black hover:text-white w-full sm:w-auto transition-all duration-200">
-                            <ExternalLink className="size-3.5" />
-                            Open
+                          <Button
+                            asChild
+                            variant="outline"
+                            size="sm"
+                            className="gap-2 border-gray-200 hover:border-black hover:bg-black hover:text-white w-full sm:w-auto transition-all duration-200"
+                          >
+                            <a href={form.link} target="_blank" rel="noreferrer">
+                              <ExternalLink className="size-3.5" />
+                              Open
+                            </a>
                           </Button>
                         </motion.div>
                       ))}
@@ -125,9 +132,11 @@ export function ResourcesPage() {
                             <p className="text-xs sm:text-sm text-gray-400">Founded {org.founded}</p>
                           </div>
                         </div>
-                        <Button variant="ghost" size="sm" className="gap-2 text-gray-500 hover:text-black w-full sm:w-auto">
-                          <ExternalLink className="size-3.5" />
-                          Visit Website
+                        <Button asChild variant="ghost" size="sm" className="gap-2 text-gray-500 hover:text-black w-full sm:w-auto">
+                          <a href={org.website} target="_blank" rel="noreferrer">
+                            <ExternalLink className="size-3.5" />
+                            Visit Website
+                          </a>
                         </Button>
                       </motion.div>
                     ))}

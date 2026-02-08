@@ -101,10 +101,29 @@ export function CouncilAdminPage() {
                           </div>
                           <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
                             <StatusBadge status={doc.status} />
-                            <Button variant="outline" size="sm" className="gap-2 border-gray-200 hover:border-black hover:bg-black hover:text-white w-full sm:w-auto transition-all duration-200">
-                              <Lock className="size-3.5" />
-                              View
-                            </Button>
+                            {doc.fileUrl ? (
+                              <Button
+                                asChild
+                                variant="outline"
+                                size="sm"
+                                className="gap-2 border-gray-200 hover:border-black hover:bg-black hover:text-white w-full sm:w-auto transition-all duration-200"
+                              >
+                                <a href={doc.fileUrl} target="_blank" rel="noreferrer">
+                                  <Lock className="size-3.5" />
+                                  View
+                                </a>
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                disabled
+                                className="gap-2 border-gray-200 w-full sm:w-auto"
+                              >
+                                <Lock className="size-3.5" />
+                                View
+                              </Button>
+                            )}
                           </div>
                         </motion.div>
                       ))}

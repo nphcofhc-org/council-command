@@ -45,15 +45,14 @@ export const siteConfig: SiteConfig = {
   subtitle: "Internal Governance Portal",
   footerText: "© 2026 National Pan-Hellenic Council of Hudson County",
   footerSubtext: "Internal Governance Portal · Authorized Access Only",
-  presidentName: "Marcus Johnson",
+  presidentName: "Christopher DeMarkus",
   presidentTitle: "Council President",
   presidentChapter: "Alpha Phi Alpha Fraternity, Inc.",
-  presidentImageUrl:
-    "https://images.unsplash.com/photo-1621062089461-01f1eaebb66c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBhZnJpY2FuJTIwYW1lcmljYW4lMjBtYW4lMjBidXNpbmVzcyUyMHN1aXQlMjBwb3J0cmFpdHxlbnwxfHx8fDE3NzA1MTMyMjR8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+  presidentImageUrl: "",
   presidentMessage: [
-    "It is my distinct honor to welcome you to the National Pan-Hellenic Council of Hudson County's internal governance portal. This platform serves as the central hub for our council's operations, communication, and collaborative efforts.",
-    "As we continue our mission to promote unity, scholarship, and service across our nine member organizations, this intranet represents our commitment to transparency, efficiency, and excellence in council administration. Here you will find critical resources, meeting documentation, event information, and the tools necessary to advance our collective goals.",
-    "I encourage all officers, delegates, and chapter representatives to utilize this platform regularly, stay informed of council activities, and engage fully in our shared work. Together, we strengthen the legacy of the Divine Nine in Hudson County and beyond.",
+    "Welcome to the NPHC of Hudson County digital portal. Our Council is committed to the principles of cooperation and service throughout the Bergen Neck and beyond.",
+    "From the urban heights of Jersey City to the waterfronts of Bayonne and Hoboken, this portal serves as a strategic resource for our member chapters to ensure operational alignment, rigorous governance, and impactful community service.",
+    "As we navigate the fastest-growing county in the state, we lead with a focus on institutional health and fraternal unity.",
   ],
   presidentClosing: "In Unity and Service,",
   bannerImageUrl: "", // Banner is imported as a local asset in HomePage
@@ -88,12 +87,13 @@ export const updates: Update[] = [
 // ═════════════════════════════════════════════════════════════════════════════
 
 export const officers: Officer[] = [
-  { id: "off-1", name: "Marcus Johnson",    title: "President",                chapter: "Alpha Phi Alpha Fraternity, Inc.",   email: "president@nphchudson.org",       imageUrl: null },
-  { id: "off-2", name: "Jasmine Williams",  title: "Vice President",           chapter: "Delta Sigma Theta Sorority, Inc.",   email: "vicepresident@nphchudson.org",   imageUrl: null },
-  { id: "off-3", name: "David Thompson",    title: "Treasurer",                chapter: "Kappa Alpha Psi Fraternity, Inc.",   email: "treasurer@nphchudson.org",       imageUrl: null },
-  { id: "off-4", name: "Nicole Patterson",  title: "Recording Secretary",      chapter: "Zeta Phi Beta Sorority, Inc.",       email: "secretary@nphchudson.org",       imageUrl: null },
-  { id: "off-5", name: "Brandon Mitchell",  title: "Corresponding Secretary",  chapter: "Omega Psi Phi Fraternity, Inc.",     email: "correspondence@nphchudson.org",  imageUrl: null },
-  { id: "off-6", name: "Angela Davis",      title: "Parliamentarian",          chapter: "Alpha Kappa Alpha Sorority, Inc.",   email: "parliamentarian@nphchudson.org", imageUrl: null },
+  { id: "off-1", name: "Christopher DeMarkus", title: "President",          chapter: "Alpha Phi Alpha Fraternity, Inc.",   email: "president@nphcofhudsoncounty.org",          imageUrl: null },
+  { id: "off-2", name: "Kimberly Conway",      title: "Vice President",     chapter: "Alpha Kappa Alpha Sorority, Inc.",   email: "vicepresident@nphcofhudsoncounty.org",      imageUrl: null },
+  { id: "off-3", name: "April Stitt",          title: "Secretary",          chapter: "Sigma Gamma Rho Sorority, Inc.",     email: "secretary@nphcofhudsoncounty.org",          imageUrl: null },
+  { id: "off-4", name: "Gibril Kamara",        title: "Financial Secretary", chapter: "Alpha Phi Alpha Fraternity, Inc.",   email: "financialsecretary@nphcofhudsoncounty.org", imageUrl: null },
+  { id: "off-5", name: "Dr. Viva White",       title: "Chaplain",           chapter: "Zeta Phi Beta Sorority, Inc.",       email: "chaplain@nphcofhudsoncounty.org",           imageUrl: null },
+  { id: "off-6", name: "Krystal Allbright",    title: "Parliamentarian",    chapter: "Sigma Gamma Rho Sorority, Inc.",     email: "parliamentarian@nphcofhudsoncounty.org",    imageUrl: null },
+  { id: "off-7", name: "To Be Appointed",      title: "Treasurer",          chapter: "",                                   email: "treasurer@nphcofhudsoncounty.org",          imageUrl: null },
 ];
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -101,15 +101,15 @@ export const officers: Officer[] = [
 // ═════════════════════════════════════════════════════════════════════════════
 
 export const delegates: Delegate[] = [
-  { id: "del-1", chapter: "Alpha Phi Alpha Fraternity, Inc.",   representative: "Marcus Johnson",   delegate: "Christopher Hayes",    term: "2025-2027" },
-  { id: "del-2", chapter: "Alpha Kappa Alpha Sorority, Inc.",   representative: "Angela Davis",     delegate: "Michelle Robinson",    term: "2025-2027" },
-  { id: "del-3", chapter: "Kappa Alpha Psi Fraternity, Inc.",   representative: "David Thompson",   delegate: "Steven Wilson",        term: "2024-2026" },
-  { id: "del-4", chapter: "Omega Psi Phi Fraternity, Inc.",     representative: "Brandon Mitchell", delegate: "James Carter",         term: "2025-2027" },
-  { id: "del-5", chapter: "Delta Sigma Theta Sorority, Inc.",   representative: "Jasmine Williams", delegate: "Kimberly Brooks",      term: "2024-2026" },
-  { id: "del-6", chapter: "Phi Beta Sigma Fraternity, Inc.",    representative: "Anthony Green",    delegate: "Malcolm Harris",       term: "2025-2027" },
-  { id: "del-7", chapter: "Zeta Phi Beta Sorority, Inc.",       representative: "Nicole Patterson", delegate: "Lisa Anderson",        term: "2024-2026" },
-  { id: "del-8", chapter: "Sigma Gamma Rho Sorority, Inc.",     representative: "Tamara Lewis",     delegate: "Christina Moore",      term: "2025-2027" },
-  { id: "del-9", chapter: "Iota Phi Theta Fraternity, Inc.",    representative: "Eric Jackson",     delegate: "Timothy Washington",   term: "2024-2026" },
+  { id: "del-1", chapter: "Alpha Phi Alpha Fraternity, Inc.",   representative: "Ricky Wallace",        delegate: "TBD",             term: "2025-2026" },
+  { id: "del-2", chapter: "Alpha Kappa Alpha Sorority, Inc.",   representative: "TBD",                 delegate: "TBD",             term: "2025-2026" },
+  { id: "del-3", chapter: "Kappa Alpha Psi Fraternity, Inc.",   representative: "Lawrence Fernandes",  delegate: "Jahshae Stewart", term: "2025-2026" },
+  { id: "del-4", chapter: "Omega Psi Phi Fraternity, Inc.",     representative: "Antonio Gordon",      delegate: "TBD",             term: "2025-2026" },
+  { id: "del-5", chapter: "Delta Sigma Theta Sorority, Inc.",   representative: "Tina Jones",          delegate: "TBD",             term: "2025-2026" },
+  { id: "del-6", chapter: "Phi Beta Sigma Fraternity, Inc.",    representative: "TBD",                 delegate: "TBD",             term: "2025-2026" },
+  { id: "del-7", chapter: "Zeta Phi Beta Sorority, Inc.",       representative: "Ayesha Noel-Smith",   delegate: "TBD",             term: "2025-2026" },
+  { id: "del-8", chapter: "Sigma Gamma Rho Sorority, Inc.",     representative: "TBD",                 delegate: "TBD",             term: "2025-2026" },
+  { id: "del-9", chapter: "Iota Phi Theta Fraternity, Inc.",    representative: "TBD",                 delegate: "TBD",             term: "Interest (2024-2025)" },
 ];
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -117,11 +117,9 @@ export const delegates: Delegate[] = [
 // ═════════════════════════════════════════════════════════════════════════════
 
 export const governingDocuments: GoverningDocument[] = [
-  { id: "gov-1", title: "NPHC Hudson County Bylaws (Revised 2024)", type: "Constitution & Bylaws",    lastUpdated: "January 15, 2024",   status: "Active" },
-  { id: "gov-2", title: "Standing Rules & Procedures Manual",       type: "Operational Guidelines",   lastUpdated: "July 10, 2023",      status: "Active" },
-  { id: "gov-3", title: "Chapter Membership Requirements",          type: "Governance Document",      lastUpdated: "September 1, 2023",  status: "Active" },
-  { id: "gov-4", title: "Financial Policies & Procedures",          type: "Financial Governance",     lastUpdated: "March 20, 2024",     status: "Active" },
-  { id: "gov-5", title: "Code of Conduct & Ethics Policy",          type: "Policy Document",          lastUpdated: "June 5, 2023",       status: "Active" },
+  { id: "gov-1", title: "NPHC National Constitution (2020)",             type: "National Governance",   lastUpdated: "2020",            status: "Active" },
+  { id: "gov-2", title: "NPHC Hudson County Local Bylaws (2023)",        type: "Local Governance",      lastUpdated: "2023",            status: "Active" },
+  { id: "gov-3", title: "Council Accountability and Compliance Standards", type: "Compliance",         lastUpdated: "February 2026",   status: "Reference", fileUrl: "/docs/nphc-council-accountability-and-compliance-standards.docx" },
 ];
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -249,11 +247,38 @@ export const nationalOrgs: NationalOrg[] = [
 // ═════════════════════════════════════════════════════════════════════════════
 
 export const trainingResources: TrainingResource[] = [
-  { id: "trn-1", title: "NPHC Hudson County New Member Orientation",  description: "Introduction to council structure, procedures, and expectations",    type: "Onboarding",   updated: "September 2025" },
-  { id: "trn-2", title: "Officer Transition Manual",                   description: "Role-specific guidance for incoming council officers",               type: "Leadership",   updated: "June 2025"      },
-  { id: "trn-3", title: "Event Planning Best Practices Guide",        description: "Step-by-step guide for organizing successful NPHC events",           type: "Programming",  updated: "October 2025"   },
-  { id: "trn-4", title: "Financial Management & Budget Procedures",   description: "Treasury operations, reimbursements, and fiscal responsibility",     type: "Financial",    updated: "August 2025"    },
-  { id: "trn-5", title: "Parliamentary Procedure Quick Reference",    description: "Robert's Rules of Order as applied to council meetings",             type: "Governance",   updated: "March 2025"     },
+  {
+    id: "trn-1",
+    title: "Comprehensive Data Brief for Intranet Integration",
+    description: "Draft portal content, executive roster context, directory notes, and governance registry.",
+    type: "Reference",
+    updated: "February 2026",
+    fileUrl: "/docs/nphc-of-hudson-county-comprehensive-data-brief-for-intranet-integration.docx",
+  },
+  {
+    id: "trn-2",
+    title: "Council Accountability and Compliance Standards",
+    description: "Annual reporting, financial documentation, bylaws upload requirements, and compliance expectations.",
+    type: "Compliance",
+    updated: "February 2026",
+    fileUrl: "/docs/nphc-council-accountability-and-compliance-standards.docx",
+  },
+  {
+    id: "trn-3",
+    title: "Centralized Intranet Portal Data Brief (XLSX)",
+    description: "Source tables and references used to assemble portal content.",
+    type: "Data",
+    updated: "February 2026",
+    fileUrl: "/docs/nphc-of-hudson-county-centralized-intranet-portal-data-brief.xlsx",
+  },
+  {
+    id: "trn-4",
+    title: "NotebookLM Mind Map (PNG)",
+    description: "High-level mind map of council portal content and structure.",
+    type: "Reference",
+    updated: "February 2026",
+    fileUrl: "/docs/notebooklm-mind-map.png",
+  },
 ];
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -265,27 +290,46 @@ export const internalDocuments: InternalDocSection[] = [
     category: "Financial",
     iconName: "DollarSign",
     documents: [
-      { id: "idoc-1", name: "FY 2026 Operating Budget - Approved",         updated: "January 10, 2026",  status: "Active"    },
-      { id: "idoc-2", name: "Q1 2026 Financial Report",                    updated: "February 5, 2026",  status: "Current"   },
-      { id: "idoc-3", name: "Treasurer's Reconciliation - January 2026",   updated: "February 1, 2026",  status: "Filed"     },
+      {
+        id: "idoc-1",
+        name: "2026 Fiscal Outlook and Budget Plan",
+        updated: "February 2026",
+        status: "Current",
+        fileUrl: "/docs/nphc-of-hudson-county-2026-fiscal-outlook-and-budget-plan.docx",
+      },
+      {
+        id: "idoc-2",
+        name: "Proposed 2026 Annual Budget Estimate",
+        updated: "February 2026",
+        status: "Draft",
+        fileUrl: "/docs/national-pan-hellenic-council-of-hudson-county-proposed-2026-annual-budget-estimate.docx",
+      },
     ],
   },
   {
     category: "Strategic Planning",
     iconName: "Target",
     documents: [
-      { id: "idoc-4", name: "NPHC Hudson County Strategic Plan 2024-2027", updated: "June 15, 2024",     status: "Active"    },
-      { id: "idoc-5", name: "2026 Program Priorities & Goals",             updated: "December 20, 2025", status: "Active"    },
-      { id: "idoc-6", name: "Mid-Year Strategic Review - Fall 2025",       updated: "November 10, 2025", status: "Filed"     },
+      {
+        id: "idoc-3",
+        name: "2024-2025 Operational Audit and Strategy Review",
+        updated: "February 2026",
+        status: "Reference",
+        fileUrl: "/docs/hudson-county-nphc-2024-2025-operational-audit-and-strategy-review.docx",
+      },
     ],
   },
   {
-    category: "Compliance & Reporting",
-    iconName: "ClipboardCheck",
+    category: "Governance",
+    iconName: "FileText",
     documents: [
-      { id: "idoc-7", name: "Annual Report to National NPHC - 2025",       updated: "January 30, 2026",  status: "Submitted" },
-      { id: "idoc-8", name: "IRS Form 990 - Tax Year 2025",               updated: "January 15, 2026",  status: "Filed"     },
-      { id: "idoc-9", name: "State of New Jersey Registration Renewal",    updated: "December 1, 2025",  status: "Current"   },
+      {
+        id: "idoc-4",
+        name: "Comprehensive Data Brief for Intranet Integration",
+        updated: "February 2026",
+        status: "Reference",
+        fileUrl: "/docs/nphc-of-hudson-county-comprehensive-data-brief-for-intranet-integration.docx",
+      },
     ],
   },
 ];

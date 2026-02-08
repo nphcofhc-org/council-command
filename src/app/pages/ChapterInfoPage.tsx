@@ -91,14 +91,29 @@ export function ChapterInfoPage() {
                                 {officer.title}
                               </Badge>
                               <p className="text-sm text-gray-500 mb-4">{officer.chapter}</p>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="w-full gap-2 border-black text-black hover:bg-black hover:text-white transition-all duration-200"
-                              >
-                                <Mail className="size-4" />
-                                Contact
-                              </Button>
+                              {officer.email ? (
+                                <Button
+                                  asChild
+                                  variant="outline"
+                                  size="sm"
+                                  className="w-full gap-2 border-black text-black hover:bg-black hover:text-white transition-all duration-200"
+                                >
+                                  <a href={`mailto:${officer.email}`}>
+                                    <Mail className="size-4" />
+                                    Contact
+                                  </a>
+                                </Button>
+                              ) : (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  disabled
+                                  className="w-full gap-2 border-gray-200"
+                                >
+                                  <Mail className="size-4" />
+                                  Contact
+                                </Button>
+                              )}
                             </div>
                           </CardContent>
                         </Card>
