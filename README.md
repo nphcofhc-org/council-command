@@ -25,6 +25,11 @@ Docs:
 - `apps-script/README.md` (Sheets/API setup)
 - `CONTENT_GUIDE.md` (which tabs/columns map to which pages)
 
+## Documents / File Links
+
+Static files can be served from the portal itself (behind Cloudflare Access) by placing them in `public/docs/`.
+Then set `fileUrl` in Sheets (or `static-data.ts`) to paths like `/docs/your-file.pdf`.
+
 ## GitHub Pages Note
 
 GitHub Pages is public hosting. Do not use it for the members-only portal unless you are intentionally making the portal public.
