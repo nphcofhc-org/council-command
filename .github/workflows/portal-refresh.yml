@@ -1,0 +1,24 @@
+name: Portal refresh (trigger Cloudflare deploy hook)
+
+on:
+  schedule:
+      # Every 15 minutes
+          - cron: "*/15 * * * *"
+            workflow_dispatch:
+
+            permissions:
+              contents: read
+
+              jobs:
+                trigger:
+                    runs-on: ubuntu-latest
+                        steps:
+                              - name: Trigger deploy hook
+                                      env:
+                                                HOOK_URL: ${{ secrets.CF_PAGES_DEPLOY_HOOK_URL }}
+                                                        run: |
+                                                                  if [ -z "$HOOK_URL" ]; then
+                                                                              echo "Missing secret CF_PAGES_DEPLOY_HOOK_URL"
+                                                                                          exit 1
+                                                                                                    fi
+                                                                                                              curl -fsS -X POST "$HOOK_URL" >/dev/null
