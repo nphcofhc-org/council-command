@@ -6,7 +6,8 @@
   "scripts": {
     "prebuild": "node scripts/sync_sheets.mjs",
     "build": "vite build",
-    "dev": "vite"
+    "dev": "vite",
+    "seed:sheets": "node scripts/seed_sheets.mjs --mode=upsert"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",

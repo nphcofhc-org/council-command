@@ -1,0 +1,254 @@
+{
+  "siteConfig": {
+    "councilName": "National Pan-Hellenic Council of Hudson County",
+    "subtitle": "Internal Governance Portal",
+    "footerText": "© 2026 National Pan-Hellenic Council of Hudson County",
+    "footerSubtext": "Internal Governance Portal · Authorized Access Only",
+    "presidentName": "Christopher DeMarkus",
+    "presidentTitle": "Council President",
+    "presidentChapter": "Alpha Phi Alpha Fraternity, Inc.",
+    "presidentImageUrl": "",
+    "presidentMessage": [
+      "Welcome to the NPHC of Hudson County digital portal. Our Council is committed to the principles of cooperation and service throughout the Bergen Neck and beyond.",
+      "From the urban heights of Jersey City to the waterfronts of Bayonne and Hoboken, this portal serves as a strategic resource for our member chapters to ensure operational alignment, rigorous governance, and impactful community service.",
+      "As we navigate the fastest-growing county in the state, we lead with a focus on institutional health and fraternal unity."
+    ],
+    "presidentClosing": "In Unity and Service,",
+    "bannerImageUrl": ""
+  },
+  "quickLinks": [],
+  "updates": [],
+  "officers": [
+    {
+      "id": "off-1",
+      "name": "Christopher DeMarkus",
+      "title": "President",
+      "chapter": "Alpha Phi Alpha Fraternity, Inc.",
+      "email": "",
+      "imageUrl": ""
+    },
+    {
+      "id": "off-2",
+      "name": "Kimberly Conway",
+      "title": "Vice President",
+      "chapter": "Alpha Kappa Alpha Sorority, Inc.",
+      "email": "",
+      "imageUrl": ""
+    },
+    {
+      "id": "off-3",
+      "name": "April Stitt",
+      "title": "Secretary",
+      "chapter": "Sigma Gamma Rho Sorority, Inc.",
+      "email": "",
+      "imageUrl": ""
+    },
+    {
+      "id": "off-4",
+      "name": "Gibril Kamara",
+      "title": "Financial Secretary",
+      "chapter": "Alpha Phi Alpha Fraternity, Inc.",
+      "email": "",
+      "imageUrl": ""
+    },
+    {
+      "id": "off-5",
+      "name": "Dr. Viva White",
+      "title": "Chaplain",
+      "chapter": "Zeta Phi Beta Sorority, Inc.",
+      "email": "",
+      "imageUrl": ""
+    },
+    {
+      "id": "off-6",
+      "name": "Krystal Allbright",
+      "title": "Parliamentarian",
+      "chapter": "Sigma Gamma Rho Sorority, Inc.",
+      "email": "",
+      "imageUrl": ""
+    },
+    {
+      "id": "off-7",
+      "name": "To Be Appointed",
+      "title": "Treasurer",
+      "chapter": "",
+      "email": "",
+      "imageUrl": ""
+    }
+  ],
+  "delegates": [
+    {
+      "id": "del-1",
+      "chapter": "Alpha Phi Alpha Fraternity, Inc.",
+      "representative": "Ricky Wallace",
+      "delegate": "TBD",
+      "term": "2025-2026"
+    },
+    {
+      "id": "del-2",
+      "chapter": "Alpha Kappa Alpha Sorority, Inc.",
+      "representative": "TBD",
+      "delegate": "TBD",
+      "term": "2025-2026"
+    },
+    {
+      "id": "del-3",
+      "chapter": "Kappa Alpha Psi Fraternity, Inc.",
+      "representative": "Lawrence Fernandes",
+      "delegate": "Jahshae Stewart",
+      "term": "2025-2026"
+    },
+    {
+      "id": "del-4",
+      "chapter": "Omega Psi Phi Fraternity, Inc.",
+      "representative": "Antonio Gordon",
+      "delegate": "TBD",
+      "term": "2025-2026"
+    },
+    {
+      "id": "del-5",
+      "chapter": "Delta Sigma Theta Sorority, Inc.",
+      "representative": "Tina Jones",
+      "delegate": "TBD",
+      "term": "2025-2026"
+    },
+    {
+      "id": "del-6",
+      "chapter": "Phi Beta Sigma Fraternity, Inc.",
+      "representative": "TBD",
+      "delegate": "TBD",
+      "term": "2025-2026"
+    },
+    {
+      "id": "del-7",
+      "chapter": "Zeta Phi Beta Sorority, Inc.",
+      "representative": "Ayesha Noel-Smith",
+      "delegate": "Dr. Viva White",
+      "term": "2025-2026"
+    },
+    {
+      "id": "del-8",
+      "chapter": "Sigma Gamma Rho Sorority, Inc.",
+      "representative": "April Stitt",
+      "delegate": "Krystal Allbright",
+      "term": "2025-2026"
+    },
+    {
+      "id": "del-9",
+      "chapter": "Iota Phi Theta Fraternity, Inc.",
+      "representative": "TBD",
+      "delegate": "TBD",
+      "term": "Interest (2024-2025)"
+    }
+  ],
+  "governingDocuments": [
+    {
+      "id": "gov-1",
+      "title": "NPHC National Constitution (2020)",
+      "type": "National Governance",
+      "lastUpdated": "2020",
+      "status": "Active",
+      "fileUrl": ""
+    },
+    {
+      "id": "gov-2",
+      "title": "NPHC Hudson County Local Bylaws (2023)",
+      "type": "Local Governance",
+      "lastUpdated": "2023",
+      "status": "Active",
+      "fileUrl": ""
+    },
+    {
+      "id": "gov-3",
+      "title": "Council Accountability and Compliance Standards",
+      "type": "Compliance",
+      "lastUpdated": "February 2026",
+      "status": "Reference",
+      "fileUrl": "/docs/nphc-council-accountability-and-compliance-standards.docx"
+    }
+  ],
+  "trainingResources": [
+    {
+      "id": "trn-1",
+      "title": "Comprehensive Data Brief for Intranet Integration",
+      "description": "Draft portal content, executive roster context, directory notes, and governance registry.",
+      "type": "Reference",
+      "updated": "February 2026",
+      "fileUrl": "/docs/nphc-of-hudson-county-comprehensive-data-brief-for-intranet-integration.docx"
+    },
+    {
+      "id": "trn-2",
+      "title": "Council Accountability and Compliance Standards",
+      "description": "Annual reporting, financial documentation, bylaws upload requirements, and compliance expectations.",
+      "type": "Compliance",
+      "updated": "February 2026",
+      "fileUrl": "/docs/nphc-council-accountability-and-compliance-standards.docx"
+    },
+    {
+      "id": "trn-3",
+      "title": "Centralized Intranet Portal Data Brief (XLSX)",
+      "description": "Source tables and references used to assemble portal content.",
+      "type": "Data",
+      "updated": "February 2026",
+      "fileUrl": "/docs/nphc-of-hudson-county-centralized-intranet-portal-data-brief.xlsx"
+    },
+    {
+      "id": "trn-4",
+      "title": "NotebookLM Mind Map (PNG)",
+      "description": "High-level mind map of council portal content and structure.",
+      "type": "Reference",
+      "updated": "February 2026",
+      "fileUrl": "/docs/notebooklm-mind-map.png"
+    }
+  ],
+  "internalDocuments": [
+    {
+      "category": "Financial",
+      "iconName": "DollarSign",
+      "documents": [
+        {
+          "id": "idoc-1",
+          "name": "2026 Fiscal Outlook and Budget Plan",
+          "updated": "February 2026",
+          "status": "Current",
+          "fileUrl": "/docs/nphc-of-hudson-county-2026-fiscal-outlook-and-budget-plan.docx"
+        },
+        {
+          "id": "idoc-2",
+          "name": "Proposed 2026 Annual Budget Estimate",
+          "updated": "February 2026",
+          "status": "Draft",
+          "fileUrl": "/docs/national-pan-hellenic-council-of-hudson-county-proposed-2026-annual-budget-estimate.docx"
+        }
+      ]
+    },
+    {
+      "category": "Strategic Planning",
+      "iconName": "Target",
+      "documents": [
+        {
+          "id": "idoc-3",
+          "name": "2024-2025 Operational Audit and Strategy Review",
+          "updated": "February 2026",
+          "status": "Reference",
+          "fileUrl": "/docs/hudson-county-nphc-2024-2025-operational-audit-and-strategy-review.docx"
+        }
+      ]
+    },
+    {
+      "category": "Governance",
+      "iconName": "FileText",
+      "documents": [
+        {
+          "id": "idoc-4",
+          "name": "Comprehensive Data Brief for Intranet Integration",
+          "updated": "February 2026",
+          "status": "Reference",
+          "fileUrl": "/docs/nphc-of-hudson-county-comprehensive-data-brief-for-intranet-integration.docx"
+        }
+      ]
+    }
+  ],
+  "tasks": []
+}
+

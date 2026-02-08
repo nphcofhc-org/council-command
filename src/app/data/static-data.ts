@@ -87,13 +87,13 @@ export const updates: Update[] = [
 // ═════════════════════════════════════════════════════════════════════════════
 
 export const officers: Officer[] = [
-  { id: "off-1", name: "Christopher DeMarkus", title: "President",          chapter: "Alpha Phi Alpha Fraternity, Inc.",   email: "president@nphcofhudsoncounty.org",          imageUrl: null },
-  { id: "off-2", name: "Kimberly Conway",      title: "Vice President",     chapter: "Alpha Kappa Alpha Sorority, Inc.",   email: "vicepresident@nphcofhudsoncounty.org",      imageUrl: null },
-  { id: "off-3", name: "April Stitt",          title: "Secretary",          chapter: "Sigma Gamma Rho Sorority, Inc.",     email: "secretary@nphcofhudsoncounty.org",          imageUrl: null },
-  { id: "off-4", name: "Gibril Kamara",        title: "Financial Secretary", chapter: "Alpha Phi Alpha Fraternity, Inc.",   email: "financialsecretary@nphcofhudsoncounty.org", imageUrl: null },
-  { id: "off-5", name: "Dr. Viva White",       title: "Chaplain",           chapter: "Zeta Phi Beta Sorority, Inc.",       email: "chaplain@nphcofhudsoncounty.org",           imageUrl: null },
-  { id: "off-6", name: "Krystal Allbright",    title: "Parliamentarian",    chapter: "Sigma Gamma Rho Sorority, Inc.",     email: "parliamentarian@nphcofhudsoncounty.org",    imageUrl: null },
-  { id: "off-7", name: "To Be Appointed",      title: "Treasurer",          chapter: "",                                   email: "treasurer@nphcofhudsoncounty.org",          imageUrl: null },
+  { id: "off-1", name: "Christopher DeMarkus", title: "President",           chapter: "Alpha Phi Alpha Fraternity, Inc.",   email: "", imageUrl: null },
+  { id: "off-2", name: "Kimberly Conway",      title: "Vice President",      chapter: "Alpha Kappa Alpha Sorority, Inc.",   email: "", imageUrl: null },
+  { id: "off-3", name: "April Stitt",          title: "Secretary",           chapter: "Sigma Gamma Rho Sorority, Inc.",     email: "", imageUrl: null },
+  { id: "off-4", name: "Gibril Kamara",        title: "Financial Secretary", chapter: "Alpha Phi Alpha Fraternity, Inc.",   email: "", imageUrl: null },
+  { id: "off-5", name: "Dr. Viva White",       title: "Chaplain",            chapter: "Zeta Phi Beta Sorority, Inc.",       email: "", imageUrl: null },
+  { id: "off-6", name: "Krystal Allbright",    title: "Parliamentarian",     chapter: "Sigma Gamma Rho Sorority, Inc.",     email: "", imageUrl: null },
+  { id: "off-7", name: "To Be Appointed",      title: "Treasurer",           chapter: "",                                   email: "", imageUrl: null },
 ];
 
 // ═════════════════════════════════════════════════════════════════════════════
