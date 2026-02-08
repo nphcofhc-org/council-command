@@ -13,12 +13,14 @@ This folder contains a drop-in Apps Script you can paste into a Google Spreadshe
 1. Create (or open) a Google Sheet.
 2. `Extensions` -> `Apps Script`
 3. Paste `Code.gs` contents into the editor (replace default file).
-4. Run `setupSheets()` once (authorize when prompted).
+4. Run `setupSheets()` (authorize when prompted). It is safe to re-run; it won’t wipe existing data.
 5. Deploy as Web App:
    - `Deploy` -> `New deployment` -> `Web app`
    - Execute as: `Me`
    - Who has access: `Anyone` (or restrict if you want)
 6. Copy the deployment URL.
+
+If you ever want to intentionally wipe everything and recreate headers, run `resetSheets()`.
 
 ## Wire The Frontend To It
 

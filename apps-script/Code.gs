@@ -254,9 +254,58 @@ function setupSheets() {
     var headers = schema[tabName];
     var ws = ss.getSheetByName(tabName);
     if (!ws) ws = ss.insertSheet(tabName);
-    ws.clearContents();
-    ws.getRange(1, 1, 1, headers.length).setValues([headers]);
+
+    // Idempotent behavior:
+    // - If the sheet is empty or the first row is blank, write headers.
+    // - If headers already match, do nothing.
+    // - If the first row has non-blank content but doesn't match, do NOT overwrite
+    //   (use resetSheets() explicitly if you want to wipe and recreate).
+    var lastRow = ws.getLastRow();
+    var lastCol = ws.getLastColumn();
+
+    if (lastRow === 0 || lastCol === 0) {
+      ws.getRange(1, 1, 1, headers.length).setValues([headers]);
+      ws.setFrozenRows(1);
+      return;
+    }
+
+    var firstRow = ws.getRange(1, 1, 1, Math.max(lastCol, headers.length)).getValues()[0] || [];
+    var firstRowTrimmed = firstRow.slice(0, headers.length).map(function (v) { return String(v || "").trim(); });
+    var headersTrimmed = headers.map(function (v) { return String(v || "").trim(); });
+
+    var firstRowAllBlank = firstRowTrimmed.every(function (v) { return v === ""; });
+    if (firstRowAllBlank) {
+      ws.getRange(1, 1, 1, headers.length).setValues([headers]);
+      ws.setFrozenRows(1);
+      return;
+    }
+
+    var matches = true;
+    for (var i = 0; i < headersTrimmed.length; i++) {
+      if (firstRowTrimmed[i] !== headersTrimmed[i]) {
+        matches = false;
+        break;
+      }
+    }
+
+    if (!matches) {
+      Logger.log('Skipped header update for "%s" (existing header row does not match expected schema).', tabName);
+      return;
+    }
+
     ws.setFrozenRows(1);
   });
 }
 
+/**
+ * Destructive helper: wipe tabs and recreate header rows.
+ * Only use this if you intentionally want to reset the Sheet.
+ */
+function resetSheets() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  ss.getSheets().forEach(function (ws) {
+    ws.clearContents();
+    ws.setFrozenRows(0);
+  });
+  setupSheets();
+}

@@ -2,7 +2,10 @@
 
 All portal content is authored in a single Google Sheet, split into tabs.
 
-Run `setupSheets()` from `apps-script/Code.gs` once to create all tabs and header rows.
+Run `setupSheets()` from `apps-script/Code.gs` to create all tabs and header rows.
+It is safe to re-run; it will not wipe existing data.
+
+If you want to intentionally wipe everything and recreate headers, run `resetSheets()`.
 
 ## Special Case: SiteConfig
 
@@ -54,4 +57,3 @@ Examples:
 
 The build process runs `scripts/sync_sheets.mjs` (via `npm run build`) and writes `src/app/data/generated-data.ts`.
 Your hosting provider rebuilds periodically (or via deploy hook), so changes appear after the next deploy.
-
