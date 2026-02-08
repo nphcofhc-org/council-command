@@ -70,7 +70,7 @@ Cloudflare Pages supports "Deploy hooks". Create one and then trigger it from Gi
 3. Add a GitHub repo secret:
    - `CF_PAGES_DEPLOY_HOOK_URL` = the hook URL
 4. Enable the scheduled workflow in this repo:
-   - `.github/workflows/portal-refresh.yml`
+   - Copy `workflows-templates/portal-refresh.yml` into `.github/workflows/portal-refresh.yml` and push
 
 ## Notes
 
