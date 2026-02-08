@@ -37,6 +37,15 @@ const TABS = {
   Officers: "Officers",
   Delegates: "Delegates",
   GoverningDocs: "GoverningDocs",
+  UpcomingMeetings: "UpcomingMeetings",
+  MeetingRecords: "MeetingRecords",
+  DelegateReports: "DelegateReports",
+  Events: "Events",
+  EventArchive: "EventArchive",
+  EventFlyers: "EventFlyers",
+  SignupForms: "SignupForms",
+  SharedForms: "SharedForms",
+  NationalOrgs: "NationalOrgs",
   TrainingResources: "TrainingResources",
   InternalDocs: "InternalDocs",
   Tasks: "Tasks",
@@ -116,6 +125,11 @@ function flattenInternalDocs(sections) {
   return rows;
 }
 
+function normalizeUrl(v) {
+  if (v == null) return "";
+  return String(v).trim();
+}
+
 function normalizeImageUrl(v) {
   if (v == null) return "";
   const s = String(v).trim();
@@ -152,6 +166,19 @@ async function main() {
 
   await write(TABS.Delegates, seed.delegates);
   await write(TABS.GoverningDocs, seed.governingDocuments);
+
+  await write(TABS.UpcomingMeetings, seed.upcomingMeetings);
+  await write(TABS.MeetingRecords, seed.meetingRecords);
+  await write(TABS.DelegateReports, seed.delegateReports);
+
+  await write(TABS.Events, seed.upcomingEvents);
+  await write(TABS.EventArchive, seed.archivedEvents);
+  await write(TABS.EventFlyers, (seed.eventFlyers || []).map((x) => ({ ...x, fileUrl: normalizeUrl(x.fileUrl) })));
+  await write(TABS.SignupForms, (seed.signupForms || []).map((x) => ({ ...x, formUrl: normalizeUrl(x.formUrl) })));
+
+  await write(TABS.SharedForms, seed.sharedForms);
+  await write(TABS.NationalOrgs, seed.nationalOrgs);
+
   await write(TABS.TrainingResources, seed.trainingResources);
 
   await write(TABS.InternalDocs, flattenInternalDocs(seed.internalDocuments));

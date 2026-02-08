@@ -59,6 +59,15 @@ async function fetchTab(tabName) {
   return data;
 }
 
+async function fetchTabOrEmpty(tabName) {
+  try {
+    return await fetchTab(tabName);
+  } catch (err) {
+    console.warn(`[sync_sheets] Warning: using empty data for "${tabName}": ${err?.message || err}`);
+    return [];
+  }
+}
+
 function transformSiteConfig(rows) {
   // rows: [{key,value}, ...]
   const kv = {};
@@ -128,8 +137,18 @@ async function main() {
     return;
   }
 
+  // If SiteConfig can't be fetched, do not overwrite generated-data.ts.
+  const siteConfigRows = await (async () => {
+    try {
+      return await fetchTab(TABS.siteConfig);
+    } catch (err) {
+      console.warn(`[sync_sheets] Warning: failed to fetch "${TABS.siteConfig}". Keeping static fallback.`, err);
+      return null;
+    }
+  })();
+  if (!siteConfigRows) return;
+
   const [
-    siteConfigRows,
     quickLinks,
     updates,
     officers,
@@ -148,24 +167,23 @@ async function main() {
     internalDocsRaw,
     tasks,
   ] = await Promise.all([
-    fetchTab(TABS.siteConfig),
-    fetchTab(TABS.quickLinks),
-    fetchTab(TABS.updates),
-    fetchTab(TABS.officers),
-    fetchTab(TABS.delegates),
-    fetchTab(TABS.governingDocuments),
-    fetchTab(TABS.upcomingMeetings),
-    fetchTab(TABS.meetingRecords),
-    fetchTab(TABS.delegateReports),
-    fetchTab(TABS.upcomingEvents),
-    fetchTab(TABS.archivedEvents),
-    fetchTab(TABS.eventFlyers),
-    fetchTab(TABS.signupForms),
-    fetchTab(TABS.sharedFormsRaw),
-    fetchTab(TABS.nationalOrgs),
-    fetchTab(TABS.trainingResources),
-    fetchTab(TABS.internalDocsRaw),
-    fetchTab(TABS.tasks),
+    fetchTabOrEmpty(TABS.quickLinks),
+    fetchTabOrEmpty(TABS.updates),
+    fetchTabOrEmpty(TABS.officers),
+    fetchTabOrEmpty(TABS.delegates),
+    fetchTabOrEmpty(TABS.governingDocuments),
+    fetchTabOrEmpty(TABS.upcomingMeetings),
+    fetchTabOrEmpty(TABS.meetingRecords),
+    fetchTabOrEmpty(TABS.delegateReports),
+    fetchTabOrEmpty(TABS.upcomingEvents),
+    fetchTabOrEmpty(TABS.archivedEvents),
+    fetchTabOrEmpty(TABS.eventFlyers),
+    fetchTabOrEmpty(TABS.signupForms),
+    fetchTabOrEmpty(TABS.sharedFormsRaw),
+    fetchTabOrEmpty(TABS.nationalOrgs),
+    fetchTabOrEmpty(TABS.trainingResources),
+    fetchTabOrEmpty(TABS.internalDocsRaw),
+    fetchTabOrEmpty(TABS.tasks),
   ]);
 
   const siteConfig = transformSiteConfig(siteConfigRows);

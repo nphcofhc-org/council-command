@@ -16,8 +16,17 @@
     "presidentClosing": "In Unity and Service,",
     "bannerImageUrl": ""
   },
-  "quickLinks": [],
-  "updates": [],
+  "quickLinks": [
+    { "id": "ql-1", "icon": "Calendar", "label": "Meetings & Delegates", "shortLabel": "Meetings", "url": "/meetings-delegates", "row": 1 },
+    { "id": "ql-2", "icon": "Calendar", "label": "Programs & Events", "shortLabel": "Events", "url": "/programs-events", "row": 1 },
+    { "id": "ql-3", "icon": "FolderOpen", "label": "Resources Library", "shortLabel": "Resources", "url": "/resources", "row": 1 },
+    { "id": "ql-4", "icon": "Users", "label": "Chapter Information", "shortLabel": "Chapters", "url": "/chapter-information", "row": 2 },
+    { "id": "ql-5", "icon": "Shield", "label": "Council Admin", "shortLabel": "Admin", "url": "/council-admin", "row": 2 },
+    { "id": "ql-6", "icon": "FileText", "label": "Documents", "shortLabel": "Docs", "url": "/resources", "row": 2 }
+  ],
+  "updates": [
+    { "id": "upd-1", "date": "February 8, 2026", "title": "Portal content seeded. Review tabs and update as needed.", "type": "Admin Notice" }
+  ],
   "officers": [
     {
       "id": "off-1",
@@ -167,6 +176,36 @@
       "fileUrl": "/docs/nphc-council-accountability-and-compliance-standards.docx"
     }
   ],
+  "upcomingMeetings": [
+    { "id": "mtg-1", "title": "General Body Meeting", "date": "TBD", "time": "TBD", "location": "TBD", "type": "General Body" },
+    { "id": "mtg-2", "title": "Executive Board Meeting", "date": "TBD", "time": "TBD", "location": "TBD", "type": "Executive Board" }
+  ],
+  "meetingRecords": [],
+  "delegateReports": [],
+  "upcomingEvents": [
+    { "id": "evt-1", "title": "MLK Day of Service (Soup & Socks)", "date": "TBD", "location": "TBD", "description": "Annual signature service project. Update date/location as needed.", "type": "Service", "registration": "TBD" },
+    { "id": "evt-2", "title": "Spring Cereal Drive", "date": "TBD", "location": "TBD", "description": "Annual community service collection. Update date/location as needed.", "type": "Service", "registration": "TBD" },
+    { "id": "evt-3", "title": "D9 Day of Advocacy (Trenton)", "date": "TBD", "location": "Trenton, NJ", "description": "Council advocacy initiative. Update details as planning finalizes.", "type": "Advocacy", "registration": "TBD" }
+  ],
+  "archivedEvents": [],
+  "eventFlyers": [],
+  "signupForms": [],
+  "sharedForms": [
+    { "category": "Admin", "id": "form-1", "name": "Event Submission Form", "description": "Submit a proposed council or chapter event for review.", "link": "" },
+    { "category": "Admin", "id": "form-2", "name": "Flyer Submission Form", "description": "Submit promotional materials for posting.", "link": "" },
+    { "category": "Admin", "id": "form-3", "name": "Delegate Report Template", "description": "Standard template for delegate reports.", "link": "" }
+  ],
+  "nationalOrgs": [
+    { "id": "org-1", "name": "Alpha Phi Alpha Fraternity, Inc.", "website": "https://apa1906.net", "founded": "1906" },
+    { "id": "org-2", "name": "Alpha Kappa Alpha Sorority, Inc.", "website": "https://aka1908.com", "founded": "1908" },
+    { "id": "org-3", "name": "Kappa Alpha Psi Fraternity, Inc.", "website": "https://kappaalphapsi1911.com", "founded": "1911" },
+    { "id": "org-4", "name": "Omega Psi Phi Fraternity, Inc.", "website": "https://oppf.org", "founded": "1911" },
+    { "id": "org-5", "name": "Delta Sigma Theta Sorority, Inc.", "website": "https://deltasigmatheta.org", "founded": "1913" },
+    { "id": "org-6", "name": "Phi Beta Sigma Fraternity, Inc.", "website": "https://pbs1914.org", "founded": "1914" },
+    { "id": "org-7", "name": "Zeta Phi Beta Sorority, Inc.", "website": "https://zphib1920.org", "founded": "1920" },
+    { "id": "org-8", "name": "Sigma Gamma Rho Sorority, Inc.", "website": "https://sgrho1922.org", "founded": "1922" },
+    { "id": "org-9", "name": "Iota Phi Theta Fraternity, Inc.", "website": "https://iotaphitheta.org", "founded": "1963" }
+  ],
   "trainingResources": [
     {
       "id": "trn-1",
@@ -249,6 +288,7 @@
       ]
     }
   ],
-  "tasks": []
+  "tasks": [
+    { "id": "tsk-1", "task": "Review seeded portal content and update for accuracy", "assignedTo": "Executive Board", "dueDate": "TBD", "priority": "High", "status": "Pending" }
+  ]
 }
-
