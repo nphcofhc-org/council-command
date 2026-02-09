@@ -1,0 +1,38 @@
+{
+  "siteIdentity": {
+    "councilName": "National Pan-Hellenic Council of Hudson County",
+    "shortName": "NPHC Hudson County",
+    "mission": "As the unified voice of the Divine Nine in our community, we are committed to excellence in scholarship, service, and sisterhood/brotherhood. Our council serves as a collaborative platform where Alpha Kappa Alpha Sorority, Alpha Phi Alpha Fraternity, Delta Sigma Theta Sorority, Zeta Phi Beta Sorority, Iota Phi Theta Fraternity, Kappa Alpha Psi Fraternity, Omega Psi Phi Fraternity, Phi Beta Sigma Fraternity, and Sigma Gamma Rho Sorority work together to uplift our community and maintain the highest standards of Greek excellence.",
+    "tagline": "Unity Through Service | Excellence Through Collaboration",
+    "founded": "1930",
+    "jurisdiction": "Hudson County, New Jersey"
+  },
+  "presidentWelcome": {
+    "title": "President's Welcome",
+    "message": "Welcome to Council Command, the centralized operational hub for NPHC of Hudson County leadership. This platform streamlines our internal communications, resource management, and strategic oversight to empower our council members and enhance organizational efficiency.\n\nAs a body, we have tremendous resources at our disposal, but we haven't always utilized them to their full potential. As your President, I am committed to ensuring we organize better, mobilize faster, and execute with excellence. This microsite itself demonstrates that commitment—a practical tool built to help us focus on what matters: serving our community and honoring our Divine Nine legacy.\n\nCheck the Internal News and Council Updates section regularly for important announcements, meeting schedules, and action items. Together, we will continue to strengthen our council and elevate our collective impact.",
+    "signature": "Christopher DeMarkus",
+    "title_line": "President, NPHC of Hudson County"
+  },
+  "contactInfo": {
+    "email": "president.nphcofhc@gmail.com",
+    "phone": "(201) 555-NPHC",
+    "address": "Hudson County, New Jersey",
+    "socialMedia": {
+      "facebook": "",
+      "instagram": "@nphchudson",
+      "twitter": "@nphchudson"
+    }
+  },
+  "brandColors": {
+    "primary": "#1e3a8a",
+    "secondary": "#dc2626",
+    "accent": "#f59e0b",
+    "background": "#f8fafc",
+    "text": "#1e293b"
+  },
+  "currentTerm": {
+    "startDate": "2026-01-01",
+    "endDate": "2027-12-31",
+    "termLabel": "2026-2027 Biennium"
+  }
+}
