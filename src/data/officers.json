@@ -1,0 +1,145 @@
+{
+  "executiveBoard": [
+    {
+      "id": "off-1",
+      "position": "President",
+      "name": "Christopher DeMarkus",
+      "organization": "Alpha Phi Alpha Fraternity, Inc.",
+      "email": "president.nphcofhc@gmail.com",
+      "phone": "",
+      "termStart": "2026-01-01",
+      "termEnd": "2027-12-31",
+      "responsibilities": [
+        "Preside over all council meetings and executive board meetings",
+        "Serve as official representative of the council",
+        "Appoint committee chairs with executive board approval",
+        "Ensure compliance with bylaws and national constitution",
+        "Maintain communication with national NPHC office",
+        "Execute all official documents and contracts",
+        "Call special meetings when necessary",
+        "Prepare annual report to member organizations",
+        "Maintain custody of council seal"
+      ],
+      "photo": "/images/officers/president.jpg"
+    },
+    {
+      "id": "off-2",
+      "position": "Vice President",
+      "name": "Kimberly Conway",
+      "organization": "Alpha Kappa Alpha Sorority, Inc.",
+      "email": "",
+      "phone": "",
+      "termStart": "2026-01-01",
+      "termEnd": "2027-12-31",
+      "responsibilities": [
+        "Assume presidential duties in president's absence",
+        "Chair the Program Committee",
+        "Coordinate all council-sponsored events",
+        "Maintain event calendar and planning timeline",
+        "Supervise event logistics and vendor coordination",
+        "Compile quarterly program reports",
+        "Serve as liaison to community partners for events",
+        "Maintain program archive and photo documentation"
+      ],
+      "photo": "/images/officers/vp.jpg"
+    },
+    {
+      "id": "off-3",
+      "position": "Secretary",
+      "name": "April Stitt",
+      "organization": "Sigma Gamma Rho Sorority, Inc.",
+      "email": "",
+      "phone": "",
+      "termStart": "2026-01-01",
+      "termEnd": "2027-12-31",
+      "responsibilities": [
+        "Record and maintain minutes of all meetings",
+        "Distribute meeting agendas 7 days prior to meetings",
+        "Distribute approved minutes within 14 days of meetings",
+        "Maintain official council correspondence",
+        "Maintain attendance records",
+        "Maintain membership roster and contact database",
+        "File annual reports with state agencies",
+        "Maintain official council archives"
+      ],
+      "photo": "/images/officers/secretary.jpg"
+    },
+    {
+      "id": "off-4",
+      "position": "Treasurer",
+      "name": "Gibril Kamara",
+      "organization": "Alpha Phi Alpha Fraternity, Inc.",
+      "email": "",
+      "phone": "",
+      "termStart": "2026-01-01",
+      "termEnd": "2027-12-31",
+      "responsibilities": [
+        "Maintain all financial records and accounts",
+        "Receive and deposit all council funds",
+        "Disburse funds as authorized by the council",
+        "Present financial reports at each regular meeting",
+        "Prepare annual budget for council approval",
+        "Maintain records of chapter dues payments",
+        "Reconcile bank statements monthly",
+        "Prepare annual tax filings (990)",
+        "Coordinate annual financial audit",
+        "Maintain insurance policies and coverage"
+      ],
+      "photo": "/images/officers/treasurer.jpg"
+    },
+    {
+      "id": "off-5",
+      "position": "Financial Secretary",
+      "name": "To Be Appointed",
+      "organization": "",
+      "email": "",
+      "phone": "",
+      "termStart": "2026-01-01",
+      "termEnd": "2027-12-31",
+      "responsibilities": [
+        "Assist Treasurer with financial record keeping",
+        "Process membership dues and payments",
+        "Maintain financial correspondence",
+        "Prepare financial reports for meetings",
+        "Coordinate with Treasurer on budget tracking"
+      ],
+      "photo": "/images/officers/financial-secretary.jpg"
+    },
+    {
+      "id": "off-6",
+      "position": "Parliamentarian",
+      "name": "To Be Appointed",
+      "organization": "Sigma Gamma Rho Sorority, Inc.",
+      "email": "",
+      "phone": "",
+      "termStart": "2026-01-01",
+      "termEnd": "2027-12-31",
+      "responsibilities": [
+        "Advise on proper parliamentary procedure",
+        "Maintain current copy of Robert's Rules of Order",
+        "Review proposed amendments to bylaws",
+        "Rule on points of order when requested",
+        "Assist in resolving procedural disputes"
+      ],
+      "photo": "/images/officers/parliamentarian.jpg"
+    },
+    {
+      "id": "off-7",
+      "position": "Chaplain",
+      "name": "Dr. Viva White",
+      "organization": "Zeta Phi Beta Sorority, Inc.",
+      "email": "",
+      "phone": "",
+      "termStart": "2026-01-01",
+      "termEnd": "2027-12-31",
+      "responsibilities": [
+        "Lead opening and closing rituals at meetings",
+        "Provide spiritual guidance to the council",
+        "Coordinate memorial services when needed",
+        "Maintain council prayer and reflection traditions",
+        "Support members during times of celebration and loss"
+      ],
+      "photo": "/images/officers/chaplain.jpg"
+    }
+  ]
+}
