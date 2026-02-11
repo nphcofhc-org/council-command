@@ -1,12 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Shield, FileText, Lock, AlertTriangle } from "lucide-react";
+import { Shield, FileText, Lock, AlertTriangle, ClipboardCheck } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { motion } from "motion/react";
 import { useCouncilAdminData } from "../hooks/use-site-data";
 import { StatusBadge } from "../components/status-badge";
 import { DynamicIcon } from "../components/icon-resolver";
+import { Link } from "react-router";
 
 const ART_MARBLE = "https://images.unsplash.com/photo-1678756466078-1ff0d7b09431?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25vY2hyb21lJTIwYWJzdHJhY3QlMjBtYXJibGUlMjB0ZXh0dXJlfGVufDF8fHx8MTc3MDUxMzIyM3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 
@@ -54,6 +55,30 @@ export function CouncilAdminPage() {
           <p className="text-sm sm:text-base text-gray-500">
             Internal documents, financial records, and strategic planning
           </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="mb-6"
+        >
+          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+            <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h3 className="text-base text-black sm:text-lg">NPHC Compliance Checklist</h3>
+                <p className="text-sm text-gray-500">
+                  Open the dedicated compliance tracking page to manage annual reporting readiness.
+                </p>
+              </div>
+              <Button asChild className="w-full bg-black hover:bg-gray-800 sm:w-auto">
+                <Link to="/council-admin/compliance">
+                  <ClipboardCheck className="mr-2 size-4" />
+                  Open Compliance Page
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
         </motion.div>
 
         <Tabs defaultValue="documents" className="space-y-6">
