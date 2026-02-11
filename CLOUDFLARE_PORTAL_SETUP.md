@@ -74,10 +74,12 @@ Cloudflare Pages -> Project -> Settings:
 3. Apply schema:
    - Run SQL in D1 console from `cloudflare/d1-schema.sql`
 
-Recommended Access policy split:
-
-- `portal.yourdomain.com/#/council-admin*` -> council leadership group only
-- all other `portal.yourdomain.com/*` -> wider member group
+Important:
+- This app uses hash routing (`/#/...`). URL fragments are not sent to Cloudflare Access.
+- So Access cannot enforce different rules for `/#/council-admin`.
+- Access should protect the whole portal hostname, and council-only access is enforced in-app via:
+  - `COUNCIL_ADMIN_EMAILS`
+  - `/api/admin/session` checks in Pages Functions
 
 ## Step 6: 15-Minute Updates (Scheduled Deploy)
 

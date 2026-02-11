@@ -24,6 +24,7 @@ Docs:
 - `CLOUDFLARE_PORTAL_SETUP.md` (recommended hosting + privacy)
 - `apps-script/README.md` (Sheets/API setup)
 - `CONTENT_GUIDE.md` (which tabs/columns map to which pages)
+- `IMPLEMENTATION_GUIDE.md` (production runbook + admin + Figma-safe workflow)
 
 ## Documents / File Links
 
