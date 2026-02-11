@@ -1,6 +1,9 @@
-name: Portal refresh (trigger Cloudflare deploy hook)
+name: Portal deploy (Cloudflare Pages)
 
 on:
+  push:
+    branches:
+      - main
   schedule:
     - cron: "*/15 * * * *"
   workflow_dispatch:
@@ -9,15 +12,35 @@ permissions:
   contents: read
 
 jobs:
-  trigger:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger deploy hook
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to Cloudflare Pages
         env:
-          HOOK_URL: ${{ secrets.CF_PAGES_DEPLOY_HOOK_URL }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          if [ -z "$HOOK_URL" ]; then
-            echo "Missing secret CF_PAGES_DEPLOY_HOOK_URL"
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "Missing secrets CLOUDFLARE_API_TOKEN or CLOUDFLARE_ACCOUNT_ID"
             exit 1
           fi
-          curl -fsS -X POST "$HOOK_URL" >/dev/null
+          npx wrangler pages deploy dist \
+            --project-name council-command \
+            --branch main \
+            --commit-hash "${GITHUB_SHA}" \
+            --commit-message "GitHub Actions deploy ${GITHUB_SHA}"
