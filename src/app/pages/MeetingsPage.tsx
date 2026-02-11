@@ -37,7 +37,7 @@ export function MeetingsPage() {
           </div>
           <h1 className="text-2xl sm:text-3xl text-black mb-1">Meetings & Delegates</h1>
           <p className="text-sm sm:text-base text-gray-500">
-            Council meeting schedule, agendas, minutes, and delegate reporting
+            Council meeting schedule, agendas, minutes, and delegate reporting for the current governance cycle
           </p>
         </motion.div>
 

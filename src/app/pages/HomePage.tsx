@@ -27,9 +27,20 @@ export function HomePage() {
   const config = data?.config;
   const quickLinks = data?.quickLinks || [];
   const updates = data?.updates || [];
+  const presidentImageUrl = config?.presidentImageUrl || "";
+
+  const welcomeParagraphs = [
+    "It is my honor to welcome you to the National Pan-Hellenic Council of Hudson County's internal governance portal.",
+    "Our mission remains clear: promote unity, scholarship, and service across our nine Divine Nine organizations. This platform is designed to help us organize better, mobilize faster, and execute with excellence, giving you direct access to meeting documentation, event information, and the resources you need to stay informed and engaged.",
+    "As your Executive Council, we're focused on four priorities this year: expanded service, enhanced collaboration, operational excellence, and technological modernization. Our goal is to turn our collective vision into measurable impact.",
+    "I encourage you to check the Internal News and Council Updates section regularly. That's where you'll find the latest on key initiatives, upcoming opportunities, and the work ahead.",
+    "Thank you for your continued dedication to our council and our legacy. Let's get to work.",
+  ];
 
   const row1Links = quickLinks.filter((l) => l.row === 1);
   const row2Links = quickLinks.filter((l) => l.row === 2);
+
+  const toHref = (url: string) => (url.startsWith("/") ? `#${url}` : url);
 
   return (
     <div className="bg-white">
@@ -61,18 +72,19 @@ export function HomePage() {
             className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-3 sm:mb-4"
           >
             {row1Links.map((link, i) => (
-              <motion.button
+              <motion.a
                 key={link.id}
                 initial={{ y: 15, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 + i * 0.07, duration: 0.4 }}
                 whileTap={{ scale: 0.95 }}
+                href={toHref(link.url)}
                 className={glassButtonClass}
               >
                 <DynamicIcon name={link.icon} className="size-4 relative z-10 flex-shrink-0" />
                 <span className="hidden sm:inline relative z-10">{link.label}</span>
                 <span className="sm:hidden relative z-10 text-xs">{link.shortLabel}</span>
-              </motion.button>
+              </motion.a>
             ))}
           </motion.div>
 
@@ -84,18 +96,19 @@ export function HomePage() {
             className="flex flex-wrap items-center justify-center gap-3 sm:gap-4"
           >
             {row2Links.map((link, i) => (
-              <motion.button
+              <motion.a
                 key={link.id}
                 initial={{ y: 15, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.35 + i * 0.07, duration: 0.4 }}
                 whileTap={{ scale: 0.95 }}
+                href={toHref(link.url)}
                 className={glassButtonClass}
               >
                 <DynamicIcon name={link.icon} className="size-4 relative z-10 flex-shrink-0" />
                 <span className="hidden sm:inline relative z-10">{link.label}</span>
                 <span className="sm:hidden relative z-10 text-xs">{link.shortLabel}</span>
-              </motion.button>
+              </motion.a>
             ))}
           </motion.div>
         </div>
@@ -136,31 +149,36 @@ export function HomePage() {
                 transition={{ duration: 0.3 }}
                 className="aspect-[3/4] bg-gray-100 rounded-xl overflow-hidden shadow-xl ring-1 ring-black/5"
               >
-                <img
-                  src={config?.presidentImageUrl || ""}
-                  alt={`${config?.presidentTitle || "Council President"} ${config?.presidentName || ""}`}
-                  className="w-full h-full object-cover"
-                />
+                {presidentImageUrl ? (
+                  <img
+                    src={presidentImageUrl}
+                    alt="President Christopher DeMarkus"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-gray-100 text-gray-400">
+                    <span className="text-sm font-semibold uppercase tracking-wide">President Photo</span>
+                  </div>
+                )}
               </motion.div>
               <div className="mt-5 text-center">
-                <h3 className="text-lg text-black">{config?.presidentName}</h3>
-                <p className="text-gray-500 text-sm">{config?.presidentTitle}</p>
-                <p className="text-gray-400 text-xs mt-1">{config?.presidentChapter}</p>
+                <h3 className="text-lg text-black">Christopher DeMarkus</h3>
+                <p className="text-gray-500 text-sm">President, NPHC Hudson County</p>
+                <p className="text-gray-400 text-xs mt-1">Alpha Phi Alpha Fraternity, Inc.</p>
               </div>
             </div>
 
             {/* President's Message */}
             <div className="md:col-span-2 space-y-5 text-gray-700">
-              <p className="text-lg text-black">Brothers and Sisters,</p>
-              {config?.presidentMessage.map((paragraph, i) => (
+              {welcomeParagraphs.map((paragraph, i) => (
                 <p key={i} className="leading-relaxed">{paragraph}</p>
               ))}
               <div className="pt-2">
-                <p className="text-gray-500 italic">{config?.presidentClosing}</p>
+                <p className="text-gray-500 italic">In Unity and Service,</p>
                 <p className="text-black mt-2">
-                  {config?.presidentName}
+                  Christopher DeMarkus
                   <br />
-                  <span className="text-gray-500 text-sm">{config?.presidentTitle}, NPHC of Hudson County</span>
+                  <span className="text-gray-500 text-sm">President, NPHC Hudson County</span>
                 </p>
               </div>
             </div>
@@ -184,9 +202,9 @@ export function HomePage() {
           >
             <div className="flex items-center gap-3 mb-1">
               <div className="w-8 h-px bg-black" />
-              <span className="text-xs tracking-[0.2em] uppercase text-gray-500">Announcements & Updates</span>
+              <span className="text-xs tracking-[0.2em] uppercase text-gray-500">Internal News</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl text-black">What's New</h2>
+            <h2 className="text-2xl sm:text-3xl text-black">Internal News and Council Updates</h2>
           </motion.div>
 
           <motion.div

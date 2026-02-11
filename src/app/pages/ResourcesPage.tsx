@@ -35,7 +35,7 @@ export function ResourcesPage() {
           </div>
           <h1 className="text-2xl sm:text-3xl text-black mb-1">Resources</h1>
           <p className="text-sm sm:text-base text-gray-500">
-            Forms, external links, training materials, and reference documents
+            Forms, external links, training materials, and governance reference documents
           </p>
         </motion.div>
 

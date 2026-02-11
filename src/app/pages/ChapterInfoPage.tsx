@@ -9,13 +9,42 @@ import { useChapterInfoData } from "../hooks/use-site-data";
 import { StatusBadge } from "../components/status-badge";
 
 const ART_INK = "https://images.unsplash.com/photo-1769181417562-be594f91fcc9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHdoaXRlJTIwYWJzdHJhY3QlMjBpbmslMjBicnVzaCUyMHN0cm9rZXN8ZW58MXx8fHwxNzcwNTEzMjIyfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
+const CONTACT_EMAIL = "nphcofhudsoncounty@gmail.com";
+
+type LeadershipMember = {
+  id: string;
+  name: string;
+  title: string;
+  chapter: string;
+  email?: string;
+};
+
+const executiveBoard: LeadershipMember[] = [
+  { id: "eb-1", title: "President", name: "Christopher DeMarkus", chapter: "Alpha Phi Alpha Fraternity, Inc." },
+  { id: "eb-2", title: "Vice President", name: "Kimberly Conway", chapter: "Alpha Kappa Alpha Sorority, Inc." },
+  { id: "eb-3", title: "Secretary", name: "April Stitt", chapter: "Sigma Gamma Rho Sorority, Inc." },
+  { id: "eb-4", title: "Treasurer", name: "Gibrill Kamara", chapter: "Alpha Phi Alpha Fraternity, Inc." },
+  { id: "eb-5", title: "Financial Secretary", name: "Chris Gadsden", chapter: "NPHC Hudson County Executive Council" },
+  { id: "eb-6", title: "Parliamentarian", name: "Ayesha Noel-Smith", chapter: "Zeta Phi Beta Sorority, Inc." },
+  { id: "eb-7", title: "Chaplain", name: "Dr. Viva White", chapter: "Zeta Phi Beta Sorority, Inc." },
+];
+
+const additionalChairs: LeadershipMember[] = [
+  { id: "ch-1", title: "Service Chair", name: "Tina Jones", chapter: "Delta Sigma Theta Sorority, Inc." },
+  { id: "ch-2", title: "Fundraising Chair", name: "Dr. Azaria Cunningham", chapter: "NPHC Hudson County Executive Council" },
+  { id: "ch-3", title: "Scholarship Chair", name: "Dr. Aaliyah Davis", chapter: "NPHC Hudson County Executive Council" },
+];
 
 export function ChapterInfoPage() {
   const { data } = useChapterInfoData();
 
-  const officers = data?.officers || [];
   const delegates = data?.delegates || [];
   const documents = data?.governingDocuments || [];
+  const toContactHref = (member: LeadershipMember) => {
+    const recipient = member.email || CONTACT_EMAIL;
+    const subject = encodeURIComponent(`Contact Request: ${member.title} (${member.name})`);
+    return `mailto:${recipient}?subject=${subject}`;
+  };
 
   return (
     <div className="relative min-h-screen">
@@ -58,14 +87,17 @@ export function ChapterInfoPage() {
             >
               <Card className="border-0 shadow-lg ring-1 ring-black/5">
                 <CardHeader>
-                  <CardTitle className="text-lg sm:text-xl">Council Officers (2025-2026)</CardTitle>
+                  <CardTitle className="text-lg sm:text-xl">Executive Board (2025-2026)</CardTitle>
                   <CardDescription className="text-sm">
-                    Executive leadership of the National Pan-Hellenic Council of Hudson County
+                    Corrected and authoritative 2025-2026 leadership roster
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
+                  <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
+                    Executive Board
+                  </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {officers.map((officer, index) => (
+                    {executiveBoard.map((officer, index) => (
                       <motion.div
                         key={officer.id}
                         initial={{ y: 20, opacity: 0 }}
@@ -91,29 +123,57 @@ export function ChapterInfoPage() {
                                 {officer.title}
                               </Badge>
                               <p className="text-sm text-gray-500 mb-4">{officer.chapter}</p>
-                              {officer.email ? (
-                                <Button
-                                  asChild
-                                  variant="outline"
-                                  size="sm"
-                                  className="w-full gap-2 border-black text-black hover:bg-black hover:text-white transition-all duration-200"
-                                >
-                                  <a href={`mailto:${officer.email}`}>
-                                    <Mail className="size-4" />
-                                    Contact
-                                  </a>
-                                </Button>
-                              ) : (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  disabled
-                                  className="w-full gap-2 border-gray-200"
-                                >
+                              <Button
+                                asChild
+                                variant="outline"
+                                size="sm"
+                                className="w-full gap-2 border-black text-black hover:bg-black hover:text-white transition-all duration-200"
+                              >
+                                <a href={toContactHref(officer)}>
                                   <Mail className="size-4" />
                                   Contact
-                                </Button>
-                              )}
+                                </a>
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  <h3 className="mb-3 mt-8 text-sm font-semibold uppercase tracking-wide text-gray-500">
+                    Additional Chairs (2025-2026)
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {additionalChairs.map((chair, index) => (
+                      <motion.div
+                        key={chair.id}
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.45 + index * 0.08, duration: 0.4 }}
+                      >
+                        <Card className="shadow-sm hover:shadow-md transition-all duration-300 h-full group hover:-translate-y-1">
+                          <CardContent className="p-6">
+                            <div className="flex flex-col items-center text-center">
+                              <div className="w-28 h-28 rounded-full bg-gray-100 flex items-center justify-center mb-4 border-4 border-gray-200 group-hover:border-gray-300 transition-colors">
+                                <User className="size-14 text-gray-300" />
+                              </div>
+                              <h3 className="text-black text-lg mb-1">{chair.name}</h3>
+                              <Badge variant="secondary" className="bg-black text-white mb-3">
+                                {chair.title}
+                              </Badge>
+                              <p className="text-sm text-gray-500 mb-4">{chair.chapter}</p>
+                              <Button
+                                asChild
+                                variant="outline"
+                                size="sm"
+                                className="w-full gap-2 border-black text-black hover:bg-black hover:text-white transition-all duration-200"
+                              >
+                                <a href={toContactHref(chair)}>
+                                  <Mail className="size-4" />
+                                  Contact
+                                </a>
+                              </Button>
                             </div>
                           </CardContent>
                         </Card>

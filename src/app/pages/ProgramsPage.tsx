@@ -37,7 +37,7 @@ export function ProgramsPage() {
           </div>
           <h1 className="text-2xl sm:text-3xl text-black mb-1">Programs & Events</h1>
           <p className="text-sm sm:text-base text-gray-500">
-            Council programming, event calendar, and registration
+            Council programming, event calendar, and member registration access
           </p>
         </motion.div>
 
