@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link } from "react-router";
 import {
   CheckCircle2,
@@ -14,6 +14,9 @@ import {
   FileText,
   ArrowLeft,
 } from "lucide-react";
+import { fetchComplianceState, saveComplianceState } from "../data/admin-api";
+import { CouncilAdminGate } from "../components/CouncilAdminGate";
+import { useCouncilSession } from "../hooks/use-council-session";
 
 type TimelineItem = {
   id: string;
@@ -343,20 +346,59 @@ function Section({
 }
 
 export function CouncilCompliancePage() {
+  const { session, loading: sessionLoading } = useCouncilSession();
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const [isLoaded, setIsLoaded] = useState(false);
+  const [syncMode, setSyncMode] = useState<"checking" | "cloud" | "local">("checking");
+  const [dirtyTick, setDirtyTick] = useState(0);
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
+  const [syncError, setSyncError] = useState<string | null>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        setCheckedItems(JSON.parse(saved));
-      } catch {
-        setCheckedItems({});
+    if (sessionLoading) return;
+
+    let cancelled = false;
+
+    const loadState = async () => {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          setCheckedItems(JSON.parse(saved));
+        } catch {
+          setCheckedItems({});
+        }
       }
-    }
-    setIsLoaded(true);
-  }, []);
+
+      if (!session.isCouncilAdmin) {
+        setSyncMode("local");
+        setIsLoaded(true);
+        return;
+      }
+
+      try {
+        const cloudState = await fetchComplianceState();
+        if (cancelled) return;
+        setCheckedItems(cloudState.checkedItems);
+        setLastSavedAt(cloudState.updatedAt);
+        setSyncMode("cloud");
+        setSyncError(null);
+      } catch (error) {
+        if (cancelled) return;
+        setSyncMode("local");
+        setSyncError(error instanceof Error ? error.message : "Cloud sync unavailable");
+      } finally {
+        if (!cancelled) {
+          setIsLoaded(true);
+        }
+      }
+    };
+
+    void loadState();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session.isCouncilAdmin, sessionLoading]);
 
   useEffect(() => {
     if (isLoaded) {
@@ -364,99 +406,137 @@ export function CouncilCompliancePage() {
     }
   }, [checkedItems, isLoaded]);
 
+  useEffect(() => {
+    if (!isLoaded || syncMode !== "cloud" || dirtyTick === 0 || !session.isCouncilAdmin) return;
+
+    const timeout = window.setTimeout(() => {
+      void saveComplianceState(checkedItems)
+        .then((savedState) => {
+          setLastSavedAt(savedState.updatedAt);
+          setSyncError(null);
+        })
+        .catch((error) => {
+          setSyncMode("local");
+          setSyncError(error instanceof Error ? error.message : "Cloud sync unavailable");
+        });
+    }, 350);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [checkedItems, dirtyTick, isLoaded, session.isCouncilAdmin, syncMode]);
+
   const toggleItem = (id: string) => {
     setCheckedItems((prev) => ({
       ...prev,
       [id]: !prev[id],
     }));
+    setDirtyTick((prev) => prev + 1);
   };
 
   const resetProgress = () => {
     if (window.confirm("Are you sure you want to clear all progress?")) {
       setCheckedItems({});
+      setDirtyTick((prev) => prev + 1);
     }
   };
+
+  const saveStatusText = useMemo(() => {
+    if (syncMode === "cloud") {
+      return "Progress syncs to council cloud storage";
+    }
+    if (syncMode === "local") {
+      return "Progress is saved on this browser only";
+    }
+    return "Checking council cloud sync...";
+  }, [syncMode]);
 
   const totalTasks = timelineData.reduce((acc, section) => acc + section.items.length, 0);
   const completedTasks = Object.values(checkedItems).filter(Boolean).length;
   const percentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 font-sans text-slate-900">
-      <div className="relative overflow-hidden bg-slate-900 px-6 pb-24 pt-12 text-white md:px-12">
-        <div className="absolute -right-32 -top-32 h-64 w-64 rounded-full bg-slate-800 opacity-50" />
-        <div className="absolute -bottom-16 -left-16 h-32 w-32 rounded-full bg-amber-500 opacity-10" />
+    <CouncilAdminGate>
+      <div className="min-h-screen bg-gray-50 pb-20 font-sans text-slate-900">
+        <div className="relative overflow-hidden bg-slate-900 px-6 pb-24 pt-12 text-white md:px-12">
+          <div className="absolute -right-32 -top-32 h-64 w-64 rounded-full bg-slate-800 opacity-50" />
+          <div className="absolute -bottom-16 -left-16 h-32 w-32 rounded-full bg-amber-500 opacity-10" />
 
-        <div className="relative z-10 mx-auto max-w-4xl">
-          <div className="mb-4">
-            <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-slate-300 hover:text-white">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Council Admin
-            </Link>
-          </div>
-
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="mb-2 text-3xl font-extrabold tracking-tight md:text-4xl">
-                NPHC Council Compliance
-              </h1>
-              <p className="max-w-xl text-lg text-slate-300">
-                Interactive audit checklist for local chapter annual reporting, financial stability, and programmatic review.
-              </p>
+          <div className="relative z-10 mx-auto max-w-4xl">
+            <div className="mb-4">
+              <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-slate-300 hover:text-white">
+                <ArrowLeft className="h-4 w-4" />
+                Back to Council Admin
+              </Link>
             </div>
-            <div className="hidden text-right md:block">
-              <div className="mb-1 text-xs uppercase tracking-widest text-slate-400">Current Status</div>
-              <div className="text-3xl font-bold text-amber-400">{percentage}% Complete</div>
+
+            <div className="flex items-start justify-between">
+              <div>
+                <h1 className="mb-2 text-3xl font-extrabold tracking-tight md:text-4xl">
+                  NPHC Council Compliance
+                </h1>
+                <p className="max-w-xl text-lg text-slate-300">
+                  Interactive audit checklist for local chapter annual reporting, financial stability, and programmatic review.
+                </p>
+              </div>
+              <div className="hidden text-right md:block">
+                <div className="mb-1 text-xs uppercase tracking-widest text-slate-400">Current Status</div>
+                <div className="text-3xl font-bold text-amber-400">{percentage}% Complete</div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="relative z-20 mx-auto -mt-16 max-w-4xl px-4 md:px-8">
-        <div className="rounded-xl bg-white p-6 shadow-xl md:p-10">
-          <div className="mb-8">
-            <div className="mb-2 flex items-end justify-between">
-              <span className="text-sm font-semibold text-slate-500">Overall Progress</span>
-              <span className="text-sm font-bold text-slate-800 md:hidden">{percentage}%</span>
-            </div>
-            <ProgressBar progress={percentage} />
+        <div className="relative z-20 mx-auto -mt-16 max-w-4xl px-4 md:px-8">
+          <div className="rounded-xl bg-white p-6 shadow-xl md:p-10">
+            <div className="mb-8">
+              <div className="mb-2 flex items-end justify-between">
+                <span className="text-sm font-semibold text-slate-500">Overall Progress</span>
+                <span className="text-sm font-bold text-slate-800 md:hidden">{percentage}%</span>
+              </div>
+              <ProgressBar progress={percentage} />
 
-            <div className="flex justify-between text-xs text-slate-400">
-              <span className="flex items-center gap-1">
-                <Save className="h-3 w-3" />
-                Progress saves automatically
-              </span>
-              <button
-                onClick={resetProgress}
-                className="flex items-center gap-1 transition-colors hover:text-red-500"
-              >
-                <RefreshCw className="h-3 w-3" />
-                Reset Checklist
-              </button>
+              <div className="flex justify-between text-xs text-slate-400">
+                <span className="flex items-center gap-1">
+                  <Save className="h-3 w-3" />
+                  {saveStatusText}
+                </span>
+                <button
+                  onClick={resetProgress}
+                  className="flex items-center gap-1 transition-colors hover:text-red-500"
+                >
+                  <RefreshCw className="h-3 w-3" />
+                  Reset Checklist
+                </button>
+              </div>
+              {lastSavedAt ? (
+                <p className="mt-2 text-xs text-slate-400">Last synced: {new Date(lastSavedAt).toLocaleString()}</p>
+              ) : null}
+              {syncError ? <p className="mt-1 text-xs text-red-600">Sync issue: {syncError}</p> : null}
             </div>
+
+            <div className="space-y-2">
+              {timelineData.map((section) => (
+                <Section key={section.id} section={section} checkedItems={checkedItems} toggleItem={toggleItem} />
+              ))}
+            </div>
+
+            {percentage === 100 && (
+              <div className="mt-8 rounded-lg bg-slate-900 p-6 text-center text-white">
+                <Award className="mx-auto mb-3 h-12 w-12 text-amber-400" />
+                <h3 className="mb-2 text-2xl font-bold">Compliance Audit Complete</h3>
+                <p className="text-slate-300">
+                  All documentation requirements have been marked as ready for submission.
+                </p>
+              </div>
+            )}
           </div>
+        </div>
 
-          <div className="space-y-2">
-            {timelineData.map((section) => (
-              <Section key={section.id} section={section} checkedItems={checkedItems} toggleItem={toggleItem} />
-            ))}
-          </div>
-
-          {percentage === 100 && (
-            <div className="mt-8 rounded-lg bg-slate-900 p-6 text-center text-white">
-              <Award className="mx-auto mb-3 h-12 w-12 text-amber-400" />
-              <h3 className="mb-2 text-2xl font-bold">Compliance Audit Complete</h3>
-              <p className="text-slate-300">
-                All documentation requirements have been marked as ready for submission.
-              </p>
-            </div>
-          )}
+        <div className="mt-12 text-center text-xs text-slate-400">
+          <p>Information based on NPHC Council Annual Report requirements.</p>
         </div>
       </div>
-
-      <div className="mt-12 text-center text-xs text-slate-400">
-        <p>Information based on NPHC Council Annual Report requirements.</p>
-      </div>
-    </div>
+    </CouncilAdminGate>
   );
 }

@@ -3,20 +3,25 @@ import { useState, useEffect } from "react";
 import { Home, Users, Calendar, TrendingUp, FolderOpen, Shield, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useSiteConfig } from "../hooks/use-site-data";
+import { useCouncilSession } from "../hooks/use-council-session";
 
-const navItems = [
+const baseNavItems = [
   { to: "/", label: "Home", icon: Home },
   { to: "/chapter-information", label: "Chapter Info", icon: Users },
   { to: "/meetings-delegates", label: "Meetings & Delegates", icon: Calendar },
   { to: "/programs-events", label: "Programs & Events", icon: TrendingUp },
   { to: "/resources", label: "Resources", icon: FolderOpen },
-  { to: "/council-admin", label: "Council Admin", icon: Shield },
 ];
 
 export function MainLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const { data: config } = useSiteConfig();
+  const { session } = useCouncilSession();
+
+  const navItems = session.isCouncilAdmin
+    ? [...baseNavItems, { to: "/council-admin", label: "Council Admin", icon: Shield }]
+    : baseNavItems;
 
   // Close mobile nav on route change
   useEffect(() => {

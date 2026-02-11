@@ -50,3 +50,19 @@ node scripts/seed_sheets.mjs --mode=upsert --dry-run
 ## GitHub Pages Note
 
 GitHub Pages is public hosting. Do not use it for the members-only portal unless you are intentionally making the portal public.
+
+## Council Admin Security + Compliance Sync
+
+The repo now includes Cloudflare Pages Functions under `functions/`:
+
+- `GET /api/admin/session` - reads Cloudflare Access identity and admin status
+- `GET/PUT /api/admin/compliance` - shared compliance checklist state for council admins
+
+Required Cloudflare Pages settings:
+
+1. Add an Environment Variable:
+   - `COUNCIL_ADMIN_EMAILS=admin1@email.com,admin2@email.com`
+2. Add a D1 binding named `DB` to your Pages project.
+3. Create the table using `cloudflare/d1-schema.sql`.
+
+Without the D1 binding, the compliance page falls back to browser-only local storage.

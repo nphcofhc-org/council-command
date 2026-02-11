@@ -41,6 +41,7 @@ jobs:
           fi
           npx wrangler pages deploy dist \
             --project-name council-command \
+            --functions functions \
             --branch main \
             --commit-hash "${GITHUB_SHA}" \
             --commit-message "GitHub Actions deploy ${GITHUB_SHA}"

@@ -8,6 +8,7 @@ import { useCouncilAdminData } from "../hooks/use-site-data";
 import { StatusBadge } from "../components/status-badge";
 import { DynamicIcon } from "../components/icon-resolver";
 import { Link } from "react-router";
+import { CouncilAdminGate } from "../components/CouncilAdminGate";
 
 const ART_MARBLE = "https://images.unsplash.com/photo-1678756466078-1ff0d7b09431?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25vY2hyb21lJTIwYWJzdHJhY3QlMjBtYXJibGUlMjB0ZXh0dXJlfGVufDF8fHx8MTc3MDUxMzIyM3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 
@@ -18,12 +19,13 @@ export function CouncilAdminPage() {
   const tasks = data?.tasks || [];
 
   return (
-    <div className="relative min-h-screen">
-      <div className="absolute top-20 right-0 w-96 h-96 opacity-[0.03] pointer-events-none hidden lg:block">
-        <img src={ART_MARBLE} alt="" className="w-full h-full object-cover" />
-      </div>
+    <CouncilAdminGate>
+      <div className="relative min-h-screen">
+        <div className="absolute top-20 right-0 w-96 h-96 opacity-[0.03] pointer-events-none hidden lg:block">
+          <img src={ART_MARBLE} alt="" className="w-full h-full object-cover" />
+        </div>
 
-      <div className="p-4 sm:p-8 max-w-7xl mx-auto relative z-10">
+        <div className="p-4 sm:p-8 max-w-7xl mx-auto relative z-10">
         {/* Restricted Access Banner */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
@@ -230,7 +232,8 @@ export function CouncilAdminPage() {
             </motion.div>
           </TabsContent>
         </Tabs>
+        </div>
       </div>
-    </div>
+    </CouncilAdminGate>
   );
 }

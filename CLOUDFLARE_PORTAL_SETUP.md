@@ -61,16 +61,33 @@ This repo runs `node scripts/sync_sheets.mjs` automatically via `prebuild`, whic
 
 With Access enabled, non-members cannot reach the portal URL at all.
 
-## Step 5: 15-Minute Updates (Scheduled Rebuild)
+## Step 5: Council-Only Admin + Shared Compliance State
 
-Cloudflare Pages supports "Deploy hooks". Create one and then trigger it from GitHub Actions.
+This repo includes Pages Functions for council admin checks and compliance sync.
 
-1. In Cloudflare Pages -> your project -> Settings -> Deploy hooks -> Create hook.
-2. Copy the hook URL.
-3. Add a GitHub repo secret:
-   - `CF_PAGES_DEPLOY_HOOK_URL` = the hook URL
-4. Enable the scheduled workflow in this repo:
-   - Copy `workflows-templates/portal-refresh.yml` into `.github/workflows/portal-refresh.yml` and push
+Cloudflare Pages -> Project -> Settings:
+
+1. Add Environment Variable:
+   - `COUNCIL_ADMIN_EMAILS` = comma-separated list of council admin emails
+2. Add D1 Database Binding:
+   - Binding name: `DB`
+3. Apply schema:
+   - Run SQL in D1 console from `cloudflare/d1-schema.sql`
+
+Recommended Access policy split:
+
+- `portal.yourdomain.com/#/council-admin*` -> council leadership group only
+- all other `portal.yourdomain.com/*` -> wider member group
+
+## Step 6: 15-Minute Updates (Scheduled Deploy)
+
+This repo deploys directly from GitHub Actions with Wrangler:
+
+1. In GitHub repo settings -> Secrets and variables -> Actions, set:
+   - `CLOUDFLARE_API_TOKEN`
+   - `CLOUDFLARE_ACCOUNT_ID`
+2. Ensure `.github/workflows/portal-refresh.yml` exists on `main`.
+3. Push changes to `main` (also runs every 15 minutes by cron).
 
 ## Notes
 
