@@ -72,7 +72,7 @@ export const quickLinks: QuickLink[] = [
   { id: "ql-1", icon: "Calendar",      label: "Next Chapter Meeting",       shortLabel: "Next Meeting",  url: "/meetings-delegates",   row: 1 },
   { id: "ql-2", icon: "FileText",      label: "Submit an Event",            shortLabel: "Submit Event",  url: "/programs-events",      row: 1 },
   { id: "ql-3", icon: "MessageCircle", label: "Council GroupMe",            shortLabel: "GroupMe",       url: "#groupme",              row: 1 },
-  { id: "ql-4", icon: "Calendar",      label: "2026 Council Calendar",      shortLabel: "Calendar",      url: "/2026-council-calendar.html", row: 2 },
+  { id: "ql-4", icon: "Calendar",      label: "2026 Council Calendar",      shortLabel: "Calendar",      url: "/2026-council-calendar.html", row: 1 },
   { id: "ql-5", icon: "FolderOpen",    label: "Shared Forms Library",       shortLabel: "Forms",         url: "/resources",            row: 2 },
   { id: "ql-6", icon: "Users",         label: "Officer & Delegate Directory", shortLabel: "Directory",  url: "/chapter-information",  row: 2 },
 ];
