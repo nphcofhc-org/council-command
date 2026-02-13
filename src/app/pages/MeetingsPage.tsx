@@ -11,6 +11,15 @@ import { StatusBadge } from "../components/status-badge";
 
 const ART_GEO = "https://images.unsplash.com/photo-1665680779817-11a0d63ee51e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHdoaXRlJTIwZ2VvbWV0cmljJTIwbWluaW1hbCUyMGFydHxlbnwxfHx8fDE3NzA1MTMyMjN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 
+function normalizeDocUrl(input: string | null | undefined): string | null {
+  const raw = String(input || "").trim();
+  if (!raw) return null;
+  if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
+  if (raw.startsWith("/")) return raw;
+  // Allow legacy values like "Agenda_Jan_2026_GB.pdf" → /docs/Agenda_Jan_2026_GB.pdf
+  return `/docs/${raw}`;
+}
+
 export function MeetingsPage() {
   const { data } = useMeetingsData();
   const location = useLocation();
@@ -158,16 +167,34 @@ export function MeetingsPage() {
                             <TableCell className="text-gray-500">{record.date}</TableCell>
                             <TableCell className="font-medium">{record.title}</TableCell>
                             <TableCell>
-                              <Button variant="ghost" size="sm" className="h-8 gap-2 text-black hover:bg-black/5">
-                                <FileText className="size-3.5" />
-                                <span className="text-xs">View</span>
-                              </Button>
+                              {normalizeDocUrl(record.agendaFile) ? (
+                                <Button asChild variant="ghost" size="sm" className="h-8 gap-2 text-black hover:bg-black/5">
+                                  <a href={normalizeDocUrl(record.agendaFile) || "#"} target="_blank" rel="noreferrer">
+                                    <FileText className="size-3.5" />
+                                    <span className="text-xs">View</span>
+                                  </a>
+                                </Button>
+                              ) : (
+                                <Button variant="ghost" size="sm" disabled className="h-8 gap-2 text-gray-400">
+                                  <FileText className="size-3.5" />
+                                  <span className="text-xs">Missing</span>
+                                </Button>
+                              )}
                             </TableCell>
                             <TableCell>
-                              <Button variant="ghost" size="sm" className="h-8 gap-2 text-black hover:bg-black/5">
-                                <FileText className="size-3.5" />
-                                <span className="text-xs">View</span>
-                              </Button>
+                              {normalizeDocUrl(record.minutesFile) ? (
+                                <Button asChild variant="ghost" size="sm" className="h-8 gap-2 text-black hover:bg-black/5">
+                                  <a href={normalizeDocUrl(record.minutesFile) || "#"} target="_blank" rel="noreferrer">
+                                    <FileText className="size-3.5" />
+                                    <span className="text-xs">View</span>
+                                  </a>
+                                </Button>
+                              ) : (
+                                <Button variant="ghost" size="sm" disabled className="h-8 gap-2 text-gray-400">
+                                  <FileText className="size-3.5" />
+                                  <span className="text-xs">Missing</span>
+                                </Button>
+                              )}
                             </TableCell>
                             <TableCell><StatusBadge status={record.status} /></TableCell>
                           </motion.tr>
@@ -193,14 +220,32 @@ export function MeetingsPage() {
                             </div>
                             <p className="text-sm text-gray-500 mb-3">{record.date}</p>
                             <div className="flex gap-2">
-                              <Button variant="outline" size="sm" className="flex-1 gap-2 text-xs border-gray-200">
-                                <FileText className="size-3" />
-                                Agenda
-                              </Button>
-                              <Button variant="outline" size="sm" className="flex-1 gap-2 text-xs border-gray-200">
-                                <FileText className="size-3" />
-                                Minutes
-                              </Button>
+                              {normalizeDocUrl(record.agendaFile) ? (
+                                <Button asChild variant="outline" size="sm" className="flex-1 gap-2 text-xs border-gray-200">
+                                  <a href={normalizeDocUrl(record.agendaFile) || "#"} target="_blank" rel="noreferrer">
+                                    <FileText className="size-3" />
+                                    Agenda
+                                  </a>
+                                </Button>
+                              ) : (
+                                <Button variant="outline" size="sm" disabled className="flex-1 gap-2 text-xs border-gray-200">
+                                  <FileText className="size-3" />
+                                  Agenda
+                                </Button>
+                              )}
+                              {normalizeDocUrl(record.minutesFile) ? (
+                                <Button asChild variant="outline" size="sm" className="flex-1 gap-2 text-xs border-gray-200">
+                                  <a href={normalizeDocUrl(record.minutesFile) || "#"} target="_blank" rel="noreferrer">
+                                    <FileText className="size-3" />
+                                    Minutes
+                                  </a>
+                                </Button>
+                              ) : (
+                                <Button variant="outline" size="sm" disabled className="flex-1 gap-2 text-xs border-gray-200">
+                                  <FileText className="size-3" />
+                                  Minutes
+                                </Button>
+                              )}
                             </div>
                           </CardContent>
                         </Card>

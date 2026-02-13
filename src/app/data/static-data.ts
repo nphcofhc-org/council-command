@@ -105,15 +105,15 @@ export const officers: Officer[] = [
 // ═════════════════════════════════════════════════════════════════════════════
 
 export const delegates: Delegate[] = [
-  { id: "del-1", chapter: "Alpha Phi Alpha Fraternity, Inc.",   representative: "Ricky Wallace",        delegate: "TBD",             term: "2025-2026" },
-  { id: "del-2", chapter: "Alpha Kappa Alpha Sorority, Inc.",   representative: "TBD",                 delegate: "TBD",             term: "2025-2026" },
-  { id: "del-3", chapter: "Kappa Alpha Psi Fraternity, Inc.",   representative: "Lawrence Fernandes",  delegate: "Jahshae Stewart", term: "2025-2026" },
-  { id: "del-4", chapter: "Omega Psi Phi Fraternity, Inc.",     representative: "Antonio Gordon",      delegate: "TBD",             term: "2025-2026" },
-  { id: "del-5", chapter: "Delta Sigma Theta Sorority, Inc.",   representative: "Tina Jones",          delegate: "TBD",             term: "2025-2026" },
-  { id: "del-6", chapter: "Phi Beta Sigma Fraternity, Inc.",    representative: "TBD",                 delegate: "TBD",             term: "2025-2026" },
-  { id: "del-7", chapter: "Zeta Phi Beta Sorority, Inc.",       representative: "Ayesha Noel-Smith",   delegate: "TBD",             term: "2025-2026" },
-  { id: "del-8", chapter: "Sigma Gamma Rho Sorority, Inc.",     representative: "TBD",                 delegate: "TBD",             term: "2025-2026" },
-  { id: "del-9", chapter: "Iota Phi Theta Fraternity, Inc.",    representative: "TBD",                 delegate: "TBD",             term: "Interest (2024-2025)" },
+  { id: "del-1", chapter: "Alpha Phi Alpha Fraternity, Inc.",   representative: "TBD",                delegate: "TBD",              term: "2025-2026" },
+  { id: "del-2", chapter: "Alpha Kappa Alpha Sorority, Inc.",   representative: "TBD",                delegate: "TBD",              term: "2025-2026" },
+  { id: "del-3", chapter: "Kappa Alpha Psi Fraternity, Inc.",   representative: "Lawrence Fernandes", delegate: "Jahshae Stewart",   term: "2025-2026" },
+  { id: "del-4", chapter: "Omega Psi Phi Fraternity, Inc.",     representative: "Antonio Gordon",     delegate: "TBD",              term: "2025-2026" },
+  { id: "del-5", chapter: "Delta Sigma Theta Sorority, Inc.",   representative: "Tina Jones",         delegate: "TBD",              term: "2025-2026" },
+  { id: "del-6", chapter: "Phi Beta Sigma Fraternity, Inc.",    representative: "TBD",                delegate: "TBD",              term: "2025-2026" },
+  { id: "del-7", chapter: "Zeta Phi Beta Sorority, Inc.",       representative: "Ayesha Noel-Smith",  delegate: "Dr. Viva White",    term: "2025-2026" },
+  { id: "del-8", chapter: "Sigma Gamma Rho Sorority, Inc.",     representative: "April Stitt",        delegate: "Krystal Allbright", term: "2025-2026" },
+  { id: "del-9", chapter: "Iota Phi Theta Fraternity, Inc.",    representative: "TBD",                delegate: "TBD",              term: "Interest 2024-2025" },
 ];
 
 // ═════════════════════════════════════════════════════════════════════════════

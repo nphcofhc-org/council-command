@@ -187,10 +187,24 @@ export function ProgramsPage() {
                         <h3 className="text-black text-sm mb-1">{flyer.title}</h3>
                         <p className="text-xs text-gray-500 mb-1">{flyer.type}</p>
                         <p className="text-xs text-gray-400 mb-3">{flyer.date}</p>
-                        <Button variant="outline" size="sm" className="w-full gap-2 border-gray-200 hover:border-black hover:bg-black hover:text-white transition-all duration-200">
-                          <ExternalLink className="size-3" />
-                          View
-                        </Button>
+                        {flyer.fileUrl ? (
+                          <Button
+                            asChild
+                            variant="outline"
+                            size="sm"
+                            className="w-full gap-2 border-gray-200 hover:border-black hover:bg-black hover:text-white transition-all duration-200"
+                          >
+                            <a href={flyer.fileUrl} target="_blank" rel="noreferrer">
+                              <ExternalLink className="size-3" />
+                              View
+                            </a>
+                          </Button>
+                        ) : (
+                          <Button variant="outline" size="sm" disabled className="w-full gap-2 border-gray-200">
+                            <ExternalLink className="size-3" />
+                            Missing
+                          </Button>
+                        )}
                       </motion.div>
                     ))}
                   </div>
@@ -234,15 +248,29 @@ export function ProgramsPage() {
                         </div>
                         <div className="flex flex-col sm:items-end gap-2">
                           <StatusBadge status={form.status} />
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="gap-2 border-gray-200 hover:border-black w-full sm:w-auto"
-                            disabled={form.status !== "Active"}
-                          >
-                            <ExternalLink className="size-3" />
-                            Open Form
-                          </Button>
+                          {form.status === "Active" && form.formUrl ? (
+                            <Button
+                              asChild
+                              size="sm"
+                              variant="outline"
+                              className="gap-2 border-gray-200 hover:border-black w-full sm:w-auto"
+                            >
+                              <a href={form.formUrl} target="_blank" rel="noreferrer">
+                                <ExternalLink className="size-3" />
+                                Open Form
+                              </a>
+                            </Button>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="gap-2 border-gray-200 w-full sm:w-auto"
+                              disabled
+                            >
+                              <ExternalLink className="size-3" />
+                              {form.formUrl ? "Closed" : "Missing"}
+                            </Button>
+                          )}
                         </div>
                       </motion.div>
                     ))}
