@@ -28,14 +28,22 @@ export function HomePage() {
   const quickLinks = data?.quickLinks || [];
   const updates = data?.updates || [];
   const presidentImageUrl = config?.presidentImageUrl || "";
+  const bannerImageUrl = config?.bannerImageUrl || "";
 
-  const welcomeParagraphs = [
+  const welcomeParagraphs = (config?.presidentMessage && config.presidentMessage.length > 0)
+    ? config.presidentMessage
+    : [
     "It is my honor to welcome you to the National Pan-Hellenic Council of Hudson County's internal governance portal.",
     "Our mission remains clear: promote unity, scholarship, and service across our nine Divine Nine organizations. This platform is designed to help us organize better, mobilize faster, and execute with excellence, giving you direct access to meeting documentation, event information, and the resources you need to stay informed and engaged.",
     "As your Executive Council, we're focused on four priorities this year: expanded service, enhanced collaboration, operational excellence, and technological modernization. Our goal is to turn our collective vision into measurable impact.",
     "I encourage you to check the Internal News and Council Updates section regularly. That's where you'll find the latest on key initiatives, upcoming opportunities, and the work ahead.",
     "Thank you for your continued dedication to our council and our legacy. Let's get to work.",
   ];
+
+  const presidentName = config?.presidentName || "Christopher DeMarkus";
+  const presidentTitle = config?.presidentTitle || "President, NPHC Hudson County";
+  const presidentChapter = config?.presidentChapter || "Alpha Phi Alpha Fraternity, Inc.";
+  const presidentClosing = config?.presidentClosing || "In Unity and Service,";
 
   const row1Links = quickLinks.filter((l) => l.row === 1);
   const row2Links = quickLinks.filter((l) => l.row === 2);
@@ -50,7 +58,7 @@ export function HomePage() {
           initial={{ opacity: 0, scale: 1.02 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8 }}
-          src={googleBanner}
+          src={bannerImageUrl || googleBanner}
           alt="NPHC Hudson County"
           className="w-full h-auto object-contain"
         />
@@ -162,9 +170,9 @@ export function HomePage() {
                 )}
               </motion.div>
               <div className="mt-5 text-center">
-                <h3 className="text-lg text-black">Christopher DeMarkus</h3>
-                <p className="text-gray-500 text-sm">President, NPHC Hudson County</p>
-                <p className="text-gray-400 text-xs mt-1">Alpha Phi Alpha Fraternity, Inc.</p>
+                <h3 className="text-lg text-black">{presidentName}</h3>
+                <p className="text-gray-500 text-sm">{presidentTitle}</p>
+                <p className="text-gray-400 text-xs mt-1">{presidentChapter}</p>
               </div>
             </div>
 
@@ -174,11 +182,11 @@ export function HomePage() {
                 <p key={i} className="leading-relaxed">{paragraph}</p>
               ))}
               <div className="pt-2">
-                <p className="text-gray-500 italic">In Unity and Service,</p>
+                <p className="text-gray-500 italic">{presidentClosing}</p>
                 <p className="text-black mt-2">
-                  Christopher DeMarkus
+                  {presidentName}
                   <br />
-                  <span className="text-gray-500 text-sm">President, NPHC Hudson County</span>
+                  <span className="text-gray-500 text-sm">{presidentTitle}</span>
                 </p>
               </div>
             </div>

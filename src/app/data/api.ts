@@ -24,6 +24,7 @@
 
 import { DATA_SOURCE, APPS_SCRIPT_URL, SHEET_TABS, CACHE_TTL_MS } from "./config";
 import * as staticData from "./generated-data";
+import { fetchQuickLinksOverride, fetchSiteConfigOverride, fetchUpdatesOverride } from "./content-api";
 import type {
   HomePageData,
   ChapterInfoPageData,
@@ -80,11 +81,28 @@ async function fetchSheetTab<T>(tabName: string): Promise<T[]> {
  */
 export async function fetchHomePageData(): Promise<HomePageData> {
   if (DATA_SOURCE === "static") {
-    return {
+    const base: HomePageData = {
       config: staticData.siteConfig,
       quickLinks: staticData.quickLinks,
       updates: staticData.updates,
     };
+
+    // Runtime overrides (D1-backed). If unavailable, keep static fallbacks.
+    try {
+      const [configOverride, linksOverride, updatesOverride] = await Promise.all([
+        fetchSiteConfigOverride().catch(() => null),
+        fetchQuickLinksOverride().catch(() => null),
+        fetchUpdatesOverride().catch(() => null),
+      ]);
+
+      return {
+        config: configOverride?.found && configOverride.data ? (configOverride.data as HomePageData["config"]) : base.config,
+        quickLinks: linksOverride?.found ? (linksOverride.data as HomePageData["quickLinks"]) : base.quickLinks,
+        updates: updatesOverride?.found ? (updatesOverride.data as HomePageData["updates"]) : base.updates,
+      };
+    } catch {
+      return base;
+    }
   }
 
   // Google Sheets: fetch each tab in parallel
@@ -225,6 +243,13 @@ export async function fetchCouncilAdminData(): Promise<CouncilAdminPageData> {
  */
 export async function fetchSiteConfig(): Promise<SiteConfig> {
   if (DATA_SOURCE === "static") {
+    // Same override behavior as HomePage: prefer runtime override if present.
+    try {
+      const override = await fetchSiteConfigOverride();
+      if (override.found && override.data) return override.data as SiteConfig;
+    } catch {
+      // ignore
+    }
     return staticData.siteConfig;
   }
 

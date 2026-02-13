@@ -1,0 +1,360 @@
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router";
+import { ArrowLeft, Plus, Save, Trash2 } from "lucide-react";
+import { CouncilAdminGate } from "../components/CouncilAdminGate";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
+import type { QuickLink, SiteConfig, Update } from "../data/types";
+import {
+  fetchQuickLinksOverride,
+  fetchSiteConfigOverride,
+  fetchUpdatesOverride,
+  saveQuickLinksOverride,
+  saveSiteConfigOverride,
+  saveUpdatesOverride,
+} from "../data/content-api";
+import { fetchHomePageData } from "../data/api";
+
+function emptyConfig(): SiteConfig {
+  return {
+    councilName: "",
+    subtitle: "",
+    footerText: "",
+    footerSubtext: "",
+    presidentName: "",
+    presidentTitle: "",
+    presidentChapter: "",
+    presidentImageUrl: "",
+    presidentMessage: [],
+    presidentClosing: "",
+    bannerImageUrl: "",
+  };
+}
+
+export function CouncilHomeContentPage() {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const [config, setConfig] = useState<SiteConfig>(emptyConfig());
+  const [quickLinks, setQuickLinks] = useState<QuickLink[]>([]);
+  const [updates, setUpdates] = useState<Update[]>([]);
+
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      setError(null);
+      setMessage(null);
+      try {
+        // Load current effective content (includes static + any overrides).
+        const home = await fetchHomePageData();
+        if (cancelled) return;
+
+        setConfig(home.config);
+        setQuickLinks(home.quickLinks);
+        setUpdates(home.updates);
+
+        // Also fetch override timestamps for display.
+        const [cfgO, linksO, updO] = await Promise.all([
+          fetchSiteConfigOverride().catch(() => null),
+          fetchQuickLinksOverride().catch(() => null),
+          fetchUpdatesOverride().catch(() => null),
+        ]);
+        const newest = [cfgO?.updatedAt, linksO?.updatedAt, updO?.updatedAt].filter(Boolean).sort().pop() || null;
+        setLastSavedAt(newest);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load home content.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const messageText = useMemo(() => config.presidentMessage.join("\n\n"), [config.presidentMessage]);
+
+  const onConfigField = (key: keyof SiteConfig, value: string) => {
+    setConfig((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const onMessageText = (value: string) => {
+    const paragraphs = value
+      .split(/\n\s*\n/g)
+      .map((p) => p.trim())
+      .filter(Boolean);
+    setConfig((prev) => ({ ...prev, presidentMessage: paragraphs }));
+  };
+
+  const addQuickLink = () => {
+    setQuickLinks((prev) => [
+      ...prev,
+      {
+        id: `ql-${prev.length + 1}`,
+        icon: "Link",
+        label: "",
+        shortLabel: "",
+        url: "",
+        row: 1,
+      },
+    ]);
+  };
+
+  const updateQuickLink = (index: number, key: keyof QuickLink, value: string) => {
+    setQuickLinks((prev) => {
+      const next = [...prev];
+      const current = next[index];
+      if (!current) return prev;
+      if (key === "row") {
+        next[index] = { ...current, row: value === "2" ? 2 : 1 };
+      } else {
+        next[index] = { ...current, [key]: value } as QuickLink;
+      }
+      return next;
+    });
+  };
+
+  const removeQuickLink = (index: number) => {
+    setQuickLinks((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const addUpdate = () => {
+    setUpdates((prev) => [
+      ...prev,
+      {
+        id: `update-${prev.length + 1}`,
+        date: "",
+        title: "",
+        type: "",
+      },
+    ]);
+  };
+
+  const updateUpdate = (index: number, key: keyof Update, value: string) => {
+    setUpdates((prev) => {
+      const next = [...prev];
+      const current = next[index];
+      if (!current) return prev;
+      next[index] = { ...current, [key]: value };
+      return next;
+    });
+  };
+
+  const removeUpdate = (index: number) => {
+    setUpdates((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const saveAll = async () => {
+    setSaving(true);
+    setError(null);
+    setMessage(null);
+    try {
+      const [cfg, links, upd] = await Promise.all([
+        saveSiteConfigOverride(config),
+        saveQuickLinksOverride(quickLinks),
+        saveUpdatesOverride(updates),
+      ]);
+      setConfig(cfg.data as SiteConfig);
+      setQuickLinks(links.data as QuickLink[]);
+      setUpdates(upd.data as Update[]);
+      setLastSavedAt([cfg.updatedAt, links.updatedAt, upd.updatedAt].filter(Boolean).sort().pop() || null);
+      setMessage("Home content saved.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Save failed.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <CouncilAdminGate>
+      <div className="mx-auto max-w-6xl p-4 sm:p-8">
+        <div className="mb-6">
+          <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Council Admin
+          </Link>
+        </div>
+
+        <Card className="border-0 shadow-lg ring-1 ring-black/5">
+          <CardHeader>
+            <CardTitle>Content Manager — Home</CardTitle>
+            <CardDescription>
+              Update the home banner, president welcome, quick links, and internal news. Changes are mobile-safe and apply immediately.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-8">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="space-y-1">
+                <p className="text-sm text-gray-600">Editor access only. Members will see the updated Home page.</p>
+                {lastSavedAt ? (
+                  <p className="text-xs text-gray-500">Last saved: {new Date(lastSavedAt).toLocaleString()}</p>
+                ) : null}
+              </div>
+              <Button onClick={saveAll} disabled={saving || loading} className="bg-black hover:bg-gray-800">
+                <Save className="mr-2 h-4 w-4" />
+                {saving ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+
+            {message ? <p className="text-sm text-green-700">{message}</p> : null}
+            {error ? <p className="text-sm text-red-700">{error}</p> : null}
+            {loading ? <p className="text-sm text-gray-500">Loading...</p> : null}
+
+            <div className="grid gap-6 lg:grid-cols-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Home Banner</CardTitle>
+                  <CardDescription>Paste an image URL (Google Drive link works if it’s public).</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="space-y-1">
+                    <Label>Banner Image URL</Label>
+                    <Input value={config.bannerImageUrl} onChange={(e) => onConfigField("bannerImageUrl", e.target.value)} />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">President Block</CardTitle>
+                  <CardDescription>Edits reflect on the home page “President’s Welcome”.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="space-y-1">
+                      <Label>Name</Label>
+                      <Input value={config.presidentName} onChange={(e) => onConfigField("presidentName", e.target.value)} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label>Title</Label>
+                      <Input value={config.presidentTitle} onChange={(e) => onConfigField("presidentTitle", e.target.value)} />
+                    </div>
+                    <div className="space-y-1 sm:col-span-2">
+                      <Label>Chapter</Label>
+                      <Input value={config.presidentChapter} onChange={(e) => onConfigField("presidentChapter", e.target.value)} />
+                    </div>
+                    <div className="space-y-1 sm:col-span-2">
+                      <Label>Photo URL</Label>
+                      <Input value={config.presidentImageUrl} onChange={(e) => onConfigField("presidentImageUrl", e.target.value)} />
+                    </div>
+                    <div className="space-y-1 sm:col-span-2">
+                      <Label>Closing Line</Label>
+                      <Input value={config.presidentClosing} onChange={(e) => onConfigField("presidentClosing", e.target.value)} />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label>Welcome Message (separate paragraphs with a blank line)</Label>
+                    <Textarea
+                      value={messageText}
+                      onChange={(e) => onMessageText(e.target.value)}
+                      rows={10}
+                      className="min-h-[220px]"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Quick Links</CardTitle>
+                <CardDescription>These are the buttons under the banner. Keep labels short for mobile.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {quickLinks.map((link, idx) => (
+                  <div key={link.id || idx} className="rounded-lg border p-4">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <p className="text-sm font-medium text-gray-700">Link {idx + 1}</p>
+                      <Button type="button" variant="outline" size="sm" onClick={() => removeQuickLink(idx)}>
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Remove
+                      </Button>
+                    </div>
+                    <div className="grid gap-3 md:grid-cols-2">
+                      <div className="space-y-1">
+                        <Label>Icon (Lucide name)</Label>
+                        <Input value={link.icon} onChange={(e) => updateQuickLink(idx, "icon", e.target.value)} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label>Row (1 or 2)</Label>
+                        <Input value={String(link.row)} onChange={(e) => updateQuickLink(idx, "row", e.target.value)} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label>Label (desktop)</Label>
+                        <Input value={link.label} onChange={(e) => updateQuickLink(idx, "label", e.target.value)} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label>Short Label (mobile)</Label>
+                        <Input value={link.shortLabel} onChange={(e) => updateQuickLink(idx, "shortLabel", e.target.value)} />
+                      </div>
+                      <div className="space-y-1 md:col-span-2">
+                        <Label>URL</Label>
+                        <Input value={link.url} onChange={(e) => updateQuickLink(idx, "url", e.target.value)} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                <Button type="button" variant="outline" onClick={addQuickLink}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Quick Link
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Internal News / Updates</CardTitle>
+                <CardDescription>These are the items in the “Internal News and Council Updates” list.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {updates.map((u, idx) => (
+                  <div key={u.id || idx} className="rounded-lg border p-4">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <p className="text-sm font-medium text-gray-700">Update {idx + 1}</p>
+                      <Button type="button" variant="outline" size="sm" onClick={() => removeUpdate(idx)}>
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Remove
+                      </Button>
+                    </div>
+                    <div className="grid gap-3 md:grid-cols-2">
+                      <div className="space-y-1">
+                        <Label>Date</Label>
+                        <Input value={u.date} onChange={(e) => updateUpdate(idx, "date", e.target.value)} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label>Type</Label>
+                        <Input value={u.type} onChange={(e) => updateUpdate(idx, "type", e.target.value)} />
+                      </div>
+                      <div className="space-y-1 md:col-span-2">
+                        <Label>Title</Label>
+                        <Input value={u.title} onChange={(e) => updateUpdate(idx, "title", e.target.value)} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                <Button type="button" variant="outline" onClick={addUpdate}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Update
+                </Button>
+              </CardContent>
+            </Card>
+          </CardContent>
+        </Card>
+      </div>
+    </CouncilAdminGate>
+  );
+}
+

@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Shield, FileText, Lock, AlertTriangle, ClipboardCheck, SlidersHorizontal } from "lucide-react";
+import { Shield, FileText, Lock, AlertTriangle, ClipboardCheck, SlidersHorizontal, Home } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { motion } from "motion/react";
@@ -94,6 +94,23 @@ export function CouncilAdminPage() {
                 <Link to="/council-admin/content">
                   <SlidersHorizontal className="mr-2 size-4" />
                   Open Content Manager
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+            <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h3 className="text-base text-black sm:text-lg">Home Page Editor</h3>
+                <p className="text-sm text-gray-500">
+                  Update banner, president welcome, quick links, and internal news.
+                </p>
+              </div>
+              <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
+                <Link to="/council-admin/content/home">
+                  <Home className="mr-2 size-4" />
+                  Edit Home Page
                 </Link>
               </Button>
             </CardContent>

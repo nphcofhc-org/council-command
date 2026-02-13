@@ -15,6 +15,7 @@ const PROTECTED_PATH_RULES = [
   { type: "exact", value: "src/app/pages/CouncilAdminPage.tsx" },
   { type: "exact", value: "src/app/pages/CouncilCompliancePage.tsx" },
   { type: "exact", value: "src/app/pages/CouncilContentManagerPage.tsx" },
+  { type: "exact", value: "src/app/pages/CouncilHomeContentPage.tsx" },
   { type: "exact", value: "src/app/routes.tsx" },
   { type: "exact", value: ".github/workflows/portal-refresh.yml" },
   { type: "exact", value: "scripts/sync_sheets.mjs" },

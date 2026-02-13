@@ -59,6 +59,9 @@ The repo now includes Cloudflare Pages Functions under `functions/`:
 
 - `GET /api/admin/session` - reads Cloudflare Access identity and admin status
 - `GET/PUT /api/admin/compliance` - shared compliance checklist state for council admins
+- `GET/PUT /api/content/site-config` - runtime home/banner/president config overrides
+- `GET/PUT /api/content/home-quick-links` - runtime home quick link overrides
+- `GET/PUT /api/content/home-updates` - runtime home internal news overrides
 
 Required Cloudflare Pages settings:
 
