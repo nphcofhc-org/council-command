@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { useCouncilSession } from "../hooks/use-council-session";
+import { fetchDecisionVotesAsAdmin, fetchMyDecisionVote, submitDecisionVote } from "../data/decision-api";
 
 type VoteChoice = "block" | "unity";
 
@@ -16,6 +17,7 @@ const LOGO_URL =
   "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/NPHC%20of%20HC%20LOGO%20Black.PNG";
 
 const STORAGE_KEY = "nphcDecisionPortalVotes";
+const DECISION_KEY = "2026-block-party-vs-unity-bbq";
 
 const unityScores = { impact: 3, unity: 5, feasibility: 4 };
 const blockScores = { impact: 5, unity: 4, feasibility: 3 };
@@ -43,6 +45,7 @@ export function DecisionPortalPage() {
 
   const [votes, setVotes] = useState<StoredVote[]>([]);
   const [confirmation, setConfirmation] = useState<string>("");
+  const [hasServerVote, setHasServerVote] = useState<boolean>(false);
 
   useEffect(() => {
     try {
@@ -63,6 +66,17 @@ export function DecisionPortalPage() {
       // Ignore invalid local data.
     }
   }, []);
+
+  useEffect(() => {
+    if (!session.authenticated) return;
+    void fetchMyDecisionVote(DECISION_KEY)
+      .then((res) => {
+        setHasServerVote(Boolean(res.found));
+      })
+      .catch(() => {
+        // ignore
+      });
+  }, [session.authenticated]);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(votes));
@@ -91,14 +105,46 @@ export function DecisionPortalPage() {
   }, [impact, unity, feasibility]);
 
   const submitVote = (choice: VoteChoice) => {
-    setVotes((prev) => [...prev, { choice, timestamp: new Date().toISOString() }]);
-    setConfirmation("Vote submitted successfully. (Stored locally on this device only.)");
-    setTimeout(() => setConfirmation(""), 3500);
+    const payload = { choice, timestamp: new Date().toISOString() };
+    setVotes((prev) => [...prev, payload].slice(-500));
+
+    if (!session.authenticated) {
+      setConfirmation("Vote submitted successfully. (Stored locally on this device only.)");
+      setTimeout(() => setConfirmation(""), 3500);
+      return;
+    }
+
+    void submitDecisionVote({
+      decisionKey: DECISION_KEY,
+      choice,
+      weights: {
+        impact,
+        unity,
+        feasibility,
+        recommendation: weighted.recommendation,
+      },
+    })
+      .then(() => {
+        setHasServerVote(true);
+        setConfirmation("Vote submitted successfully. (Council-wide confidential submission recorded.)");
+        setTimeout(() => setConfirmation(""), 3500);
+      })
+      .catch((err) => {
+        setConfirmation(err instanceof Error ? err.message : "Vote failed to submit.");
+        setTimeout(() => setConfirmation(""), 5000);
+      });
   };
 
   const exportVotes = () => {
     if (!session.isCouncilAdmin) return;
-    downloadJson("NPHC_DecisionPortal_Votes.json", votes);
+    void fetchDecisionVotesAsAdmin(DECISION_KEY)
+      .then((res) => {
+        downloadJson("NPHC_DecisionPortal_Votes.json", res);
+      })
+      .catch((err) => {
+        setConfirmation(err instanceof Error ? err.message : "Export failed.");
+        setTimeout(() => setConfirmation(""), 5000);
+      });
   };
 
   return (
@@ -200,9 +246,14 @@ export function DecisionPortalPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-gray-600">
-                Submit your independent choice. Votes are stored in your browser’s localStorage on this device and are
-                not displayed publicly.
+                Submit your independent choice. Your vote is submitted confidentially for council-wide access control,
+                and never displayed publicly. (A local copy is kept on this device for continuity.)
               </p>
+              {session.authenticated && hasServerVote ? (
+                <p className="text-xs text-gray-500">
+                  Note: you have already submitted a vote for this decision. Submitting again will update your vote.
+                </p>
+              ) : null}
 
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button className="bg-black hover:bg-gray-900" onClick={() => submitVote("block")}>
@@ -221,7 +272,7 @@ export function DecisionPortalPage() {
                 <div>
                   <p className="text-sm font-semibold text-gray-900">Admin Export</p>
                   <p className="text-xs text-gray-500">
-                    Downloads vote history from this device only.
+                    Downloads council-wide vote history for this decision.
                   </p>
                 </div>
                 <Button
@@ -258,4 +309,3 @@ export function DecisionPortalPage() {
     </div>
   );
 }
-
