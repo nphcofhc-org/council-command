@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
@@ -7,41 +8,40 @@ import { Button } from "../components/ui/button";
 import { motion } from "motion/react";
 import { useChapterInfoData } from "../hooks/use-site-data";
 import { StatusBadge } from "../components/status-badge";
+import { fetchLeadershipContent } from "../data/admin-api";
+import {
+  DEFAULT_CONTACT_EMAIL,
+  DEFAULT_LEADERSHIP_CONTENT,
+  type LeadershipContent,
+  type LeadershipMember,
+} from "../data/leadership";
 
 const ART_INK = "https://images.unsplash.com/photo-1769181417562-be594f91fcc9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHdoaXRlJTIwYWJzdHJhY3QlMjBpbmslMjBicnVzaCUyMHN0cm9rZXN8ZW58MXx8fHwxNzcwNTEzMjIyfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
-const CONTACT_EMAIL = "nphcofhudsoncounty@gmail.com";
-
-type LeadershipMember = {
-  id: string;
-  name: string;
-  title: string;
-  chapter: string;
-  email?: string;
-};
-
-const executiveBoard: LeadershipMember[] = [
-  { id: "eb-1", title: "President", name: "Christopher DeMarkus", chapter: "Alpha Phi Alpha Fraternity, Inc." },
-  { id: "eb-2", title: "Vice President", name: "Kimberly Conway", chapter: "Alpha Kappa Alpha Sorority, Inc." },
-  { id: "eb-3", title: "Secretary", name: "April Stitt", chapter: "Sigma Gamma Rho Sorority, Inc." },
-  { id: "eb-4", title: "Treasurer", name: "Gibrill Kamara", chapter: "Alpha Phi Alpha Fraternity, Inc." },
-  { id: "eb-5", title: "Financial Secretary", name: "Chris Gadsden", chapter: "NPHC Hudson County Executive Council" },
-  { id: "eb-6", title: "Parliamentarian", name: "Ayesha Noel-Smith", chapter: "Zeta Phi Beta Sorority, Inc." },
-  { id: "eb-7", title: "Chaplain", name: "Dr. Viva White", chapter: "Zeta Phi Beta Sorority, Inc." },
-];
-
-const additionalChairs: LeadershipMember[] = [
-  { id: "ch-1", title: "Service Chair", name: "Tina Jones", chapter: "Delta Sigma Theta Sorority, Inc." },
-  { id: "ch-2", title: "Fundraising Chair", name: "Dr. Azaria Cunningham", chapter: "NPHC Hudson County Executive Council" },
-  { id: "ch-3", title: "Scholarship Chair", name: "Dr. Aaliyah Davis", chapter: "NPHC Hudson County Executive Council" },
-];
 
 export function ChapterInfoPage() {
   const { data } = useChapterInfoData();
+  const [leadership, setLeadership] = useState<LeadershipContent>(DEFAULT_LEADERSHIP_CONTENT);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetchLeadershipContent()
+      .then((payload) => {
+        if (cancelled || !payload.found) return;
+        setLeadership(payload.data);
+      })
+      .catch(() => {
+        // Keep static default when CMS content is unavailable.
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const delegates = data?.delegates || [];
   const documents = data?.governingDocuments || [];
   const toContactHref = (member: LeadershipMember) => {
-    const recipient = member.email || CONTACT_EMAIL;
+    const recipient = member.email || DEFAULT_CONTACT_EMAIL;
     const subject = encodeURIComponent(`Contact Request: ${member.title} (${member.name})`);
     return `mailto:${recipient}?subject=${subject}`;
   };
@@ -97,7 +97,7 @@ export function ChapterInfoPage() {
                     Executive Board
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {executiveBoard.map((officer, index) => (
+                    {leadership.executiveBoard.map((officer, index) => (
                       <motion.div
                         key={officer.id}
                         initial={{ y: 20, opacity: 0 }}
@@ -145,7 +145,7 @@ export function ChapterInfoPage() {
                     Additional Chairs (2025-2026)
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {additionalChairs.map((chair, index) => (
+                    {leadership.additionalChairs.map((chair, index) => (
                       <motion.div
                         key={chair.id}
                         initial={{ y: 20, opacity: 0 }}

@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Shield, FileText, Lock, AlertTriangle, ClipboardCheck } from "lucide-react";
+import { Shield, FileText, Lock, AlertTriangle, ClipboardCheck, SlidersHorizontal } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { motion } from "motion/react";
@@ -63,7 +63,7 @@ export function CouncilAdminPage() {
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
-          className="mb-6"
+          className="mb-6 grid gap-4 lg:grid-cols-2"
         >
           <Card className="border-0 shadow-lg ring-1 ring-black/5">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
@@ -77,6 +77,23 @@ export function CouncilAdminPage() {
                 <Link to="/council-admin/compliance">
                   <ClipboardCheck className="mr-2 size-4" />
                   Open Compliance Page
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+            <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h3 className="text-base text-black sm:text-lg">Content Manager</h3>
+                <p className="text-sm text-gray-500">
+                  Update leadership names, chapters, emails, and photo URLs.
+                </p>
+              </div>
+              <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
+                <Link to="/council-admin/content">
+                  <SlidersHorizontal className="mr-2 size-4" />
+                  Open Content Manager
                 </Link>
               </Button>
             </CardContent>

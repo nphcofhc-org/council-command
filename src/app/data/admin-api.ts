@@ -1,3 +1,5 @@
+import type { LeadershipContent } from "./leadership";
+
 export type CouncilSession = {
   authenticated: boolean;
   email: string | null;
@@ -10,8 +12,16 @@ export type ComplianceState = {
   updatedBy: string | null;
 };
 
+export type LeadershipContentResponse = {
+  found: boolean;
+  data: LeadershipContent;
+  updatedAt: string | null;
+  updatedBy: string | null;
+};
+
 const SESSION_ENDPOINT = "/api/admin/session";
 const COMPLIANCE_ENDPOINT = "/api/admin/compliance";
+const LEADERSHIP_ENDPOINT = "/api/content/chapter-leadership";
 
 async function parseError(response: Response): Promise<string> {
   try {
@@ -91,6 +101,58 @@ export async function saveComplianceState(checkedItems: Record<string, boolean>)
         Object.entries(data.checkedItems).map(([key, value]) => [key, Boolean(value)]),
       )
       : {},
+    updatedAt: data?.updatedAt ? String(data.updatedAt) : null,
+    updatedBy: data?.updatedBy ? String(data.updatedBy) : null,
+  };
+}
+
+export async function fetchLeadershipContent(): Promise<LeadershipContentResponse> {
+  const response = await fetch(LEADERSHIP_ENDPOINT, {
+    method: "GET",
+    credentials: "same-origin",
+    headers: {
+      accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response));
+  }
+
+  const data = await response.json();
+  return {
+    found: Boolean(data?.found),
+    data: {
+      executiveBoard: Array.isArray(data?.data?.executiveBoard) ? data.data.executiveBoard : [],
+      additionalChairs: Array.isArray(data?.data?.additionalChairs) ? data.data.additionalChairs : [],
+    },
+    updatedAt: data?.updatedAt ? String(data.updatedAt) : null,
+    updatedBy: data?.updatedBy ? String(data.updatedBy) : null,
+  };
+}
+
+export async function saveLeadershipContent(content: LeadershipContent): Promise<LeadershipContentResponse> {
+  const response = await fetch(LEADERSHIP_ENDPOINT, {
+    method: "PUT",
+    credentials: "same-origin",
+    headers: {
+      "content-type": "application/json",
+      accept: "application/json",
+    },
+    body: JSON.stringify(content),
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response));
+  }
+
+  const data = await response.json();
+  return {
+    found: Boolean(data?.found),
+    data: {
+      executiveBoard: Array.isArray(data?.data?.executiveBoard) ? data.data.executiveBoard : [],
+      additionalChairs: Array.isArray(data?.data?.additionalChairs) ? data.data.additionalChairs : [],
+    },
     updatedAt: data?.updatedAt ? String(data.updatedAt) : null,
     updatedBy: data?.updatedBy ? String(data.updatedBy) : null,
   };

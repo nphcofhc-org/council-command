@@ -1,0 +1,81 @@
+{
+  "navigation": [
+    "Home",
+    "Chapter Info",
+    "Meetings & Delegates",
+    "Programs & Events",
+    "Resources",
+    "Council Admin"
+  ],
+  "leadership": {
+    "executiveBoard": [
+      {
+        "id": "eb-1",
+        "name": "Christopher DeMarkus",
+        "title": "President",
+        "chapter": "Alpha Phi Alpha Fraternity, Inc."
+      },
+      {
+        "id": "eb-2",
+        "name": "Kimberly Conway",
+        "title": "Vice President",
+        "chapter": "Alpha Kappa Alpha Sorority, Inc."
+      },
+      {
+        "id": "eb-3",
+        "name": "April Stitt",
+        "title": "Secretary",
+        "chapter": "Sigma Gamma Rho Sorority, Inc."
+      },
+      {
+        "id": "eb-4",
+        "name": "Gibrill Kamara",
+        "title": "Treasurer",
+        "chapter": "Alpha Phi Alpha Fraternity, Inc."
+      },
+      {
+        "id": "eb-5",
+        "name": "Chris Gadsden",
+        "title": "Financial Secretary",
+        "chapter": "NPHC Hudson County Executive Council"
+      },
+      {
+        "id": "eb-6",
+        "name": "Ayesha Noel-Smith",
+        "title": "Parliamentarian",
+        "chapter": "Zeta Phi Beta Sorority, Inc."
+      },
+      {
+        "id": "eb-7",
+        "name": "Dr. Viva White",
+        "title": "Chaplain",
+        "chapter": "Zeta Phi Beta Sorority, Inc."
+      }
+    ],
+    "additionalChairs": [
+      {
+        "id": "ch-1",
+        "name": "Tina Jones",
+        "title": "Service Chair",
+        "chapter": "Delta Sigma Theta Sorority, Inc."
+      },
+      {
+        "id": "ch-2",
+        "name": "Dr. Azaria Cunningham",
+        "title": "Fundraising Chair",
+        "chapter": "NPHC Hudson County Executive Council"
+      },
+      {
+        "id": "ch-3",
+        "name": "Dr. Aaliyah Davis",
+        "title": "Scholarship Chair",
+        "chapter": "NPHC Hudson County Executive Council"
+      }
+    ]
+  },
+  "complianceSections": [
+    "Financial Stability & Compliance",
+    "Administrative Compliance",
+    "Programmatic Accountability"
+  ]
+}

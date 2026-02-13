@@ -74,6 +74,10 @@ Cloudflare Pages -> Project -> Settings:
 3. Apply schema:
    - Run SQL in D1 console from `cloudflare/d1-schema.sql`
 
+This enables:
+- shared compliance checklist state
+- runtime leadership content updates from `/#/council-admin/content`
+
 Important:
 - This app uses hash routing (`/#/...`). URL fragments are not sent to Cloudflare Access.
 - So Access cannot enforce different rules for `/#/council-admin`.

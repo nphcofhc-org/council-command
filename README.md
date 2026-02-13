@@ -25,6 +25,7 @@ Docs:
 - `apps-script/README.md` (Sheets/API setup)
 - `CONTENT_GUIDE.md` (which tabs/columns map to which pages)
 - `IMPLEMENTATION_GUIDE.md` (production runbook + admin + Figma-safe workflow)
+- `figma/starter-pack/README.md` (Figma rebuild handoff + staging workflow)
 
 ## Documents / File Links
 

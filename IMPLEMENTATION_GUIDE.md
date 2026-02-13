@@ -64,7 +64,7 @@ API endpoint:
 If D1 is missing/unavailable:
 - page falls back to local browser storage only.
 
-## 4) How Content Updates Work
+## 4) Content Sources (Build-Time + Runtime CMS)
 
 ### Data flow
 - `npm run build` triggers `prebuild` script:
@@ -78,11 +78,18 @@ If D1 is missing/unavailable:
 - push/trigger deploy
 - deployment rebuilds with latest content
 
+Runtime CMS layer (Phase 2 start):
+- `GET /api/content/chapter-leadership` returns D1-backed leadership content
+- `PUT /api/content/chapter-leadership` saves leadership content (council-admin only)
+- `/#/council-admin/content` is the current admin editor UI for that dataset
+
 ## 5) Safe Figma Sync Workflow (No Core Wipes)
 
 This repo now has:
 - workflow: `.github/workflows/figma-sync-guard.yml`
 - guard script: `scripts/ci/figma_sync_guard.mjs`
+- staging lane route: `/#/figma-staging`
+- starter pack: `figma/starter-pack/`
 
 ### How to use it
 1. Create branch using prefix:
@@ -91,12 +98,19 @@ This repo now has:
 3. Add label:
    - `figma-sync` (optional if branch already starts with `figma/`)
 4. Guard blocks protected core-file changes unless explicitly overridden.
+5. Figma-generated components go to `src/figma-staging/` first.
 
 ### Protected files/directories
 - `functions/`
 - `cloudflare/`
 - `src/app/data/`
 - `src/data/`
+- `src/app/components/CouncilAdminGate.tsx`
+- `src/app/components/MainLayout.tsx`
+- `src/app/pages/CouncilAdminPage.tsx`
+- `src/app/pages/CouncilCompliancePage.tsx`
+- `src/app/pages/CouncilContentManagerPage.tsx`
+- `src/app/routes.tsx`
 - `.github/workflows/portal-refresh.yml`
 - `scripts/sync_sheets.mjs`
 - `package.json`
@@ -123,5 +137,7 @@ For production incidents:
 - [ ] `main` push triggers successful Pages deploy
 - [ ] non-admin user is blocked by in-app council admin gate on `#/council-admin`
 - [ ] admin user can access compliance page
+- [ ] admin user can access content manager page
 - [ ] compliance state survives refresh/login/device (with D1)
+- [ ] leadership edits in content manager appear on `#/chapter-information`
 - [ ] Figma PR touching protected core files is blocked unless override label is added
