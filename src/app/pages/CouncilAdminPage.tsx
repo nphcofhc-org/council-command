@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Shield, FileText, Lock, AlertTriangle, ClipboardCheck, SlidersHorizontal, Home } from "lucide-react";
+import { Shield, FileText, Lock, AlertTriangle, ClipboardCheck, SlidersHorizontal, Home, Calendar, TrendingUp, FolderOpen } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { motion } from "motion/react";
@@ -111,6 +111,57 @@ export function CouncilAdminPage() {
                 <Link to="/council-admin/content/home">
                   <Home className="mr-2 size-4" />
                   Edit Home Page
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+            <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h3 className="text-base text-black sm:text-lg">Meetings Editor</h3>
+                <p className="text-sm text-gray-500">
+                  Update upcoming meetings, minutes, and delegate report rows.
+                </p>
+              </div>
+              <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
+                <Link to="/council-admin/content/meetings">
+                  <Calendar className="mr-2 size-4" />
+                  Edit Meetings
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+            <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h3 className="text-base text-black sm:text-lg">Programs Editor</h3>
+                <p className="text-sm text-gray-500">
+                  Update events, flyers, archives, and signup forms.
+                </p>
+              </div>
+              <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
+                <Link to="/council-admin/content/programs">
+                  <TrendingUp className="mr-2 size-4" />
+                  Edit Programs
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+            <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h3 className="text-base text-black sm:text-lg">Resources Editor</h3>
+                <p className="text-sm text-gray-500">
+                  Update shared forms, org links, and training resources.
+                </p>
+              </div>
+              <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
+                <Link to="/council-admin/content/resources">
+                  <FolderOpen className="mr-2 size-4" />
+                  Edit Resources
                 </Link>
               </Button>
             </CardContent>

@@ -1,4 +1,18 @@
-import type { QuickLink, SiteConfig, Update } from "./types";
+import type {
+  ArchivedEvent,
+  CouncilEvent,
+  DelegateReport,
+  EventFlyer,
+  MeetingRecord,
+  NationalOrg,
+  QuickLink,
+  SharedFormCategory,
+  SignupForm,
+  SiteConfig,
+  TrainingResource,
+  UpcomingMeeting,
+  Update,
+} from "./types";
 
 type ContentResponse<T> = {
   found: boolean;
@@ -65,3 +79,45 @@ export function saveUpdatesOverride(updates: Update[]): Promise<ContentResponse<
   return putJson("/api/content/home-updates", updates);
 }
 
+export type MeetingsOverridePayload = {
+  upcomingMeetings: UpcomingMeeting[];
+  meetingRecords: MeetingRecord[];
+  delegateReports: DelegateReport[];
+};
+
+export function fetchMeetingsOverride(): Promise<ContentResponse<MeetingsOverridePayload | null>> {
+  return getJson("/api/content/meetings");
+}
+
+export function saveMeetingsOverride(payload: MeetingsOverridePayload): Promise<ContentResponse<MeetingsOverridePayload>> {
+  return putJson("/api/content/meetings", payload);
+}
+
+export type ProgramsOverridePayload = {
+  upcomingEvents: CouncilEvent[];
+  archivedEvents: ArchivedEvent[];
+  eventFlyers: EventFlyer[];
+  signupForms: SignupForm[];
+};
+
+export function fetchProgramsOverride(): Promise<ContentResponse<ProgramsOverridePayload | null>> {
+  return getJson("/api/content/programs");
+}
+
+export function saveProgramsOverride(payload: ProgramsOverridePayload): Promise<ContentResponse<ProgramsOverridePayload>> {
+  return putJson("/api/content/programs", payload);
+}
+
+export type ResourcesOverridePayload = {
+  sharedForms: SharedFormCategory[];
+  nationalOrgs: NationalOrg[];
+  trainingResources: TrainingResource[];
+};
+
+export function fetchResourcesOverride(): Promise<ContentResponse<ResourcesOverridePayload | null>> {
+  return getJson("/api/content/resources");
+}
+
+export function saveResourcesOverride(payload: ResourcesOverridePayload): Promise<ContentResponse<ResourcesOverridePayload>> {
+  return putJson("/api/content/resources", payload);
+}

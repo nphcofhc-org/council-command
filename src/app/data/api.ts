@@ -24,7 +24,14 @@
 
 import { DATA_SOURCE, APPS_SCRIPT_URL, SHEET_TABS, CACHE_TTL_MS } from "./config";
 import * as staticData from "./generated-data";
-import { fetchQuickLinksOverride, fetchSiteConfigOverride, fetchUpdatesOverride } from "./content-api";
+import {
+  fetchMeetingsOverride,
+  fetchProgramsOverride,
+  fetchQuickLinksOverride,
+  fetchResourcesOverride,
+  fetchSiteConfigOverride,
+  fetchUpdatesOverride,
+} from "./content-api";
 import type {
   HomePageData,
   ChapterInfoPageData,
@@ -146,11 +153,19 @@ export async function fetchChapterInfoData(): Promise<ChapterInfoPageData> {
 
 export async function fetchMeetingsData(): Promise<MeetingsPageData> {
   if (DATA_SOURCE === "static") {
-    return {
+    const base: MeetingsPageData = {
       upcomingMeetings: staticData.upcomingMeetings,
       meetingRecords: staticData.meetingRecords,
       delegateReports: staticData.delegateReports,
     };
+
+    try {
+      const override = await fetchMeetingsOverride();
+      if (override.found && override.data) return override.data as MeetingsPageData;
+    } catch {
+      // ignore
+    }
+    return base;
   }
 
   const [upcomingMeetings, meetingRecords, delegateReports] = await Promise.all([
@@ -168,12 +183,20 @@ export async function fetchMeetingsData(): Promise<MeetingsPageData> {
 
 export async function fetchProgramsData(): Promise<ProgramsPageData> {
   if (DATA_SOURCE === "static") {
-    return {
+    const base: ProgramsPageData = {
       upcomingEvents: staticData.upcomingEvents,
       archivedEvents: staticData.archivedEvents,
       eventFlyers: staticData.eventFlyers,
       signupForms: staticData.signupForms,
     };
+
+    try {
+      const override = await fetchProgramsOverride();
+      if (override.found && override.data) return override.data as ProgramsPageData;
+    } catch {
+      // ignore
+    }
+    return base;
   }
 
   const [upcomingEvents, archivedEvents, eventFlyers, signupForms] = await Promise.all([
@@ -193,11 +216,19 @@ export async function fetchProgramsData(): Promise<ProgramsPageData> {
 
 export async function fetchResourcesData(): Promise<ResourcesPageData> {
   if (DATA_SOURCE === "static") {
-    return {
+    const base: ResourcesPageData = {
       sharedForms: staticData.sharedForms,
       nationalOrgs: staticData.nationalOrgs,
       trainingResources: staticData.trainingResources,
     };
+
+    try {
+      const override = await fetchResourcesOverride();
+      if (override.found && override.data) return override.data as ResourcesPageData;
+    } catch {
+      // ignore
+    }
+    return base;
   }
 
   const [sharedFormsRaw, nationalOrgs, trainingResources] = await Promise.all([
