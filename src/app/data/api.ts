@@ -323,6 +323,14 @@ function transformSiteConfig(rows: Record<string, string>[]): SiteConfig {
     presidentMessage: messageParagraphs,
     presidentClosing: kv.presidentClosing || "",
     bannerImageUrl: kv.bannerImageUrl || "",
+    alertEnabled: (kv.alertEnabled || "").toLowerCase() === "true",
+    alertVariant: (["info", "warning", "urgent"] as const).includes((kv.alertVariant || "").toLowerCase() as any)
+      ? ((kv.alertVariant || "").toLowerCase() as "info" | "warning" | "urgent")
+      : "info",
+    alertTitle: kv.alertTitle || "",
+    alertMessage: kv.alertMessage || "",
+    alertLinkLabel: kv.alertLinkLabel || "",
+    alertLinkUrl: kv.alertLinkUrl || "",
   };
 }
 

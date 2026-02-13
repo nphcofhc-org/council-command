@@ -16,6 +16,7 @@ export function MeetingsPage() {
   const upcomingMeetings = data?.upcomingMeetings || [];
   const meetingRecords = data?.meetingRecords || [];
   const delegateReports = data?.delegateReports || [];
+  const calendarHref = "/2026-council-calendar.html";
 
   return (
     <div className="relative min-h-screen">
@@ -58,7 +59,12 @@ export function MeetingsPage() {
             >
               <Card className="border-0 shadow-lg ring-1 ring-black/5">
                 <CardHeader>
-                  <CardTitle className="text-lg sm:text-xl">Council Meeting Calendar</CardTitle>
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <CardTitle className="text-lg sm:text-xl">Council Meeting Calendar</CardTitle>
+                    <Button asChild variant="outline" size="sm" className="w-fit">
+                      <a href={calendarHref}>View 2026 Calendar</a>
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">

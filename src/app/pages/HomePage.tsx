@@ -1,5 +1,5 @@
 import { Card, CardContent } from "../components/ui/card";
-import { Clock } from "lucide-react";
+import { Bell, Clock } from "lucide-react";
 import googleBanner from "../../assets/08f5f2f8147d555bb4793ae6a060e3d0c28be71f.png";
 import { motion } from "motion/react";
 import { useHomePageData } from "../hooks/use-site-data";
@@ -25,10 +25,27 @@ export function HomePage() {
 
   // While loading, data is null — use safe defaults so layout doesn't jump
   const config = data?.config;
-  const quickLinks = data?.quickLinks || [];
+  const rawQuickLinks = data?.quickLinks || [];
   const updates = data?.updates || [];
   const presidentImageUrl = config?.presidentImageUrl || "";
   const bannerImageUrl = config?.bannerImageUrl || "";
+
+  const CALENDAR_URL = "/2026-council-calendar.html";
+  const quickLinks = (() => {
+    const alreadyHas = rawQuickLinks.some((l) => (l?.url || "").trim() === CALENDAR_URL);
+    if (alreadyHas) return rawQuickLinks;
+    return [
+      {
+        id: "calendar-2026",
+        icon: "Calendar",
+        label: "2026 Calendar",
+        shortLabel: "Calendar",
+        url: CALENDAR_URL,
+        row: 1 as const,
+      },
+      ...rawQuickLinks,
+    ];
+  })();
 
   const welcomeParagraphs = (config?.presidentMessage && config.presidentMessage.length > 0)
     ? config.presidentMessage
@@ -48,7 +65,33 @@ export function HomePage() {
   const row1Links = quickLinks.filter((l) => l.row === 1);
   const row2Links = quickLinks.filter((l) => l.row === 2);
 
-  const toHref = (url: string) => (url.startsWith("/") ? `#${url}` : url);
+  const isInternalHashRoute = (url: string) => {
+    const u = url.trim();
+    if (!u.startsWith("/")) return false;
+    if (u === "/") return true;
+    return (
+      u === "/chapter-information" ||
+      u === "/meetings-delegates" ||
+      u === "/programs-events" ||
+      u === "/resources" ||
+      u === "/figma-staging" ||
+      u === "/council-admin" ||
+      u.startsWith("/council-admin/")
+    );
+  };
+
+  // Hash routes for SPA pages. Plain paths for static assets (HTML/PDF under /public).
+  const toHref = (url: string) => (isInternalHashRoute(url) ? `#${url}` : url);
+
+  const alertEnabled = !!config?.alertEnabled;
+  const alertVariant = (config?.alertVariant || "info") as "info" | "warning" | "urgent";
+  const alertTitle = (config?.alertTitle || "").trim();
+  const alertMessage = (config?.alertMessage || "").trim();
+  const alertLinkLabel = (config?.alertLinkLabel || "").trim();
+  const alertLinkUrl = (config?.alertLinkUrl || "").trim();
+  const showAlert = alertEnabled && (alertTitle.length > 0 || alertMessage.length > 0);
+  const alertAccent =
+    alertVariant === "urgent" ? "border-l-red-600" : alertVariant === "warning" ? "border-l-amber-500" : "border-l-slate-900";
 
   return (
     <div className="bg-white">
@@ -64,6 +107,41 @@ export function HomePage() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
       </div>
+
+      {/* ── Alert / Notifications Banner (Home) ───────────────────────────── */}
+      {showAlert ? (
+        <div className="bg-white">
+          <div className="max-w-5xl mx-auto px-4 sm:px-8 py-5">
+            <motion.div
+              initial={{ y: -10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.35 }}
+              className={`rounded-xl border bg-white shadow-sm p-4 sm:p-5 border-gray-200 border-l-4 ${alertAccent}`}
+            >
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 rounded-lg bg-black text-white p-2 flex-shrink-0">
+                    <Bell className="size-4" />
+                  </div>
+                  <div className="min-w-0">
+                    {alertTitle ? <p className="text-sm font-semibold text-black">{alertTitle}</p> : null}
+                    {alertMessage ? <p className="text-sm text-gray-700 mt-0.5">{alertMessage}</p> : null}
+                  </div>
+                </div>
+
+                {alertLinkUrl && alertLinkLabel ? (
+                  <a
+                    href={toHref(alertLinkUrl)}
+                    className="inline-flex items-center justify-center rounded-lg bg-black text-white px-4 py-2 text-sm font-medium hover:bg-gray-900 active:scale-[0.99] transition self-start"
+                  >
+                    {alertLinkLabel}
+                  </a>
+                ) : null}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      ) : null}
 
       {/* ── Quick Links ───────────────────────────────────────────────────── */}
       <div className="bg-black py-8 sm:py-10 relative overflow-hidden">

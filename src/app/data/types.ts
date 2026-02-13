@@ -45,6 +45,13 @@ export interface SiteConfig {
   presidentMessage: string[];       // Each paragraph as an array item
   presidentClosing: string;
   bannerImageUrl: string;           // Google Sites header banner
+  // Optional sitewide notification banner (primarily used on Home).
+  alertEnabled: boolean;
+  alertVariant: "info" | "warning" | "urgent";
+  alertTitle: string;
+  alertMessage: string;
+  alertLinkLabel: string;
+  alertLinkUrl: string;
 }
 
 export interface QuickLink {

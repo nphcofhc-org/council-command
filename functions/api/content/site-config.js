@@ -19,6 +19,10 @@ function sanitizeConfig(input) {
     ? input.presidentMessage.map((p) => t(p, 1200)).filter(Boolean).slice(0, 10)
     : [];
 
+  const variantRaw = t(input?.alertVariant, 32).toLowerCase();
+  const alertVariant = ["info", "warning", "urgent"].includes(variantRaw) ? variantRaw : "info";
+  const alertEnabled = input?.alertEnabled === true || t(input?.alertEnabled, 16).toLowerCase() === "true";
+
   return {
     councilName: t(input?.councilName, 200),
     subtitle: t(input?.subtitle, 260),
@@ -31,6 +35,12 @@ function sanitizeConfig(input) {
     presidentMessage,
     presidentClosing: t(input?.presidentClosing, 260),
     bannerImageUrl: t(input?.bannerImageUrl, 2048),
+    alertEnabled,
+    alertVariant,
+    alertTitle: t(input?.alertTitle, 140),
+    alertMessage: t(input?.alertMessage, 1200),
+    alertLinkLabel: t(input?.alertLinkLabel, 60),
+    alertLinkUrl: t(input?.alertLinkUrl, 2048),
   };
 }
 
@@ -77,4 +87,3 @@ export async function onRequest(context) {
   const saved = await writeSection(env.DB, SECTION_KEY, sanitizeConfig(body || {}), auth.session.email);
   return json(saved);
 }
-

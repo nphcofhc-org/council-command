@@ -7,6 +7,8 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
+import { Switch } from "../components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import type { QuickLink, SiteConfig, Update } from "../data/types";
 import {
   fetchQuickLinksOverride,
@@ -31,6 +33,12 @@ function emptyConfig(): SiteConfig {
     presidentMessage: [],
     presidentClosing: "",
     bannerImageUrl: "",
+    alertEnabled: false,
+    alertVariant: "info",
+    alertTitle: "",
+    alertMessage: "",
+    alertLinkLabel: "",
+    alertLinkUrl: "",
   };
 }
 
@@ -84,6 +92,10 @@ export function CouncilHomeContentPage() {
   const messageText = useMemo(() => config.presidentMessage.join("\n\n"), [config.presidentMessage]);
 
   const onConfigField = (key: keyof SiteConfig, value: string) => {
+    setConfig((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const onConfigBool = (key: keyof SiteConfig, value: boolean) => {
     setConfig((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -268,6 +280,73 @@ export function CouncilHomeContentPage() {
 
             <Card>
               <CardHeader>
+                <CardTitle className="text-base">Alerts / Notifications Banner</CardTitle>
+                <CardDescription>
+                  Optional banner shown on the Home page for time-sensitive announcements. Keep it short for mobile.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between gap-4 rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <p className="text-sm font-medium text-gray-800">Enable Banner</p>
+                    <p className="text-xs text-gray-500">Turn on/off without deleting your message.</p>
+                  </div>
+                  <Switch
+                    checked={!!config.alertEnabled}
+                    onCheckedChange={(checked) => onConfigBool("alertEnabled", !!checked)}
+                    aria-label="Enable alert banner"
+                  />
+                </div>
+
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="space-y-1">
+                    <Label>Style</Label>
+                    <Select
+                      value={config.alertVariant || "info"}
+                      onValueChange={(v) => onConfigField("alertVariant", v)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choose a style" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="info">Info</SelectItem>
+                        <SelectItem value="warning">Warning</SelectItem>
+                        <SelectItem value="urgent">Urgent</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label>Title (optional)</Label>
+                    <Input value={config.alertTitle} onChange={(e) => onConfigField("alertTitle", e.target.value)} />
+                  </div>
+
+                  <div className="space-y-1 md:col-span-2">
+                    <Label>Message</Label>
+                    <Textarea
+                      value={config.alertMessage}
+                      onChange={(e) => onConfigField("alertMessage", e.target.value)}
+                      rows={4}
+                      className="min-h-[120px]"
+                      placeholder="Example: Meeting link updated. Please review the agenda by Friday 5pm."
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label>Button Label (optional)</Label>
+                    <Input value={config.alertLinkLabel} onChange={(e) => onConfigField("alertLinkLabel", e.target.value)} />
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label>Button URL (optional)</Label>
+                    <Input value={config.alertLinkUrl} onChange={(e) => onConfigField("alertLinkUrl", e.target.value)} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
                 <CardTitle className="text-base">Quick Links</CardTitle>
                 <CardDescription>These are the buttons under the banner. Keep labels short for mobile.</CardDescription>
               </CardHeader>
@@ -357,4 +436,3 @@ export function CouncilHomeContentPage() {
     </CouncilAdminGate>
   );
 }
-
