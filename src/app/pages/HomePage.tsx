@@ -69,8 +69,19 @@ export function HomePage() {
       },
     ];
 
-    const existingUrls = new Set(rawQuickLinks.map((l) => (l?.url || "").trim()).filter(Boolean));
-    const missing = required.filter((r) => !existingUrls.has(r.url));
+    const hasMinutes = rawQuickLinks.some((l) => (l?.url || "").includes("tab=records") || (l?.label || "").toLowerCase().includes("minutes"));
+    const hasCalendar = rawQuickLinks.some((l) => (l?.url || "").trim() === "/2026-council-calendar.html" || (l?.label || "").toLowerCase().includes("calendar"));
+    const hasNext = rawQuickLinks.some((l) => (l?.url || "").trim() === "/meetings-delegates" || (l?.label || "").toLowerCase().includes("next meeting"));
+    const hasSocial = rawQuickLinks.some((l) => (l?.shortLabel || "").toLowerCase() === "social" || (l?.label || "").toLowerCase().includes("social"));
+
+    const missing = required.filter((r) => {
+      if (r.id === "ql-core-minutes") return !hasMinutes;
+      if (r.id === "ql-core-calendar-2026") return !hasCalendar;
+      if (r.id === "ql-core-next-meeting") return !hasNext;
+      if (r.id === "ql-core-social-post") return !hasSocial;
+      return true;
+    });
+
     if (missing.length === 0) return rawQuickLinks;
     return [...missing, ...rawQuickLinks];
   })();
