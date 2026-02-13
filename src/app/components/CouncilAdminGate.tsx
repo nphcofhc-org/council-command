@@ -3,6 +3,7 @@ import { ShieldAlert, Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { useCouncilSession } from "../hooks/use-council-session";
+import { useEditorMode } from "../hooks/use-editor-mode";
 
 type CouncilAdminGateProps = {
   children: ReactNode;
@@ -10,6 +11,7 @@ type CouncilAdminGateProps = {
 
 export function CouncilAdminGate({ children }: CouncilAdminGateProps) {
   const { session, loading, error, refetch } = useCouncilSession();
+  const { editorMode, setEditorMode } = useEditorMode();
 
   if (loading) {
     return (
@@ -47,6 +49,29 @@ export function CouncilAdminGate({ children }: CouncilAdminGateProps) {
             ) : null}
             <Button type="button" variant="outline" onClick={refetch}>
               Retry Access Check
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!editorMode) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-14 sm:px-8">
+        <Card className="border-gray-200">
+          <CardHeader>
+            <CardTitle className="text-black">Editor Mode Is Off</CardTitle>
+            <CardDescription>
+              You are signed in as an admin, but you are currently viewing the portal as a regular member.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-gray-700">
+              Turn on Editor Mode to access Council Admin tools (compliance tracking, content updates).
+            </p>
+            <Button type="button" className="bg-black hover:bg-gray-800" onClick={() => setEditorMode(true)}>
+              Enable Editor Mode
             </Button>
           </CardContent>
         </Card>

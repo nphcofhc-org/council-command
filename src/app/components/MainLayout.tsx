@@ -4,6 +4,7 @@ import { Home, Users, Calendar, TrendingUp, FolderOpen, Shield, Menu, X } from "
 import { motion, AnimatePresence } from "motion/react";
 import { useSiteConfig } from "../hooks/use-site-data";
 import { useCouncilSession } from "../hooks/use-council-session";
+import { useEditorMode } from "../hooks/use-editor-mode";
 
 const baseNavItems = [
   { to: "/", label: "Home", icon: Home },
@@ -18,8 +19,9 @@ export function MainLayout() {
   const location = useLocation();
   const { data: config } = useSiteConfig();
   const { session } = useCouncilSession();
+  const { editorMode, toggleEditorMode } = useEditorMode();
 
-  const navItems = session.isCouncilAdmin
+  const navItems = session.isCouncilAdmin && editorMode
     ? [...baseNavItems, { to: "/council-admin", label: "Council Admin", icon: Shield }]
     : baseNavItems;
 
@@ -83,7 +85,17 @@ export function MainLayout() {
 
             {/* Desktop: portal label */}
             <div className="hidden lg:flex items-center">
-              <span className="text-xs text-white/40 tracking-widest uppercase">Internal Portal</span>
+              {session.isCouncilAdmin ? (
+                <button
+                  type="button"
+                  onClick={toggleEditorMode}
+                  className="rounded-full border border-white/15 px-3 py-1 text-[11px] tracking-widest uppercase text-white/60 hover:text-white hover:border-white/30 transition-colors"
+                >
+                  {editorMode ? "Editor View" : "Member View"}
+                </button>
+              ) : (
+                <span className="text-xs text-white/40 tracking-widest uppercase">Internal Portal</span>
+              )}
             </div>
           </div>
         </div>
@@ -143,6 +155,15 @@ export function MainLayout() {
                 </div>
 
                 <div className="px-6 mt-8 pt-4 border-t border-white/10">
+                  {session.isCouncilAdmin ? (
+                    <button
+                      type="button"
+                      onClick={toggleEditorMode}
+                      className="w-full rounded-lg border border-white/10 px-3 py-2 text-left text-xs text-white/60 hover:text-white hover:border-white/25 transition-colors"
+                    >
+                      View Mode: {editorMode ? "Editor" : "Member"} (tap to switch)
+                    </button>
+                  ) : null}
                   <p className="text-white/30 text-xs">Internal Use Only</p>
                   <p className="text-white/20 text-xs mt-1">&copy; 2026 NPHC of Hudson County</p>
                 </div>
