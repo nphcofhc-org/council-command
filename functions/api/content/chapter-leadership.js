@@ -130,7 +130,7 @@ export async function onRequest(context) {
     return json(content);
   }
 
-  const session = getSessionState(request, env);
+  const session = await getSessionState(request, env);
   if (!session.isAuthenticated) {
     return json({ error: "Unauthenticated." }, { status: 401 });
   }

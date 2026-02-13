@@ -2,7 +2,7 @@ import { getSessionState } from "../../_lib/auth";
 import { json } from "../../_lib/http";
 
 export async function onRequestGet({ request, env }) {
-  const session = getSessionState(request, env);
+  const session = await getSessionState(request, env);
 
   return json({
     authenticated: session.isAuthenticated,

@@ -84,8 +84,8 @@ async function writeState(db, email, checkedItems) {
   };
 }
 
-function requireCouncilAdmin(request, env) {
-  const session = getSessionState(request, env);
+async function requireCouncilAdmin(request, env) {
+  const session = await getSessionState(request, env);
   if (!session.isAuthenticated) {
     return {
       ok: false,
@@ -122,7 +122,7 @@ export async function onRequest(context) {
     return methodNotAllowed(["GET", "PUT"]);
   }
 
-  const auth = requireCouncilAdmin(request, env);
+  const auth = await requireCouncilAdmin(request, env);
   if (!auth.ok) return auth.response;
 
   const dbResponse = requireDatabase(env);
