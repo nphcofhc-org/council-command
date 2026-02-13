@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>2026 Council Calendar</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #ffffff;
+        color: #000000;
+      }
+
+      .card-hover:hover {
+        transform: translateY(-4px);
+        box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 1);
+      }
+
+      .past-month {
+        opacity: 0.4;
+        filter: grayscale(40%);
+        transition: all 0.4s ease;
+      }
+
+      .current-month {
+        border-width: 3px !important;
+        border-color: #000 !important;
+        background: linear-gradient(to bottom right, #ffffff, #f5f5f5);
+      }
+
+      .break-pattern {
+        background-image: repeating-linear-gradient(
+          45deg,
+          #ffffff,
+          #ffffff 10px,
+          #f3f3f3 10px,
+          #f3f3f3 20px
+        );
+      }
+
+      .status-badge {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+      }
+
+      .agenda-note {
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: 6px;
+      }
+    </style>
+  </head>
+
+  <body class="min-h-screen p-4 md:p-8 flex flex-col items-center">
+    <header class="w-full max-w-6xl mb-6 border-b-2 border-black pb-6">
+      <h1 class="text-4xl md:text-6xl font-extrabold tracking-tighter uppercase">
+        2026 Schedule
+      </h1>
+      <p class="text-xs uppercase tracking-widest text-gray-500 mt-2">
+        Chapter & Executive Council
+      </p>
+    </header>
+
+    <div class="w-full max-w-6xl mb-10">
+      <div class="h-1 bg-gray-200">
+        <div id="year-progress" class="h-1 bg-black transition-all duration-700"></div>
+      </div>
+    </div>
+
+    <div
+      id="calendar-grid"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl"
+    >
+      <!-- Each month includes data-date for the chapter meeting -->
+
+      <div class="card-hover border border-gray-200 p-6 relative group" data-month="0" data-date="2026-01-24">
+        <div class="flex justify-between items-start mb-4">
+          <span class="text-5xl font-extrabold text-gray-200 group-hover:text-black transition">01</span>
+          <span class="text-sm font-bold uppercase tracking-widest border-b border-black pb-1">January</span>
+        </div>
+        <div class="status-badge"></div>
+        <div class="mt-4">
+          <div class="text-xl font-bold">Saturday, Jan 24</div>
+          <div class="text-sm font-semibold mt-1">In-Person</div>
+          <div class="agenda-note text-gray-600"></div>
+          <div class="mt-4 border-t pt-3 text-sm">Exec: Thu, Jan 22</div>
+        </div>
+      </div>
+
+      <div class="card-hover border border-gray-200 p-6 relative group" data-month="1" data-date="2026-02-23">
+        <div class="flex justify-between items-start mb-4">
+          <span class="text-5xl font-extrabold text-gray-200 group-hover:text-black transition">02</span>
+          <span class="text-sm font-bold uppercase tracking-widest border-b border-black pb-1">February</span>
+        </div>
+        <div class="status-badge"></div>
+        <div class="mt-4">
+          <div class="text-xl font-bold">Monday, Feb 23</div>
+          <div class="text-sm font-semibold mt-1">Virtual Meeting</div>
+          <div class="agenda-note text-gray-600"></div>
+          <div class="mt-4 border-t pt-3 text-sm">Exec: Thu, Feb 19</div>
+        </div>
+      </div>
+
+      <div class="card-hover border border-gray-200 p-6 relative group" data-month="2" data-date="2026-03-23">
+        <div class="flex justify-between items-start mb-4">
+          <span class="text-5xl font-extrabold text-gray-200 group-hover:text-black transition">03</span>
+          <span class="text-sm font-bold uppercase tracking-widest border-b border-black pb-1">March</span>
+        </div>
+        <div class="status-badge"></div>
+        <div class="mt-4">
+          <div class="text-xl font-bold">Monday, Mar 23</div>
+          <div class="text-sm font-semibold mt-1">Virtual Meeting</div>
+          <div class="agenda-note text-gray-600"></div>
+          <div class="mt-4 border-t pt-3 text-sm">Exec: Thu, Mar 19</div>
+        </div>
+      </div>
+
+      <div class="card-hover border border-gray-200 p-6 relative group" data-month="3" data-date="2026-04-25">
+        <div class="flex justify-between items-start mb-4">
+          <span class="text-5xl font-extrabold text-gray-200 group-hover:text-black transition">04</span>
+          <span class="text-sm font-bold uppercase tracking-widest border-b border-black pb-1">April</span>
+        </div>
+        <div class="status-badge"></div>
+        <div class="mt-4">
+          <div class="text-xl font-bold">Saturday, Apr 25</div>
+          <div class="agenda-note text-gray-600"></div>
+          <div class="mt-4 border-t pt-3 text-sm">Exec: Thu, Apr 23</div>
+        </div>
+      </div>
+
+      <div class="card-hover border border-gray-200 p-6 relative group" data-month="4" data-date="2026-05-18">
+        <div class="flex justify-between items-start mb-4">
+          <span class="text-5xl font-extrabold text-gray-200 group-hover:text-black transition">05</span>
+          <span class="text-sm font-bold uppercase tracking-widest border-b border-black pb-1">May</span>
+        </div>
+        <div class="status-badge"></div>
+        <div class="mt-4">
+          <div class="text-xl font-bold">Monday, May 18</div>
+          <div class="agenda-note text-gray-600"></div>
+          <div class="mt-4 border-t pt-3 text-sm">Exec: Thu, May 14</div>
+        </div>
+      </div>
+
+      <div class="card-hover border border-gray-200 p-6 relative group" data-month="5" data-date="2026-06-22">
+        <div class="flex justify-between items-start mb-4">
+          <span class="text-5xl font-extrabold text-gray-200 group-hover:text-black transition">06</span>
+          <span class="text-sm font-bold uppercase tracking-widest border-b border-black pb-1">June</span>
+        </div>
+        <div class="status-badge"></div>
+        <div class="mt-4">
+          <div class="text-xl font-bold">Monday, Jun 22</div>
+          <div class="agenda-note text-gray-600"></div>
+          <div class="mt-4 border-t pt-3 text-sm">Exec: Thu, Jun 18</div>
+        </div>
+      </div>
+
+      <div class="break-pattern opacity-60 flex flex-col justify-center items-center p-6 text-center">
+        <h3 class="text-xl font-bold uppercase text-gray-400">July</h3>
+        <p class="mt-2 font-semibold">Summer Break</p>
+      </div>
+
+      <div class="break-pattern opacity-60 flex flex-col justify-center items-center p-6 text-center">
+        <h3 class="text-xl font-bold uppercase text-gray-400">August</h3>
+        <p class="mt-2 font-semibold">Summer Break</p>
+      </div>
+
+      <div class="card-hover border border-gray-200 p-6 relative group" data-month="8" data-date="2026-09-26">
+        <div class="flex justify-between items-start mb-4">
+          <span class="text-5xl font-extrabold text-gray-200 group-hover:text-black transition">09</span>
+          <span class="text-sm font-bold uppercase tracking-widest border-b border-black pb-1">September</span>
+        </div>
+        <div class="status-badge"></div>
+        <div class="mt-4">
+          <div class="text-xl font-bold">Saturday, Sep 26</div>
+          <div class="agenda-note text-gray-600"></div>
+          <div class="mt-4 border-t pt-3 text-sm">Exec: Thu, Sep 24</div>
+        </div>
+      </div>
+
+      <div class="card-hover border border-gray-200 p-6 relative group" data-month="9" data-date="2026-10-26">
+        <div class="flex justify-between items-start mb-4">
+          <span class="text-5xl font-extrabold text-gray-200 group-hover:text-black transition">10</span>
+          <span class="text-sm font-bold uppercase tracking-widest border-b border-black pb-1">October</span>
+        </div>
+        <div class="status-badge"></div>
+        <div class="mt-4">
+          <div class="text-xl font-bold">Monday, Oct 26</div>
+          <div class="text-sm font-semibold mt-1">Virtual Meeting</div>
+          <div class="agenda-note text-gray-600"></div>
+          <div class="mt-4 border-t pt-3 text-sm">Exec: Thu, Oct 22</div>
+        </div>
+      </div>
+
+      <div class="card-hover border border-gray-200 p-6 relative group" data-month="10" data-date="2026-11-23">
+        <div class="flex justify-between items-start mb-4">
+          <span class="text-5xl font-extrabold text-gray-200 group-hover:text-black transition">11</span>
+          <span class="text-sm font-bold uppercase tracking-widest border-b border-black pb-1">November</span>
+        </div>
+        <div class="status-badge"></div>
+        <div class="mt-4">
+          <div class="text-xl font-bold">Monday, Nov 23</div>
+          <div class="agenda-note text-gray-600"></div>
+          <div class="mt-4 border-t pt-3 text-sm">Exec: Thu, Nov 19</div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="mt-16 text-xs text-gray-400 uppercase tracking-widest text-center">
+      National Pan-Hellenic Council of Hudson County - 2026
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth();
+        const now = new Date();
+
+        const allMonths = document.querySelectorAll("[data-month]");
+
+        if (currentYear === 2026) {
+          allMonths.forEach((card) => {
+            const monthIndex = parseInt(card.getAttribute("data-month"), 10);
+            const badge = card.querySelector(".status-badge");
+            const agendaNote = card.querySelector(".agenda-note");
+            const meetingDate = new Date(card.getAttribute("data-date"));
+
+            const hoursUntilMeeting = (meetingDate - now) / (1000 * 60 * 60);
+
+            // Month Status
+            if (monthIndex < currentMonth) {
+              card.classList.add("past-month");
+              badge.textContent = "Completed";
+              badge.classList.add("text-gray-400");
+            }
+
+            if (monthIndex === currentMonth) {
+              card.classList.add("current-month");
+              badge.textContent = "Live This Month";
+              badge.classList.add("text-black");
+              card.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+
+            if (monthIndex > currentMonth) {
+              badge.textContent = "Upcoming";
+              badge.classList.add("text-gray-500");
+            }
+
+            // Agenda Logic
+            if (hoursUntilMeeting <= 0) {
+              agendaNote.textContent = "Meeting Completed";
+              agendaNote.classList.add("text-gray-400");
+            } else if (hoursUntilMeeting <= 48) {
+              agendaNote.textContent = "Agenda Issued (48hrs Prior)";
+              agendaNote.classList.add("text-black");
+            } else {
+              agendaNote.textContent = "Agenda prepared & issued 48 hours in advance";
+            }
+          });
+
+          const progress = ((currentMonth + 1) / 12) * 100;
+          document.getElementById("year-progress").style.width = progress + "%";
+        }
+      });
+    </script>
+  </body>
+</html>
+
