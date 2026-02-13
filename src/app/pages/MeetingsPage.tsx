@@ -5,6 +5,7 @@ import { Badge } from "../components/ui/badge";
 import { Calendar, FileText, Clock } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { motion } from "motion/react";
+import { useLocation } from "react-router";
 import { useMeetingsData } from "../hooks/use-site-data";
 import { StatusBadge } from "../components/status-badge";
 
@@ -12,11 +13,14 @@ const ART_GEO = "https://images.unsplash.com/photo-1665680779817-11a0d63ee51e?cr
 
 export function MeetingsPage() {
   const { data } = useMeetingsData();
+  const location = useLocation();
 
   const upcomingMeetings = data?.upcomingMeetings || [];
   const meetingRecords = data?.meetingRecords || [];
   const delegateReports = data?.delegateReports || [];
   const calendarHref = "/2026-council-calendar.html";
+  const tab = new URLSearchParams(location.search || "").get("tab") || "";
+  const initialTab = tab === "records" ? "records" : tab === "reports" ? "reports" : "upcoming";
 
   return (
     <div className="relative min-h-screen">
@@ -42,7 +46,7 @@ export function MeetingsPage() {
           </p>
         </motion.div>
 
-        <Tabs defaultValue="upcoming" className="space-y-6">
+        <Tabs key={initialTab} defaultValue={initialTab} className="space-y-6">
           <TabsList className="bg-white border border-gray-200 w-full sm:w-auto flex-wrap justify-start">
             <TabsTrigger value="upcoming" className="text-xs sm:text-sm">Upcoming Meetings</TabsTrigger>
             <TabsTrigger value="records" className="text-xs sm:text-sm">Agendas & Minutes</TabsTrigger>

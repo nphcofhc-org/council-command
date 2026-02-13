@@ -30,21 +30,49 @@ export function HomePage() {
   const presidentImageUrl = config?.presidentImageUrl || "";
   const bannerImageUrl = config?.bannerImageUrl || "";
 
-  const CALENDAR_URL = "/2026-council-calendar.html";
+  // Required "core" quick links the council wants front-and-center.
+  // If existing data doesn't include one of these URLs, we prepend it.
   const quickLinks = (() => {
-    const alreadyHas = rawQuickLinks.some((l) => (l?.url || "").trim() === CALENDAR_URL);
-    if (alreadyHas) return rawQuickLinks;
-    return [
+    const required = [
       {
-        id: "calendar-2026",
+        id: "ql-core-next-meeting",
         icon: "Calendar",
-        label: "2026 Calendar",
-        shortLabel: "Calendar",
-        url: CALENDAR_URL,
+        label: "Next Meeting",
+        shortLabel: "Next",
+        url: "/meetings-delegates",
         row: 1 as const,
       },
-      ...rawQuickLinks,
+      {
+        id: "ql-core-calendar-2026",
+        icon: "Calendar",
+        label: "Meetings Calendar",
+        shortLabel: "Calendar",
+        url: "/2026-council-calendar.html",
+        row: 1 as const,
+      },
+      {
+        id: "ql-core-minutes",
+        icon: "FileText",
+        label: "Meeting Minutes",
+        shortLabel: "Minutes",
+        url: "/meetings-delegates?tab=records",
+        row: 1 as const,
+      },
+      {
+        id: "ql-core-social-post",
+        icon: "TrendingUp",
+        label: "Request a Social Post",
+        shortLabel: "Social",
+        // Default destination until a Google Form link is added in Council Admin → Content → Home.
+        url: "/resources",
+        row: 1 as const,
+      },
     ];
+
+    const existingUrls = new Set(rawQuickLinks.map((l) => (l?.url || "").trim()).filter(Boolean));
+    const missing = required.filter((r) => !existingUrls.has(r.url));
+    if (missing.length === 0) return rawQuickLinks;
+    return [...missing, ...rawQuickLinks];
   })();
 
   const welcomeParagraphs = (config?.presidentMessage && config.presidentMessage.length > 0)
@@ -68,15 +96,16 @@ export function HomePage() {
   const isInternalHashRoute = (url: string) => {
     const u = url.trim();
     if (!u.startsWith("/")) return false;
-    if (u === "/") return true;
+    const pathOnly = u.split("?")[0] || u;
+    if (pathOnly === "/") return true;
     return (
-      u === "/chapter-information" ||
-      u === "/meetings-delegates" ||
-      u === "/programs-events" ||
-      u === "/resources" ||
-      u === "/figma-staging" ||
-      u === "/council-admin" ||
-      u.startsWith("/council-admin/")
+      pathOnly === "/chapter-information" ||
+      pathOnly === "/meetings-delegates" ||
+      pathOnly === "/programs-events" ||
+      pathOnly === "/resources" ||
+      pathOnly === "/figma-staging" ||
+      pathOnly === "/council-admin" ||
+      pathOnly.startsWith("/council-admin/")
     );
   };
 
