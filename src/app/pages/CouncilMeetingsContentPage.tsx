@@ -138,6 +138,22 @@ export function CouncilMeetingsContentPage() {
                           return { ...p, upcomingMeetings: next };
                         })} />
                       </div>
+                      <div className="space-y-1 md:col-span-2">
+                        <Label>Join Link URL (Google Meet)</Label>
+                        <Input value={m.joinUrl || ""} onChange={(e) => setForm((p) => {
+                          const next = [...p.upcomingMeetings];
+                          next[idx] = { ...next[idx], joinUrl: e.target.value };
+                          return { ...p, upcomingMeetings: next };
+                        })} />
+                      </div>
+                      <div className="space-y-1 md:col-span-2">
+                        <Label>Join Button Label</Label>
+                        <Input value={m.joinLabel || ""} onChange={(e) => setForm((p) => {
+                          const next = [...p.upcomingMeetings];
+                          next[idx] = { ...next[idx], joinLabel: e.target.value };
+                          return { ...p, upcomingMeetings: next };
+                        })} />
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -257,4 +273,3 @@ export function CouncilMeetingsContentPage() {
     </CouncilAdminGate>
   );
 }
-

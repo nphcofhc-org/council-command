@@ -107,6 +107,8 @@ export interface UpcomingMeeting {
   time: string;
   location: string;
   type: string;                     // "General Body", "Executive Board"
+  joinUrl?: string;                 // Google Meet / Zoom / etc.
+  joinLabel?: string;               // Optional button label ("Join Google Meet")
 }
 
 export interface MeetingRecord {

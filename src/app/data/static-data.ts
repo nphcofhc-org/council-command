@@ -131,9 +131,36 @@ export const governingDocuments: GoverningDocument[] = [
 // ═════════════════════════════════════════════════════════════════════════════
 
 export const upcomingMeetings: UpcomingMeeting[] = [
-  { id: "mtg-1", title: "February 2026 General Body Meeting",  date: "February 15, 2026", time: "2:00 PM - 4:00 PM",  location: "Hudson County Community College - Room 301", type: "General Body"    },
-  { id: "mtg-2", title: "March 2026 Executive Board Meeting",  date: "March 5, 2026",     time: "6:30 PM - 8:00 PM",  location: "Virtual - Zoom Link Provided",               type: "Executive Board" },
-  { id: "mtg-3", title: "March 2026 General Body Meeting",     date: "March 20, 2026",    time: "2:00 PM - 4:00 PM",  location: "Jersey City Public Library - Main Branch",    type: "General Body"    },
+  {
+    id: "mtg-1",
+    title: "February 2026 General Body Meeting",
+    date: "February 15, 2026",
+    time: "2:00 PM - 4:00 PM",
+    location: "Hudson County Community College - Room 301",
+    type: "General Body",
+    joinUrl: "", // Set in Council Admin → Content → Meetings
+    joinLabel: "Join Google Meet",
+  },
+  {
+    id: "mtg-2",
+    title: "March 2026 Executive Council Meeting",
+    date: "March 5, 2026",
+    time: "6:30 PM - 8:00 PM",
+    location: "Virtual",
+    type: "Executive Council",
+    joinUrl: "", // Set in Council Admin → Content → Meetings
+    joinLabel: "Join Google Meet",
+  },
+  {
+    id: "mtg-3",
+    title: "March 2026 General Body Meeting",
+    date: "March 20, 2026",
+    time: "2:00 PM - 4:00 PM",
+    location: "Jersey City Public Library - Main Branch",
+    type: "General Body",
+    joinUrl: "", // Set in Council Admin → Content → Meetings
+    joinLabel: "Join Google Meet",
+  },
 ];
 
 // ═════════════════════════════════════════════════════════════════════════════

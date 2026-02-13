@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Badge } from "../components/ui/badge";
-import { Calendar, FileText, Clock } from "lucide-react";
+import { Calendar, FileText, Clock, ExternalLink } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { motion } from "motion/react";
 import { useLocation } from "react-router";
@@ -18,6 +18,14 @@ function normalizeDocUrl(input: string | null | undefined): string | null {
   if (raw.startsWith("/")) return raw;
   // Allow legacy values like "Agenda_Jan_2026_GB.pdf" → /docs/Agenda_Jan_2026_GB.pdf
   return `/docs/${raw}`;
+}
+
+function normalizeJoinUrl(input: string | null | undefined): string | null {
+  const raw = String(input || "").trim();
+  if (!raw) return null;
+  if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
+  if (raw.startsWith("meet.google.com/")) return `https://${raw}`;
+  return raw;
 }
 
 export function MeetingsPage() {
@@ -110,7 +118,17 @@ export function MeetingsPage() {
                                 </div>
                               </div>
                             </div>
-                            <Badge className="bg-black text-white hover:bg-black w-fit">{meeting.type}</Badge>
+                            <div className="flex flex-col items-start sm:items-end gap-2">
+                              <Badge className="bg-black text-white hover:bg-black w-fit">{meeting.type}</Badge>
+                              {normalizeJoinUrl(meeting.joinUrl) ? (
+                                <Button asChild variant="outline" size="sm" className="gap-2 border-gray-200 hover:border-black hover:bg-black hover:text-white w-full sm:w-auto">
+                                  <a href={normalizeJoinUrl(meeting.joinUrl) || "#"} target="_blank" rel="noreferrer">
+                                    <ExternalLink className="size-3.5" />
+                                    {meeting.joinLabel || "Join"}
+                                  </a>
+                                </Button>
+                              ) : null}
+                            </div>
                           </div>
                         </div>
                       </motion.div>
