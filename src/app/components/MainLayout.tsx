@@ -51,14 +51,14 @@ export function MainLayout() {
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       {/* Top Navigation Bar */}
-      <nav className="sticky top-0 z-50 border-b border-white/10 bg-black/40 text-white backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.45)]">
+      <nav className="nphc-holo-nav sticky top-0 z-50 border-b border-white/10 bg-black/40 text-white backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14">
             {/* Mobile: hamburger + title */}
             <div className="flex items-center gap-3 lg:hidden">
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="p-2 -ml-2 hover:bg-white/10 rounded-lg transition-colors"
+                className="nphc-holo-btn p-2 -ml-2 hover:bg-white/10 rounded-lg transition-colors"
                 aria-label="Toggle navigation"
               >
                 {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -78,8 +78,8 @@ export function MainLayout() {
                   className={({ isActive }) =>
                     `flex items-center gap-2 px-4 py-4 text-sm transition-all duration-200 border-b-2 ${
                       isActive
-                        ? "border-primary text-primary bg-white/5"
-                        : "border-transparent text-white/70 hover:text-primary hover:bg-white/5"
+                        ? "border-primary text-primary bg-white/5 drop-shadow-[0_0_12px_rgba(24,224,208,0.55)]"
+                        : "border-transparent text-white/70 hover:text-primary hover:bg-white/5 hover:drop-shadow-[0_0_12px_rgba(24,224,208,0.35)]"
                     }`
                   }
                 >
@@ -95,7 +95,7 @@ export function MainLayout() {
                 <button
                   type="button"
                   onClick={toggleEditorMode}
-                  className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] tracking-widest uppercase text-white/70 hover:text-white hover:border-primary/60 transition-colors"
+                  className="nphc-holo-btn rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] tracking-widest uppercase text-white/70 hover:text-white hover:border-primary/60 transition-colors"
                 >
                   {editorMode ? "Editor View" : "Member View"}
                 </button>
@@ -134,28 +134,28 @@ export function MainLayout() {
                   <p className="text-white text-sm mt-1">Hudson County, NJ</p>
                 </div>
 
-                <div className="px-3 space-y-1">
-                  {navItems.map((item, index) => (
-                    <motion.div
-                      key={item.to}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.05, duration: 0.3 }}
-                    >
-                      <NavLink
-                        to={item.to}
-                        end={item.to === "/"}
-                        className={({ isActive }) =>
-                          `flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-200 ${
-                            isActive
-                              ? "bg-white/10 text-primary"
-                              : "text-white/70 hover:bg-white/5 hover:text-primary"
+              <div className="px-3 space-y-1">
+                {navItems.map((item, index) => (
+                  <motion.div
+                    key={item.to}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05, duration: 0.3 }}
+                  >
+                    <NavLink
+                      to={item.to}
+                      end={item.to === "/"}
+                      className={({ isActive }) =>
+                        `flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-200 ${
+                          isActive
+                              ? "bg-white/10 text-primary drop-shadow-[0_0_12px_rgba(24,224,208,0.55)]"
+                              : "text-white/70 hover:bg-white/5 hover:text-primary hover:drop-shadow-[0_0_12px_rgba(24,224,208,0.35)]"
                           }`
-                        }
-                      >
-                        <item.icon className="size-5" />
-                        <span>{item.label}</span>
-                      </NavLink>
+                      }
+                    >
+                      <item.icon className="size-5" />
+                      <span>{item.label}</span>
+                    </NavLink>
                     </motion.div>
                   ))}
                 </div>

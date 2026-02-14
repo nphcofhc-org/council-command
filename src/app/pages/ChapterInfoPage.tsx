@@ -113,11 +113,11 @@ export function ChapterInfoPage() {
                                 <img
                                   src={officer.imageUrl}
                                   alt={officer.name}
-                                  className="w-28 h-28 rounded-xl object-cover mb-4 border-4 border-white/10"
+                                  className="w-36 h-36 rounded-xl object-cover mb-4 border-4 border-white/10"
                                 />
                               ) : (
-                                <div className="w-28 h-28 rounded-xl bg-white/5 flex items-center justify-center mb-4 border-4 border-white/10 group-hover:border-white/20 transition-colors">
-                                  <User className="size-14 text-white/25" />
+                                <div className="w-36 h-36 rounded-xl bg-white/5 flex items-center justify-center mb-4 border-4 border-white/10 group-hover:border-white/20 transition-colors">
+                                  <User className="size-16 text-white/25" />
                                 </div>
                               )}
                               <h3 className="text-white text-lg mb-1">{officer.name}</h3>
@@ -161,11 +161,11 @@ export function ChapterInfoPage() {
                                 <img
                                   src={chair.imageUrl}
                                   alt={chair.name}
-                                  className="w-28 h-28 rounded-xl object-cover mb-4 border-4 border-white/10"
+                                  className="w-36 h-36 rounded-xl object-cover mb-4 border-4 border-white/10"
                                 />
                               ) : (
-                                <div className="w-28 h-28 rounded-xl bg-white/5 flex items-center justify-center mb-4 border-4 border-white/10 group-hover:border-white/20 transition-colors">
-                                  <User className="size-14 text-white/25" />
+                                <div className="w-36 h-36 rounded-xl bg-white/5 flex items-center justify-center mb-4 border-4 border-white/10 group-hover:border-white/20 transition-colors">
+                                  <User className="size-16 text-white/25" />
                                 </div>
                               )}
                               <h3 className="text-white text-lg mb-1">{chair.name}</h3>

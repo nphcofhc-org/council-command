@@ -17,7 +17,7 @@ declare global {
 
 // ── Shared glass button class for quick links ───────────────────────────────
 const glassButtonClass =
-  "relative overflow-hidden inline-flex items-center gap-2 px-4 py-2.5 rounded-lg cursor-pointer " +
+  "nphc-holo-btn relative overflow-hidden inline-flex items-center gap-2 px-4 py-2.5 rounded-lg cursor-pointer " +
   "bg-white/[0.08] backdrop-blur-xl text-white border border-white/20 " +
   "shadow-[0_8px_32px_0_rgba(255,255,255,0.07)] " +
   "transition-all duration-300 text-sm " +
@@ -227,13 +227,13 @@ export function HomePage() {
   return (
     <div>
       {/* ── Google Sites Cover Banner ─────────────────────────────────────── */}
-      <div className="relative w-full overflow-hidden bg-black h-[180px] sm:h-[220px] lg:h-[260px]">
+      <div className="relative w-full overflow-hidden bg-black h-[200px] sm:h-[240px] lg:h-[280px]">
         {bannerIsVideo ? (
           <motion.video
             initial={{ opacity: 0, scale: 1.02 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
-            className="absolute inset-0 h-full w-full object-cover object-center"
+            className="absolute inset-0 h-full w-full object-contain object-center"
             autoPlay
             loop
             muted
@@ -250,7 +250,7 @@ export function HomePage() {
             transition={{ duration: 0.8 }}
             src={effectiveBannerUrl}
             alt="NPHC Hudson County"
-            className="absolute inset-0 h-full w-full object-cover object-center"
+            className="absolute inset-0 h-full w-full object-contain object-center"
             onError={() => setBannerError(true)}
           />
         )}
@@ -377,20 +377,20 @@ export function HomePage() {
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ delay: 0.15, duration: 0.6 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 items-start"
+            className="grid grid-cols-1 md:grid-cols-5 gap-8 lg:gap-12 items-start"
           >
             {/* President Photo */}
-            <div className="md:col-span-1">
+            <div className="md:col-span-2">
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}
-                className="aspect-[3/4] rounded-2xl overflow-hidden bg-white/5 shadow-[0_25px_80px_rgba(0,0,0,0.55)] ring-1 ring-white/10"
+                className="nphc-holo-surface aspect-[4/5] rounded-2xl overflow-hidden bg-white/5 shadow-[0_25px_80px_rgba(0,0,0,0.55),0_0_70px_rgba(255,255,255,0.14)] ring-1 ring-white/20"
               >
                 {presidentImageUrl ? (
                   <img
                     src={presidentImageUrl}
                     alt="President Christopher DeMarkus"
-                    className="h-full w-full object-cover object-top saturate-110 contrast-105"
+                    className="h-full w-full object-cover object-center saturate-110 contrast-105"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-white/5 text-white/50">
@@ -406,7 +406,7 @@ export function HomePage() {
             </div>
 
             {/* President's Message */}
-            <div className="md:col-span-2 space-y-5 text-white/75">
+            <div className="md:col-span-3 space-y-5 text-white/75">
               {welcomeParagraphs.map((paragraph, i) => (
                 <p key={i} className="leading-relaxed">{paragraph}</p>
               ))}
