@@ -22,6 +22,7 @@ import { BudgetSubmissionPage } from "./pages/BudgetSubmissionPage";
 import { ReimbursementRequestPage } from "./pages/ReimbursementRequestPage";
 import { SocialMediaRequestPage } from "./pages/SocialMediaRequestPage";
 import { CouncilSubmissionsPage } from "./pages/CouncilSubmissionsPage";
+import { MySubmissionsPage } from "./pages/MySubmissionsPage";
 
 // Hash routing is the most reliable option for static hosting + Google Sites embedding
 // (no server-side rewrite rules needed to handle deep links).
@@ -42,6 +43,7 @@ export const router = createHashRouter([
       { path: "forms/budget", Component: BudgetSubmissionPage },
       { path: "forms/reimbursement", Component: ReimbursementRequestPage },
       { path: "forms/social-media", Component: SocialMediaRequestPage },
+      { path: "forms/my", Component: MySubmissionsPage },
       { path: "figma-staging", Component: FigmaStagingPage },
       { path: "council-admin", Component: CouncilAdminPage },
       { path: "council-admin/compliance", Component: CouncilCompliancePage },

@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { motion } from "motion/react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { DollarSign, Receipt, Megaphone } from "lucide-react";
+import { DollarSign, Receipt, Megaphone, ListChecks } from "lucide-react";
 
 export function FormsPage() {
   return (
@@ -25,6 +25,23 @@ export function FormsPage() {
         </motion.div>
 
         <div className="grid gap-5 md:grid-cols-3">
+          <Card className="border-0 shadow-lg ring-1 ring-black/5 md:col-span-3">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <ListChecks className="size-5" />
+                My Submissions
+              </CardTitle>
+              <CardDescription>
+                Check status updates and review notes on your submitted requests.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild variant="outline" className="w-full sm:w-auto border-black text-black hover:bg-black hover:text-white">
+                <Link to="/forms/my">View My Submissions</Link>
+              </Button>
+            </CardContent>
+          </Card>
+
           <Card className="border-0 shadow-lg ring-1 ring-black/5">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -80,4 +97,3 @@ export function FormsPage() {
     </div>
   );
 }
-
