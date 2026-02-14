@@ -75,6 +75,8 @@ export const quickLinks: QuickLink[] = [
   { id: "ql-2", icon: "Calendar",      label: "Meetings Calendar",        shortLabel: "Calendar", url: "/2026-council-calendar.html",      row: 1 },
   { id: "ql-3", icon: "FileText",      label: "Meeting Minutes",          shortLabel: "Minutes",  url: "/meetings-delegates?tab=records",  row: 1 },
   { id: "ql-4", icon: "TrendingUp",   label: "Request a Social Post",     shortLabel: "Social",   url: "/resources",                       row: 1 },
+  { id: "ql-5", icon: "ExternalLink",  label: "NPHC HQ Website",          shortLabel: "NPHC HQ",  url: "https://www.nphchq.com/",           row: 2 },
+  { id: "ql-6", icon: "ExternalLink",  label: "NPHC Gateway",             shortLabel: "Gateway",  url: "https://gateway.nphchq.com/app/login?action=userspending&chapterId=6044", row: 2 },
 ];
 
 // ═════════════════════════════════════════════════════════════════════════════

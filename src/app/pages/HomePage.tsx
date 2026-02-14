@@ -107,18 +107,38 @@ export function HomePage() {
         url: "/forms/social-media",
         row: 1 as const,
       },
+      {
+        id: "ql-core-nphc-hq",
+        icon: "ExternalLink",
+        label: "NPHC HQ Website",
+        shortLabel: "NPHC HQ",
+        url: "https://www.nphchq.com/",
+        row: 2 as const,
+      },
+      {
+        id: "ql-core-gateway",
+        icon: "ExternalLink",
+        label: "NPHC Gateway",
+        shortLabel: "Gateway",
+        url: "https://gateway.nphchq.com/app/login?action=userspending&chapterId=6044",
+        row: 2 as const,
+      },
     ];
 
     const hasMinutes = rawQuickLinks.some((l) => (l?.url || "").includes("tab=records") || (l?.label || "").toLowerCase().includes("minutes"));
     const hasCalendar = rawQuickLinks.some((l) => (l?.url || "").trim() === "/2026-council-calendar.html" || (l?.label || "").toLowerCase().includes("calendar"));
     const hasNext = rawQuickLinks.some((l) => (l?.url || "").trim() === "/meetings-delegates" || (l?.label || "").toLowerCase().includes("next meeting"));
     const hasSocial = rawQuickLinks.some((l) => (l?.shortLabel || "").toLowerCase() === "social" || (l?.label || "").toLowerCase().includes("social"));
+    const hasHq = rawQuickLinks.some((l) => (l?.url || "").trim() === "https://www.nphchq.com/" || (l?.label || "").toLowerCase().includes("nphc hq"));
+    const hasGateway = rawQuickLinks.some((l) => (l?.url || "").includes("gateway.nphchq.com") || (l?.label || "").toLowerCase().includes("gateway"));
 
     const missing = required.filter((r) => {
       if (r.id === "ql-core-minutes") return !hasMinutes;
       if (r.id === "ql-core-calendar-2026") return !hasCalendar;
       if (r.id === "ql-core-next-meeting") return !hasNext;
       if (r.id === "ql-core-social-post") return !hasSocial;
+      if (r.id === "ql-core-nphc-hq") return !hasHq;
+      if (r.id === "ql-core-gateway") return !hasGateway;
       return true;
     });
 
@@ -168,6 +188,7 @@ export function HomePage() {
 
   // Hash routes for SPA pages. Plain paths for static assets (HTML/PDF under /public).
   const toHref = (url: string) => (isInternalHashRoute(url) ? `#${url}` : url);
+  const isExternalUrl = (url: string) => /^https?:\/\//i.test(url.trim());
 
   const alertEnabled = !!config?.alertEnabled;
   const alertVariant = (config?.alertVariant || "info") as "info" | "warning" | "urgent";
@@ -315,6 +336,8 @@ export function HomePage() {
                 whileTap={{ scale: 0.95 }}
                 href={toHref(link.url)}
                 className={glassButtonClass}
+                target={isExternalUrl(link.url) ? "_blank" : undefined}
+                rel={isExternalUrl(link.url) ? "noreferrer" : undefined}
               >
                 <DynamicIcon name={link.icon} className="size-4 relative z-10 flex-shrink-0" />
                 <span className="hidden sm:inline relative z-10">{link.label}</span>
@@ -339,6 +362,8 @@ export function HomePage() {
                 whileTap={{ scale: 0.95 }}
                 href={toHref(link.url)}
                 className={glassButtonClass}
+                target={isExternalUrl(link.url) ? "_blank" : undefined}
+                rel={isExternalUrl(link.url) ? "noreferrer" : undefined}
               >
                 <DynamicIcon name={link.icon} className="size-4 relative z-10 flex-shrink-0" />
                 <span className="hidden sm:inline relative z-10">{link.label}</span>
