@@ -8,6 +8,7 @@ import { motion } from "motion/react";
 import { useLocation } from "react-router";
 import { useMeetingsData } from "../hooks/use-site-data";
 import { StatusBadge } from "../components/status-badge";
+import { Link } from "react-router";
 
 const ART_GEO = "https://images.unsplash.com/photo-1665680779817-11a0d63ee51e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHdoaXRlJTIwZ2VvbWV0cmljJTIwbWluaW1hbCUyMGFydHxlbnwxfHx8fDE3NzA1MTMyMjN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 
@@ -38,6 +39,8 @@ export function MeetingsPage() {
   const calendarHref = "/2026-council-calendar.html";
   const tab = new URLSearchParams(location.search || "").get("tab") || "";
   const initialTab = tab === "records" ? "records" : tab === "reports" ? "reports" : "upcoming";
+  const toViewer = (url: string) => `/viewer?src=${encodeURIComponent(url)}`;
+  const isInternalFile = (url: string) => url.trim().startsWith("/");
 
   return (
     <div className="relative min-h-screen">
@@ -187,10 +190,20 @@ export function MeetingsPage() {
                             <TableCell>
                               {normalizeDocUrl(record.agendaFile) ? (
                                 <Button asChild variant="ghost" size="sm" className="h-8 gap-2 text-black hover:bg-black/5">
-                                  <a href={normalizeDocUrl(record.agendaFile) || "#"} target="_blank" rel="noreferrer">
-                                    <FileText className="size-3.5" />
-                                    <span className="text-xs">View</span>
-                                  </a>
+                                  {(() => {
+                                    const href = normalizeDocUrl(record.agendaFile) || "#";
+                                    return isInternalFile(href) ? (
+                                      <Link to={toViewer(href)}>
+                                        <FileText className="size-3.5" />
+                                        <span className="text-xs">View</span>
+                                      </Link>
+                                    ) : (
+                                      <a href={href} target="_blank" rel="noreferrer">
+                                        <FileText className="size-3.5" />
+                                        <span className="text-xs">View</span>
+                                      </a>
+                                    );
+                                  })()}
                                 </Button>
                               ) : (
                                 <Button variant="ghost" size="sm" disabled className="h-8 gap-2 text-gray-400">
@@ -202,10 +215,20 @@ export function MeetingsPage() {
                             <TableCell>
                               {normalizeDocUrl(record.minutesFile) ? (
                                 <Button asChild variant="ghost" size="sm" className="h-8 gap-2 text-black hover:bg-black/5">
-                                  <a href={normalizeDocUrl(record.minutesFile) || "#"} target="_blank" rel="noreferrer">
-                                    <FileText className="size-3.5" />
-                                    <span className="text-xs">View</span>
-                                  </a>
+                                  {(() => {
+                                    const href = normalizeDocUrl(record.minutesFile) || "#";
+                                    return isInternalFile(href) ? (
+                                      <Link to={toViewer(href)}>
+                                        <FileText className="size-3.5" />
+                                        <span className="text-xs">View</span>
+                                      </Link>
+                                    ) : (
+                                      <a href={href} target="_blank" rel="noreferrer">
+                                        <FileText className="size-3.5" />
+                                        <span className="text-xs">View</span>
+                                      </a>
+                                    );
+                                  })()}
                                 </Button>
                               ) : (
                                 <Button variant="ghost" size="sm" disabled className="h-8 gap-2 text-gray-400">
@@ -240,10 +263,20 @@ export function MeetingsPage() {
                             <div className="flex gap-2">
                               {normalizeDocUrl(record.agendaFile) ? (
                                 <Button asChild variant="outline" size="sm" className="flex-1 gap-2 text-xs border-gray-200">
-                                  <a href={normalizeDocUrl(record.agendaFile) || "#"} target="_blank" rel="noreferrer">
-                                    <FileText className="size-3" />
-                                    Agenda
-                                  </a>
+                                  {(() => {
+                                    const href = normalizeDocUrl(record.agendaFile) || "#";
+                                    return isInternalFile(href) ? (
+                                      <Link to={toViewer(href)}>
+                                        <FileText className="size-3" />
+                                        Agenda
+                                      </Link>
+                                    ) : (
+                                      <a href={href} target="_blank" rel="noreferrer">
+                                        <FileText className="size-3" />
+                                        Agenda
+                                      </a>
+                                    );
+                                  })()}
                                 </Button>
                               ) : (
                                 <Button variant="outline" size="sm" disabled className="flex-1 gap-2 text-xs border-gray-200">
@@ -253,10 +286,20 @@ export function MeetingsPage() {
                               )}
                               {normalizeDocUrl(record.minutesFile) ? (
                                 <Button asChild variant="outline" size="sm" className="flex-1 gap-2 text-xs border-gray-200">
-                                  <a href={normalizeDocUrl(record.minutesFile) || "#"} target="_blank" rel="noreferrer">
-                                    <FileText className="size-3" />
-                                    Minutes
-                                  </a>
+                                  {(() => {
+                                    const href = normalizeDocUrl(record.minutesFile) || "#";
+                                    return isInternalFile(href) ? (
+                                      <Link to={toViewer(href)}>
+                                        <FileText className="size-3" />
+                                        Minutes
+                                      </Link>
+                                    ) : (
+                                      <a href={href} target="_blank" rel="noreferrer">
+                                        <FileText className="size-3" />
+                                        Minutes
+                                      </a>
+                                    );
+                                  })()}
                                 </Button>
                               ) : (
                                 <Button variant="outline" size="sm" disabled className="flex-1 gap-2 text-xs border-gray-200">

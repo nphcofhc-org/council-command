@@ -17,6 +17,8 @@ export function CouncilAdminPage() {
 
   const internalDocuments = data?.internalDocuments || [];
   const tasks = data?.tasks || [];
+  const toViewer = (url: string) => `/viewer?src=${encodeURIComponent(url)}`;
+  const isInternalFile = (url: string) => url.trim().startsWith("/");
 
   return (
     <CouncilAdminGate>
@@ -237,10 +239,17 @@ export function CouncilAdminPage() {
                                 size="sm"
                                 className="gap-2 border-gray-200 hover:border-black hover:bg-black hover:text-white w-full sm:w-auto transition-all duration-200"
                               >
-                                <a href={doc.fileUrl} target="_blank" rel="noreferrer">
-                                  <Lock className="size-3.5" />
-                                  View
-                                </a>
+                                {isInternalFile(doc.fileUrl) ? (
+                                  <Link to={toViewer(doc.fileUrl)}>
+                                    <Lock className="size-3.5" />
+                                    View
+                                  </Link>
+                                ) : (
+                                  <a href={doc.fileUrl} target="_blank" rel="noreferrer">
+                                    <Lock className="size-3.5" />
+                                    View
+                                  </a>
+                                )}
                               </Button>
                             ) : (
                               <Button

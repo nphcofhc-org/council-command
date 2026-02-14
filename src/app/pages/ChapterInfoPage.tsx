@@ -323,12 +323,16 @@ export function ChapterInfoPage() {
                       );
 
                       if (doc.fileUrl) {
+                        const raw = String(doc.fileUrl || "").trim();
+                        const isInternalFile = raw.startsWith("/");
+                        const viewerHref = isInternalFile ? `#/viewer?src=${encodeURIComponent(raw)}` : raw;
+
                         return (
                           <motion.a
                             key={doc.id}
-                            href={doc.fileUrl}
-                            target="_blank"
-                            rel="noreferrer"
+                            href={viewerHref}
+                            target={isInternalFile ? undefined : "_blank"}
+                            rel={isInternalFile ? undefined : "noreferrer"}
                             {...motionProps}
                             className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-lg border border-gray-100 hover:bg-gray-50 transition-all duration-200 group"
                           >

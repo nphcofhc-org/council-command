@@ -5,6 +5,7 @@ import { FileText, ExternalLink, GraduationCap, Building2, BookOpen } from "luci
 import { Button } from "../components/ui/button";
 import { motion } from "motion/react";
 import { useResourcesData } from "../hooks/use-site-data";
+import { Link } from "react-router";
 
 const ART_INK = "https://images.unsplash.com/photo-1769181417562-be594f91fcc9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHdoaXRlJTIwYWJzdHJhY3QlMjBpbmslMjBicnVzaCUyMHN0cm9rZXN8ZW58MXx8fHwxNzcwNTEzMjIyfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 
@@ -14,6 +15,9 @@ export function ResourcesPage() {
   const sharedForms = data?.sharedForms || [];
   const nationalOrgs = data?.nationalOrgs || [];
   const trainingResources = data?.trainingResources || [];
+
+  const toViewer = (url: string) => `/viewer?src=${encodeURIComponent(url)}`;
+  const isInternalFile = (url: string) => url.trim().startsWith("/");
 
   return (
     <div className="relative min-h-screen">
@@ -210,10 +214,17 @@ export function ResourcesPage() {
                             size="sm"
                             className="gap-2 border-gray-200 hover:border-black hover:bg-black hover:text-white w-full sm:w-auto lg:ml-4 transition-all duration-200"
                           >
-                            <a href={resource.fileUrl} target="_blank" rel="noreferrer">
-                              <FileText className="size-3.5" />
-                              View
-                            </a>
+                            {isInternalFile(resource.fileUrl) ? (
+                              <Link to={toViewer(resource.fileUrl)}>
+                                <FileText className="size-3.5" />
+                                View
+                              </Link>
+                            ) : (
+                              <a href={resource.fileUrl} target="_blank" rel="noreferrer">
+                                <FileText className="size-3.5" />
+                                View
+                              </a>
+                            )}
                           </Button>
                         ) : (
                           <Button
