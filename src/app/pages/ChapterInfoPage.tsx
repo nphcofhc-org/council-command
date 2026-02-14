@@ -18,6 +18,50 @@ import {
 
 const ART_INK = "https://images.unsplash.com/photo-1769181417562-be594f91fcc9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHdoaXRlJTIwYWJzdHJhY3QlMjBpbmslMjBicnVzaCUyMHN0cm9rZXN8ZW58MXx8fHwxNzcwNTEzMjIyfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 
+function normalizeDriveImageUrl(raw: string | null | undefined): string {
+  const input = String(raw || "").trim();
+  if (!input) return "";
+
+  // Convert common Google Drive share links to direct view URLs so <img> can load them.
+  // Note: the file must still be shared publicly ("Anyone with the link can view").
+  try {
+    const u = new URL(input);
+    const host = u.hostname.toLowerCase();
+    if (host !== "drive.google.com") return input;
+
+    const m = u.pathname.match(/\/file\/d\/([^/]+)\//);
+    const fileId = m?.[1] || u.searchParams.get("id");
+    if (!fileId) return input;
+
+    return `https://drive.google.com/uc?export=view&id=${encodeURIComponent(fileId)}`;
+  } catch {
+    return input;
+  }
+}
+
+function MemberPhoto({ member }: { member: LeadershipMember }) {
+  const [failed, setFailed] = useState(false);
+  const normalized = normalizeDriveImageUrl(member.imageUrl);
+
+  if (normalized && !failed) {
+    return (
+      <img
+        src={normalized}
+        alt={member.name}
+        className="w-36 h-36 rounded-xl object-cover mb-4 border-4 border-black/10 bg-white"
+        onError={() => setFailed(true)}
+        loading="lazy"
+      />
+    );
+  }
+
+  return (
+    <div className="w-36 h-36 rounded-xl bg-white/5 flex items-center justify-center mb-4 border-4 border-black/10 group-hover:border-black/15 transition-colors">
+      <User className="size-16 text-slate-300" />
+    </div>
+  );
+}
+
 export function ChapterInfoPage() {
   const { data } = useChapterInfoData();
   const [leadership, setLeadership] = useState<LeadershipContent>(DEFAULT_LEADERSHIP_CONTENT);
@@ -109,17 +153,7 @@ export function ChapterInfoPage() {
                         <Card className="h-full transition-all duration-300 group hover:-translate-y-1 hover:border-primary/40 hover:bg-white/10">
                           <CardContent className="p-6">
                             <div className="flex flex-col items-center text-center">
-                              {officer.imageUrl ? (
-                                <img
-                                  src={officer.imageUrl}
-                                  alt={officer.name}
-                                  className="w-36 h-36 rounded-xl object-cover mb-4 border-4 border-black/10"
-                                />
-                              ) : (
-                                <div className="w-36 h-36 rounded-xl bg-white/5 flex items-center justify-center mb-4 border-4 border-black/10 group-hover:border-black/15 transition-colors">
-                                  <User className="size-16 text-slate-300" />
-                                </div>
-                              )}
+                              <MemberPhoto member={officer} />
                               <h3 className="text-slate-900 text-lg mb-1">{officer.name}</h3>
                               <Badge variant="secondary" className="mb-3 border border-primary/25 bg-primary/15 text-primary">
                                 {officer.title}
@@ -157,17 +191,7 @@ export function ChapterInfoPage() {
                         <Card className="h-full transition-all duration-300 group hover:-translate-y-1 hover:border-primary/40 hover:bg-white/10">
                           <CardContent className="p-6">
                             <div className="flex flex-col items-center text-center">
-                              {chair.imageUrl ? (
-                                <img
-                                  src={chair.imageUrl}
-                                  alt={chair.name}
-                                  className="w-36 h-36 rounded-xl object-cover mb-4 border-4 border-black/10"
-                                />
-                              ) : (
-                                <div className="w-36 h-36 rounded-xl bg-white/5 flex items-center justify-center mb-4 border-4 border-black/10 group-hover:border-black/15 transition-colors">
-                                  <User className="size-16 text-slate-300" />
-                                </div>
-                              )}
+                              <MemberPhoto member={chair} />
                               <h3 className="text-slate-900 text-lg mb-1">{chair.name}</h3>
                               <Badge variant="secondary" className="mb-3 border border-primary/25 bg-primary/15 text-primary">
                                 {chair.title}
