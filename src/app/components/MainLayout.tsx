@@ -15,7 +15,7 @@ const baseNavItems = [
   { to: "/treasury", label: "Treasury", icon: Wallet },
   { to: "/forms", label: "Forms", icon: ClipboardList },
   { to: "/forum", label: "Forum", icon: MessagesSquare },
-  { to: "/decision-portal", label: "Decision Portal", icon: Target },
+  { to: "/decision-portal", label: "Signature Event Analysis", icon: Target },
 ];
 
 export function MainLayout() {

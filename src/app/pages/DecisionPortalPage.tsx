@@ -23,12 +23,14 @@ const DEFAULT_DECISION_KEY = "2026-block-party-vs-unity-bbq";
 
 const DEFAULT_CONTENT: DecisionPortalContent = {
   decisionKey: DEFAULT_DECISION_KEY,
-  title: "2026 Summer Signature Event Decision",
-  subtitle: "Review the brief, then submit your confidential vote.",
+  title: "Signature Event Analysis",
+  subtitle: "Review the committee analysis, then submit your confidential preference.",
   summary:
-    "Use this page to review the committee comparison and submit a confidential vote.\n\n" +
-    "Recommended reading:\n" +
-    "- Signature Event Comparison (interactive report)",
+    "This section supports a chapter-wide, data-driven decision on the 2026 signature event.\n\n" +
+    "Members are asked to:\n" +
+    "1) Review the interactive comparison report.\n" +
+    "2) Consider the tradeoffs (impact, unity, feasibility, budget, capacity).\n" +
+    "3) Submit a confidential preference (your vote is not shown publicly).",
   options: [
     { id: "block", label: "Neighborhood Block Party", description: "" },
     { id: "unity", label: "Unity BBQ", description: "" },
@@ -209,7 +211,7 @@ export function DecisionPortalPage() {
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="w-10 h-px bg-primary" />
-            <span className="text-xs tracking-[0.2em] uppercase text-slate-500">Decision Portal</span>
+            <span className="text-xs tracking-[0.2em] uppercase text-slate-500">Signature Event Analysis</span>
             <div className="w-10 h-px bg-primary" />
           </div>
 
@@ -218,7 +220,7 @@ export function DecisionPortalPage() {
           </div>
 
           <h1 className="mt-5 text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">NPHC of Hudson County</h1>
-          <p className="text-sm text-slate-600 mt-2">Interactive Decision & Confidential Voting Portal</p>
+          <p className="text-sm text-slate-600 mt-2">Interactive Analysis & Confidential Preference Submission</p>
         </div>
       </header>
 
@@ -226,11 +228,28 @@ export function DecisionPortalPage() {
         <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.35 }}>
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardHeader>
-              <CardTitle>{content.title}</CardTitle>
-              <p className="text-sm text-slate-600">{content.subtitle}</p>
+              <CardTitle>Signature Event Analysis</CardTitle>
+              <p className="text-sm text-slate-600">
+                Review the committee analysis, then submit your confidential preference for the 2026 signature event.
+              </p>
             </CardHeader>
             <CardContent className="space-y-4">
-              {content.summary ? <p className="text-sm text-slate-700 whitespace-pre-wrap">{content.summary}</p> : null}
+              <div className="rounded-xl border border-black/10 bg-white/60 p-4">
+                <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">Overview</p>
+                <p className="text-sm text-slate-700 whitespace-pre-wrap">{content.summary}</p>
+              </div>
+
+              <div className="rounded-xl border border-black/10 bg-white/60 p-4">
+                <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">What Members Should Do</p>
+                <div className="text-sm text-slate-700 space-y-1">
+                  <p>1. Open the interactive report below and review the criteria and recommendations.</p>
+                  <p>2. (Optional) Use the weighted simulator to test what matters most to you.</p>
+                  <p>3. Submit your confidential preference. Results are not displayed publicly.</p>
+                </div>
+                <p className="text-xs text-slate-500 mt-3">
+                  If you are logged in, your preference is recorded for the council (confidential). If not logged in, it saves on this device only.
+                </p>
+              </div>
 
               <div className="grid gap-3 md:grid-cols-2">
                 <div className="rounded-lg border border-black/10 bg-white/5 p-4">
