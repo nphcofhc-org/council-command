@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useLocation } from "react-router";
 import { useState, useEffect } from "react";
-import { Home, Users, Calendar, TrendingUp, FolderOpen, Wallet, Shield, Menu, X, Target, ClipboardList } from "lucide-react";
+import { Home, Users, Calendar, TrendingUp, FolderOpen, Wallet, Shield, Menu, X, Target, ClipboardList, MessagesSquare } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useSiteConfig } from "../hooks/use-site-data";
 import { useCouncilSession } from "../hooks/use-council-session";
@@ -14,6 +14,7 @@ const baseNavItems = [
   { to: "/resources", label: "Resources", icon: FolderOpen },
   { to: "/treasury", label: "Treasury", icon: Wallet },
   { to: "/forms", label: "Forms", icon: ClipboardList },
+  { to: "/forum", label: "Forum", icon: MessagesSquare },
   { to: "/decision-portal", label: "Decision Portal", icon: Target },
 ];
 

@@ -26,6 +26,8 @@ import { CommitteeReportPage } from "./pages/CommitteeReportPage";
 import { CouncilSubmissionsPage } from "./pages/CouncilSubmissionsPage";
 import { MySubmissionsPage } from "./pages/MySubmissionsPage";
 import { CouncilNotificationSettingsPage } from "./pages/CouncilNotificationSettingsPage";
+import { ForumPage } from "./pages/ForumPage";
+import { ForumTopicPage } from "./pages/ForumTopicPage";
 
 // Hash routing is the most reliable option for static hosting + Google Sites embedding
 // (no server-side rewrite rules needed to handle deep links).
@@ -41,6 +43,8 @@ export const router = createHashRouter([
       { path: "resources", Component: ResourcesPage },
       { path: "treasury", Component: TreasuryPage },
       { path: "decision-portal", Component: DecisionPortalPage },
+      { path: "forum", Component: ForumPage },
+      { path: "forum/:id", Component: ForumTopicPage },
       { path: "reports/signature-event-comparison", Component: SignatureEventComparisonReportPage },
       { path: "viewer", Component: DocumentViewerPage },
       { path: "forms", Component: FormsPage },

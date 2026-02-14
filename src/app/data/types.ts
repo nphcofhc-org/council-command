@@ -45,6 +45,8 @@ export interface SiteConfig {
   presidentMessage: string[];       // Each paragraph as an array item
   presidentClosing: string;
   bannerImageUrl: string;           // Google Sites header banner
+  instagramHandle: string;          // e.g. "nphcofhudsoncounty"
+  instagramPostUrls: string[];      // Optional: specific post URLs to embed as a feed
   // Optional sitewide notification banner (primarily used on Home).
   alertEnabled: boolean;
   alertVariant: "info" | "warning" | "urgent";
