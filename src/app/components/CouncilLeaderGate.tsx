@@ -1,46 +1,44 @@
 import type { ReactNode } from "react";
-import { ShieldAlert, Loader2 } from "lucide-react";
+import { Loader2, ShieldAlert } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { useCouncilSession } from "../hooks/use-council-session";
-import { useEditorMode } from "../hooks/use-editor-mode";
 
-type CouncilAdminGateProps = {
+type CouncilLeaderGateProps = {
   children: ReactNode;
 };
 
-export function CouncilAdminGate({ children }: CouncilAdminGateProps) {
+export function CouncilLeaderGate({ children }: CouncilLeaderGateProps) {
   const { session, loading, error, refetch } = useCouncilSession();
-  const { editorMode, setEditorMode } = useEditorMode();
 
   if (loading) {
     return (
       <div className="mx-auto flex min-h-[40vh] max-w-2xl items-center justify-center px-6">
         <div className="flex items-center gap-2 text-sm text-gray-500">
           <Loader2 className="h-4 w-4 animate-spin" />
-          Validating council admin access...
+          Validating council access...
         </div>
       </div>
     );
   }
 
-  if (!session.isSiteEditor) {
+  if (!session.isCouncilAdmin) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-14 sm:px-8">
         <Card className="border-red-200">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-red-700">
               <ShieldAlert className="h-5 w-5" />
-              Site Editor Access Required
+              Council Leadership Access Required
             </CardTitle>
             <CardDescription className="text-red-700/80">
-              Your account is not in the site editor allowlist for this section.
+              Your account is not in the council leadership allowlist for this section.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-gray-700">
               If this is unexpected, confirm your Cloudflare Access login email and that it is listed in{" "}
-              <code>SITE_EDITOR_EMAILS</code>.
+              <code>COUNCIL_ADMIN_EMAILS</code>.
             </p>
             {error ? (
               <p className="rounded-md bg-red-50 px-3 py-2 text-xs text-red-700">
@@ -56,28 +54,6 @@ export function CouncilAdminGate({ children }: CouncilAdminGateProps) {
     );
   }
 
-  if (!editorMode) {
-    return (
-      <div className="mx-auto max-w-2xl px-4 py-14 sm:px-8">
-        <Card className="border-gray-200">
-          <CardHeader>
-            <CardTitle className="text-black">Editor Mode Is Off</CardTitle>
-            <CardDescription>
-              You are signed in as an admin, but you are currently viewing the portal as a regular member.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-gray-700">
-              Turn on Editor Mode to access Council Admin tools (compliance tracking, content updates).
-            </p>
-            <Button type="button" className="bg-black hover:bg-gray-800" onClick={() => setEditorMode(true)}>
-              Enable Editor Mode
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return <>{children}</>;
 }
+

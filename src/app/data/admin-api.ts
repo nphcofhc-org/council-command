@@ -4,6 +4,7 @@ export type CouncilSession = {
   authenticated: boolean;
   email: string | null;
   isCouncilAdmin: boolean;
+  isSiteEditor: boolean;
 };
 
 export type ComplianceState = {
@@ -51,6 +52,7 @@ export async function fetchCouncilSession(): Promise<CouncilSession> {
     authenticated: Boolean(data?.authenticated),
     email: data?.email ? String(data.email) : null,
     isCouncilAdmin: Boolean(data?.isCouncilAdmin),
+    isSiteEditor: Boolean(data?.isSiteEditor),
   };
 }
 

@@ -35,6 +35,17 @@ export async function requireCouncilAdmin(request, env) {
   return { ok: true, session };
 }
 
+export async function requireSiteEditor(request, env) {
+  const session = await getSessionState(request, env);
+  if (!session.isAuthenticated) {
+    return { ok: false, response: json({ error: "Unauthenticated." }, { status: 401 }) };
+  }
+  if (!session.isSiteEditor) {
+    return { ok: false, response: json({ error: "Forbidden: site editor access required." }, { status: 403 }) };
+  }
+  return { ok: true, session };
+}
+
 export function requireMethods(request, allowed) {
   if (!allowed.includes(request.method)) {
     return methodNotAllowed(allowed);
@@ -92,4 +103,3 @@ export async function writeSection(db, sectionKey, payload, email) {
     updatedBy: email || null,
   };
 }
-

@@ -69,6 +69,10 @@ export function parseCouncilAdminEmails(rawValue) {
     .filter(Boolean);
 }
 
+export function parseSiteEditorEmails(rawValue) {
+  return parseCouncilAdminEmails(rawValue);
+}
+
 export async function getSessionState(request, env) {
   let email = getAuthenticatedEmail(request);
   if (!email) {
@@ -80,12 +84,17 @@ export async function getSessionState(request, env) {
     }
   }
   const allowlist = parseCouncilAdminEmails(env.COUNCIL_ADMIN_EMAILS || "");
+  const siteEditors = parseSiteEditorEmails(env.SITE_EDITOR_EMAILS || "");
   const isAuthenticated = email.length > 0;
   const isCouncilAdmin = isAuthenticated && allowlist.includes(email);
+  // Site editors are a tighter allowlist used for content updates.
+  // This is intentionally separate from COUNCIL_ADMIN_EMAILS.
+  const isSiteEditor = isAuthenticated && siteEditors.includes(email);
 
   return {
     email,
     isAuthenticated,
     isCouncilAdmin,
+    isSiteEditor,
   };
 }
