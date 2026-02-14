@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NPHC of Hudson County — Signature Event Comparison</title>
+
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root{
+      --bg: #0b0c10;
+      --panel: rgba(255,255,255,0.06);
+      --panel2: rgba(255,255,255,0.09);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.70);
+      --subtle: rgba(255,255,255,0.55);
+      --border: rgba(255,255,255,0.12);
+      --accent: #7c3aed; /* purple */
+      --accent2:#22c55e; /* green */
+      --accent3:#06b6d4; /* cyan */
+      --warn:#f59e0b;
+      --danger:#ef4444;
+
+      --radius: 16px;
+      --shadow: 0 18px 50px rgba(0,0,0,0.45);
+      --shadow2: 0 10px 30px rgba(0,0,0,0.35);
+    }
+
+    * { box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1200px 700px at 20% 10%, rgba(124,58,237,0.28), transparent 60%),
+        radial-gradient(1100px 650px at 85% 20%, rgba(34,197,94,0.18), transparent 55%),
+        radial-gradient(900px 600px at 50% 90%, rgba(6,182,212,0.14), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    a{ color: inherit; text-decoration: none; }
+    .wrap{
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 18px 60px;
+    }
+
+    header{
+      display:flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 18px 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .kicker{
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    h1{
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+    .subhead{
+      margin: 10px 0 0;
+      color: var(--muted);
+      max-width: 72ch;
+      font-size: 14.5px;
+    }
+    .meta{
+      display:flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 260px;
+      align-items:flex-end;
+      text-align:right;
+    }
+    .pillrow{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content:flex-end;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .pill b{ color: var(--text); font-weight: 700; }
+    .btnrow{
+      display:flex;
+      gap: 10px;
+      justify-content:flex-end;
+      flex-wrap: wrap;
+    }
+    button{
+      cursor:pointer;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 13px;
+      box-shadow: var(--shadow2);
+      transition: transform .08s ease, background .12s ease;
+    }
+    button:hover{ background: rgba(255,255,255,0.11); }
+    button:active{ transform: translateY(1px); }
+    .primary{
+      background: linear-gradient(135deg, rgba(124,58,237,0.9), rgba(6,182,212,0.65));
+      border-color: rgba(255,255,255,0.18);
+    }
+    .primary:hover{ background: linear-gradient(135deg, rgba(124,58,237,1), rgba(6,182,212,0.75)); }
+
+    main{
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 16px;
+    }
+    @media (max-width: 980px){
+      main{ grid-template-columns: 1fr; }
+      .meta{ align-items:flex-start; text-align:left; }
+      .pillrow, .btnrow{ justify-content:flex-start; }
+    }
+
+    .card{
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow2);
+    }
+    .card h2{
+      margin: 0 0 10px;
+      font-size: 18px;
+      letter-spacing: -0.01em;
+    }
+    .card h3{
+      margin: 14px 0 8px;
+      font-size: 15px;
+      color: rgba(255,255,255,0.92);
+      letter-spacing: -0.01em;
+    }
+    .muted{ color: var(--muted); }
+    .subtle{ color: var(--subtle); }
+
+    .grid2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 700px){
+      .grid2{ grid-template-columns: 1fr; }
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.07);
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0 8px 8px 0;
+    }
+    .dot{
+      width: 10px; height: 10px;
+      border-radius: 999px;
+      background: var(--accent3);
+      box-shadow: 0 0 0 4px rgba(6,182,212,0.18);
+    }
+    .dot.p{ background: var(--accent); box-shadow: 0 0 0 4px rgba(124,58,237,0.18); }
+    .dot.g{ background: var(--accent2); box-shadow: 0 0 0 4px rgba(34,197,94,0.18); }
+
+    .table{
+      width:100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow:hidden;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.18);
+      margin-top: 10px;
+    }
+    .table th, .table td{
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      vertical-align: top;
+      font-size: 13px;
+    }
+    .table th{
+      text-align:left;
+      color: rgba(255,255,255,0.86);
+      background: rgba(255,255,255,0.05);
+      font-weight: 700;
+    }
+    .table tr:last-child td{ border-bottom: none; }
+    .tag{
+      display:inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+      font-size: 12px;
+      color: rgba(255,255,255,0.84);
+      white-space: nowrap;
+    }
+
+    .cols{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 900px){
+      .cols{ grid-template-columns: 1fr; }
+    }
+    .section{
+      margin-top: 16px;
+    }
+    .callout{
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04));
+    }
+    .callout b{ font-weight: 800; }
+
+    .timeline{
+      margin-top: 12px;
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .titem{
+      display:flex;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
+    }
+    .tmonth{
+      min-width: 92px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .footer{
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+    .print-note{ display:none; }
+
+    @media print{
+      body{ background:white; color:#111; }
+      header, .card, .footer{ box-shadow:none; }
+      .wrap{ max-width: 100%; padding: 0; }
+      header{ border-radius: 0; }
+      .card{ border-radius: 0; }
+      button{ display:none; }
+      .print-note{ display:block; margin-top:10px; color:#333; font-size: 12px;}
+      canvas{ max-height: 360px !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div class="kicker">NPHC of Hudson County</div>
+        <h1>Signature Event Comparison — Unity BBQ vs Neighborhood Block Party</h1>
+        <p class="subhead">
+          Consolidated web version of the committee’s objective comparison across nine evaluation criteria, including feasibility, partnership potential, strategic fit, budget, risk, and implementation timeline.
+        </p>
+      </div>
+
+      <div class="meta">
+        <div class="pillrow">
+          <span class="pill"><b>Date:</b> Jan 29, 2026</span>
+          <span class="pill"><b>Treasury:</b> $7,842.64</span>
+          <span class="pill"><b>Goal:</b> Data-driven decision support</span>
+        </div>
+
+        <div class="btnrow">
+          <button class="primary" onclick="window.print()">Print / Save PDF</button>
+          <button onclick="toggleDetails()">Toggle Detail Level</button>
+        </div>
+        <div class="print-note">Printed from the NPHC of Hudson County event comparison web report.</div>
+      </div>
+    </header>
+
+    <main>
+      <!-- LEFT COLUMN -->
+      <section class="card" id="leftCol">
+        <h2>Executive Summary</h2>
+        <div class="callout">
+          <div class="muted">
+            The committee evaluated two proposed signature event concepts across nine strategic criteria:
+            community impact, NPHC alignment, feasibility, partnerships, member engagement, unity, signature potential,
+            capacity requirements, and strategic fit.
+          </div>
+          <div style="margin-top:10px">
+            <span class="badge"><span class="dot p"></span>Unity BBQ: internal fellowship + inter-organizational relationship-building</span>
+            <span class="badge"><span class="dot g"></span>Neighborhood Block Party: community-facing back-to-school initiative</span>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Key Context (from chapter assessment & findings)</h3>
+          <ul class="muted" style="margin: 8px 0 0 18px">
+            <li>Documented “ticket fatigue” and member preference for more accessible programming.</li>
+            <li>Leadership capacity constraints (vacancies and reliance on a small core group).</li>
+            <li>Hudson County scale and density create significant community engagement upside.</li>
+            <li>Current civic engagement footprint noted as minimal relative to county population.</li>
+          </ul>
+        </div>
+
+        <div class="section cols">
+          <div class="callout">
+            <h3 style="margin-top:0">Concept 1 — Divine Nine Unity BBQ</h3>
+            <div class="muted">
+              A fellowship-centered gathering to build trust, strengthen working relationships across organizations,
+              support reclamation/re-engagement, and establish foundations for future joint programming.
+            </div>
+            <div style="margin-top:10px" class="subtle">
+              Strength areas include feasibility (lower complexity) and inter-organizational unity.
+            </div>
+          </div>
+
+          <div class="callout">
+            <h3 style="margin-top:0">Concept 2 — Neighborhood Block Party (Back-to-School)</h3>
+            <div class="muted">
+              A community-facing event providing school supplies/backpacks, family engagement, and high-visibility
+              public relationship-building with partners, sponsors, and civic stakeholders.
+            </div>
+            <div style="margin-top:10px" class="subtle">
+              Strength areas include community impact, NPHC pillar alignment, partnership potential, and signature-event brand building.
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>Side-by-Side Criteria Summary</h2>
+          <div class="muted">Qualitative ratings from the report are mapped to a 1–5 scale for visualization (Very High=5, High=4, Moderate=3, Low=2).</div>
+
+          <table class="table" aria-label="Criteria comparison table">
+            <thead>
+              <tr>
+                <th>Evaluation Criterion</th>
+                <th>Unity BBQ</th>
+                <th>Block Party</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Community Impact & Visibility</td>
+                <td><span class="tag">Moderate</span></td>
+                <td><span class="tag">Very High</span></td>
+              </tr>
+              <tr>
+                <td>Alignment with National NPHC Programs</td>
+                <td><span class="tag">Moderate (Indirect)</span></td>
+                <td><span class="tag">Very High (Direct)</span></td>
+              </tr>
+              <tr>
+                <td>Feasibility, Scale, Sustainability</td>
+                <td><span class="tag">High</span></td>
+                <td><span class="tag">Moderate–High</span></td>
+              </tr>
+              <tr>
+                <td>Partnership & Sponsorship Opportunities</td>
+                <td><span class="tag">Low–Moderate</span></td>
+                <td><span class="tag">Very High</span></td>
+              </tr>
+              <tr>
+                <td>Member Engagement & Participation</td>
+                <td><span class="tag">High</span></td>
+                <td><span class="tag">High</span></td>
+              </tr>
+              <tr>
+                <td>Inter-Organizational Unity & Collaboration</td>
+                <td><span class="tag">Very High</span></td>
+                <td><span class="tag">High</span></td>
+              </tr>
+              <tr>
+                <td>Long-Term Value / Signature Potential</td>
+                <td><span class="tag">Moderate</span></td>
+                <td><span class="tag">Very High</span></td>
+              </tr>
+              <tr>
+                <td>Capacity Requirements</td>
+                <td><span class="tag">Lower</span></td>
+                <td><span class="tag">Higher</span></td>
+              </tr>
+              <tr>
+                <td>Strategic Fit with Current Priorities</td>
+                <td><span class="tag">Moderate</span></td>
+                <td><span class="tag">Very High</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="section">
+          <h2>Budget & Financial Considerations</h2>
+          <div class="grid2">
+            <div class="callout">
+              <h3 style="margin-top:0">Unity BBQ (Estimated)</h3>
+              <ul class="muted" style="margin: 8px 0 0 18px">
+                <li>Total expenses: <b>$2,100–$4,100</b></li>
+                <li>Typical cost drivers: venue, food, entertainment, supplies</li>
+                <li>Lower sponsorship appeal due to internal audience</li>
+              </ul>
+            </div>
+            <div class="callout">
+              <h3 style="margin-top:0">Block Party (Estimated)</h3>
+              <ul class="muted" style="margin: 8px 0 0 18px">
+                <li>Total expenses: <b>$5,000–$10,000</b></li>
+                <li>Includes permits/insurance, supplies/backpacks, entertainment, food, signage</li>
+                <li>Higher sponsorship and in-kind donation potential</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="section">
+            <canvas id="budgetChart" height="130" aria-label="Budget comparison chart"></canvas>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>Risk Snapshot</h2>
+          <div class="grid2">
+            <div class="callout">
+              <h3 style="margin-top:0">Block Party — Risk Areas</h3>
+              <div class="muted">
+                Weather, permits, volunteer capacity, supply availability, safety planning, vendor coordination.
+                Overall profile described as <b>moderate</b> and manageable with strong coordination.
+              </div>
+            </div>
+            <div class="callout">
+              <h3 style="margin-top:0">Unity BBQ — Risk Areas</h3>
+              <div class="muted">
+                Attendance variability, weather (if outdoors), food execution, and ensuring cross-organization interaction.
+                Overall profile described as <b>low</b> with straightforward execution.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section" id="detailsBlock">
+          <h2>Success Metrics</h2>
+          <div class="grid2">
+            <div class="callout">
+              <h3 style="margin-top:0">Block Party (Year 1 Targets)</h3>
+              <ul class="muted" style="margin: 8px 0 0 18px">
+                <li>Attendance: <b>200–300</b></li>
+                <li>Backpacks distributed: <b>100</b></li>
+                <li>Volunteers: <b>25–30</b></li>
+                <li>Sponsorship secured: <b>$2,000–$4,000</b></li>
+                <li>Partners engaged: <b>10–15</b></li>
+              </ul>
+            </div>
+            <div class="callout">
+              <h3 style="margin-top:0">Unity BBQ (Operational Indicators)</h3>
+              <ul class="muted" style="margin: 8px 0 0 18px">
+                <li>Total attendance by organization</li>
+                <li>Representation across Divine Nine chapters</li>
+                <li>Member feedback & engagement</li>
+                <li>Inter-organizational relationship quality</li>
+                <li>Post-event collaboration opportunities identified</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2>Implementation Timeline (Recommended Path)</h2>
+            <div class="muted">
+              Milestones below consolidate the report’s phased timeline into web-friendly checkpoints.
+            </div>
+            <div class="timeline" aria-label="Implementation timeline">
+              <div class="titem">
+                <div class="tmonth">Feb 2026</div>
+                <div class="muted">Form planning committee; appoint coordinator; build project plan & budget; initiate partner outreach; begin permits/insurance process.</div>
+              </div>
+              <div class="titem">
+                <div class="tmonth">Mar 2026</div>
+                <div class="muted">Finalize date/location; launch sponsorship outreach; begin volunteer recruitment; confirm initial partners.</div>
+              </div>
+              <div class="titem">
+                <div class="tmonth">Apr–May 2026</div>
+                <div class="muted">Procure supplies; secure entertainment/vendors; build marketing materials; establish media and community channels.</div>
+              </div>
+              <div class="titem">
+                <div class="tmonth">Jun–Jul 2026</div>
+                <div class="muted">Intensive promotion; volunteer training; finalize logistics & contingency plans; prepare signage and materials.</div>
+              </div>
+              <div class="titem">
+                <div class="tmonth">Aug 2026</div>
+                <div class="muted"><b>Execute Neighborhood Block Party</b>; document with photo/video; collect feedback and initial impact metrics.</div>
+              </div>
+              <div class="titem">
+                <div class="tmonth">Sep 2026</div>
+                <div class="muted">Post-event evaluation; compile sponsor reporting; produce runbook for next year; present results to full body.</div>
+              </div>
+              <div class="titem">
+                <div class="tmonth">Summer 2027</div>
+                <div class="muted"><b>Unity BBQ</b> planning and execution leveraging systems and volunteer coordination developed during the Block Party.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- RIGHT COLUMN -->
+      <aside class="card">
+        <h2>Visual Summary</h2>
+        <div class="muted">Interactive charts summarizing the qualitative findings and budget ranges.</div>
+
+        <div class="section">
+          <h3>Criteria Radar (1–5)</h3>
+          <canvas id="radarChart" height="260" aria-label="Criteria radar chart"></canvas>
+          <div class="subtle" style="margin-top:10px">
+            Scale mapping: Very High=5 • High=4 • Moderate–High=3.5 • Moderate=3 • Low–Moderate=2.5 • Low=2
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Phased Recommendation (from report)</h3>
+          <div class="callout">
+            <div class="muted">
+              Phase 1: Launch the community-facing program as the signature event (targeted for back-to-school timing).<br/>
+              Phase 2: Introduce Unity BBQ as complementary fellowship programming in the subsequent year.
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Quick Reference</h3>
+          <div class="callout">
+            <div class="muted">
+              <b>Treasury capacity:</b> $7,842.64 supports either event without fundraising dependency.<br/>
+              <b>Volunteer needs (day-of):</b> Unity BBQ 10–15 • Block Party 25–40.<br/>
+              <b>Lead time:</b> Unity BBQ 2–3 months • Block Party 4–6 months (first year).
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Sources</h3>
+          <div class="muted" style="font-size:12.5px">
+            This page is a consolidated web rendering of the “Ad Hoc Committee on Unity Event vs. Neighborhood Block Party” comparison report (NPHC of Hudson County), dated Jan 29, 2026.
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <div class="footer">
+      <div><b>Note:</b> All figures and qualitative ratings are taken from the committee report and converted into web-friendly visuals. No new claims are introduced.</div>
+      <div style="margin-top:6px">© NPHC of Hudson County — Committee Materials</div>
+    </div>
+  </div>
+
+  <script>
+    // --- Detail Toggle ---
+    function toggleDetails(){
+      const el = document.getElementById('detailsBlock');
+      const isHidden = el.style.display === 'none';
+      el.style.display = isHidden ? 'block' : 'none';
+    }
+    // default: show details
+    document.getElementById('detailsBlock').style.display = 'block';
+
+    // --- Ratings mapped from report qualitative scores ---
+    // Mapping: Very High=5, High=4, Moderate-High=3.5, Moderate=3, Low-Moderate=2.5, Low=2
+    const labels = [
+      'Community Impact',
+      'NPHC Alignment',
+      'Feasibility',
+      'Partnerships',
+      'Member Engagement',
+      'Inter-Org Unity',
+      'Signature Potential',
+      'Capacity Fit',
+      'Strategic Fit'
+    ];
+
+    // Unity BBQ (from report)
+    const unity = [3, 3, 4, 2.5, 4, 5, 3, 4, 3];
+
+    // Block Party (from report)
+    const block = [5, 5, 3.5, 5, 4, 4, 5, 3, 5];
+
+    // --- Radar Chart ---
+    const radarCtx = document.getElementById('radarChart');
+    new Chart(radarCtx, {
+      type: 'radar',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Unity BBQ',
+            data: unity,
+            borderWidth: 2,
+            pointRadius: 2
+          },
+          {
+            label: 'Neighborhood Block Party',
+            data: block,
+            borderWidth: 2,
+            pointRadius: 2
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          r: {
+            min: 0,
+            max: 5,
+            ticks: { stepSize: 1 },
+            grid: { color: 'rgba(255,255,255,0.10)' },
+            angleLines: { color: 'rgba(255,255,255,0.10)' },
+            pointLabels: { color: 'rgba(255,255,255,0.85)', font: { size: 11 } }
+          }
+        },
+        plugins: {
+          legend: {
+            labels: { color: 'rgba(255,255,255,0.85)' }
+          },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.r}/5`
+            }
+          }
+        }
+      }
+    });
+
+    // --- Budget Chart (range bars via stacked bars using min + span) ---
+    const budgetCtx = document.getElementById('budgetChart');
+
+    // Ranges from report:
+    // Unity BBQ expenses: $2,100-$4,100
+    // Block Party expenses: $5,000-$10,000
+    const unityMin = 2100, unityMax = 4100;
+    const blockMin = 5000, blockMax = 10000;
+
+    // Stacked trick: first stack is "min" (transparent), second stack is "range"
+    new Chart(budgetCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Unity BBQ', 'Block Party'],
+        datasets: [
+          {
+            label: 'Min',
+            data: [unityMin, blockMin],
+            borderWidth: 0,
+            backgroundColor: 'rgba(255,255,255,0.00)',
+            stack: 'budget'
+          },
+          {
+            label: 'Range',
+            data: [unityMax - unityMin, blockMax - blockMin],
+            borderWidth: 1,
+            stack: 'budget'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            labels: { color: 'rgba(255,255,255,0.85)' }
+          },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => {
+                const i = ctx.dataIndex;
+                if (ctx.dataset.label === 'Min') return null;
+                const min = i === 0 ? unityMin : blockMin;
+                const max = i === 0 ? unityMax : blockMax;
+                return `Estimated Expenses: $${min.toLocaleString()} – $${max.toLocaleString()}`;
+              }
+            },
+            filter: (item) => item.dataset.label !== 'Min'
+          }
+        },
+        scales: {
+          x: {
+            stacked: true,
+            ticks: { color: 'rgba(255,255,255,0.85)' },
+            grid: { display: false }
+          },
+          y: {
+            stacked: true,
+            ticks: {
+              color: 'rgba(255,255,255,0.70)',
+              callback: (v) => `$${Number(v).toLocaleString()}`
+            },
+            grid: { color: 'rgba(255,255,255,0.10)' }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
+

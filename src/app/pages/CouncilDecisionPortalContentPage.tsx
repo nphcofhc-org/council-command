@@ -21,7 +21,10 @@ function emptyDecisionPortal(): DecisionPortalContent {
       { id: "block", label: "Neighborhood Block Party", description: "" },
       { id: "unity", label: "Unity BBQ", description: "" },
     ],
-    links: [],
+    links: [
+      { id: "lnk-web", label: "Open Web Report", url: "/signature-event-comparison.html" },
+      { id: "lnk-pdf", label: "Open PDF Report", url: "/docs/event-comparison-report-nphc-2026.pdf" },
+    ],
     isOpen: true,
   };
 }
@@ -268,4 +271,3 @@ export function CouncilDecisionPortalContentPage() {
     </CouncilAdminGate>
   );
 }
-

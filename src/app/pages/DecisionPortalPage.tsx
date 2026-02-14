@@ -26,13 +26,18 @@ const DEFAULT_CONTENT: DecisionPortalContent = {
   title: "2026 Summer Signature Event Decision",
   subtitle: "Review the brief, then submit your confidential vote.",
   summary:
-    "This decision portal supports confidential voting and a weighted decision simulator. " +
-    "The council will provide the full decision brief and links here.",
+    "Use this page to review the committee comparison and submit a confidential vote.\n\n" +
+    "Recommended reading:\n" +
+    "- Signature Event Comparison (web report)\n" +
+    "- Signature Event Comparison (PDF)",
   options: [
     { id: "block", label: "Neighborhood Block Party", description: "" },
     { id: "unity", label: "Unity BBQ", description: "" },
   ],
-  links: [],
+  links: [
+    { id: "lnk-web", label: "Open Web Report", url: "/signature-event-comparison.html" },
+    { id: "lnk-pdf", label: "Open PDF Report", url: "/docs/event-comparison-report-nphc-2026.pdf" },
+  ],
   isOpen: true,
 };
 
