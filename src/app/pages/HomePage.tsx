@@ -371,7 +371,7 @@ export function HomePage() {
             initial={{ opacity: 0, scale: 1.02 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
-            className="absolute inset-0 h-full w-full object-contain object-center"
+            className="absolute inset-0 h-full w-full object-cover object-center"
             autoPlay
             loop
             muted
@@ -388,7 +388,7 @@ export function HomePage() {
             transition={{ duration: 0.8 }}
             src={effectiveBannerUrl}
             alt="NPHC Hudson County"
-            className="absolute inset-0 h-full w-full object-contain object-center"
+            className="absolute inset-0 h-full w-full object-cover object-center"
             onError={() => setBannerError(true)}
           />
         )}
