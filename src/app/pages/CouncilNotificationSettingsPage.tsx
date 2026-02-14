@@ -98,17 +98,17 @@ export function CouncilNotificationSettingsPage() {
     <CouncilAdminGate>
       <div className="mx-auto max-w-5xl p-4 sm:p-8 space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black">
+          <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-primary transition-colors">
             <ArrowLeft className="size-4" />
             Back to Council Admin
           </Link>
-          <Button onClick={save} disabled={saving || loading} className="bg-black hover:bg-gray-900 gap-2">
+          <Button onClick={save} disabled={saving || loading} className="gap-2">
             <Save className="size-4" />
             {saving ? "Saving…" : "Save"}
           </Button>
         </div>
 
-        <Card className="border-0 shadow-lg ring-1 ring-black/5">
+        <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
           <CardHeader>
             <CardTitle>Notifications</CardTitle>
             <CardDescription>
@@ -117,11 +117,11 @@ export function CouncilNotificationSettingsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {message ? <p className="text-sm text-green-700 font-semibold">{message}</p> : null}
-            {error ? <p className="text-sm text-red-700 font-semibold">{error}</p> : null}
-            {loading ? <p className="text-sm text-gray-500">Loading…</p> : null}
+            {message ? <p className="text-sm text-emerald-300 font-semibold">{message}</p> : null}
+            {error ? <p className="text-sm text-rose-300 font-semibold">{error}</p> : null}
+            {loading ? <p className="text-sm text-white/60">Loading…</p> : null}
 
-            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+            <div className="rounded-lg border border-amber-400/30 bg-amber-500/10 p-4 text-sm text-amber-100">
               <p className="font-semibold">Cloudflare Email Sending Must Be Enabled</p>
               <p className="mt-1">
                 In Cloudflare Pages, add env vars: <span className="font-mono">EMAIL_ENABLED=true</span> and <span className="font-mono">EMAIL_FROM</span>.
@@ -129,11 +129,11 @@ export function CouncilNotificationSettingsPage() {
               </p>
             </div>
 
-            <div className="rounded-lg border border-gray-200 p-4 space-y-4">
+            <div className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm font-semibold text-black">Enable Email Notifications</p>
-                  <p className="text-xs text-gray-500 mt-0.5">When off, no emails are attempted.</p>
+                  <p className="text-sm font-semibold text-white">Enable Email Notifications</p>
+                  <p className="text-xs text-white/60 mt-0.5">When off, no emails are attempted.</p>
                 </div>
                 <Switch checked={Boolean(form.enabled)} onCheckedChange={(v) => setForm((prev) => ({ ...prev, enabled: Boolean(v) }))} />
               </div>
@@ -157,18 +157,18 @@ export function CouncilNotificationSettingsPage() {
                 </div>
               </div>
 
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-white/60">
                 Last saved: {lastSavedAt ? new Date(lastSavedAt).toLocaleString() : "—"}
               </p>
             </div>
 
             <div className="grid gap-4">
               {ruleKeys.map((k) => (
-                <div key={k} className="rounded-lg border border-gray-200 p-4">
+                <div key={k} className="rounded-lg border border-white/10 bg-white/5 p-4">
                   <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div>
-                      <p className="text-sm font-semibold text-black">{ruleLabel(k)}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">Per-form override (leave blank to use default recipients).</p>
+                      <p className="text-sm font-semibold text-white">{ruleLabel(k)}</p>
+                      <p className="text-xs text-white/60 mt-0.5">Per-form override (leave blank to use default recipients).</p>
                     </div>
                   </div>
 
@@ -182,10 +182,10 @@ export function CouncilNotificationSettingsPage() {
                       />
                     </div>
 
-                    <div className="flex items-center justify-between gap-4 rounded-md border border-gray-100 bg-gray-50 p-3">
+                    <div className="flex items-center justify-between gap-4 rounded-md border border-white/10 bg-black/30 p-3">
                       <div>
-                        <p className="text-sm font-semibold text-black">Send Confirmation to Requestor</p>
-                        <p className="text-xs text-gray-500 mt-0.5">Email “We received your request” to submitter.</p>
+                        <p className="text-sm font-semibold text-white">Send Confirmation to Requestor</p>
+                        <p className="text-xs text-white/60 mt-0.5">Email “We received your request” to submitter.</p>
                       </div>
                       <Switch
                         checked={Boolean(form.rules?.[k]?.sendConfirmation)}
@@ -193,10 +193,10 @@ export function CouncilNotificationSettingsPage() {
                       />
                     </div>
 
-                    <div className="flex items-center justify-between gap-4 rounded-md border border-gray-100 bg-gray-50 p-3">
+                    <div className="flex items-center justify-between gap-4 rounded-md border border-white/10 bg-black/30 p-3">
                       <div>
-                        <p className="text-sm font-semibold text-black">Notify on Status Change</p>
-                        <p className="text-xs text-gray-500 mt-0.5">When admins update status, email the requestor.</p>
+                        <p className="text-sm font-semibold text-white">Notify on Status Change</p>
+                        <p className="text-xs text-white/60 mt-0.5">When admins update status, email the requestor.</p>
                       </div>
                       <Switch
                         checked={Boolean(form.rules?.[k]?.notifyOnStatusChange)}
@@ -213,4 +213,3 @@ export function CouncilNotificationSettingsPage() {
     </CouncilAdminGate>
   );
 }
-

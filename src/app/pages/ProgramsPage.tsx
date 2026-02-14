@@ -32,17 +32,19 @@ export function ProgramsPage() {
           className="mb-8"
         >
           <div className="flex items-center gap-3 mb-1">
-            <div className="w-8 h-px bg-black" />
-            <span className="text-xs tracking-[0.2em] uppercase text-gray-400">Council Programming</span>
+            <div className="w-8 h-px bg-primary" />
+            <span className="text-xs tracking-[0.2em] uppercase text-white/60">Council Programming</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl text-black mb-1">Programs & Events</h1>
-          <p className="text-sm sm:text-base text-gray-500">
+          <h1 className="text-2xl sm:text-3xl text-white mb-1">
+            Programs <span className="text-primary">&amp;</span> Events
+          </h1>
+          <p className="text-sm sm:text-base text-white/70">
             Council programming, event calendar, and member registration access
           </p>
         </motion.div>
 
         <Tabs defaultValue="calendar" className="space-y-6">
-          <TabsList className="bg-white border border-gray-200 w-full sm:w-auto flex-wrap justify-start">
+          <TabsList className="w-full sm:w-auto flex-wrap justify-start border border-white/10 bg-white/5 backdrop-blur-xl">
             <TabsTrigger value="calendar" className="text-xs sm:text-sm">Event Calendar</TabsTrigger>
             <TabsTrigger value="flyers" className="text-xs sm:text-sm">Event Materials</TabsTrigger>
             <TabsTrigger value="signup" className="text-xs sm:text-sm">Sign-Up Forms</TabsTrigger>
@@ -55,7 +57,7 @@ export function ProgramsPage() {
                 initial={{ x: -15, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.4 }}
-                className="text-lg sm:text-xl text-black mb-4"
+                className="text-lg sm:text-xl text-white mb-4"
               >
                 Upcoming Events
               </motion.h2>
@@ -68,18 +70,18 @@ export function ProgramsPage() {
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.08, duration: 0.5 }}
                   >
-                    <Card className="border-0 shadow-md ring-1 ring-black/5 hover:shadow-lg transition-shadow duration-300">
+                    <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl hover:border-primary/30 transition-colors">
                       <CardContent className="p-4 sm:p-6">
                         <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start gap-3 mb-3">
-                              <div className="p-2.5 bg-black/5 rounded-lg flex-shrink-0">
-                                <Calendar className="size-5 text-black" />
+                              <div className="p-2.5 rounded-lg border border-white/10 bg-white/5 flex-shrink-0">
+                                <Calendar className="size-5 text-white" />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <h3 className="text-lg sm:text-xl text-black mb-1">{event.title}</h3>
-                                <p className="text-gray-500 text-sm mb-3">{event.description}</p>
-                                <div className="space-y-1.5 text-sm text-gray-500">
+                                <h3 className="text-lg sm:text-xl text-white mb-1">{event.title}</h3>
+                                <p className="text-white/70 text-sm mb-3">{event.description}</p>
+                                <div className="space-y-1.5 text-sm text-white/70">
                                   <div className="flex items-center gap-2">
                                     <Clock className="size-3.5 flex-shrink-0" />
                                     <span>{event.date}</span>
@@ -93,13 +95,15 @@ export function ProgramsPage() {
                             </div>
                           </div>
                           <div className="flex flex-col sm:text-right gap-2 w-full sm:w-auto">
-                            <Badge className="bg-black text-white w-fit">{event.type}</Badge>
+                            <Badge className="w-fit border border-primary/25 bg-primary/15 text-primary hover:bg-primary/15">
+                              {event.type}
+                            </Badge>
                             <Button
                               size="sm"
                               className={
                                 event.registration === "Open"
-                                  ? "bg-black hover:bg-gray-800 w-full sm:w-auto"
-                                  : "bg-gray-300 text-gray-500 w-full sm:w-auto cursor-default"
+                                  ? "bg-primary text-primary-foreground hover:brightness-110 w-full sm:w-auto"
+                                  : "bg-white/10 text-white/40 w-full sm:w-auto cursor-default"
                               }
                               disabled={event.registration !== "Open"}
                             >
@@ -121,7 +125,7 @@ export function ProgramsPage() {
                 whileInView={{ x: 0, opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4 }}
-                className="text-lg sm:text-xl text-black mb-4"
+                className="text-lg sm:text-xl text-white mb-4"
               >
                 Recent Events
               </motion.h2>
@@ -131,7 +135,7 @@ export function ProgramsPage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
               >
-                <Card className="border-0 shadow-md ring-1 ring-black/5">
+                <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                   <CardContent className="p-0">
                     {archivedEvents.map((event, index) => (
                       <motion.div
@@ -141,15 +145,15 @@ export function ProgramsPage() {
                         viewport={{ once: true }}
                         transition={{ delay: index * 0.05, duration: 0.3 }}
                         className={`flex flex-col sm:flex-row sm:items-center justify-between p-5 gap-2 ${
-                          index < archivedEvents.length - 1 ? "border-b border-gray-100" : ""
+                          index < archivedEvents.length - 1 ? "border-b border-white/10" : ""
                         }`}
                       >
                         <div className="flex-1">
-                          <h3 className="text-black">{event.title}</h3>
-                          <p className="text-sm text-gray-500">{event.date}</p>
+                          <h3 className="text-white">{event.title}</h3>
+                          <p className="text-sm text-white/60">{event.date}</p>
                         </div>
                         <div className="flex items-center gap-3">
-                          <p className="text-sm text-gray-500">{event.attendees}</p>
+                          <p className="text-sm text-white/60">{event.attendees}</p>
                           <StatusBadge status={event.status} />
                         </div>
                       </motion.div>
@@ -167,7 +171,7 @@ export function ProgramsPage() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.1, duration: 0.5 }}
             >
-              <Card className="border-0 shadow-lg ring-1 ring-black/5">
+              <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="text-lg sm:text-xl">Event One-Pagers & Promotional Materials</CardTitle>
                 </CardHeader>
@@ -179,20 +183,20 @@ export function ProgramsPage() {
                         initial={{ scale: 0.95, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: index * 0.08, duration: 0.4 }}
-                        className="border border-gray-100 rounded-xl p-4 hover:shadow-md transition-all duration-300 group"
+                        className="rounded-xl border border-white/10 bg-white/5 p-4 transition-all duration-300 group hover:border-primary/30 hover:bg-white/10"
                       >
                         <div className="aspect-[8.5/11] bg-gradient-to-br from-black via-gray-800 to-gray-700 rounded-lg mb-4 flex items-center justify-center group-hover:from-gray-800 group-hover:to-gray-600 transition-all duration-300">
                           <FileText className="size-12 sm:size-16 text-white/15" />
                         </div>
-                        <h3 className="text-black text-sm mb-1">{flyer.title}</h3>
-                        <p className="text-xs text-gray-500 mb-1">{flyer.type}</p>
-                        <p className="text-xs text-gray-400 mb-3">{flyer.date}</p>
+                        <h3 className="text-white text-sm mb-1">{flyer.title}</h3>
+                        <p className="text-xs text-white/60 mb-1">{flyer.type}</p>
+                        <p className="text-xs text-white/45 mb-3">{flyer.date}</p>
                         {flyer.fileUrl ? (
                           <Button
                             asChild
                             variant="outline"
                             size="sm"
-                            className="w-full gap-2 border-gray-200 hover:border-black hover:bg-black hover:text-white transition-all duration-200"
+                            className="w-full gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10 transition-all duration-200"
                           >
                             <a href={flyer.fileUrl} target="_blank" rel="noreferrer">
                               <ExternalLink className="size-3" />
@@ -200,7 +204,7 @@ export function ProgramsPage() {
                             </a>
                           </Button>
                         ) : (
-                          <Button variant="outline" size="sm" disabled className="w-full gap-2 border-gray-200">
+                          <Button variant="outline" size="sm" disabled className="w-full gap-2 border-white/15 bg-white/5 text-white/35">
                             <ExternalLink className="size-3" />
                             Missing
                           </Button>
@@ -220,7 +224,7 @@ export function ProgramsPage() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.1, duration: 0.5 }}
             >
-              <Card className="border-0 shadow-lg ring-1 ring-black/5">
+              <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="text-lg sm:text-xl">Event Registration & Forms</CardTitle>
                 </CardHeader>
@@ -232,16 +236,16 @@ export function ProgramsPage() {
                         initial={{ x: -15, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ delay: index * 0.08, duration: 0.4 }}
-                        className="flex flex-col sm:flex-row sm:items-start sm:justify-between p-4 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors gap-4"
+                        className="flex flex-col sm:flex-row sm:items-start sm:justify-between p-4 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-colors gap-4"
                       >
                         <div className="flex items-start gap-4 flex-1 min-w-0">
-                          <div className="p-2 bg-black/5 rounded flex-shrink-0">
-                            <Users className="size-5 text-black" />
+                          <div className="p-2 rounded-lg border border-white/10 bg-white/5 flex-shrink-0">
+                            <Users className="size-5 text-white" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-black mb-1">{form.title}</h3>
-                            <p className="text-sm text-gray-500 mb-2">{form.description}</p>
-                            <p className="text-xs text-gray-400">
+                            <h3 className="text-white mb-1">{form.title}</h3>
+                            <p className="text-sm text-white/70 mb-2">{form.description}</p>
+                            <p className="text-xs text-white/45">
                               <strong>Deadline:</strong> {form.deadline}
                             </p>
                           </div>
@@ -253,7 +257,7 @@ export function ProgramsPage() {
                               asChild
                               size="sm"
                               variant="outline"
-                              className="gap-2 border-gray-200 hover:border-black w-full sm:w-auto"
+                              className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10 w-full sm:w-auto"
                             >
                               <a href={form.formUrl} target="_blank" rel="noreferrer">
                                 <ExternalLink className="size-3" />
@@ -264,7 +268,7 @@ export function ProgramsPage() {
                             <Button
                               size="sm"
                               variant="outline"
-                              className="gap-2 border-gray-200 w-full sm:w-auto"
+                              className="gap-2 border-white/15 bg-white/5 text-white/35 w-full sm:w-auto"
                               disabled
                             >
                               <ExternalLink className="size-3" />

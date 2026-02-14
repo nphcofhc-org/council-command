@@ -52,23 +52,23 @@ export function BudgetSubmissionPage() {
   };
 
   return (
-    <div className="bg-white">
+    <div className="relative">
       <div className="max-w-4xl mx-auto p-4 sm:p-8 space-y-4">
         <div className="flex items-center gap-3">
-          <Button asChild variant="outline" className="gap-2">
+          <Button asChild variant="outline" className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10">
             <Link to="/forms">
               <ArrowLeft className="size-4" />
               Back
             </Link>
           </Button>
           <div>
-            <p className="text-xs uppercase tracking-widest text-gray-500">Form</p>
-            <h1 className="text-lg sm:text-xl font-extrabold text-black">Budget Submission</h1>
+            <p className="text-xs uppercase tracking-widest text-white/60">Form</p>
+            <h1 className="text-lg sm:text-xl font-extrabold text-white">Budget Submission</h1>
           </div>
         </div>
 
         <motion.div initial={{ y: 8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.35 }}>
-          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardHeader>
               <CardTitle>Submit Proposed Budget</CardTitle>
               <CardDescription>
@@ -77,13 +77,13 @@ export function BudgetSubmissionPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               {!session.authenticated ? (
-                <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+                <div className="rounded-lg border border-amber-400/30 bg-amber-500/10 p-4 text-sm text-amber-100">
                   You must be authenticated to submit. If you see this message, refresh and complete Access login.
                 </div>
               ) : null}
 
-              {message ? <p className="text-sm text-green-700 font-semibold">{message}</p> : null}
-              {error ? <p className="text-sm text-red-700 font-semibold">{error}</p> : null}
+              {message ? <p className="text-sm text-emerald-300 font-semibold">{message}</p> : null}
+              {error ? <p className="text-sm text-rose-300 font-semibold">{error}</p> : null}
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1">
@@ -133,7 +133,7 @@ export function BudgetSubmissionPage() {
                 <Input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="your@email.com" />
               </div>
 
-              <Button onClick={submit} disabled={saving || !session.authenticated} className="bg-black hover:bg-gray-900 w-full sm:w-auto">
+              <Button onClick={submit} disabled={saving || !session.authenticated} className="w-full sm:w-auto">
                 <Save className="mr-2 size-4" />
                 {saving ? "Submitting…" : "Submit Budget"}
               </Button>
@@ -144,4 +144,3 @@ export function BudgetSubmissionPage() {
     </div>
   );
 }
-

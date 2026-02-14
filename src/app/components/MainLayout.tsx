@@ -49,9 +49,9 @@ export function MainLayout() {
   const footerSubtext = config?.footerSubtext || "Internal Governance Portal · Authorized Access Only";
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
       {/* Top Navigation Bar */}
-      <nav className="bg-black text-white sticky top-0 z-50 shadow-lg">
+      <nav className="sticky top-0 z-50 border-b border-white/10 bg-black/40 text-white backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.45)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14">
             {/* Mobile: hamburger + title */}
@@ -63,7 +63,9 @@ export function MainLayout() {
               >
                 {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
               </button>
-              <span className="text-sm tracking-wide">NPHC Hudson County</span>
+              <span className="text-sm tracking-wide">
+                NPHC <span className="text-primary">Hudson County</span>
+              </span>
             </div>
 
             {/* Desktop Navigation Links */}
@@ -76,8 +78,8 @@ export function MainLayout() {
                   className={({ isActive }) =>
                     `flex items-center gap-2 px-4 py-4 text-sm transition-all duration-200 border-b-2 ${
                       isActive
-                        ? "border-white text-white bg-white/10"
-                        : "border-transparent text-white/60 hover:text-white hover:bg-white/5"
+                        ? "border-primary text-primary bg-white/5"
+                        : "border-transparent text-white/70 hover:text-primary hover:bg-white/5"
                     }`
                   }
                 >
@@ -93,7 +95,7 @@ export function MainLayout() {
                 <button
                   type="button"
                   onClick={toggleEditorMode}
-                  className="rounded-full border border-white/15 px-3 py-1 text-[11px] tracking-widest uppercase text-white/60 hover:text-white hover:border-white/30 transition-colors"
+                  className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] tracking-widest uppercase text-white/70 hover:text-white hover:border-primary/60 transition-colors"
                 >
                   {editorMode ? "Editor View" : "Member View"}
                 </button>
@@ -122,7 +124,7 @@ export function MainLayout() {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed top-14 left-0 bottom-0 w-72 bg-black z-40 lg:hidden overflow-y-auto"
+              className="fixed bottom-0 left-0 top-14 z-40 w-72 overflow-y-auto border-r border-white/10 bg-black/65 backdrop-blur-xl lg:hidden"
             >
               <div className="py-4">
                 <div className="px-6 pb-4 mb-2 border-b border-white/10">
@@ -146,8 +148,8 @@ export function MainLayout() {
                         className={({ isActive }) =>
                           `flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-200 ${
                             isActive
-                              ? "bg-white/15 text-white"
-                              : "text-white/60 hover:bg-white/5 hover:text-white"
+                              ? "bg-white/10 text-primary"
+                              : "text-white/70 hover:bg-white/5 hover:text-primary"
                           }`
                         }
                       >
@@ -163,7 +165,7 @@ export function MainLayout() {
                     <button
                       type="button"
                       onClick={toggleEditorMode}
-                      className="w-full rounded-lg border border-white/10 px-3 py-2 text-left text-xs text-white/60 hover:text-white hover:border-white/25 transition-colors"
+                      className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-left text-xs text-white/70 hover:text-white hover:border-primary/60 transition-colors"
                     >
                       View Mode: {editorMode ? "Editor" : "Member"} (tap to switch)
                     </button>
@@ -183,7 +185,7 @@ export function MainLayout() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-black text-white/50 py-8 mt-auto">
+      <footer className="mt-auto border-t border-white/10 bg-black/30 py-8 text-white/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
             <p>{footerText}</p>

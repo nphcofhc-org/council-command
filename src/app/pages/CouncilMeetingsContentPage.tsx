@@ -61,13 +61,13 @@ export function CouncilMeetingsContentPage() {
     <CouncilAdminGate>
       <div className="mx-auto max-w-6xl p-4 sm:p-8">
         <div className="mb-6">
-          <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black">
+          <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-primary transition-colors">
             <ArrowLeft className="h-4 w-4" />
             Back to Council Admin
           </Link>
         </div>
 
-        <Card className="border-0 shadow-lg ring-1 ring-black/5">
+        <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
           <CardHeader>
             <CardTitle>Content Manager — Meetings</CardTitle>
             <CardDescription>
@@ -76,16 +76,16 @@ export function CouncilMeetingsContentPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-sm text-gray-600">Tip: keep fields short for mobile.</p>
-              <Button onClick={save} disabled={saving || loading} className="bg-black hover:bg-gray-800">
+              <p className="text-sm text-white/70">Tip: keep fields short for mobile.</p>
+              <Button onClick={save} disabled={saving || loading}>
                 <Save className="mr-2 h-4 w-4" />
                 {saving ? "Saving..." : "Save Changes"}
               </Button>
             </div>
 
-            {message ? <p className="text-sm text-green-700">{message}</p> : null}
-            {error ? <p className="text-sm text-red-700">{error}</p> : null}
-            {loading ? <p className="text-sm text-gray-500">Loading...</p> : null}
+            {message ? <p className="text-sm text-emerald-300">{message}</p> : null}
+            {error ? <p className="text-sm text-rose-300">{error}</p> : null}
+            {loading ? <p className="text-sm text-white/60">Loading...</p> : null}
 
             <Card>
               <CardHeader>

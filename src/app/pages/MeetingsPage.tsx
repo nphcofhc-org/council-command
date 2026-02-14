@@ -57,17 +57,19 @@ export function MeetingsPage() {
           className="mb-8"
         >
           <div className="flex items-center gap-3 mb-1">
-            <div className="w-8 h-px bg-black" />
-            <span className="text-xs tracking-[0.2em] uppercase text-gray-400">Council Operations</span>
+            <div className="w-8 h-px bg-primary" />
+            <span className="text-xs tracking-[0.2em] uppercase text-white/60">Council Operations</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl text-black mb-1">Meetings & Delegates</h1>
-          <p className="text-sm sm:text-base text-gray-500">
+          <h1 className="text-2xl sm:text-3xl text-white mb-1">
+            Meetings <span className="text-primary">&amp;</span> Delegates
+          </h1>
+          <p className="text-sm sm:text-base text-white/70">
             Council meeting schedule, agendas, minutes, and delegate reporting for the current governance cycle
           </p>
         </motion.div>
 
         <Tabs key={initialTab} defaultValue={initialTab} className="space-y-6">
-          <TabsList className="bg-white border border-gray-200 w-full sm:w-auto flex-wrap justify-start">
+          <TabsList className="w-full sm:w-auto flex-wrap justify-start border border-white/10 bg-white/5 backdrop-blur-xl">
             <TabsTrigger value="upcoming" className="text-xs sm:text-sm">Upcoming Meetings</TabsTrigger>
             <TabsTrigger value="records" className="text-xs sm:text-sm">Agendas & Minutes</TabsTrigger>
             <TabsTrigger value="reports" className="text-xs sm:text-sm">Delegate Reports</TabsTrigger>
@@ -81,7 +83,7 @@ export function MeetingsPage() {
               transition={{ delay: 0.1, duration: 0.5 }}
               className="space-y-4"
             >
-              <Card className="border-0 shadow-lg ring-1 ring-black/5">
+              <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <CardHeader>
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <CardTitle className="text-lg sm:text-xl">Council Meeting Calendar</CardTitle>
@@ -98,9 +100,9 @@ export function MeetingsPage() {
                         initial={{ x: -15, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ delay: index * 0.08, duration: 0.4 }}
-                        className="flex flex-col sm:flex-row items-start gap-4 p-4 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors group"
+                        className="flex flex-col sm:flex-row items-start gap-4 p-4 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-colors group"
                       >
-                        <div className="p-3 bg-black text-white rounded-xl text-center min-w-[4rem] flex-shrink-0">
+                        <div className="p-3 rounded-xl border border-primary/25 bg-primary/15 text-primary text-center min-w-[4rem] flex-shrink-0">
                           <div className="text-2xl">{new Date(meeting.date).getDate()}</div>
                           <div className="text-[10px] uppercase tracking-wider opacity-70">
                             {new Date(meeting.date).toLocaleDateString("en-US", { month: "short" })}
@@ -109,8 +111,8 @@ export function MeetingsPage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                             <div className="flex-1 min-w-0">
-                              <h3 className="text-black mb-2">{meeting.title}</h3>
-                              <div className="space-y-1.5 text-sm text-gray-500">
+                              <h3 className="text-white mb-2">{meeting.title}</h3>
+                              <div className="space-y-1.5 text-sm text-white/70">
                                 <div className="flex items-center gap-2">
                                   <Clock className="size-3.5 flex-shrink-0" />
                                   <span>{meeting.time}</span>
@@ -122,9 +124,11 @@ export function MeetingsPage() {
                               </div>
                             </div>
                             <div className="flex flex-col items-start sm:items-end gap-2">
-                              <Badge className="bg-black text-white hover:bg-black w-fit">{meeting.type}</Badge>
+                              <Badge className="w-fit border border-primary/25 bg-primary/15 text-primary hover:bg-primary/15">
+                                {meeting.type}
+                              </Badge>
                               {normalizeJoinUrl(meeting.joinUrl) ? (
-                                <Button asChild variant="outline" size="sm" className="gap-2 border-gray-200 hover:border-black hover:bg-black hover:text-white w-full sm:w-auto">
+                                <Button asChild variant="outline" size="sm" className="w-full sm:w-auto gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10">
                                   <a href={normalizeJoinUrl(meeting.joinUrl) || "#"} target="_blank" rel="noreferrer">
                                     <ExternalLink className="size-3.5" />
                                     {meeting.joinLabel || "Join"}
@@ -140,10 +144,10 @@ export function MeetingsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-50 border-0">
+              <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
                 <CardContent className="pt-6">
-                  <p className="text-sm text-gray-600">
-                    <strong className="text-black">Note:</strong> General Body meetings are held on the third Saturday of each month.
+                  <p className="text-sm text-white/75">
+                    <strong className="text-white">Note:</strong> General Body meetings are held on the third Saturday of each month.
                     Executive Board meetings convene on the first Wednesday. All members should review meeting
                     materials 48 hours in advance.
                   </p>
@@ -159,7 +163,7 @@ export function MeetingsPage() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.1, duration: 0.5 }}
             >
-              <Card className="border-0 shadow-lg ring-1 ring-black/5">
+              <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="text-lg sm:text-xl">Meeting Documentation Archive</CardTitle>
                 </CardHeader>
@@ -183,13 +187,13 @@ export function MeetingsPage() {
                             initial={{ x: -15, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
                             transition={{ delay: index * 0.04, duration: 0.3 }}
-                            className="border-b transition-colors hover:bg-gray-50"
+                            className="border-b border-white/10 transition-colors hover:bg-white/5"
                           >
-                            <TableCell className="text-gray-500">{record.date}</TableCell>
+                            <TableCell className="text-white/60">{record.date}</TableCell>
                             <TableCell className="font-medium">{record.title}</TableCell>
                             <TableCell>
                               {normalizeDocUrl(record.agendaFile) ? (
-                                <Button asChild variant="ghost" size="sm" className="h-8 gap-2 text-black hover:bg-black/5">
+                                <Button asChild variant="ghost" size="sm" className="h-8 gap-2 text-white hover:bg-white/5">
                                   {(() => {
                                     const href = normalizeDocUrl(record.agendaFile) || "#";
                                     return isInternalFile(href) ? (
@@ -206,7 +210,7 @@ export function MeetingsPage() {
                                   })()}
                                 </Button>
                               ) : (
-                                <Button variant="ghost" size="sm" disabled className="h-8 gap-2 text-gray-400">
+                                <Button variant="ghost" size="sm" disabled className="h-8 gap-2 text-white/35">
                                   <FileText className="size-3.5" />
                                   <span className="text-xs">Missing</span>
                                 </Button>
@@ -214,7 +218,7 @@ export function MeetingsPage() {
                             </TableCell>
                             <TableCell>
                               {normalizeDocUrl(record.minutesFile) ? (
-                                <Button asChild variant="ghost" size="sm" className="h-8 gap-2 text-black hover:bg-black/5">
+                                <Button asChild variant="ghost" size="sm" className="h-8 gap-2 text-white hover:bg-white/5">
                                   {(() => {
                                     const href = normalizeDocUrl(record.minutesFile) || "#";
                                     return isInternalFile(href) ? (
@@ -231,7 +235,7 @@ export function MeetingsPage() {
                                   })()}
                                 </Button>
                               ) : (
-                                <Button variant="ghost" size="sm" disabled className="h-8 gap-2 text-gray-400">
+                                <Button variant="ghost" size="sm" disabled className="h-8 gap-2 text-white/35">
                                   <FileText className="size-3.5" />
                                   <span className="text-xs">Missing</span>
                                 </Button>
@@ -256,13 +260,13 @@ export function MeetingsPage() {
                         <Card className="shadow-sm">
                           <CardContent className="p-4">
                             <div className="flex justify-between items-start mb-3">
-                              <h3 className="text-black text-sm flex-1">{record.title}</h3>
+                              <h3 className="text-white text-sm flex-1">{record.title}</h3>
                               <StatusBadge status={record.status} />
                             </div>
-                            <p className="text-sm text-gray-500 mb-3">{record.date}</p>
+                            <p className="text-sm text-white/60 mb-3">{record.date}</p>
                             <div className="flex gap-2">
                               {normalizeDocUrl(record.agendaFile) ? (
-                                <Button asChild variant="outline" size="sm" className="flex-1 gap-2 text-xs border-gray-200">
+                                <Button asChild variant="outline" size="sm" className="flex-1 gap-2 text-xs border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10">
                                   {(() => {
                                     const href = normalizeDocUrl(record.agendaFile) || "#";
                                     return isInternalFile(href) ? (
@@ -279,13 +283,13 @@ export function MeetingsPage() {
                                   })()}
                                 </Button>
                               ) : (
-                                <Button variant="outline" size="sm" disabled className="flex-1 gap-2 text-xs border-gray-200">
+                                <Button variant="outline" size="sm" disabled className="flex-1 gap-2 text-xs border-white/15 bg-white/5 text-white/35">
                                   <FileText className="size-3" />
                                   Agenda
                                 </Button>
                               )}
                               {normalizeDocUrl(record.minutesFile) ? (
-                                <Button asChild variant="outline" size="sm" className="flex-1 gap-2 text-xs border-gray-200">
+                                <Button asChild variant="outline" size="sm" className="flex-1 gap-2 text-xs border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10">
                                   {(() => {
                                     const href = normalizeDocUrl(record.minutesFile) || "#";
                                     return isInternalFile(href) ? (
@@ -302,7 +306,7 @@ export function MeetingsPage() {
                                   })()}
                                 </Button>
                               ) : (
-                                <Button variant="outline" size="sm" disabled className="flex-1 gap-2 text-xs border-gray-200">
+                                <Button variant="outline" size="sm" disabled className="flex-1 gap-2 text-xs border-white/15 bg-white/5 text-white/35">
                                   <FileText className="size-3" />
                                   Minutes
                                 </Button>
@@ -326,7 +330,7 @@ export function MeetingsPage() {
               transition={{ delay: 0.1, duration: 0.5 }}
               className="space-y-4"
             >
-              <Card className="border-0 shadow-lg ring-1 ring-black/5">
+              <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="text-lg sm:text-xl">Chapter Delegate Reports</CardTitle>
                 </CardHeader>
@@ -350,12 +354,12 @@ export function MeetingsPage() {
                             initial={{ x: -15, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
                             transition={{ delay: index * 0.04, duration: 0.3 }}
-                            className="border-b transition-colors hover:bg-gray-50"
+                            className="border-b border-white/10 transition-colors hover:bg-white/5"
                           >
                             <TableCell className="font-medium">{report.meetingCycle}</TableCell>
                             <TableCell>{report.chapter}</TableCell>
                             <TableCell>{report.submittedBy}</TableCell>
-                            <TableCell className="text-gray-500">{report.dateSubmitted}</TableCell>
+                            <TableCell className="text-white/60">{report.dateSubmitted}</TableCell>
                             <TableCell><StatusBadge status={report.status} /></TableCell>
                           </motion.tr>
                         ))}
@@ -375,20 +379,20 @@ export function MeetingsPage() {
                         <Card className="shadow-sm">
                           <CardContent className="p-4">
                             <div className="flex justify-between items-start mb-3">
-                              <h3 className="text-black text-sm flex-1">{report.meetingCycle}</h3>
+                              <h3 className="text-white text-sm flex-1">{report.meetingCycle}</h3>
                               <StatusBadge status={report.status} />
                             </div>
                             <div className="space-y-2 text-sm">
                               <div>
-                                <span className="text-gray-400 text-xs">Chapter</span>
-                                <p className="text-gray-700">{report.chapter}</p>
+                                <span className="text-white/50 text-xs">Chapter</span>
+                                <p className="text-white/80">{report.chapter}</p>
                               </div>
                               <div className="flex justify-between gap-2">
-                                <span className="text-gray-500 flex-shrink-0">Submitted By:</span>
+                                <span className="text-white/60 flex-shrink-0">Submitted By:</span>
                                 <span className="text-right">{report.submittedBy}</span>
                               </div>
                               <div className="flex justify-between gap-2">
-                                <span className="text-gray-500 flex-shrink-0">Date:</span>
+                                <span className="text-white/60 flex-shrink-0">Date:</span>
                                 <span className="text-right">{report.dateSubmitted}</span>
                               </div>
                             </div>
@@ -400,10 +404,10 @@ export function MeetingsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-50 border-0">
+              <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
                 <CardContent className="pt-6">
-                  <p className="text-sm text-gray-600">
-                    <strong className="text-black">Reminder:</strong> Chapter delegate reports are due 72 hours prior to each General Body meeting.
+                  <p className="text-sm text-white/75">
+                    <strong className="text-white">Reminder:</strong> Chapter delegate reports are due 72 hours prior to each General Body meeting.
                     Please use the official Delegate Report Form available in the Resources section.
                   </p>
                 </CardContent>

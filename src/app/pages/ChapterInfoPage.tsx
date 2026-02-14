@@ -62,17 +62,19 @@ export function ChapterInfoPage() {
           className="mb-8"
         >
           <div className="flex items-center gap-3 mb-1">
-            <div className="w-8 h-px bg-black" />
-            <span className="text-xs tracking-[0.2em] uppercase text-gray-400">Council Governance</span>
+            <div className="w-8 h-px bg-primary" />
+            <span className="text-xs tracking-[0.2em] uppercase text-white/60">Council Governance</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl text-black mb-1">Chapter Information</h1>
-          <p className="text-sm sm:text-base text-gray-500">
+          <h1 className="text-2xl sm:text-3xl text-white mb-1">
+            Chapter <span className="text-primary">Information</span>
+          </h1>
+          <p className="text-sm sm:text-base text-white/70">
             Council leadership, chapter delegates, and governing documents
           </p>
         </motion.div>
 
         <Tabs defaultValue="officers" className="space-y-6">
-          <TabsList className="bg-white border border-gray-200 w-full sm:w-auto flex-wrap justify-start">
+          <TabsList className="w-full sm:w-auto flex-wrap justify-start border border-white/10 bg-white/5 backdrop-blur-xl">
             <TabsTrigger value="officers" className="text-xs sm:text-sm">Officers & Contact</TabsTrigger>
             <TabsTrigger value="delegates" className="text-xs sm:text-sm">Delegates</TabsTrigger>
             <TabsTrigger value="documents" className="text-xs sm:text-sm">Governing Documents</TabsTrigger>
@@ -85,7 +87,7 @@ export function ChapterInfoPage() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.1, duration: 0.5 }}
             >
-              <Card className="border-0 shadow-lg ring-1 ring-black/5">
+              <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="text-lg sm:text-xl">Executive Board (2025-2026)</CardTitle>
                   <CardDescription className="text-sm">
@@ -93,7 +95,7 @@ export function ChapterInfoPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
+                  <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-white/60">
                     Executive Board
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -104,30 +106,30 @@ export function ChapterInfoPage() {
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.05 + index * 0.08, duration: 0.4 }}
                       >
-                        <Card className="shadow-sm hover:shadow-md transition-all duration-300 h-full group hover:-translate-y-1">
+                        <Card className="h-full transition-all duration-300 group hover:-translate-y-1 hover:border-primary/40 hover:bg-white/10">
                           <CardContent className="p-6">
                             <div className="flex flex-col items-center text-center">
                               {officer.imageUrl ? (
                                 <img
                                   src={officer.imageUrl}
                                   alt={officer.name}
-                                  className="w-28 h-28 rounded-xl object-cover mb-4 border-4 border-gray-200"
+                                  className="w-28 h-28 rounded-xl object-cover mb-4 border-4 border-white/10"
                                 />
                               ) : (
-                                <div className="w-28 h-28 rounded-xl bg-gray-100 flex items-center justify-center mb-4 border-4 border-gray-200 group-hover:border-gray-300 transition-colors">
-                                  <User className="size-14 text-gray-300" />
+                                <div className="w-28 h-28 rounded-xl bg-white/5 flex items-center justify-center mb-4 border-4 border-white/10 group-hover:border-white/20 transition-colors">
+                                  <User className="size-14 text-white/25" />
                                 </div>
                               )}
-                              <h3 className="text-black text-lg mb-1">{officer.name}</h3>
-                              <Badge variant="secondary" className="bg-black text-white mb-3">
+                              <h3 className="text-white text-lg mb-1">{officer.name}</h3>
+                              <Badge variant="secondary" className="mb-3 border border-primary/25 bg-primary/15 text-primary">
                                 {officer.title}
                               </Badge>
-                              <p className="text-sm text-gray-500 mb-4">{officer.chapter}</p>
+                              <p className="text-sm text-white/60 mb-4">{officer.chapter}</p>
                               <Button
                                 asChild
                                 variant="outline"
                                 size="sm"
-                                className="w-full gap-2 border-black text-black hover:bg-black hover:text-white transition-all duration-200"
+                                className="w-full gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10 transition-all duration-200"
                               >
                                 <a href={toContactHref(officer)}>
                                   <Mail className="size-4" />
@@ -141,7 +143,7 @@ export function ChapterInfoPage() {
                     ))}
                   </div>
 
-                  <h3 className="mb-3 mt-8 text-sm font-semibold uppercase tracking-wide text-gray-500">
+                  <h3 className="mb-3 mt-8 text-sm font-semibold uppercase tracking-wide text-white/60">
                     Additional Chairs (2025-2026)
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -152,30 +154,30 @@ export function ChapterInfoPage() {
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.45 + index * 0.08, duration: 0.4 }}
                       >
-                        <Card className="shadow-sm hover:shadow-md transition-all duration-300 h-full group hover:-translate-y-1">
+                        <Card className="h-full transition-all duration-300 group hover:-translate-y-1 hover:border-primary/40 hover:bg-white/10">
                           <CardContent className="p-6">
                             <div className="flex flex-col items-center text-center">
                               {chair.imageUrl ? (
                                 <img
                                   src={chair.imageUrl}
                                   alt={chair.name}
-                                  className="w-28 h-28 rounded-xl object-cover mb-4 border-4 border-gray-200"
+                                  className="w-28 h-28 rounded-xl object-cover mb-4 border-4 border-white/10"
                                 />
                               ) : (
-                                <div className="w-28 h-28 rounded-xl bg-gray-100 flex items-center justify-center mb-4 border-4 border-gray-200 group-hover:border-gray-300 transition-colors">
-                                  <User className="size-14 text-gray-300" />
+                                <div className="w-28 h-28 rounded-xl bg-white/5 flex items-center justify-center mb-4 border-4 border-white/10 group-hover:border-white/20 transition-colors">
+                                  <User className="size-14 text-white/25" />
                                 </div>
                               )}
-                              <h3 className="text-black text-lg mb-1">{chair.name}</h3>
-                              <Badge variant="secondary" className="bg-black text-white mb-3">
+                              <h3 className="text-white text-lg mb-1">{chair.name}</h3>
+                              <Badge variant="secondary" className="mb-3 border border-primary/25 bg-primary/15 text-primary">
                                 {chair.title}
                               </Badge>
-                              <p className="text-sm text-gray-500 mb-4">{chair.chapter}</p>
+                              <p className="text-sm text-white/60 mb-4">{chair.chapter}</p>
                               <Button
                                 asChild
                                 variant="outline"
                                 size="sm"
-                                className="w-full gap-2 border-black text-black hover:bg-black hover:text-white transition-all duration-200"
+                                className="w-full gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10 transition-all duration-200"
                               >
                                 <a href={toContactHref(chair)}>
                                   <Mail className="size-4" />
@@ -200,7 +202,7 @@ export function ChapterInfoPage() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.1, duration: 0.5 }}
             >
-              <Card className="border-0 shadow-lg ring-1 ring-black/5">
+              <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="text-lg sm:text-xl">Chapter Representatives & Delegates</CardTitle>
                   <CardDescription className="text-sm">
@@ -226,7 +228,7 @@ export function ChapterInfoPage() {
                             initial={{ x: -15, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
                             transition={{ delay: index * 0.04, duration: 0.3 }}
-                            className="border-b transition-colors hover:bg-gray-50"
+                            className="border-b border-white/10 transition-colors hover:bg-white/5"
                           >
                             <TableCell className="font-medium">{d.chapter}</TableCell>
                             <TableCell>{d.representative}</TableCell>
@@ -251,18 +253,18 @@ export function ChapterInfoPage() {
                       >
                         <Card className="shadow-sm">
                           <CardContent className="p-4">
-                            <h3 className="text-black text-sm mb-3">{d.chapter}</h3>
+                            <h3 className="text-white text-sm mb-3">{d.chapter}</h3>
                             <div className="space-y-2 text-sm">
                               <div className="flex justify-between gap-2">
-                                <span className="text-gray-500 flex-shrink-0">Representative:</span>
+                                <span className="text-white/60 flex-shrink-0">Representative:</span>
                                 <span className="text-right">{d.representative}</span>
                               </div>
                               <div className="flex justify-between gap-2">
-                                <span className="text-gray-500 flex-shrink-0">Delegate:</span>
+                                <span className="text-white/60 flex-shrink-0">Delegate:</span>
                                 <span className="text-right">{d.delegate}</span>
                               </div>
                               <div className="flex justify-between items-center gap-2">
-                                <span className="text-gray-500 flex-shrink-0">Term:</span>
+                                <span className="text-white/60 flex-shrink-0">Term:</span>
                                 <Badge variant="outline">{d.term}</Badge>
                               </div>
                             </div>
@@ -283,7 +285,7 @@ export function ChapterInfoPage() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.1, duration: 0.5 }}
             >
-              <Card className="border-0 shadow-lg ring-1 ring-black/5">
+              <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="text-lg sm:text-xl">Governing Documents Library</CardTitle>
                   <CardDescription className="text-sm">
@@ -303,14 +305,14 @@ export function ChapterInfoPage() {
                       const content = (
                         <>
                           <div className="flex items-start gap-3 flex-1 min-w-0">
-                            <div className="p-2 bg-black/5 rounded flex-shrink-0 group-hover:bg-black/10 transition-colors">
-                              <FileText className="size-4 sm:size-5 text-black" />
+                            <div className="p-2 rounded-lg border border-white/10 bg-white/5 flex-shrink-0 group-hover:border-primary/30 group-hover:bg-white/10 transition-colors">
+                              <FileText className="size-4 sm:size-5 text-white" />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <h3 className="text-black mb-1 text-sm sm:text-base">{doc.title}</h3>
-                              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-xs sm:text-sm text-gray-500">
+                              <h3 className="text-white mb-1 text-sm sm:text-base">{doc.title}</h3>
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-xs sm:text-sm text-white/60">
                                 <span>{doc.type}</span>
-                                <span className="hidden sm:inline text-gray-300">&middot;</span>
+                                <span className="hidden sm:inline text-white/20">&middot;</span>
                                 <span className="flex items-center gap-1">
                                   <Calendar className="size-3" />
                                   Updated {doc.lastUpdated}
@@ -334,7 +336,7 @@ export function ChapterInfoPage() {
                             target={isInternalFile ? undefined : "_blank"}
                             rel={isInternalFile ? undefined : "noreferrer"}
                             {...motionProps}
-                            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-lg border border-gray-100 hover:bg-gray-50 transition-all duration-200 group"
+                            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-all duration-200 group"
                           >
                             {content}
                           </motion.a>
@@ -345,7 +347,7 @@ export function ChapterInfoPage() {
                         <motion.div
                           key={doc.id}
                           {...motionProps}
-                          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-lg border border-gray-100 bg-gray-50/40 hover:bg-gray-50/60 transition-colors duration-200 group"
+                          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-colors duration-200 group"
                         >
                           {content}
                         </motion.div>

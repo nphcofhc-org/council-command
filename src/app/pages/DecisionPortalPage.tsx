@@ -193,7 +193,7 @@ export function DecisionPortalPage() {
   };
 
   return (
-    <div className="bg-white">
+    <div className="relative">
       <style>{`
         @media print {
           nav, footer { display: none !important; }
@@ -201,48 +201,57 @@ export function DecisionPortalPage() {
         }
       `}</style>
 
-      <header className="bg-black text-white py-10 px-4 sm:px-8">
-        <div className="max-w-5xl mx-auto text-center">
-          <img
-            src={LOGO_URL}
-            alt="NPHC of Hudson County Logo"
-            className="mx-auto h-14 w-auto mb-3"
-          />
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">NPHC of Hudson County</h1>
-          <p className="text-sm text-white/75 mt-2">Interactive Decision & Confidential Voting Portal</p>
+      <header className="relative overflow-hidden py-12 sm:py-16 px-4 sm:px-8">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-24 -right-24 size-72 rounded-full bg-primary/12 blur-3xl" />
+          <div className="absolute -bottom-28 -left-28 size-96 rounded-full bg-white/5 blur-3xl" />
+        </div>
+        <div className="max-w-5xl mx-auto text-center relative z-10">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="w-10 h-px bg-primary" />
+            <span className="text-xs tracking-[0.2em] uppercase text-white/60">Decision Portal</span>
+            <div className="w-10 h-px bg-primary" />
+          </div>
+
+          <div className="mx-auto inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white p-2 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
+            <img src={LOGO_URL} alt="NPHC of Hudson County Logo" className="h-12 w-auto" />
+          </div>
+
+          <h1 className="mt-5 text-2xl sm:text-3xl font-extrabold tracking-tight text-white">NPHC of Hudson County</h1>
+          <p className="text-sm text-white/70 mt-2">Interactive Decision & Confidential Voting Portal</p>
         </div>
       </header>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-8 py-10 sm:py-14 space-y-6">
         <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.35 }}>
-          <Card className="border border-gray-200 shadow-sm">
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardHeader>
               <CardTitle>{content.title}</CardTitle>
-              <p className="text-sm text-gray-600">{content.subtitle}</p>
+              <p className="text-sm text-white/70">{content.subtitle}</p>
             </CardHeader>
             <CardContent className="space-y-4">
-              {content.summary ? <p className="text-sm text-gray-700 whitespace-pre-wrap">{content.summary}</p> : null}
+              {content.summary ? <p className="text-sm text-white/75 whitespace-pre-wrap">{content.summary}</p> : null}
 
               <div className="grid gap-3 md:grid-cols-2">
-                <div className="rounded-lg border border-gray-100 p-4">
-                  <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Option A</p>
-                  <p className="text-sm font-semibold text-black">{blockOption.label}</p>
+                <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+                  <p className="text-xs uppercase tracking-widest text-white/60 mb-1">Option A</p>
+                  <p className="text-sm font-semibold text-white">{blockOption.label}</p>
                   {blockOption.description ? (
-                    <p className="text-sm text-gray-600 mt-1 whitespace-pre-wrap">{blockOption.description}</p>
+                    <p className="text-sm text-white/70 mt-1 whitespace-pre-wrap">{blockOption.description}</p>
                   ) : null}
                 </div>
-                <div className="rounded-lg border border-gray-100 p-4">
-                  <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Option B</p>
-                  <p className="text-sm font-semibold text-black">{unityOption.label}</p>
+                <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+                  <p className="text-xs uppercase tracking-widest text-white/60 mb-1">Option B</p>
+                  <p className="text-sm font-semibold text-white">{unityOption.label}</p>
                   {unityOption.description ? (
-                    <p className="text-sm text-gray-600 mt-1 whitespace-pre-wrap">{unityOption.description}</p>
+                    <p className="text-sm text-white/70 mt-1 whitespace-pre-wrap">{unityOption.description}</p>
                   ) : null}
                 </div>
               </div>
 
               {links.length > 0 ? (
                 <div className="space-y-2">
-                  <p className="text-xs uppercase tracking-widest text-gray-500">Links</p>
+                  <p className="text-xs uppercase tracking-widest text-white/60">Links</p>
                   <div className="flex flex-col sm:flex-row flex-wrap gap-2">
                     {links.map((lnk) => (
                       <a
@@ -250,7 +259,7 @@ export function DecisionPortalPage() {
                         href={lnk.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center justify-center rounded-lg border border-gray-200 px-3 py-2 text-sm text-black hover:bg-black hover:text-white hover:border-black transition w-fit"
+                        className="inline-flex items-center justify-center rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white hover:border-primary/60 hover:text-primary hover:bg-white/10 transition w-fit"
                       >
                         {lnk.label}
                       </a>
@@ -260,7 +269,7 @@ export function DecisionPortalPage() {
               ) : null}
 
               {!content.isOpen ? (
-                <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+                <div className="rounded-lg border border-amber-400/30 bg-amber-500/10 p-4 text-sm text-amber-100">
                   Voting is currently closed for this decision.
                 </div>
               ) : null}
@@ -269,7 +278,7 @@ export function DecisionPortalPage() {
         </motion.div>
 
         <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.35 }}>
-          <Card className="border border-gray-200 shadow-sm">
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Scale className="size-5" />
@@ -277,15 +286,15 @@ export function DecisionPortalPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-5">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-white/70">
                 Use the sliders below to weight strategic priorities and determine the higher weighted recommendation.
               </p>
 
               <div className="space-y-4">
                 <div>
                   <div className="flex items-center justify-between gap-3">
-                    <label className="text-sm font-semibold text-gray-800">Community Impact</label>
-                    <span className="text-xs text-gray-500">Weight: {impact}</span>
+                    <label className="text-sm font-semibold text-white">Community Impact</label>
+                    <span className="text-xs text-white/60">Weight: {impact}</span>
                   </div>
                   <input
                     type="range"
@@ -299,8 +308,8 @@ export function DecisionPortalPage() {
 
                 <div>
                   <div className="flex items-center justify-between gap-3">
-                    <label className="text-sm font-semibold text-gray-800">Inter-Organizational Unity</label>
-                    <span className="text-xs text-gray-500">Weight: {unity}</span>
+                    <label className="text-sm font-semibold text-white">Inter-Organizational Unity</label>
+                    <span className="text-xs text-white/60">Weight: {unity}</span>
                   </div>
                   <input
                     type="range"
@@ -314,8 +323,8 @@ export function DecisionPortalPage() {
 
                 <div>
                   <div className="flex items-center justify-between gap-3">
-                    <label className="text-sm font-semibold text-gray-800">Feasibility</label>
-                    <span className="text-xs text-gray-500">Weight: {feasibility}</span>
+                    <label className="text-sm font-semibold text-white">Feasibility</label>
+                    <span className="text-xs text-white/60">Weight: {feasibility}</span>
                   </div>
                   <input
                     type="range"
@@ -328,9 +337,9 @@ export function DecisionPortalPage() {
                 </div>
               </div>
 
-              <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                <p className="text-lg font-bold text-black">{weighted.recommendation}</p>
-                <p className="text-xs text-gray-500 mt-1">
+              <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+                <p className="text-lg font-bold text-white">{weighted.recommendation}</p>
+                <p className="text-xs text-white/60 mt-1">
                   (Internal scoring only. Vote results are never shown publicly.)
                 </p>
               </div>
@@ -339,38 +348,38 @@ export function DecisionPortalPage() {
         </motion.div>
 
         <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.05, duration: 0.35 }}>
-          <Card className="border border-gray-200 shadow-sm">
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardHeader>
               <CardTitle>Confidential Preference Submission</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-white/70">
                 Submit your independent choice. Your vote is submitted confidentially for council-wide access control,
                 and never displayed publicly. (A local copy is kept on this device for continuity.)
               </p>
               {session.authenticated && hasServerVote ? (
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-white/60">
                   Note: you have already submitted a vote for this decision. Submitting again will update your vote.
                 </p>
               ) : null}
 
               <div className="flex flex-col sm:flex-row gap-3">
-                <Button className="bg-black hover:bg-gray-900" onClick={() => submitVote("block")} disabled={!content.isOpen}>
+                <Button onClick={() => submitVote("block")} disabled={!content.isOpen}>
                   Vote: {blockOption.label}
                 </Button>
-                <Button className="bg-black hover:bg-gray-900" onClick={() => submitVote("unity")} disabled={!content.isOpen}>
+                <Button onClick={() => submitVote("unity")} disabled={!content.isOpen}>
                   Vote: {unityOption.label}
                 </Button>
               </div>
 
-              {confirmation ? <p className="text-sm font-semibold text-black">{confirmation}</p> : null}
+              {confirmation ? <p className="text-sm font-semibold text-white">{confirmation}</p> : null}
 
               <hr className="my-2" />
 
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">Admin Export</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-sm font-semibold text-white">Admin Export</p>
+                  <p className="text-xs text-white/60">
                     Downloads council-wide vote history for this decision.
                   </p>
                 </div>
@@ -378,7 +387,7 @@ export function DecisionPortalPage() {
                   variant="outline"
                   onClick={exportVotes}
                   disabled={!session.isCouncilAdmin}
-                  className="gap-2"
+                  className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10"
                 >
                   <Download className="size-4" />
                   Download Vote Data
@@ -389,15 +398,19 @@ export function DecisionPortalPage() {
         </motion.div>
 
         <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1, duration: 0.35 }}>
-          <Card className="border border-gray-200 shadow-sm">
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardHeader>
               <CardTitle>Print Instructions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-white/70">
                 Use your browser’s print function to generate a PDF snapshot of the decision simulator.
               </p>
-              <Button variant="outline" className="gap-2" onClick={() => window.print()}>
+              <Button
+                variant="outline"
+                className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10"
+                onClick={() => window.print()}
+              >
                 <Printer className="size-4" />
                 Print / Save PDF
               </Button>

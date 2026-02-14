@@ -85,17 +85,22 @@ export function ForumTopicPage() {
   return (
     <div className="mx-auto max-w-4xl p-4 sm:p-8 space-y-4">
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <Link to="/forum" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black">
+        <Link to="/forum" className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-primary transition-colors">
           <ArrowLeft className="size-4" />
           Back to Forum
         </Link>
-        <Button variant="outline" className="gap-2" onClick={load} disabled={!canUse || loading}>
+        <Button
+          variant="outline"
+          className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10"
+          onClick={load}
+          disabled={!canUse || loading}
+        >
           <RefreshCw className="size-4" />
           Refresh
         </Button>
       </div>
 
-      <Card className="border-0 shadow-lg ring-1 ring-black/5">
+      <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
         <CardHeader>
           <CardTitle>{topic?.title || "Topic"}</CardTitle>
           <CardDescription>
@@ -105,39 +110,44 @@ export function ForumTopicPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           {!canUse ? (
-            <p className="text-sm text-gray-700">
+            <p className="text-sm text-white/70">
               You must be authenticated to use the forum. If you see this, refresh and complete Cloudflare Access login.
             </p>
           ) : null}
 
-          {message ? <p className="text-sm text-green-700 font-semibold">{message}</p> : null}
-          {error ? <p className="text-sm text-red-700 font-semibold">{error}</p> : null}
-          {loading ? <p className="text-sm text-gray-500">Loading...</p> : null}
+          {message ? <p className="text-sm text-emerald-300 font-semibold">{message}</p> : null}
+          {error ? <p className="text-sm text-rose-300 font-semibold">{error}</p> : null}
+          {loading ? <p className="text-sm text-white/60">Loading...</p> : null}
 
           {!loading && posts.length === 0 ? (
-            <p className="text-sm text-gray-600">No posts.</p>
+            <p className="text-sm text-white/70">No posts.</p>
           ) : null}
 
           <div className="space-y-3">
             {posts.map((p, idx) => (
-              <div key={p.id} className={`rounded-xl border p-4 sm:p-5 ${idx === 0 ? "border-black/15 bg-gray-50/60" : "border-gray-200 bg-white"}`}>
+              <div
+                key={p.id}
+                className={`rounded-xl border p-4 sm:p-5 ${
+                  idx === 0 ? "border-primary/25 bg-primary/10" : "border-white/10 bg-white/5"
+                }`}
+              >
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-white/60">
                     {displayEmail(p.createdBy)} • {fmtDateTime(p.createdAt)}
                   </p>
                   {idx === 0 ? (
-                    <span className="rounded-full border border-gray-200 px-2.5 py-0.5 text-[11px] text-gray-600">
+                    <span className="rounded-full border border-primary/25 bg-primary/10 px-2.5 py-0.5 text-[11px] text-primary">
                       Original Post
                     </span>
                   ) : null}
                 </div>
-                <p className="mt-2 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{p.body}</p>
+                <p className="mt-2 text-sm text-white/80 whitespace-pre-wrap leading-relaxed">{p.body}</p>
               </div>
             ))}
           </div>
 
-          <div className="rounded-xl border border-gray-200 p-4 sm:p-5 bg-gray-50/40">
-            <p className="text-sm font-semibold text-black mb-2">Add Reply</p>
+          <div className="rounded-xl border border-white/10 p-4 sm:p-5 bg-white/5">
+            <p className="text-sm font-semibold text-white mb-2">Add Reply</p>
             <Textarea
               value={reply}
               onChange={(e) => setReply(e.target.value)}
@@ -149,15 +159,15 @@ export function ForumTopicPage() {
               <Button
                 onClick={submitReply}
                 disabled={!canUse || locked || saving || reply.trim().length === 0}
-                className="bg-black hover:bg-gray-800 gap-2"
+                className="gap-2"
               >
                 <Send className="size-4" />
                 {saving ? "Posting..." : "Post Reply"}
               </Button>
               {locked ? (
-                <p className="text-xs text-gray-600">Topic is locked.</p>
+                <p className="text-xs text-white/60">Topic is locked.</p>
               ) : (
-                <p className="text-xs text-gray-600">Keep it respectful and on-topic.</p>
+                <p className="text-xs text-white/60">Keep it respectful and on-topic.</p>
               )}
             </div>
           </div>
@@ -166,4 +176,3 @@ export function ForumTopicPage() {
     </div>
   );
 }
-

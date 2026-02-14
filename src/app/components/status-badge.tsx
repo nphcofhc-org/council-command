@@ -7,32 +7,32 @@ import { Badge } from "./ui/badge";
 
 const statusStyles: Record<string, string> = {
   // Green — positive / complete
-  Active:     "bg-green-50 text-green-700 border-green-200",
-  Current:    "bg-green-50 text-green-700 border-green-200",
-  Submitted:  "bg-green-50 text-green-700 border-green-200",
-  Completed:  "bg-green-50 text-green-700 border-green-200",
-  Final:      "bg-green-50 text-green-700 border-green-200",
-  Open:       "bg-green-50 text-green-700 border-green-200",
+  Active:     "bg-emerald-500/15 text-emerald-200 border-emerald-400/25",
+  Current:    "bg-emerald-500/15 text-emerald-200 border-emerald-400/25",
+  Submitted:  "bg-emerald-500/15 text-emerald-200 border-emerald-400/25",
+  Completed:  "bg-emerald-500/15 text-emerald-200 border-emerald-400/25",
+  Final:      "bg-emerald-500/15 text-emerald-200 border-emerald-400/25",
+  Open:       "bg-emerald-500/15 text-emerald-200 border-emerald-400/25",
 
   // Blue — informational
-  "In Progress": "bg-blue-50 text-blue-700 border-blue-200",
+  "In Progress": "bg-sky-500/15 text-sky-200 border-sky-400/25",
 
   // Amber / Orange — attention needed
-  Draft:       "bg-amber-50 text-amber-700 border-amber-200",
-  Pending:     "bg-orange-50 text-orange-700 border-orange-200",
-  "Coming Soon": "bg-gray-50 text-gray-500 border-gray-200",
+  Draft:         "bg-amber-500/15 text-amber-200 border-amber-400/25",
+  Pending:       "bg-amber-500/15 text-amber-200 border-amber-400/25",
+  "Coming Soon": "bg-white/10 text-white/70 border-white/15",
 
   // Red — high priority
-  High:        "bg-red-50 text-red-700 border-red-200",
+  High:        "bg-rose-500/15 text-rose-200 border-rose-400/25",
 
   // Yellow — medium priority
-  Medium:      "bg-amber-50 text-amber-700 border-amber-200",
+  Medium:      "bg-amber-500/15 text-amber-200 border-amber-400/25",
 
   // Gray — neutral / archived
-  Filed:       "bg-gray-50 text-gray-500 border-gray-200",
-  Low:         "bg-gray-50 text-gray-500 border-gray-200",
-  "Not Started": "bg-gray-50 text-gray-500 border-gray-200",
-  Closed:      "bg-gray-50 text-gray-500 border-gray-200",
+  Filed:        "bg-white/10 text-white/70 border-white/15",
+  Low:          "bg-white/10 text-white/70 border-white/15",
+  "Not Started": "bg-white/10 text-white/70 border-white/15",
+  Closed:       "bg-white/10 text-white/70 border-white/15",
 };
 
 interface StatusBadgeProps {
@@ -42,16 +42,16 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, variant, className = "" }: StatusBadgeProps) {
-  const style = statusStyles[status] || "bg-gray-100 text-gray-700 border-gray-200";
+  const style = statusStyles[status] || "bg-white/10 text-white/70 border-white/15";
 
   if (variant === "outline") {
     // For outline variant, use border color + text color only
     const outlineStyles: Record<string, string> = {
-      "In Progress": "border-blue-300 text-blue-700",
-      Pending:       "border-amber-300 text-amber-700",
-      "Not Started": "border-gray-300 text-gray-500",
+      "In Progress": "border-sky-400/40 text-sky-200",
+      Pending:       "border-amber-400/40 text-amber-200",
+      "Not Started": "border-white/20 text-white/60",
     };
-    const outlineStyle = outlineStyles[status] || "border-gray-300 text-gray-500";
+    const outlineStyle = outlineStyles[status] || "border-white/20 text-white/60";
     return (
       <Badge variant="outline" className={`${outlineStyle} w-fit ${className}`}>
         {status}

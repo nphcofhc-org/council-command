@@ -38,9 +38,9 @@ export function CouncilAdminPage() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <Alert className="mb-6 border-red-200 bg-red-50/80">
-            <AlertTriangle className="size-4 text-red-600" />
-            <AlertDescription className="text-red-800 ml-1 text-sm">
+          <Alert className="mb-6 border-rose-400/30 bg-rose-500/10 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
+            <AlertTriangle className="size-4 text-rose-300" />
+            <AlertDescription className="text-rose-100 ml-1 text-sm">
               <strong>Restricted Access {"\u2013"} Council Leadership Only.</strong>{" "}
               This section contains confidential council documents and administrative tools.
               Access is limited to Executive Board members and authorized personnel.
@@ -56,11 +56,11 @@ export function CouncilAdminPage() {
           className="mb-8"
         >
           <div className="flex items-center gap-3 mb-1">
-            <Shield className="size-5 text-black" />
-            <span className="text-xs tracking-[0.2em] uppercase text-gray-400">Executive Access</span>
+            <Shield className="size-5 text-primary" />
+            <span className="text-xs tracking-[0.2em] uppercase text-white/60">Executive Access</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl text-black mb-1">Council Admin</h1>
-          <p className="text-sm sm:text-base text-gray-500">
+          <h1 className="text-2xl sm:text-3xl text-white mb-1">Council Admin</h1>
+          <p className="text-sm sm:text-base text-white/70">
             Internal documents, financial records, and strategic planning
           </p>
         </motion.div>
@@ -71,15 +71,15 @@ export function CouncilAdminPage() {
           transition={{ delay: 0.2, duration: 0.5 }}
           className="mb-6 grid gap-4 lg:grid-cols-2"
         >
-          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h3 className="text-base text-black sm:text-lg">NPHC Compliance Checklist</h3>
-                <p className="text-sm text-gray-500">
+                <h3 className="text-base text-white sm:text-lg">NPHC Compliance Checklist</h3>
+                <p className="text-sm text-white/70">
                   Open the dedicated compliance tracking page to manage annual reporting readiness.
                 </p>
               </div>
-              <Button asChild className="w-full bg-black hover:bg-gray-800 sm:w-auto">
+              <Button asChild className="w-full sm:w-auto">
                 <Link to="/council-admin/compliance">
                   <ClipboardCheck className="mr-2 size-4" />
                   Open Compliance Page
@@ -88,23 +88,23 @@ export function CouncilAdminPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h3 className="text-base text-black sm:text-lg">Content Manager</h3>
-                <p className="text-sm text-gray-500">
+                <h3 className="text-base text-white sm:text-lg">Content Manager</h3>
+                <p className="text-sm text-white/70">
                   Update leadership names, chapters, emails, and photo URLs.
                 </p>
               </div>
               {session.isSiteEditor ? (
-                <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
+                <Button asChild variant="outline" className="w-full sm:w-auto border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10">
                   <Link to="/council-admin/content">
                     <SlidersHorizontal className="mr-2 size-4" />
                     Open Content Manager
                   </Link>
                 </Button>
               ) : (
-                <Button type="button" variant="outline" className="w-full border-black/40 text-black/60 sm:w-auto" disabled>
+                <Button type="button" variant="outline" className="w-full sm:w-auto border-white/15 bg-white/5 text-white/40" disabled>
                   <Lock className="mr-2 size-4" />
                   President Only
                 </Button>
@@ -112,11 +112,11 @@ export function CouncilAdminPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h3 className="text-base text-black sm:text-lg">Home Page Editor</h3>
-                <p className="text-sm text-gray-500">
+                <h3 className="text-base text-white sm:text-lg">Home Page Editor</h3>
+                <p className="text-sm text-white/70">
                   Update banner, president welcome, quick links, and internal news.
                 </p>
               </div>
@@ -124,7 +124,7 @@ export function CouncilAdminPage() {
                 <Button
                   type="button"
                   variant={editorMode ? "outline" : "default"}
-                  className={editorMode ? "w-full border-black text-black hover:bg-black hover:text-white sm:w-auto" : "w-full bg-black hover:bg-gray-800 sm:w-auto"}
+                  className={editorMode ? "w-full sm:w-auto border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10" : "w-full sm:w-auto"}
                   onClick={() => setEditorMode(true)}
                   asChild={editorMode}
                 >
@@ -141,7 +141,7 @@ export function CouncilAdminPage() {
                   )}
                 </Button>
               ) : (
-                <Button type="button" variant="outline" className="w-full border-black/40 text-black/60 sm:w-auto" disabled>
+                <Button type="button" variant="outline" className="w-full sm:w-auto border-white/15 bg-white/5 text-white/40" disabled>
                   <Lock className="mr-2 size-4" />
                   President Only
                 </Button>
@@ -149,23 +149,23 @@ export function CouncilAdminPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h3 className="text-base text-black sm:text-lg">Meetings Editor</h3>
-                <p className="text-sm text-gray-500">
+                <h3 className="text-base text-white sm:text-lg">Meetings Editor</h3>
+                <p className="text-sm text-white/70">
                   Update upcoming meetings, minutes, and delegate report rows.
                 </p>
               </div>
               {session.isSiteEditor ? (
-                <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
+                <Button asChild variant="outline" className="w-full sm:w-auto border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10">
                   <Link to="/council-admin/content/meetings">
                     <Calendar className="mr-2 size-4" />
                     Edit Meetings
                   </Link>
                 </Button>
               ) : (
-                <Button type="button" variant="outline" className="w-full border-black/40 text-black/60 sm:w-auto" disabled>
+                <Button type="button" variant="outline" className="w-full sm:w-auto border-white/15 bg-white/5 text-white/40" disabled>
                   <Lock className="mr-2 size-4" />
                   President Only
                 </Button>
@@ -173,23 +173,23 @@ export function CouncilAdminPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h3 className="text-base text-black sm:text-lg">Programs Editor</h3>
-                <p className="text-sm text-gray-500">
+                <h3 className="text-base text-white sm:text-lg">Programs Editor</h3>
+                <p className="text-sm text-white/70">
                   Update events, flyers, archives, and signup forms.
                 </p>
               </div>
               {session.isSiteEditor ? (
-                <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
+                <Button asChild variant="outline" className="w-full sm:w-auto border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10">
                   <Link to="/council-admin/content/programs">
                     <TrendingUp className="mr-2 size-4" />
                     Edit Programs
                   </Link>
                 </Button>
               ) : (
-                <Button type="button" variant="outline" className="w-full border-black/40 text-black/60 sm:w-auto" disabled>
+                <Button type="button" variant="outline" className="w-full sm:w-auto border-white/15 bg-white/5 text-white/40" disabled>
                   <Lock className="mr-2 size-4" />
                   President Only
                 </Button>
@@ -197,23 +197,23 @@ export function CouncilAdminPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h3 className="text-base text-black sm:text-lg">Resources Editor</h3>
-                <p className="text-sm text-gray-500">
+                <h3 className="text-base text-white sm:text-lg">Resources Editor</h3>
+                <p className="text-sm text-white/70">
                   Update shared forms, org links, and training resources.
                 </p>
               </div>
               {session.isSiteEditor ? (
-                <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
+                <Button asChild variant="outline" className="w-full sm:w-auto border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10">
                   <Link to="/council-admin/content/resources">
                     <FolderOpen className="mr-2 size-4" />
                     Edit Resources
                   </Link>
                 </Button>
               ) : (
-                <Button type="button" variant="outline" className="w-full border-black/40 text-black/60 sm:w-auto" disabled>
+                <Button type="button" variant="outline" className="w-full sm:w-auto border-white/15 bg-white/5 text-white/40" disabled>
                   <Lock className="mr-2 size-4" />
                   President Only
                 </Button>
@@ -221,23 +221,23 @@ export function CouncilAdminPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h3 className="text-base text-black sm:text-lg">Decision Portal Editor</h3>
-                <p className="text-sm text-gray-500">
+                <h3 className="text-base text-white sm:text-lg">Decision Portal Editor</h3>
+                <p className="text-sm text-white/70">
                   Manage the decision brief, option labels, links, and whether voting is open.
                 </p>
               </div>
               {session.isSiteEditor ? (
-                <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
+                <Button asChild variant="outline" className="w-full sm:w-auto border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10">
                   <Link to="/council-admin/content/decision-portal">
                     <Target className="mr-2 size-4" />
                     Edit Decision Portal
                   </Link>
                 </Button>
               ) : (
-                <Button type="button" variant="outline" className="w-full border-black/40 text-black/60 sm:w-auto" disabled>
+                <Button type="button" variant="outline" className="w-full sm:w-auto border-white/15 bg-white/5 text-white/40" disabled>
                   <Lock className="mr-2 size-4" />
                   President Only
                 </Button>
@@ -245,15 +245,15 @@ export function CouncilAdminPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h3 className="text-base text-black sm:text-lg">Submission Review</h3>
-                <p className="text-sm text-gray-500">
+                <h3 className="text-base text-white sm:text-lg">Submission Review</h3>
+                <p className="text-sm text-white/70">
                   Review budget submissions, reimbursement requests, and social media intake forms.
                 </p>
               </div>
-              <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
+              <Button asChild variant="outline" className="w-full sm:w-auto border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10">
                 <Link to="/council-admin/submissions">
                   <Inbox className="mr-2 size-4" />
                   Review Submissions
@@ -262,23 +262,23 @@ export function CouncilAdminPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h3 className="text-base text-black sm:text-lg">Notifications</h3>
-                <p className="text-sm text-gray-500">
+                <h3 className="text-base text-white sm:text-lg">Notifications</h3>
+                <p className="text-sm text-white/70">
                   Configure email recipients and confirmation emails for portal requests.
                 </p>
               </div>
               {session.isSiteEditor ? (
-                <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
+                <Button asChild variant="outline" className="w-full sm:w-auto border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10">
                   <Link to="/council-admin/notifications">
                     <Mail className="mr-2 size-4" />
                     Notification Settings
                   </Link>
                 </Button>
               ) : (
-                <Button type="button" variant="outline" className="w-full border-black/40 text-black/60 sm:w-auto" disabled>
+                <Button type="button" variant="outline" className="w-full sm:w-auto border-white/15 bg-white/5 text-white/40" disabled>
                   <Lock className="mr-2 size-4" />
                   President Only
                 </Button>
@@ -288,7 +288,7 @@ export function CouncilAdminPage() {
         </motion.div>
 
         <Tabs defaultValue="documents" className="space-y-6">
-          <TabsList className="bg-white border border-gray-200 w-full sm:w-auto flex-wrap justify-start">
+          <TabsList className="bg-white/5 border border-white/10 backdrop-blur-xl w-full sm:w-auto flex-wrap justify-start">
             <TabsTrigger value="documents" className="text-xs sm:text-sm">Internal Documents</TabsTrigger>
             <TabsTrigger value="tasks" className="text-xs sm:text-sm">Task Tracker</TabsTrigger>
           </TabsList>
@@ -302,11 +302,11 @@ export function CouncilAdminPage() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: sectionIndex * 0.1, duration: 0.5 }}
               >
-                <Card className="border-0 shadow-lg ring-1 ring-black/5">
+                <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                   <CardHeader>
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-black/5 rounded">
-                        <DynamicIcon name={section.iconName} className="size-5 text-black" />
+                      <div className="p-2 rounded-lg border border-white/10 bg-white/5 text-primary">
+                        <DynamicIcon name={section.iconName} className="size-5" />
                       </div>
                       <CardTitle className="text-lg sm:text-xl">{section.category}</CardTitle>
                     </div>
@@ -319,15 +319,15 @@ export function CouncilAdminPage() {
                           initial={{ x: -15, opacity: 0 }}
                           animate={{ x: 0, opacity: 1 }}
                           transition={{ delay: index * 0.05, duration: 0.3 }}
-                          className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors gap-3 group"
+                          className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/40 transition-colors gap-3 group"
                         >
                           <div className="flex items-start gap-3 flex-1 min-w-0">
-                            <div className="p-2 bg-black/5 rounded flex-shrink-0 group-hover:bg-black/10 transition-colors">
-                              <FileText className="size-4 sm:size-5 text-black" />
+                            <div className="p-2 rounded-lg border border-white/10 bg-black/30 text-primary flex-shrink-0 group-hover:border-primary/40 transition-colors">
+                              <FileText className="size-4 sm:size-5" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h3 className="text-black mb-1 text-sm sm:text-base">{doc.name}</h3>
-                              <p className="text-xs sm:text-sm text-gray-400">Last updated: {doc.updated}</p>
+                              <h3 className="text-white mb-1 text-sm sm:text-base">{doc.name}</h3>
+                              <p className="text-xs sm:text-sm text-white/60">Last updated: {doc.updated}</p>
                             </div>
                           </div>
                           <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
@@ -337,7 +337,7 @@ export function CouncilAdminPage() {
                                 asChild
                                 variant="outline"
                                 size="sm"
-                                className="gap-2 border-gray-200 hover:border-black hover:bg-black hover:text-white w-full sm:w-auto transition-all duration-200"
+                                className="gap-2 w-full sm:w-auto border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10 transition-all duration-200"
                               >
                                 {isInternalFile(doc.fileUrl) ? (
                                   <Link to={toViewer(doc.fileUrl)}>
@@ -356,7 +356,7 @@ export function CouncilAdminPage() {
                                 variant="outline"
                                 size="sm"
                                 disabled
-                                className="gap-2 border-gray-200 w-full sm:w-auto"
+                                className="gap-2 w-full sm:w-auto border-white/15 bg-white/5 text-white/40"
                               >
                                 <Lock className="size-3.5" />
                                 View
@@ -376,10 +376,10 @@ export function CouncilAdminPage() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.4, duration: 0.5 }}
             >
-              <Card className="bg-gray-50 border-0">
+              <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
                 <CardContent className="pt-6">
-                  <p className="text-sm text-gray-600">
-                    <strong className="text-black">Document Security Notice:</strong> All documents in this section are
+                  <p className="text-sm text-white/70">
+                    <strong className="text-white">Document Security Notice:</strong> All documents in this section are
                     confidential and for authorized council leadership only. Do not share, forward,
                     or discuss contents outside of official council business.
                   </p>
@@ -396,7 +396,7 @@ export function CouncilAdminPage() {
               transition={{ delay: 0.1, duration: 0.5 }}
               className="space-y-4"
             >
-              <Card className="border-0 shadow-lg ring-1 ring-black/5">
+              <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="text-lg sm:text-xl">Council Leadership Task Management</CardTitle>
                   <CardDescription className="text-sm">
@@ -411,17 +411,17 @@ export function CouncilAdminPage() {
                         initial={{ x: -15, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ delay: index * 0.08, duration: 0.4 }}
-                        className="flex flex-col sm:flex-row sm:items-start sm:justify-between p-4 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors gap-4"
+                        className="flex flex-col sm:flex-row sm:items-start sm:justify-between p-4 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/40 transition-colors gap-4"
                       >
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-black mb-2">{task.task}</h3>
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-4 text-sm text-gray-500">
+                          <h3 className="text-white mb-2">{task.task}</h3>
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-4 text-sm text-white/60">
                             <span>
-                              <strong className="text-gray-600">Assigned to:</strong> {task.assignedTo}
+                              <strong className="text-white/80">Assigned to:</strong> {task.assignedTo}
                             </span>
-                            <span className="hidden sm:inline text-gray-300">&middot;</span>
+                            <span className="hidden sm:inline text-white/20">&middot;</span>
                             <span>
-                              <strong className="text-gray-600">Due:</strong> {task.dueDate}
+                              <strong className="text-white/80">Due:</strong> {task.dueDate}
                             </span>
                           </div>
                         </div>
@@ -436,7 +436,10 @@ export function CouncilAdminPage() {
               </Card>
 
               <div className="flex justify-end">
-                <Button className="bg-black hover:bg-gray-800 w-full sm:w-auto">
+                <Button
+                  variant="outline"
+                  className="w-full sm:w-auto border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10"
+                >
                   View Full Task Management System
                 </Button>
               </div>

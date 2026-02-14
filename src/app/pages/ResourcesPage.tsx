@@ -34,17 +34,19 @@ export function ResourcesPage() {
           className="mb-8"
         >
           <div className="flex items-center gap-3 mb-1">
-            <div className="w-8 h-px bg-black" />
-            <span className="text-xs tracking-[0.2em] uppercase text-gray-400">Reference Library</span>
+            <div className="w-8 h-px bg-primary" />
+            <span className="text-xs tracking-[0.2em] uppercase text-white/60">Reference Library</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl text-black mb-1">Resources</h1>
-          <p className="text-sm sm:text-base text-gray-500">
+          <h1 className="text-2xl sm:text-3xl text-white mb-1">
+            <span className="text-primary">Resources</span>
+          </h1>
+          <p className="text-sm sm:text-base text-white/70">
             Forms, external links, training materials, and governance reference documents
           </p>
         </motion.div>
 
         <Tabs defaultValue="forms" className="space-y-6">
-          <TabsList className="bg-white border border-gray-200 w-full sm:w-auto flex-wrap justify-start">
+          <TabsList className="w-full sm:w-auto flex-wrap justify-start border border-white/10 bg-white/5 backdrop-blur-xl">
             <TabsTrigger value="forms" className="text-xs sm:text-sm">Shared Forms</TabsTrigger>
             <TabsTrigger value="national" className="text-xs sm:text-sm">National Organizations</TabsTrigger>
             <TabsTrigger value="training" className="text-xs sm:text-sm">Training & Onboarding</TabsTrigger>
@@ -59,7 +61,7 @@ export function ResourcesPage() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: catIndex * 0.1, duration: 0.5 }}
               >
-                <Card className="border-0 shadow-lg ring-1 ring-black/5">
+                <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                   <CardHeader>
                     <CardTitle className="text-lg sm:text-xl">{category.category}</CardTitle>
                   </CardHeader>
@@ -71,22 +73,22 @@ export function ResourcesPage() {
                           initial={{ x: -15, opacity: 0 }}
                           animate={{ x: 0, opacity: 1 }}
                           transition={{ delay: index * 0.05, duration: 0.3 }}
-                          className="flex flex-col sm:flex-row sm:items-start sm:justify-between p-4 rounded-lg border border-gray-100 hover:bg-gray-50 transition-all duration-200 gap-3 group"
+                          className="flex flex-col sm:flex-row sm:items-start sm:justify-between p-4 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-all duration-200 gap-3 group"
                         >
                           <div className="flex items-start gap-3 flex-1 min-w-0">
-                            <div className="p-2 bg-black/5 rounded flex-shrink-0 group-hover:bg-black/10 transition-colors">
-                              <FileText className="size-4 sm:size-5 text-black" />
+                            <div className="p-2 rounded-lg border border-white/10 bg-white/5 flex-shrink-0 group-hover:border-primary/30 group-hover:bg-white/10 transition-colors">
+                              <FileText className="size-4 sm:size-5 text-white" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h3 className="text-black mb-1 text-sm sm:text-base">{form.name}</h3>
-                              <p className="text-sm text-gray-500">{form.description}</p>
+                              <h3 className="text-white mb-1 text-sm sm:text-base">{form.name}</h3>
+                              <p className="text-sm text-white/70">{form.description}</p>
                             </div>
                           </div>
                           <Button
                             asChild
                             variant="outline"
                             size="sm"
-                            className="gap-2 border-gray-200 hover:border-black hover:bg-black hover:text-white w-full sm:w-auto transition-all duration-200"
+                            className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10 w-full sm:w-auto transition-all duration-200"
                           >
                             <a href={form.link} target="_blank" rel="noreferrer">
                               <ExternalLink className="size-3.5" />
@@ -110,7 +112,7 @@ export function ResourcesPage() {
               transition={{ delay: 0.1, duration: 0.5 }}
               className="space-y-4"
             >
-              <Card className="border-0 shadow-lg ring-1 ring-black/5">
+              <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="text-lg sm:text-xl">Divine Nine National Headquarters</CardTitle>
                   <CardDescription className="text-sm">
@@ -125,18 +127,18 @@ export function ResourcesPage() {
                         initial={{ x: -15, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ delay: index * 0.04, duration: 0.3 }}
-                        className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors gap-3 group"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-colors gap-3 group"
                       >
                         <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className="p-2 bg-black/5 rounded flex-shrink-0 group-hover:bg-black/10 transition-colors">
-                            <Building2 className="size-4 sm:size-5 text-black" />
+                          <div className="p-2 rounded-lg border border-white/10 bg-white/5 flex-shrink-0 group-hover:border-primary/30 group-hover:bg-white/10 transition-colors">
+                            <Building2 className="size-4 sm:size-5 text-white" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-black text-sm sm:text-base">{org.name}</h3>
-                            <p className="text-xs sm:text-sm text-gray-400">Founded {org.founded}</p>
+                            <h3 className="text-white text-sm sm:text-base">{org.name}</h3>
+                            <p className="text-xs sm:text-sm text-white/50">Founded {org.founded}</p>
                           </div>
                         </div>
-                        <Button asChild variant="ghost" size="sm" className="gap-2 text-gray-500 hover:text-black w-full sm:w-auto">
+                        <Button asChild variant="ghost" size="sm" className="gap-2 text-white/70 hover:text-primary w-full sm:w-auto">
                           <a href={org.website} target="_blank" rel="noreferrer">
                             <ExternalLink className="size-3.5" />
                             Visit Website
@@ -148,14 +150,14 @@ export function ResourcesPage() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-50 border-0">
+              <Card className="border border-white/10 bg-white/5 backdrop-blur-xl">
                 <CardContent className="pt-6">
                   <div className="flex items-start gap-3">
-                    <GraduationCap className="size-5 text-black mt-0.5 flex-shrink-0" />
-                    <p className="text-sm text-gray-600">
-                      <strong className="text-black">National Pan-Hellenic Council, Inc.</strong> coordinates the activities
+                    <GraduationCap className="size-5 text-primary mt-0.5 flex-shrink-0" />
+                    <p className="text-sm text-white/75">
+                      <strong className="text-white">National Pan-Hellenic Council, Inc.</strong> coordinates the activities
                       of its nine member organizations on a national and international scale. Visit{" "}
-                      <a href="https://nphchq.org" className="underline text-black hover:no-underline">
+                      <a href="https://nphchq.org" className="underline text-primary hover:no-underline">
                         nphchq.org
                       </a>{" "}
                       for national council information.
@@ -173,7 +175,7 @@ export function ResourcesPage() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.1, duration: 0.5 }}
             >
-              <Card className="border-0 shadow-lg ring-1 ring-black/5">
+              <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="text-lg sm:text-xl">Training Materials & Reference Documents</CardTitle>
                   <CardDescription className="text-sm">
@@ -188,20 +190,20 @@ export function ResourcesPage() {
                         initial={{ x: -15, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ delay: index * 0.05, duration: 0.3 }}
-                        className="flex flex-col lg:flex-row lg:items-center lg:justify-between p-4 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors gap-3 group"
+                        className="flex flex-col lg:flex-row lg:items-center lg:justify-between p-4 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-colors gap-3 group"
                       >
                         <div className="flex items-start gap-3 flex-1 min-w-0">
-                          <div className="p-2 bg-black/5 rounded flex-shrink-0 group-hover:bg-black/10 transition-colors">
-                            <BookOpen className="size-4 sm:size-5 text-black" />
+                          <div className="p-2 rounded-lg border border-white/10 bg-white/5 flex-shrink-0 group-hover:border-primary/30 group-hover:bg-white/10 transition-colors">
+                            <BookOpen className="size-4 sm:size-5 text-white" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
                               <div className="flex-1 min-w-0">
-                                <h3 className="text-black mb-1 text-sm sm:text-base">{resource.title}</h3>
-                                <p className="text-sm text-gray-500 mb-1">{resource.description}</p>
-                                <p className="text-xs text-gray-400">Last updated: {resource.updated}</p>
+                                <h3 className="text-white mb-1 text-sm sm:text-base">{resource.title}</h3>
+                                <p className="text-sm text-white/70 mb-1">{resource.description}</p>
+                                <p className="text-xs text-white/45">Last updated: {resource.updated}</p>
                               </div>
-                              <Badge variant="secondary" className="whitespace-nowrap bg-black text-white w-fit">
+                              <Badge variant="secondary" className="whitespace-nowrap w-fit border border-primary/25 bg-primary/15 text-primary">
                                 {resource.type}
                               </Badge>
                             </div>
@@ -212,7 +214,7 @@ export function ResourcesPage() {
                             asChild
                             variant="outline"
                             size="sm"
-                            className="gap-2 border-gray-200 hover:border-black hover:bg-black hover:text-white w-full sm:w-auto lg:ml-4 transition-all duration-200"
+                            className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10 w-full sm:w-auto lg:ml-4 transition-all duration-200"
                           >
                             {isInternalFile(resource.fileUrl) ? (
                               <Link to={toViewer(resource.fileUrl)}>
@@ -231,7 +233,7 @@ export function ResourcesPage() {
                             variant="outline"
                             size="sm"
                             disabled
-                            className="gap-2 border-gray-200 w-full sm:w-auto lg:ml-4"
+                            className="gap-2 border-white/15 bg-white/5 text-white/35 w-full sm:w-auto lg:ml-4"
                           >
                             <FileText className="size-3.5" />
                             View

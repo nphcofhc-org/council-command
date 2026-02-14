@@ -45,7 +45,7 @@ export const reportMeta: ReportMeta = {
   title: "Signature Event Comparison",
   subtitle: "Unity BBQ vs Neighborhood Block Party (Back-to-School)",
   dateLabel: "January 29, 2026",
-  treasuryLabel: "$7,842.64",
+  treasuryLabel: "$9,513.75",
   mission:
     "Provide an objective, data-driven comparison of two proposed signature event concepts and deliver strategic recommendations to support informed decision-making by the full chapter body.",
   links: [],

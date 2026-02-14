@@ -55,7 +55,7 @@ export const siteConfig: SiteConfig = {
     "As we navigate the fastest-growing county in the state, we lead with a focus on institutional health and fraternal unity.",
   ],
   presidentClosing: "In Unity and Service,",
-  bannerImageUrl: "", // Banner is imported as a local asset in HomePage
+  bannerImageUrl: "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/FORMAL%20NPHC%20BANNER.mp4",
   instagramHandle: "",
   instagramPostUrls: [],
   alertEnabled: false,

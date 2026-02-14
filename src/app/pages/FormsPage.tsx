@@ -6,7 +6,7 @@ import { DollarSign, Receipt, Megaphone, ListChecks, FileText } from "lucide-rea
 
 export function FormsPage() {
   return (
-    <div className="bg-white">
+    <div className="relative">
       <div className="max-w-7xl mx-auto p-4 sm:p-8">
         <motion.div
           initial={{ y: -12, opacity: 0 }}
@@ -15,17 +15,17 @@ export function FormsPage() {
           className="mb-8"
         >
           <div className="flex items-center gap-3 mb-1">
-            <div className="w-8 h-px bg-black" />
-            <span className="text-xs tracking-[0.2em] uppercase text-gray-400">Submissions</span>
+            <div className="w-8 h-px bg-primary" />
+            <span className="text-xs tracking-[0.2em] uppercase text-white/60">Submissions</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl text-black mb-1">Forms & Requests</h1>
-          <p className="text-sm sm:text-base text-gray-500">
+          <h1 className="text-2xl sm:text-3xl text-white mb-1">Forms & Requests</h1>
+          <p className="text-sm sm:text-base text-white/70">
             Submit budgets, reimbursements, social media requests, and committee reports for review.
           </p>
         </motion.div>
 
         <div className="grid gap-5 md:grid-cols-3">
-          <Card className="border-0 shadow-lg ring-1 ring-black/5 md:col-span-3">
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl md:col-span-3">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <ListChecks className="size-5" />
@@ -36,13 +36,17 @@ export function FormsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button asChild variant="outline" className="w-full sm:w-auto border-black text-black hover:bg-black hover:text-white">
+              <Button
+                asChild
+                variant="outline"
+                className="w-full sm:w-auto border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10"
+              >
                 <Link to="/forms/my">View My Submissions</Link>
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <DollarSign className="size-5" />
@@ -53,13 +57,13 @@ export function FormsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button asChild className="bg-black hover:bg-gray-900 w-full">
+              <Button asChild className="w-full">
                 <Link to="/forms/budget">Open Form</Link>
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <Receipt className="size-5" />
@@ -70,13 +74,13 @@ export function FormsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button asChild className="bg-black hover:bg-gray-900 w-full">
+              <Button asChild className="w-full">
                 <Link to="/forms/reimbursement">Open Form</Link>
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <Megaphone className="size-5" />
@@ -87,13 +91,13 @@ export function FormsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button asChild className="bg-black hover:bg-gray-900 w-full">
+              <Button asChild className="w-full">
                 <Link to="/forms/social-media">Open Form</Link>
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <FileText className="size-5" />
@@ -104,7 +108,7 @@ export function FormsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button asChild className="bg-black hover:bg-gray-900 w-full">
+              <Button asChild className="w-full">
                 <Link to="/forms/committee-report">Open Form</Link>
               </Button>
             </CardContent>
