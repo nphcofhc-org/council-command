@@ -2,7 +2,7 @@ import { json } from "../../_lib/http";
 import {
   ensureContentTable,
   readSection,
-  requireCouncilAdmin,
+  requireSiteEditor,
   requireDb,
   requireMethods,
   writeSection,
@@ -65,7 +65,7 @@ export async function onRequest(context) {
     return json({ found: true, data: sanitizePayload(payload.data || {}), updatedAt: payload.updatedAt, updatedBy: payload.updatedBy });
   }
 
-  const auth = await requireCouncilAdmin(request, env);
+  const auth = await requireSiteEditor(request, env);
   if (!auth.ok) return auth.response;
 
   let body;
@@ -78,4 +78,3 @@ export async function onRequest(context) {
   const saved = await writeSection(env.DB, SECTION_KEY, sanitizePayload(body || {}), auth.session.email);
   return json(saved);
 }
-

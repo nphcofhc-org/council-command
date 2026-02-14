@@ -8,12 +8,16 @@ import { useCouncilAdminData } from "../hooks/use-site-data";
 import { StatusBadge } from "../components/status-badge";
 import { DynamicIcon } from "../components/icon-resolver";
 import { Link } from "react-router";
-import { CouncilAdminGate } from "../components/CouncilAdminGate";
+import { CouncilLeaderGate } from "../components/CouncilLeaderGate";
+import { useCouncilSession } from "../hooks/use-council-session";
+import { useEditorMode } from "../hooks/use-editor-mode";
 
 const ART_MARBLE = "https://images.unsplash.com/photo-1678756466078-1ff0d7b09431?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25vY2hyb21lJTIwYWJzdHJhY3QlMjBtYXJibGUlMjB0ZXh0dXJlfGVufDF8fHx8MTc3MDUxMzIyM3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 
 export function CouncilAdminPage() {
   const { data } = useCouncilAdminData();
+  const { session } = useCouncilSession();
+  const { editorMode, setEditorMode } = useEditorMode();
 
   const internalDocuments = data?.internalDocuments || [];
   const tasks = data?.tasks || [];
@@ -21,7 +25,7 @@ export function CouncilAdminPage() {
   const isInternalFile = (url: string) => url.trim().startsWith("/");
 
   return (
-    <CouncilAdminGate>
+    <CouncilLeaderGate>
       <div className="relative min-h-screen">
         <div className="absolute top-20 right-0 w-96 h-96 opacity-[0.03] pointer-events-none hidden lg:block">
           <img src={ART_MARBLE} alt="" className="w-full h-full object-cover" />
@@ -92,12 +96,19 @@ export function CouncilAdminPage() {
                   Update leadership names, chapters, emails, and photo URLs.
                 </p>
               </div>
-              <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
-                <Link to="/council-admin/content">
-                  <SlidersHorizontal className="mr-2 size-4" />
-                  Open Content Manager
-                </Link>
-              </Button>
+              {session.isSiteEditor ? (
+                <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
+                  <Link to="/council-admin/content">
+                    <SlidersHorizontal className="mr-2 size-4" />
+                    Open Content Manager
+                  </Link>
+                </Button>
+              ) : (
+                <Button type="button" variant="outline" className="w-full border-black/40 text-black/60 sm:w-auto" disabled>
+                  <Lock className="mr-2 size-4" />
+                  President Only
+                </Button>
+              )}
             </CardContent>
           </Card>
 
@@ -109,12 +120,32 @@ export function CouncilAdminPage() {
                   Update banner, president welcome, quick links, and internal news.
                 </p>
               </div>
-              <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
-                <Link to="/council-admin/content/home">
-                  <Home className="mr-2 size-4" />
-                  Edit Home Page
-                </Link>
-              </Button>
+              {session.isSiteEditor ? (
+                <Button
+                  type="button"
+                  variant={editorMode ? "outline" : "default"}
+                  className={editorMode ? "w-full border-black text-black hover:bg-black hover:text-white sm:w-auto" : "w-full bg-black hover:bg-gray-800 sm:w-auto"}
+                  onClick={() => setEditorMode(true)}
+                  asChild={editorMode}
+                >
+                  {editorMode ? (
+                    <Link to="/council-admin/content/home">
+                      <Home className="mr-2 size-4" />
+                      Edit Home Page
+                    </Link>
+                  ) : (
+                    <>
+                      <Home className="mr-2 size-4" />
+                      Enable Editor Mode
+                    </>
+                  )}
+                </Button>
+              ) : (
+                <Button type="button" variant="outline" className="w-full border-black/40 text-black/60 sm:w-auto" disabled>
+                  <Lock className="mr-2 size-4" />
+                  President Only
+                </Button>
+              )}
             </CardContent>
           </Card>
 
@@ -126,12 +157,19 @@ export function CouncilAdminPage() {
                   Update upcoming meetings, minutes, and delegate report rows.
                 </p>
               </div>
-              <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
-                <Link to="/council-admin/content/meetings">
-                  <Calendar className="mr-2 size-4" />
-                  Edit Meetings
-                </Link>
-              </Button>
+              {session.isSiteEditor ? (
+                <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
+                  <Link to="/council-admin/content/meetings">
+                    <Calendar className="mr-2 size-4" />
+                    Edit Meetings
+                  </Link>
+                </Button>
+              ) : (
+                <Button type="button" variant="outline" className="w-full border-black/40 text-black/60 sm:w-auto" disabled>
+                  <Lock className="mr-2 size-4" />
+                  President Only
+                </Button>
+              )}
             </CardContent>
           </Card>
 
@@ -143,12 +181,19 @@ export function CouncilAdminPage() {
                   Update events, flyers, archives, and signup forms.
                 </p>
               </div>
-              <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
-                <Link to="/council-admin/content/programs">
-                  <TrendingUp className="mr-2 size-4" />
-                  Edit Programs
-                </Link>
-              </Button>
+              {session.isSiteEditor ? (
+                <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
+                  <Link to="/council-admin/content/programs">
+                    <TrendingUp className="mr-2 size-4" />
+                    Edit Programs
+                  </Link>
+                </Button>
+              ) : (
+                <Button type="button" variant="outline" className="w-full border-black/40 text-black/60 sm:w-auto" disabled>
+                  <Lock className="mr-2 size-4" />
+                  President Only
+                </Button>
+              )}
             </CardContent>
           </Card>
 
@@ -160,12 +205,19 @@ export function CouncilAdminPage() {
                   Update shared forms, org links, and training resources.
                 </p>
               </div>
-              <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
-                <Link to="/council-admin/content/resources">
-                  <FolderOpen className="mr-2 size-4" />
-                  Edit Resources
-                </Link>
-              </Button>
+              {session.isSiteEditor ? (
+                <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
+                  <Link to="/council-admin/content/resources">
+                    <FolderOpen className="mr-2 size-4" />
+                    Edit Resources
+                  </Link>
+                </Button>
+              ) : (
+                <Button type="button" variant="outline" className="w-full border-black/40 text-black/60 sm:w-auto" disabled>
+                  <Lock className="mr-2 size-4" />
+                  President Only
+                </Button>
+              )}
             </CardContent>
           </Card>
 
@@ -177,12 +229,19 @@ export function CouncilAdminPage() {
                   Manage the decision brief, option labels, links, and whether voting is open.
                 </p>
               </div>
-              <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
-                <Link to="/council-admin/content/decision-portal">
-                  <Target className="mr-2 size-4" />
-                  Edit Decision Portal
-                </Link>
-              </Button>
+              {session.isSiteEditor ? (
+                <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
+                  <Link to="/council-admin/content/decision-portal">
+                    <Target className="mr-2 size-4" />
+                    Edit Decision Portal
+                  </Link>
+                </Button>
+              ) : (
+                <Button type="button" variant="outline" className="w-full border-black/40 text-black/60 sm:w-auto" disabled>
+                  <Lock className="mr-2 size-4" />
+                  President Only
+                </Button>
+              )}
             </CardContent>
           </Card>
 
@@ -211,12 +270,19 @@ export function CouncilAdminPage() {
                   Configure email recipients and confirmation emails for portal requests.
                 </p>
               </div>
-              <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
-                <Link to="/council-admin/notifications">
-                  <Mail className="mr-2 size-4" />
-                  Notification Settings
-                </Link>
-              </Button>
+              {session.isSiteEditor ? (
+                <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
+                  <Link to="/council-admin/notifications">
+                    <Mail className="mr-2 size-4" />
+                    Notification Settings
+                  </Link>
+                </Button>
+              ) : (
+                <Button type="button" variant="outline" className="w-full border-black/40 text-black/60 sm:w-auto" disabled>
+                  <Lock className="mr-2 size-4" />
+                  President Only
+                </Button>
+              )}
             </CardContent>
           </Card>
         </motion.div>
@@ -379,6 +445,6 @@ export function CouncilAdminPage() {
         </Tabs>
         </div>
       </div>
-    </CouncilAdminGate>
+    </CouncilLeaderGate>
   );
 }

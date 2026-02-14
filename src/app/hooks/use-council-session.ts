@@ -12,12 +12,14 @@ const DEV_FALLBACK_SESSION: CouncilSession = {
   authenticated: true,
   email: "local-dev@nphc.local",
   isCouncilAdmin: true,
+  isSiteEditor: true,
 };
 
 const DEFAULT_SESSION: CouncilSession = {
   authenticated: false,
   email: null,
   isCouncilAdmin: false,
+  isSiteEditor: false,
 };
 
 let cachedSession: CouncilSession | null = null;

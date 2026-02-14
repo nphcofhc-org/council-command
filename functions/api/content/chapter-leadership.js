@@ -134,8 +134,8 @@ export async function onRequest(context) {
   if (!session.isAuthenticated) {
     return json({ error: "Unauthenticated." }, { status: 401 });
   }
-  if (!session.isCouncilAdmin) {
-    return json({ error: "Forbidden: council admin access required." }, { status: 403 });
+  if (!session.isSiteEditor) {
+    return json({ error: "Forbidden: site editor access required." }, { status: 403 });
   }
 
   let body;

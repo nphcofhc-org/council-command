@@ -24,7 +24,7 @@ export function MainLayout() {
   const { session } = useCouncilSession();
   const { editorMode, toggleEditorMode } = useEditorMode();
 
-  const navItems = session.isCouncilAdmin && editorMode
+  const navItems = session.isCouncilAdmin
     ? [...baseNavItems, { to: "/council-admin", label: "Council Admin", icon: Shield }]
     : baseNavItems;
 
@@ -88,7 +88,7 @@ export function MainLayout() {
 
             {/* Desktop: portal label */}
             <div className="hidden lg:flex items-center">
-              {session.isCouncilAdmin ? (
+              {session.isSiteEditor ? (
                 <button
                   type="button"
                   onClick={toggleEditorMode}
@@ -158,7 +158,7 @@ export function MainLayout() {
                 </div>
 
                 <div className="px-6 mt-8 pt-4 border-t border-white/10">
-                  {session.isCouncilAdmin ? (
+                  {session.isSiteEditor ? (
                     <button
                       type="button"
                       onClick={toggleEditorMode}
