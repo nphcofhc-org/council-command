@@ -365,7 +365,7 @@ export function HomePage() {
     <div>
       <FormsQuickPane />
       {/* ── Google Sites Cover Banner ─────────────────────────────────────── */}
-      <div className="relative w-full overflow-hidden bg-white h-[200px] sm:h-[240px] lg:h-[280px]">
+      <div className="relative w-full overflow-hidden bg-white h-[200px] sm:h-[240px] lg:h-[280px] lg:-ml-64 lg:w-[calc(100%+16rem)]">
         {bannerIsVideo ? (
           <motion.video
             initial={{ opacity: 0, scale: 1.02 }}
