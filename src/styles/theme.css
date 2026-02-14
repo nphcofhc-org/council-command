@@ -132,6 +132,9 @@
   }
 
   body {
+    position: relative;
+    z-index: 0;
+    isolation: isolate;
     background:
       radial-gradient(1200px 700px at 15% 10%, rgba(11, 189, 176, 0.14), transparent 55%),
       radial-gradient(900px 620px at 85% 20%, rgba(11, 189, 176, 0.10), transparent 55%),
@@ -154,6 +157,21 @@
       18px 26px,
       64px 10px,
       0 0;
+  }
+
+  /* NPHC watermark background (SVG) */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: url("https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/NPHC%20LOGO%20FINAL%20BLACK%20ON%20WHITECLEAR%20(1).svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: min(820px, 92vw);
+    opacity: 0.06;
+    filter: blur(0.2px);
   }
 
   /**
