@@ -94,6 +94,23 @@ export async function fetchHomePageData(): Promise<HomePageData> {
       updates: staticData.updates,
     };
 
+    const mergeConfig = (override: Partial<HomePageData["config"]> | null | undefined): HomePageData["config"] => {
+      if (!override) return base.config;
+      const merged = { ...base.config, ...override } as HomePageData["config"];
+      // Preserve base defaults when overrides omit or clear arrays.
+      if (Array.isArray(override.presidentMessage) && override.presidentMessage.length > 0) {
+        merged.presidentMessage = override.presidentMessage;
+      } else {
+        merged.presidentMessage = base.config.presidentMessage;
+      }
+      if (Array.isArray(override.instagramPostUrls) && override.instagramPostUrls.length > 0) {
+        merged.instagramPostUrls = override.instagramPostUrls;
+      } else {
+        merged.instagramPostUrls = base.config.instagramPostUrls;
+      }
+      return merged;
+    };
+
     // Runtime overrides (D1-backed). If unavailable, keep static fallbacks.
     try {
       const [configOverride, linksOverride, updatesOverride] = await Promise.all([
@@ -103,7 +120,7 @@ export async function fetchHomePageData(): Promise<HomePageData> {
       ]);
 
       return {
-        config: configOverride?.found && configOverride.data ? (configOverride.data as HomePageData["config"]) : base.config,
+        config: configOverride?.found && configOverride.data ? mergeConfig(configOverride.data as HomePageData["config"]) : base.config,
         quickLinks: linksOverride?.found ? (linksOverride.data as HomePageData["quickLinks"]) : base.quickLinks,
         updates: updatesOverride?.found ? (updatesOverride.data as HomePageData["updates"]) : base.updates,
       };

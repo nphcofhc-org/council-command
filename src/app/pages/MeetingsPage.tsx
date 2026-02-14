@@ -9,6 +9,7 @@ import { useLocation } from "react-router";
 import { useMeetingsData } from "../hooks/use-site-data";
 import { StatusBadge } from "../components/status-badge";
 import { Link } from "react-router";
+import { useCouncilCalendarSchedule } from "../hooks/use-council-calendar";
 
 const ART_GEO = "https://images.unsplash.com/photo-1665680779817-11a0d63ee51e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHdoaXRlJTIwZ2VvbWV0cmljJTIwbWluaW1hbCUyMGFydHxlbnwxfHx8fDE3NzA1MTMyMjN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 
@@ -33,14 +34,51 @@ export function MeetingsPage() {
   const { data } = useMeetingsData();
   const location = useLocation();
 
+  const calendarHref = "/2026-council-calendar.html";
+  const { generalMeetings, execMeetings } = useCouncilCalendarSchedule(calendarHref);
+
+  // Use CMS data only for join links/labels (not dates).
   const upcomingMeetings = data?.upcomingMeetings || [];
   const meetingRecords = data?.meetingRecords || [];
   const delegateReports = data?.delegateReports || [];
-  const calendarHref = "/2026-council-calendar.html";
   const tab = new URLSearchParams(location.search || "").get("tab") || "";
   const initialTab = tab === "records" ? "records" : tab === "reports" ? "reports" : "upcoming";
   const toViewer = (url: string) => `/viewer?src=${encodeURIComponent(url)}`;
   const isInternalFile = (url: string) => url.trim().startsWith("/");
+
+  const toYmd = (input: string | null | undefined): string | null => {
+    const raw = String(input || "").trim();
+    if (!raw) return null;
+    if (/^\\d{4}-\\d{2}-\\d{2}$/.test(raw)) return raw;
+    const t = Date.parse(raw);
+    if (!Number.isFinite(t)) return null;
+    const d = new Date(t);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const joinByDate = new Map<string, { joinUrl?: string; joinLabel?: string }>();
+  for (const m of upcomingMeetings) {
+    const ymd = toYmd(m.date);
+    if (!ymd) continue;
+    joinByDate.set(ymd, { joinUrl: m.joinUrl, joinLabel: m.joinLabel });
+  }
+
+  const nowISO = toYmd(new Date().toISOString()) || "";
+  const scheduleRows = [...generalMeetings, ...execMeetings]
+    .filter((m) => m.dateISO >= nowISO)
+    .sort((a, b) => (a.dateISO < b.dateISO ? -1 : a.dateISO > b.dateISO ? 1 : 0))
+    .map((m) => ({
+      id: `${m.kind}-${m.dateISO}`,
+      title: m.label,
+      dateISO: m.dateISO,
+      type: m.kind === "exec" ? "Executive Council" : "General Body",
+      location: m.mode || (m.kind === "exec" ? "Executive Council Meeting" : "General Body Meeting"),
+      joinUrl: joinByDate.get(m.dateISO)?.joinUrl || "",
+      joinLabel: joinByDate.get(m.dateISO)?.joinLabel || "Join Google Meet",
+    }));
 
   return (
     <div className="relative min-h-screen">
@@ -94,7 +132,7 @@ export function MeetingsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {upcomingMeetings.map((meeting, index) => (
+                    {scheduleRows.map((meeting, index) => (
                       <motion.div
                         key={meeting.id}
                         initial={{ x: -15, opacity: 0 }}
@@ -103,9 +141,9 @@ export function MeetingsPage() {
                         className="flex flex-col sm:flex-row items-start gap-4 p-4 rounded-lg border border-black/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-colors group"
                       >
                         <div className="p-3 rounded-xl border border-primary/25 bg-primary/15 text-primary text-center min-w-[4rem] flex-shrink-0">
-                          <div className="text-2xl">{new Date(meeting.date).getDate()}</div>
+                          <div className="text-2xl">{Number(meeting.dateISO.slice(8, 10))}</div>
                           <div className="text-[10px] uppercase tracking-wider opacity-70">
-                            {new Date(meeting.date).toLocaleDateString("en-US", { month: "short" })}
+                            {new Date(`${meeting.dateISO}T00:00:00`).toLocaleDateString("en-US", { month: "short" })}
                           </div>
                         </div>
                         <div className="flex-1 min-w-0">
@@ -113,10 +151,6 @@ export function MeetingsPage() {
                             <div className="flex-1 min-w-0">
                               <h3 className="text-slate-900 mb-2">{meeting.title}</h3>
                               <div className="space-y-1.5 text-sm text-slate-600">
-                                <div className="flex items-center gap-2">
-                                  <Clock className="size-3.5 flex-shrink-0" />
-                                  <span>{meeting.time}</span>
-                                </div>
                                 <div className="flex items-start gap-2">
                                   <Calendar className="size-3.5 flex-shrink-0 mt-0.5" />
                                   <span className="break-words">{meeting.location}</span>
@@ -140,6 +174,9 @@ export function MeetingsPage() {
                         </div>
                       </motion.div>
                     ))}
+                    {scheduleRows.length === 0 ? (
+                      <p className="text-sm text-slate-600">No upcoming meetings found in the 2026 calendar.</p>
+                    ) : null}
                   </div>
                 </CardContent>
               </Card>
@@ -147,9 +184,8 @@ export function MeetingsPage() {
               <Card className="border border-black/10 bg-white/5 backdrop-blur-xl">
                 <CardContent className="pt-6">
                   <p className="text-sm text-slate-700">
-                    <strong className="text-slate-900">Note:</strong> General Body meetings are held on the third Saturday of each month.
-                    Executive Board meetings convene on the first Wednesday. All members should review meeting
-                    materials 48 hours in advance.
+                    <strong className="text-slate-900">Note:</strong> Dates on this page are sourced directly from the 2026 Council Calendar.
+                    Council Admin can add the Google Meet join link for each meeting (shown above when available).
                   </p>
                 </CardContent>
               </Card>

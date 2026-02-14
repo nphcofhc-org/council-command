@@ -49,9 +49,58 @@ export function MainLayout() {
   const footerSubtext = config?.footerSubtext || "Internal Governance Portal · Authorized Access Only";
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground lg:flex">
+      {/* Desktop Sidebar Navigation */}
+      <aside className="hidden lg:flex lg:fixed lg:inset-y-0 lg:w-64 lg:flex-col border-r border-black/10 bg-white/60 backdrop-blur-xl nphc-holo-surface">
+        <div className="px-6 pt-6 pb-4 border-b border-black/10">
+          <p className="text-[11px] tracking-[0.25em] uppercase text-slate-500">
+            {councilName.includes("National") ? "National Pan-Hellenic Council" : councilName}
+          </p>
+          <p className="text-slate-900 text-sm mt-1">Hudson County, NJ</p>
+          <div className="mt-4 flex items-center justify-between gap-3">
+            <span className="text-xs text-slate-400 tracking-widest uppercase">Portal</span>
+            {session.isSiteEditor ? (
+              <button
+                type="button"
+                onClick={toggleEditorMode}
+                className="nphc-holo-btn rounded-full border border-black/15 bg-white/5 px-3 py-1 text-[10px] tracking-widest uppercase text-slate-600 hover:text-slate-900 hover:border-primary/60 transition-colors"
+              >
+                {editorMode ? "Editor" : "Member"}
+              </button>
+            ) : null}
+          </div>
+        </div>
+
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.to === "/"}
+              className={({ isActive }) =>
+                `nphc-holo-btn flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all duration-200 ${
+                  isActive
+                    ? "bg-primary/10 text-primary border border-primary/25 drop-shadow-[0_0_14px_rgba(11,189,176,0.35)]"
+                    : "text-slate-700 hover:bg-white/20 hover:text-primary border border-transparent"
+                }`
+              }
+            >
+              <item.icon className="size-5" />
+              <span className="truncate">{item.label}</span>
+            </NavLink>
+          ))}
+        </nav>
+
+        <div className="px-6 py-4 border-t border-black/10">
+          <p className="text-slate-500 text-xs">{footerText}</p>
+          <p className="text-slate-400 text-[11px] mt-1">{footerSubtext}</p>
+        </div>
+      </aside>
+
+      {/* Main Column */}
+      <div className="flex min-h-screen flex-col lg:pl-64 w-full">
       {/* Top Navigation Bar */}
-      <nav className="nphc-holo-nav sticky top-0 z-50 border-b border-black/10 bg-white/60 text-slate-900 backdrop-blur-xl">
+      <nav className="lg:hidden nphc-holo-nav sticky top-0 z-50 border-b border-black/10 bg-white/60 text-slate-900 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14">
             {/* Mobile: hamburger + title */}
@@ -69,40 +118,10 @@ export function MainLayout() {
             </div>
 
             {/* Desktop Navigation Links */}
-            <div className="hidden lg:flex items-center gap-1">
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  end={item.to === "/"}
-                  className={({ isActive }) =>
-                    `flex items-center gap-2 px-4 py-4 text-sm transition-all duration-200 border-b-2 ${
-                      isActive
-                        ? "border-primary text-primary bg-white/5 drop-shadow-[0_0_12px_rgba(24,224,208,0.55)]"
-                        : "border-transparent text-slate-600 hover:text-primary hover:bg-white/5 hover:drop-shadow-[0_0_12px_rgba(24,224,208,0.35)]"
-                    }`
-                  }
-                >
-                  <item.icon className="size-4" />
-                  <span>{item.label}</span>
-                </NavLink>
-              ))}
-            </div>
+            <div className="hidden lg:flex" />
 
             {/* Desktop: portal label */}
-            <div className="hidden lg:flex items-center">
-              {session.isSiteEditor ? (
-                <button
-                  type="button"
-                  onClick={toggleEditorMode}
-                  className="nphc-holo-btn rounded-full border border-black/15 bg-white/5 px-3 py-1 text-[11px] tracking-widest uppercase text-slate-600 hover:text-slate-900 hover:border-primary/60 transition-colors"
-                >
-                  {editorMode ? "Editor View" : "Member View"}
-                </button>
-              ) : (
-                <span className="text-xs text-slate-400 tracking-widest uppercase">Internal Portal</span>
-              )}
-            </div>
+            <div className="hidden lg:flex" />
           </div>
         </div>
       </nav>
@@ -185,7 +204,7 @@ export function MainLayout() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-black/10 bg-white/55 py-8 text-slate-500">
+      <footer className="mt-auto border-t border-black/10 bg-white/55 py-8 text-slate-500 lg:hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
             <p>{footerText}</p>
@@ -193,6 +212,7 @@ export function MainLayout() {
           </div>
         </div>
       </footer>
+      </div>
     </div>
   );
 }
