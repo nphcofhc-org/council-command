@@ -365,7 +365,7 @@ export function HomePage() {
     <div>
       <FormsQuickPane />
       {/* ── Google Sites Cover Banner ─────────────────────────────────────── */}
-      <div className="relative w-full overflow-hidden bg-white h-[200px] sm:h-[240px] lg:h-[280px] lg:-ml-64 lg:w-[calc(100%+16rem)]">
+      <div className="relative w-full overflow-hidden bg-white h-[200px] sm:h-[240px] lg:h-[280px]">
         {bannerIsVideo ? (
           <motion.video
             initial={{ opacity: 0, scale: 1.02 }}
@@ -519,20 +519,20 @@ export function HomePage() {
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ delay: 0.15, duration: 0.6 }}
-            className="grid grid-cols-1 md:grid-cols-5 gap-8 lg:gap-12 items-start"
+            className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-start"
           >
             {/* President Photo */}
-            <div className="md:col-span-2">
+            <div className="md:col-span-5">
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}
-                className="nphc-holo-surface aspect-[5/6] rounded-2xl overflow-hidden bg-white/5 shadow-[0_25px_80px_rgba(0,0,0,0.35),0_0_70px_rgba(255,255,255,0.18)] ring-1 ring-black/10"
+                className="nphc-holo-surface aspect-[4/5] rounded-2xl overflow-hidden bg-white/5 shadow-[0_25px_80px_rgba(0,0,0,0.35),0_0_70px_rgba(255,255,255,0.18)] ring-1 ring-black/10"
               >
                 {presidentImageUrl ? (
                   <img
                     src={presidentImageUrl}
                     alt="President Christopher DeMarkus"
-                    className="h-full w-full object-cover object-center saturate-110 contrast-105"
+                    className="h-full w-full object-contain object-center"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-white/5 text-slate-500">
@@ -548,7 +548,7 @@ export function HomePage() {
             </div>
 
             {/* President's Message */}
-            <div className="md:col-span-3 space-y-3 text-[15px] text-slate-700 leading-snug">
+            <div className="md:col-span-7 space-y-3 text-[15px] text-slate-700 leading-snug">
               {welcomeParagraphs.map((paragraph, i) => (
                 <p key={i}>{paragraph}</p>
               ))}
