@@ -155,9 +155,17 @@ export function ChapterInfoPage() {
                         <Card className="shadow-sm hover:shadow-md transition-all duration-300 h-full group hover:-translate-y-1">
                           <CardContent className="p-6">
                             <div className="flex flex-col items-center text-center">
-                              <div className="w-28 h-28 rounded-full bg-gray-100 flex items-center justify-center mb-4 border-4 border-gray-200 group-hover:border-gray-300 transition-colors">
-                                <User className="size-14 text-gray-300" />
-                              </div>
+                              {chair.imageUrl ? (
+                                <img
+                                  src={chair.imageUrl}
+                                  alt={chair.name}
+                                  className="w-28 h-28 rounded-full object-cover mb-4 border-4 border-gray-200"
+                                />
+                              ) : (
+                                <div className="w-28 h-28 rounded-full bg-gray-100 flex items-center justify-center mb-4 border-4 border-gray-200 group-hover:border-gray-300 transition-colors">
+                                  <User className="size-14 text-gray-300" />
+                                </div>
+                              )}
                               <h3 className="text-black text-lg mb-1">{chair.name}</h3>
                               <Badge variant="secondary" className="bg-black text-white mb-3">
                                 {chair.title}
