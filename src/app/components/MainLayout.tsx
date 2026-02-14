@@ -51,19 +51,19 @@ export function MainLayout() {
   return (
     <div className="min-h-screen bg-background text-foreground lg:flex">
       {/* Desktop Sidebar Navigation */}
-      <aside className="hidden lg:flex lg:fixed lg:inset-y-0 lg:w-64 lg:flex-col border-r border-black/10 bg-white/60 backdrop-blur-xl nphc-holo-surface">
-        <div className="px-6 pt-6 pb-4 border-b border-black/10">
-          <p className="text-[11px] tracking-[0.25em] uppercase text-slate-500">
+      <aside className="hidden lg:flex lg:fixed lg:inset-y-0 lg:w-64 lg:flex-col border-r border-white/10 bg-black/70 text-white backdrop-blur-xl nphc-holo-surface">
+        <div className="px-6 pt-6 pb-4 border-b border-white/10">
+          <p className="text-[11px] tracking-[0.25em] uppercase text-white/55">
             {councilName.includes("National") ? "National Pan-Hellenic Council" : councilName}
           </p>
-          <p className="text-slate-900 text-sm mt-1">Hudson County, NJ</p>
+          <p className="text-white text-sm mt-1">Hudson County, NJ</p>
           <div className="mt-4 flex items-center justify-between gap-3">
-            <span className="text-xs text-slate-400 tracking-widest uppercase">Portal</span>
+            <span className="text-xs text-white/35 tracking-widest uppercase">Portal</span>
             {session.isSiteEditor ? (
               <button
                 type="button"
                 onClick={toggleEditorMode}
-                className="nphc-holo-btn rounded-full border border-black/15 bg-white/5 px-3 py-1 text-[10px] tracking-widest uppercase text-slate-600 hover:text-slate-900 hover:border-primary/60 transition-colors"
+                className="nphc-holo-btn rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[10px] tracking-widest uppercase text-white/70 hover:text-white hover:border-primary/60 transition-colors"
               >
                 {editorMode ? "Editor" : "Member"}
               </button>
@@ -81,7 +81,7 @@ export function MainLayout() {
                 `nphc-holo-btn flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all duration-200 ${
                   isActive
                     ? "bg-primary/10 text-primary border border-primary/25 drop-shadow-[0_0_14px_rgba(11,189,176,0.35)]"
-                    : "text-slate-700 hover:bg-white/20 hover:text-primary border border-transparent"
+                    : "text-white/75 hover:bg-white/10 hover:text-primary border border-transparent"
                 }`
               }
             >
@@ -91,9 +91,9 @@ export function MainLayout() {
           ))}
         </nav>
 
-        <div className="px-6 py-4 border-t border-black/10">
-          <p className="text-slate-500 text-xs">{footerText}</p>
-          <p className="text-slate-400 text-[11px] mt-1">{footerSubtext}</p>
+        <div className="px-6 py-4 border-t border-white/10">
+          <p className="text-white/55 text-xs">{footerText}</p>
+          <p className="text-white/35 text-[11px] mt-1">{footerSubtext}</p>
         </div>
       </aside>
 
