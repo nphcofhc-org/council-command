@@ -221,7 +221,7 @@ export const criteria: Criterion[] = [
         "More complex but feasible with early planning and partnerships; inaugural execution requires longer lead time.",
       notes: [
         "Lead time (first year): 4-6 months; subsequent years 3-4 months.",
-        "Requires permits, insurance, safety planning, and contingency planning.",
+        "Logistical requirements: street closure permits; liability insurance; vendor coordination; public safety (police/first aid); weather contingency; waste management/clean-up.",
         "Recommendation: start with moderate scale (200-300) and grow over time.",
       ],
     },
@@ -337,9 +337,30 @@ export const criteria: Criterion[] = [
       score: q("Very High"),
       summary:
         "Directly addresses assessment priorities: accessible programming, community visibility, leverage county density, leadership development opportunities, and national pillar alignment.",
+      notes: [
+        "Presidential initiative: reflects executive leadership vision for strategic direction and community positioning.",
+        'Public positioning: for a "relatively new" chapter, a high-profile community event accelerates recognition and organizational legitimacy.',
+      ],
     },
   },
 ];
+
+export const keyDifferentiators = {
+  unityBBQAdvantages: [
+    "Lower complexity and resource requirements.",
+    "Direct focus on inter-organizational relationship-building.",
+    "Immediate feasibility with current capacity constraints.",
+    "Lower risk profile for inaugural execution.",
+    "Strong appeal to member preferences for social programming.",
+  ],
+  blockPartyAdvantages: [
+    "Substantial direct community service and impact.",
+    "Exceptional public visibility and brand building.",
+    "Strong alignment with NPHC national priorities.",
+    "High partnership and sponsorship potential.",
+    "Signature event potential defining chapter identity.",
+  ],
+};
 
 export const budgetRanges: Record<EventId, BudgetRange> = {
   unity_bbq: { min: 2100, max: 4100 },
@@ -405,6 +426,11 @@ export const financialModels = {
       { label: "Individual donations (on-site)", range: { min: 200, max: 500 } },
     ],
     totalRevenuePotential: { min: 3700, max: 7500 },
+    netCostScenarios: [
+      { scenario: "Conservative (Low sponsorship)", revenue: 3700, netCost: { min: 1300, max: 6300 } },
+      { scenario: "Moderate (Medium sponsorship)", revenue: 5500, netCost: { min: -500, max: 4500 } },
+      { scenario: "Optimistic (High sponsorship)", revenue: 7500, netCost: { min: -2500, max: 2500 } },
+    ],
   },
   unity: {
     revenuePotential: [
@@ -415,6 +441,24 @@ export const financialModels = {
     totalRevenuePotential: { min: 1000, max: 2000 },
     netCost: { min: 1100, max: 3100 },
   },
+};
+
+export const riskMitigation = {
+  title: "Risk Mitigation (from report)",
+  bullets: [
+    "Start with moderate attendance target (200-300) and scale up in future years.",
+    "Secure a weather contingency plan (rain date or tent rentals).",
+    "Develop backup vendors and volunteers for critical roles.",
+    "Create a simplified version of the event that can be executed if challenges arise.",
+    "Document all processes for future improvement and replication.",
+  ],
+  unityBBQIntroduction2027: [
+    "Leverage Block Party success and established systems.",
+    'Position as "member appreciation" following successful community event.',
+    "Use as recruitment opportunity for Block Party volunteers and leadership.",
+    "Keep planning simple and execution manageable.",
+    "Consider rotating responsibility among organizations to distribute workload.",
+  ],
 };
 
 export const riskMatrix = {
@@ -589,4 +633,3 @@ export const references: string[] = [
   "HundrED. (2024). Back-To-School Block Party innovation case study. https://hundred.org/en/innovations/back-to-school-block-party",
   "Hopeful Neighborhood. (2024). 5 Steps to a Successful Block Party. https://www.hopefulneighborhood.org/blog/5-steps-to-a-successful-block-party/",
 ];
-

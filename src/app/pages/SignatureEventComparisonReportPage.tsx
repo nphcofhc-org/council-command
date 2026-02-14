@@ -28,11 +28,13 @@ import {
   evaluationFramework,
   concepts,
   criteria,
+  keyDifferentiators,
   budgetRanges,
   blockPartyBudgetBreakdown,
   unityBudgetBreakdown,
   recommendations,
   financialModels,
+  riskMitigation,
   riskMatrix,
   implementationTimeline,
   successMetrics,
@@ -330,6 +332,33 @@ export function SignatureEventComparisonReportPage() {
               </CardContent>
             </Card>
 
+            <Card className="border border-gray-200 shadow-sm">
+              <CardHeader>
+                <CardTitle>Key Differentiators</CardTitle>
+                <p className="text-sm text-gray-600">
+                  Directly from the committee comparison section (advantages of each concept).
+                </p>
+              </CardHeader>
+              <CardContent className="grid gap-6 lg:grid-cols-2">
+                <div className="rounded-lg border border-gray-100 p-4">
+                  <p className="text-xs uppercase tracking-widest text-gray-500">Unity BBQ Advantages</p>
+                  <ul className="mt-2 list-disc ml-5 text-sm text-gray-700 space-y-1">
+                    {keyDifferentiators.unityBBQAdvantages.map((b) => (
+                      <li key={b}>{b}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="rounded-lg border border-gray-100 p-4">
+                  <p className="text-xs uppercase tracking-widest text-gray-500">Block Party Advantages</p>
+                  <ul className="mt-2 list-disc ml-5 text-sm text-gray-700 space-y-1">
+                    {keyDifferentiators.blockPartyAdvantages.map((b) => (
+                      <li key={b}>{b}</li>
+                    ))}
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+
             {detailMode === "full" ? (
               <Card className="border border-gray-200 shadow-sm">
                 <CardHeader>
@@ -617,6 +646,28 @@ export function SignatureEventComparisonReportPage() {
                     <p className="text-sm font-semibold text-gray-900 mt-3">
                       Total Revenue Potential: {money(financialModels.block.totalRevenuePotential.min)} - {money(financialModels.block.totalRevenuePotential.max)}
                     </p>
+                    <div className="mt-4 overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="text-left text-xs text-gray-500 border-b">
+                            <th className="py-2 pr-3 font-semibold">Scenario</th>
+                            <th className="py-2 pr-3 font-semibold">Revenue</th>
+                            <th className="py-2 font-semibold">Net Cost</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {financialModels.block.netCostScenarios.map((r) => (
+                            <tr key={r.scenario} className="border-b last:border-b-0">
+                              <td className="py-2 pr-3 align-top font-semibold text-gray-900">{r.scenario}</td>
+                              <td className="py-2 pr-3 align-top text-gray-700">{money(r.revenue)}</td>
+                              <td className="py-2 align-top text-gray-700">
+                                {money(r.netCost.min)} - {money(r.netCost.max)}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
 
                   <div className="rounded-lg border border-gray-100 p-4">
@@ -634,6 +685,32 @@ export function SignatureEventComparisonReportPage() {
                     <p className="text-sm text-gray-700 mt-1">
                       Net Cost (after revenue): {money(financialModels.unity.netCost.min)} - {money(financialModels.unity.netCost.max)}
                     </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : null}
+
+            {detailMode === "full" ? (
+              <Card className="border border-gray-200 shadow-sm">
+                <CardHeader>
+                  <CardTitle>{riskMitigation.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="grid gap-6 lg:grid-cols-2">
+                  <div className="rounded-lg border border-gray-100 p-4">
+                    <p className="text-xs uppercase tracking-widest text-gray-500">Block Party Mitigation</p>
+                    <ul className="mt-2 list-disc ml-5 text-sm text-gray-700 space-y-1">
+                      {riskMitigation.bullets.map((b) => (
+                        <li key={b}>{b}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="rounded-lg border border-gray-100 p-4">
+                    <p className="text-xs uppercase tracking-widest text-gray-500">Unity BBQ Introduction (2027)</p>
+                    <ul className="mt-2 list-disc ml-5 text-sm text-gray-700 space-y-1">
+                      {riskMitigation.unityBBQIntroduction2027.map((b) => (
+                        <li key={b}>{b}</li>
+                      ))}
+                    </ul>
                   </div>
                 </CardContent>
               </Card>
@@ -784,4 +861,3 @@ export function SignatureEventComparisonReportPage() {
     </div>
   );
 }
-
