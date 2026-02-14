@@ -117,7 +117,12 @@ export function HomePage() {
       pathOnly === "/meetings-delegates" ||
       pathOnly === "/programs-events" ||
       pathOnly === "/resources" ||
+      pathOnly === "/decision-portal" ||
+      pathOnly === "/viewer" ||
       pathOnly === "/figma-staging" ||
+      pathOnly === "/forms" ||
+      pathOnly.startsWith("/forms/") ||
+      pathOnly.startsWith("/reports/") ||
       pathOnly === "/council-admin" ||
       pathOnly.startsWith("/council-admin/")
     );
