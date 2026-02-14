@@ -22,6 +22,20 @@ type ContentResponse<T> = {
   updatedBy: string | null;
 };
 
+export type NotificationSettings = {
+  enabled: boolean;
+  defaultNotifyEmails: string;
+  treasurerEmail: string;
+  rules: Record<
+    string,
+    {
+      notifyEmails: string;
+      sendConfirmation: boolean;
+      notifyOnStatusChange: boolean;
+    }
+  >;
+};
+
 async function parseError(response: Response): Promise<string> {
   try {
     const data = await response.json();
@@ -129,4 +143,12 @@ export function saveDecisionPortalOverride(payload: DecisionPortalContent): Prom
 
 export function saveResourcesOverride(payload: ResourcesOverridePayload): Promise<ContentResponse<ResourcesOverridePayload>> {
   return putJson("/api/content/resources", payload);
+}
+
+export function fetchNotificationSettings(): Promise<ContentResponse<NotificationSettings | null>> {
+  return getJson("/api/content/notification-settings");
+}
+
+export function saveNotificationSettings(payload: NotificationSettings): Promise<ContentResponse<NotificationSettings>> {
+  return putJson("/api/content/notification-settings", payload);
 }

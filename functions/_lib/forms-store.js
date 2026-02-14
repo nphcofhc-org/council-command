@@ -5,6 +5,7 @@ export const FORM_KEYS = [
   "budget_submission",
   "reimbursement_request",
   "social_media_request",
+  "committee_report",
 ];
 
 export function requireDb(env) {
@@ -193,3 +194,37 @@ export async function updateSubmission(db, { id, status, reviewNotes, reviewedBy
   return { ok: true, id, status, reviewedAt: now, reviewedBy: reviewedBy || null, reviewNotes: reviewNotes || null };
 }
 
+export async function readSubmissionById(db, id) {
+  const row = await db
+    .prepare(
+      `SELECT id, form_key, payload_json, created_at, created_by, status, reviewed_at, reviewed_by, review_notes
+       FROM portal_form_submissions
+       WHERE id = ?1`,
+    )
+    .bind(id)
+    .first();
+
+  if (!row) return { found: false, row: null };
+
+  let payload = null;
+  try {
+    payload = JSON.parse(row.payload_json || "null");
+  } catch {
+    payload = null;
+  }
+
+  return {
+    found: true,
+    row: {
+      id: row.id,
+      formKey: row.form_key,
+      payload,
+      createdAt: row.created_at,
+      createdBy: row.created_by,
+      status: row.status,
+      reviewedAt: row.reviewed_at,
+      reviewedBy: row.reviewed_by,
+      reviewNotes: row.review_notes,
+    },
+  };
+}

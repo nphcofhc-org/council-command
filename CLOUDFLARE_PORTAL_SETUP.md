@@ -88,7 +88,7 @@ Important:
 
 ## Step 5B: Receipt Uploads (Optional, but recommended)
 
-If you want reimbursements to accept receipt file uploads (PDF/JPG/PNG/HEIC) inside the portal:
+If you want uploads inside the portal (receipts, social media flyers/images, committee report attachments):
 
 1. Cloudflare Dashboard -> R2 -> Create bucket:
    - Bucket name: `nphc-portal-receipts` (or any name)
@@ -96,7 +96,22 @@ If you want reimbursements to accept receipt file uploads (PDF/JPG/PNG/HEIC) ins
    - Binding name: `RECEIPTS_BUCKET`
    - Bucket: select the bucket you created
 
-Without this binding, reimbursements will still work but will require members to paste Google Drive receipt links instead of uploading.
+Without this binding, forms will still work but will require members to paste Google Drive links instead of uploading.
+
+## Step 5C: Email Notifications (Optional)
+
+The portal can send:
+- a notification email to recipients (set in `/#/council-admin/notifications`)
+- a confirmation email to the requestor
+- reimbursement disbursement notifications to the treasurer email
+
+Cloudflare Pages -> Project -> Settings -> Environment variables:
+- `EMAIL_ENABLED` = `true`
+- `EMAIL_PROVIDER` = `mailchannels` (default)
+- `EMAIL_FROM` = a from address you control (example: `no-reply@portal.yourdomain.com`)
+- `EMAIL_FROM_NAME` = (optional) display name (example: `NPHC Hudson County Portal`)
+
+Note: This uses MailChannels via Cloudflare’s runtime. Deliverability depends on your domain and DNS (SPF/DKIM/DMARC).
 
 ## Step 6: 15-Minute Updates (Scheduled Deploy)
 

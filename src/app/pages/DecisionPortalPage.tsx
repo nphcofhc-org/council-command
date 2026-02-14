@@ -28,15 +28,13 @@ const DEFAULT_CONTENT: DecisionPortalContent = {
   summary:
     "Use this page to review the committee comparison and submit a confidential vote.\n\n" +
     "Recommended reading:\n" +
-    "- Signature Event Comparison (interactive report)\n" +
-    "- Signature Event Comparison (PDF)",
+    "- Signature Event Comparison (interactive report)",
   options: [
     { id: "block", label: "Neighborhood Block Party", description: "" },
     { id: "unity", label: "Unity BBQ", description: "" },
   ],
   links: [
     { id: "lnk-interactive", label: "Open Interactive Report", url: "#/reports/signature-event-comparison" },
-    { id: "lnk-pdf", label: "Open PDF Report", url: "/docs/event-comparison-report-nphc-2026.pdf" },
   ],
   isOpen: true,
 };
@@ -73,6 +71,10 @@ export function DecisionPortalPage() {
   const decisionKey = content.decisionKey || DEFAULT_DECISION_KEY;
   const blockOption = content.options.find((o) => o.id === "block") || DEFAULT_CONTENT.options[0];
   const unityOption = content.options.find((o) => o.id === "unity") || DEFAULT_CONTENT.options[1];
+  const links = useMemo(() => {
+    // Hide the legacy PDF link for this decision (we only want the interactive report in the portal UI).
+    return (content.links || []).filter((l) => String(l?.url || "").trim() !== "/docs/event-comparison-report-nphc-2026.pdf");
+  }, [content.links]);
 
   useEffect(() => {
     try {
@@ -238,11 +240,11 @@ export function DecisionPortalPage() {
                 </div>
               </div>
 
-              {content.links.length > 0 ? (
+              {links.length > 0 ? (
                 <div className="space-y-2">
                   <p className="text-xs uppercase tracking-widest text-gray-500">Links</p>
                   <div className="flex flex-col sm:flex-row flex-wrap gap-2">
-                    {content.links.map((lnk) => (
+                    {links.map((lnk) => (
                       <a
                         key={lnk.id}
                         href={lnk.url}
