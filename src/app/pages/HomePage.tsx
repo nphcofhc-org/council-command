@@ -25,10 +25,6 @@ const glassButtonClass =
   "hover:shadow-[0_12px_40px_0_rgba(24,224,208,0.28)] hover:-translate-y-0.5 " +
   "active:bg-primary/25 active:text-primary active:scale-[0.97]";
 
-// ── Abstract art image URLs (centralized for easy swap) ─────────────────────
-const ART_MARBLE = "https://images.unsplash.com/photo-1678756466078-1ff0d7b09431?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25vY2hyb21lJTIwYWJzdHJhY3QlMjBtYXJibGUlMjB0ZXh0dXJlfGVufDF8fHx8MTc3MDUxMzIyM3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
-const ART_INK = "https://images.unsplash.com/photo-1769181417562-be594f91fcc9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHdoaXRlJTIwYWJzdHJhY3QlMjBpbmslMjBicnVzaCUyMHN0cm9rZXN8ZW58MXx8fHwxNzcwNTEzMjIyfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
-const ART_GEO = "https://images.unsplash.com/photo-1665680779817-11a0d63ee51e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHdoaXRlJTIwZ2VvbWV0cmljJTIwbWluaW1hbCUyMGFydHxlbnwxfHx8fDE3NzA1MTMyMjN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 const DEFAULT_HOME_BANNER_MEDIA_URL =
   "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/FORMAL%20NPHC%20BANNER%20(1).mp4";
 
@@ -365,7 +361,7 @@ export function HomePage() {
     <div>
       <FormsQuickPane />
       {/* ── Google Sites Cover Banner ─────────────────────────────────────── */}
-      <div className="relative w-full overflow-hidden bg-white h-[200px] sm:h-[240px] lg:h-[280px]">
+      <div className="relative w-full overflow-hidden bg-white h-[220px] sm:h-[260px] lg:h-[340px]">
         {bannerIsVideo ? (
           <motion.video
             initial={{ opacity: 0, scale: 1.02 }}
@@ -432,53 +428,22 @@ export function HomePage() {
 
       {/* ── Quick Links ───────────────────────────────────────────────────── */}
       <div className="bg-white py-8 sm:py-10 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.03]">
-          <img src={ART_MARBLE} alt="" className="w-full h-full object-cover" />
-        </div>
-
-        <div className="max-w-5xl mx-auto px-4 sm:px-8 relative z-10">
-          {/* Row 1 */}
+        <div className="px-4 sm:px-8 lg:px-10 relative z-10">
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.15, duration: 0.5 }}
-            className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-3 sm:mb-4"
+            className="flex flex-wrap lg:flex-nowrap items-center justify-start gap-3 sm:gap-4 overflow-x-auto pb-2"
           >
-            {row1Links.map((link, i) => (
+            {[...row1Links, ...row2Links].map((link, i) => (
               <motion.a
                 key={link.id}
                 initial={{ y: 15, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2 + i * 0.07, duration: 0.4 }}
+                transition={{ delay: 0.2 + i * 0.05, duration: 0.35 }}
                 whileTap={{ scale: 0.95 }}
                 href={toHref(link.url)}
-                className={glassButtonClass}
-                target={isExternalUrl(link.url) ? "_blank" : undefined}
-                rel={isExternalUrl(link.url) ? "noreferrer" : undefined}
-              >
-                <DynamicIcon name={link.icon} className="size-4 relative z-10 flex-shrink-0" />
-                <span className="hidden sm:inline relative z-10">{link.label}</span>
-                <span className="sm:hidden relative z-10 text-xs">{link.shortLabel}</span>
-              </motion.a>
-            ))}
-          </motion.div>
-
-          {/* Row 2 */}
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className="flex flex-wrap items-center justify-center gap-3 sm:gap-4"
-          >
-            {row2Links.map((link, i) => (
-              <motion.a
-                key={link.id}
-                initial={{ y: 15, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.35 + i * 0.07, duration: 0.4 }}
-                whileTap={{ scale: 0.95 }}
-                href={toHref(link.url)}
-                className={glassButtonClass}
+                className={glassButtonClass + " flex-shrink-0"}
                 target={isExternalUrl(link.url) ? "_blank" : undefined}
                 rel={isExternalUrl(link.url) ? "noreferrer" : undefined}
               >
@@ -493,11 +458,7 @@ export function HomePage() {
 
       {/* ── President's Welcome ───────────────────────────────────────────── */}
       <section className="relative overflow-hidden">
-        <div className="absolute right-0 top-0 w-1/2 h-full opacity-[0.04] pointer-events-none hidden lg:block">
-          <img src={ART_INK} alt="" className="w-full h-full object-cover" />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20 relative z-10">
+        <div className="px-4 sm:px-8 lg:px-10 py-14 sm:py-20 relative z-10">
           <motion.div
             initial={{ x: -30, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
@@ -548,7 +509,7 @@ export function HomePage() {
             </div>
 
             {/* President's Message */}
-            <div className="md:col-span-7 space-y-3 text-[15px] text-slate-700 leading-snug">
+            <div className="md:col-span-7 space-y-3 text-[15px] text-slate-800 leading-snug">
               {welcomeParagraphs.map((paragraph, i) => (
                 <p key={i}>{paragraph}</p>
               ))}
@@ -567,7 +528,7 @@ export function HomePage() {
 
       {/* ── Next Meeting + Schedules ─────────────────────────────────────── */}
       <section className="relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-12 sm:py-14">
+        <div className="px-4 sm:px-8 lg:px-10 py-12 sm:py-14">
           <motion.div
             initial={{ x: -30, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
@@ -687,7 +648,7 @@ export function HomePage() {
 
       {/* ── Treasury Snapshot ────────────────────────────────────────────── */}
       <section className="relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-12 sm:py-14">
+        <div className="px-4 sm:px-8 lg:px-10 py-12 sm:py-14">
           <motion.div
             initial={{ x: -30, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
@@ -795,11 +756,7 @@ export function HomePage() {
 
       {/* ── What's New ────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden">
-        <div className="absolute left-0 bottom-0 w-80 h-80 opacity-[0.04] pointer-events-none">
-          <img src={ART_GEO} alt="" className="w-full h-full object-cover" />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20 relative z-10">
+        <div className="px-4 sm:px-8 lg:px-10 py-14 sm:py-20 relative z-10">
           <motion.div
             initial={{ x: -30, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}

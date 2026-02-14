@@ -51,7 +51,7 @@ export function MainLayout() {
   return (
     <div className="min-h-screen bg-background text-foreground lg:flex">
       {/* Desktop Sidebar Navigation */}
-      <aside className="hidden lg:flex lg:fixed lg:inset-y-0 lg:w-64 lg:flex-col border-r border-white/10 bg-black/70 text-white backdrop-blur-xl nphc-holo-surface">
+      <aside className="hidden lg:flex lg:fixed lg:inset-y-0 lg:w-64 lg:flex-col border-r border-white/10 bg-black text-white nphc-holo-surface">
         <div className="px-6 pt-6 pb-4 border-b border-white/10">
           <p className="text-[11px] tracking-[0.25em] uppercase text-white/55">
             {councilName.includes("National") ? "National Pan-Hellenic Council" : councilName}
