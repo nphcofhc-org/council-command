@@ -189,16 +189,16 @@ export function HomePage() {
     : null;
 
   return (
-    <div className="bg-white">
+      <div className="bg-white">
       {/* ── Google Sites Cover Banner ─────────────────────────────────────── */}
-      <div className="relative w-full overflow-hidden bg-black">
+      <div className="relative w-full overflow-hidden bg-black h-[200px] sm:h-[260px] lg:h-[320px]">
         <motion.img
           initial={{ opacity: 0, scale: 1.02 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8 }}
           src={bannerImageUrl || googleBanner}
           alt="NPHC Hudson County"
-          className="w-full h-auto object-contain"
+          className="absolute inset-0 h-full w-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
       </div>
