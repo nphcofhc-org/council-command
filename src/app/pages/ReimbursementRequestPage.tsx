@@ -220,11 +220,11 @@ export function ReimbursementRequestPage() {
                 </div>
                 <div className="space-y-1">
                   <Label>Event Start Date *</Label>
-                  <Input value={eventStartDate} onChange={(e) => setEventStartDate(e.target.value)} placeholder="YYYY-MM-DD" />
+                  <Input type="date" value={eventStartDate} onChange={(e) => setEventStartDate(e.target.value)} />
                 </div>
                 <div className="space-y-1">
                   <Label>Event End Date *</Label>
-                  <Input value={eventEndDate} onChange={(e) => setEventEndDate(e.target.value)} placeholder="YYYY-MM-DD" />
+                  <Input type="date" value={eventEndDate} onChange={(e) => setEventEndDate(e.target.value)} />
                 </div>
               </div>
 
@@ -241,11 +241,11 @@ export function ReimbursementRequestPage() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1">
                   <Label>Airline Total (Enter $0 if not applicable) *</Label>
-                  <Input value={airlineTotal} onChange={(e) => setAirlineTotal(e.target.value)} inputMode="decimal" />
+                  <Input type="number" step="0.01" min="0" value={airlineTotal} onChange={(e) => setAirlineTotal(e.target.value)} inputMode="decimal" />
                 </div>
                 <div className="space-y-1">
                   <Label>Lodging Total (Hotel / Airbnb) (Enter $0 if not applicable) *</Label>
-                  <Input value={lodgingTotal} onChange={(e) => setLodgingTotal(e.target.value)} inputMode="decimal" />
+                  <Input type="number" step="0.01" min="0" value={lodgingTotal} onChange={(e) => setLodgingTotal(e.target.value)} inputMode="decimal" />
                 </div>
                 <div className="space-y-1 sm:col-span-2">
                   <Label>Duration of Stay (e.g., "3 Nights, 4 Days" or "N/A") *</Label>
@@ -253,19 +253,19 @@ export function ReimbursementRequestPage() {
                 </div>
                 <div className="space-y-1">
                   <Label>Rental Car / Ground Transportation (Uber, Lyft, Taxi) (Enter $0 if not applicable) *</Label>
-                  <Input value={groundTransportationTotal} onChange={(e) => setGroundTransportationTotal(e.target.value)} inputMode="decimal" />
+                  <Input type="number" step="0.01" min="0" value={groundTransportationTotal} onChange={(e) => setGroundTransportationTotal(e.target.value)} inputMode="decimal" />
                 </div>
                 <div className="space-y-1">
                   <Label>Event Registration Fees (Enter $0 if not applicable) *</Label>
-                  <Input value={registrationFeesTotal} onChange={(e) => setRegistrationFeesTotal(e.target.value)} inputMode="decimal" />
+                  <Input type="number" step="0.01" min="0" value={registrationFeesTotal} onChange={(e) => setRegistrationFeesTotal(e.target.value)} inputMode="decimal" />
                 </div>
                 <div className="space-y-1">
                   <Label>Meals (Enter $0 if not applicable) *</Label>
-                  <Input value={mealsTotal} onChange={(e) => setMealsTotal(e.target.value)} inputMode="decimal" />
+                  <Input type="number" step="0.01" min="0" value={mealsTotal} onChange={(e) => setMealsTotal(e.target.value)} inputMode="decimal" />
                 </div>
                 <div className="space-y-1">
                   <Label>Other Expenses Total (Enter $0 if not applicable) *</Label>
-                  <Input value={otherExpensesTotal} onChange={(e) => setOtherExpensesTotal(e.target.value)} inputMode="decimal" />
+                  <Input type="number" step="0.01" min="0" value={otherExpensesTotal} onChange={(e) => setOtherExpensesTotal(e.target.value)} inputMode="decimal" />
                 </div>
                 <div className="space-y-1 sm:col-span-2">
                   <Label>Other Expenses (Itemize) *</Label>
