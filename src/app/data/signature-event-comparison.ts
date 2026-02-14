@@ -48,9 +48,7 @@ export const reportMeta: ReportMeta = {
   treasuryLabel: "$7,842.64",
   mission:
     "Provide an objective, data-driven comparison of two proposed signature event concepts and deliver strategic recommendations to support informed decision-making by the full chapter body.",
-  links: [
-    { label: "Open PDF Report", href: "/docs/event-comparison-report-nphc-2026.pdf" },
-  ],
+  links: [],
 };
 
 export const keyFindings: string[] = [

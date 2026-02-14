@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { motion } from "motion/react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { DollarSign, Receipt, Megaphone, ListChecks } from "lucide-react";
+import { DollarSign, Receipt, Megaphone, ListChecks, FileText } from "lucide-react";
 
 export function FormsPage() {
   return (
@@ -20,7 +20,7 @@ export function FormsPage() {
           </div>
           <h1 className="text-2xl sm:text-3xl text-black mb-1">Forms & Requests</h1>
           <p className="text-sm sm:text-base text-gray-500">
-            Submit budgets, reimbursements, and social media requests for review.
+            Submit budgets, reimbursements, social media requests, and committee reports for review.
           </p>
         </motion.div>
 
@@ -89,6 +89,23 @@ export function FormsPage() {
             <CardContent>
               <Button asChild className="bg-black hover:bg-gray-900 w-full">
                 <Link to="/forms/social-media">Open Form</Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <FileText className="size-5" />
+                Committee Report
+              </CardTitle>
+              <CardDescription>
+                Submit committee updates and attachments for recordkeeping and review.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild className="bg-black hover:bg-gray-900 w-full">
+                <Link to="/forms/committee-report">Open Form</Link>
               </Button>
             </CardContent>
           </Card>

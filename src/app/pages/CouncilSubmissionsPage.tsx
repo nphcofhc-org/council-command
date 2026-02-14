@@ -24,6 +24,7 @@ const FORM_TABS: { key: FormKey; label: string }[] = [
   { key: "budget_submission", label: "Budgets" },
   { key: "reimbursement_request", label: "Reimbursements" },
   { key: "social_media_request", label: "Social Requests" },
+  { key: "committee_report", label: "Committee Reports" },
 ];
 
 function toViewerHref(src: string): string {
@@ -165,6 +166,8 @@ export function CouncilSubmissionsPage() {
                             <p className="text-sm font-semibold text-black truncate">
                               {r.payload?.title ||
                                 r.payload?.eventName ||
+                                r.payload?.reportTitle ||
+                                r.payload?.committeeName ||
                                 r.payload?.projectName ||
                                 r.payload?.payeeName ||
                                 r.payload?.eventName ||
@@ -270,6 +273,34 @@ export function CouncilSubmissionsPage() {
                               <p className="text-xs uppercase tracking-widest text-gray-500">Asset Links</p>
                               <p className="text-sm text-gray-700 mt-2 whitespace-pre-wrap">
                                 {String((selected.payload as any).mediaLinks)}
+                              </p>
+                            </div>
+                          ) : null}
+
+                          {Array.isArray((selected.payload as any)?.attachments) && (selected.payload as any).attachments.length > 0 ? (
+                            <div className="mt-4 rounded-lg border border-gray-200 p-4">
+                              <p className="text-xs uppercase tracking-widest text-gray-500">Attachments</p>
+                              <div className="mt-2 space-y-2">
+                                {(selected.payload as any).attachments.map((f: any) => (
+                                  <a
+                                    key={String(f?.key || f?.viewUrl || Math.random())}
+                                    href={toViewerHref(String(f?.viewUrl || ""))}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="block rounded-md border border-gray-100 bg-white px-3 py-2 text-sm text-black hover:bg-gray-50"
+                                  >
+                                    {String(f?.filename || f?.key || "Attachment")}
+                                  </a>
+                                ))}
+                              </div>
+                            </div>
+                          ) : null}
+
+                          {String((selected.payload as any)?.attachmentLinks || "").trim() ? (
+                            <div className="mt-4 rounded-lg border border-gray-200 p-4">
+                              <p className="text-xs uppercase tracking-widest text-gray-500">Attachment Links</p>
+                              <p className="text-sm text-gray-700 mt-2 whitespace-pre-wrap">
+                                {String((selected.payload as any).attachmentLinks)}
                               </p>
                             </div>
                           ) : null}

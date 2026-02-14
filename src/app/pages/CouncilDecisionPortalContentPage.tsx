@@ -22,8 +22,7 @@ function emptyDecisionPortal(): DecisionPortalContent {
       { id: "unity", label: "Unity BBQ", description: "" },
     ],
     links: [
-      { id: "lnk-web", label: "Open Web Report", url: "/signature-event-comparison.html" },
-      { id: "lnk-pdf", label: "Open PDF Report", url: "/docs/event-comparison-report-nphc-2026.pdf" },
+      { id: "lnk-web", label: "Open Interactive Report", url: "#/reports/signature-event-comparison" },
     ],
     isOpen: true,
   };

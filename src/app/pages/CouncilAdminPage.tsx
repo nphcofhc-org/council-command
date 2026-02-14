@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Shield, FileText, Lock, AlertTriangle, ClipboardCheck, SlidersHorizontal, Home, Calendar, TrendingUp, FolderOpen, Target, Inbox } from "lucide-react";
+import { Shield, FileText, Lock, AlertTriangle, ClipboardCheck, SlidersHorizontal, Home, Calendar, TrendingUp, FolderOpen, Target, Inbox, Mail } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { motion } from "motion/react";
@@ -198,6 +198,23 @@ export function CouncilAdminPage() {
                 <Link to="/council-admin/submissions">
                   <Inbox className="mr-2 size-4" />
                   Review Submissions
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+            <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h3 className="text-base text-black sm:text-lg">Notifications</h3>
+                <p className="text-sm text-gray-500">
+                  Configure email recipients and confirmation emails for portal requests.
+                </p>
+              </div>
+              <Button asChild variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white sm:w-auto">
+                <Link to="/council-admin/notifications">
+                  <Mail className="mr-2 size-4" />
+                  Notification Settings
                 </Link>
               </Button>
             </CardContent>
