@@ -1,0 +1,227 @@
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router";
+import { ArrowLeft, Download, RefreshCw, Save } from "lucide-react";
+import { CouncilAdminGate } from "../components/CouncilAdminGate";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import { Textarea } from "../components/ui/textarea";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { fetchSubmissionsAsAdmin, updateSubmissionAsAdmin, type FormSubmissionRow, type FormKey } from "../data/forms-api";
+
+function downloadJson(filename: string, payload: unknown) {
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+const FORM_TABS: { key: FormKey; label: string }[] = [
+  { key: "budget_submission", label: "Budgets" },
+  { key: "reimbursement_request", label: "Reimbursements" },
+  { key: "social_media_request", label: "Social Requests" },
+];
+
+export function CouncilSubmissionsPage() {
+  const [activeForm, setActiveForm] = useState<FormKey>("budget_submission");
+  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [rows, setRows] = useState<FormSubmissionRow[]>([]);
+
+  const [selectedId, setSelectedId] = useState<string>("");
+  const selected = useMemo(() => rows.find((r) => r.id === selectedId) || null, [rows, selectedId]);
+
+  const [updateStatus, setUpdateStatus] = useState<string>("Under Review");
+  const [updateNotes, setUpdateNotes] = useState<string>("");
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const load = async () => {
+    setLoading(true);
+    setError(null);
+    setMessage(null);
+    try {
+      const data = await fetchSubmissionsAsAdmin({
+        formKey: activeForm,
+        status: statusFilter || undefined,
+        limit: 120,
+      });
+      setRows(data);
+      if (data.length && !selectedId) setSelectedId(data[0].id);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load submissions.");
+      setRows([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    void load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeForm, statusFilter]);
+
+  useEffect(() => {
+    if (!selected) return;
+    setUpdateStatus(selected.status || "Under Review");
+    setUpdateNotes(selected.reviewNotes || "");
+  }, [selectedId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const exportAll = () => {
+    downloadJson(`portal_${activeForm}_submissions.json`, rows);
+  };
+
+  const saveUpdate = async () => {
+    if (!selected) return;
+    setSaving(true);
+    setError(null);
+    setMessage(null);
+    try {
+      await updateSubmissionAsAdmin({ id: selected.id, status: updateStatus, reviewNotes: updateNotes });
+      setMessage("Saved.");
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Update failed.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <CouncilAdminGate>
+      <div className="mx-auto max-w-7xl p-4 sm:p-8 space-y-4">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black">
+            <ArrowLeft className="size-4" />
+            Back to Council Admin
+          </Link>
+          <div className="flex gap-2">
+            <Button variant="outline" className="gap-2" onClick={load} disabled={loading}>
+              <RefreshCw className="size-4" />
+              Refresh
+            </Button>
+            <Button variant="outline" className="gap-2" onClick={exportAll} disabled={rows.length === 0}>
+              <Download className="size-4" />
+              Export JSON
+            </Button>
+          </div>
+        </div>
+
+        <Card className="border-0 shadow-lg ring-1 ring-black/5">
+          <CardHeader>
+            <CardTitle>Submission Review</CardTitle>
+            <CardDescription>Review budgets, reimbursements, and social requests stored in the portal backend.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {message ? <p className="text-sm text-green-700 font-semibold">{message}</p> : null}
+            {error ? <p className="text-sm text-red-700 font-semibold">{error}</p> : null}
+            {loading ? <p className="text-sm text-gray-500">Loading…</p> : null}
+
+            <Tabs value={activeForm} onValueChange={(v) => setActiveForm(v as FormKey)} className="space-y-3">
+              <TabsList className="bg-white border border-gray-200 w-full sm:w-auto flex-wrap justify-start">
+                {FORM_TABS.map((t) => (
+                  <TabsTrigger key={t.key} value={t.key} className="text-xs sm:text-sm">
+                    {t.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+
+              <div className="grid gap-4 lg:grid-cols-3">
+                <div className="lg:col-span-1 space-y-3">
+                  <div className="rounded-lg border border-gray-200 p-3">
+                    <Label>Status Filter (optional)</Label>
+                    <Input
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      placeholder='e.g. "Submitted" or "Approved"'
+                      className="mt-2"
+                    />
+                  </div>
+
+                  <div className="rounded-lg border border-gray-200 overflow-hidden">
+                    {rows.length === 0 ? (
+                      <div className="p-4 text-sm text-gray-500">No submissions found.</div>
+                    ) : (
+                      <div className="max-h-[60vh] overflow-auto">
+                        {rows.map((r) => (
+                          <button
+                            key={r.id}
+                            onClick={() => setSelectedId(r.id)}
+                            className={`w-full text-left p-3 border-b last:border-b-0 hover:bg-gray-50 ${
+                              r.id === selectedId ? "bg-gray-50" : "bg-white"
+                            }`}
+                          >
+                            <p className="text-sm font-semibold text-black truncate">{r.payload?.title || r.payload?.projectName || r.payload?.payeeName || r.payload?.requestType || r.id}</p>
+                            <p className="text-xs text-gray-500 mt-1">{r.status} • {new Date(r.createdAt).toLocaleString()}</p>
+                            <p className="text-xs text-gray-400 truncate">{r.createdBy || "Unknown sender"}</p>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="lg:col-span-2 space-y-3">
+                  <TabsContent value={activeForm} className="space-y-3">
+                    <div className="rounded-lg border border-gray-200 p-4">
+                      {!selected ? (
+                        <p className="text-sm text-gray-500">Select a submission to view details.</p>
+                      ) : (
+                        <>
+                          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                            <div>
+                              <p className="text-xs uppercase tracking-widest text-gray-500">Submission</p>
+                              <p className="text-sm text-gray-700 mt-1">
+                                <span className="font-semibold text-black">ID:</span> {selected.id}
+                              </p>
+                              <p className="text-sm text-gray-700">
+                                <span className="font-semibold text-black">From:</span> {selected.createdBy || "Unknown"}
+                              </p>
+                              <p className="text-sm text-gray-700">
+                                <span className="font-semibold text-black">Created:</span> {new Date(selected.createdAt).toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                            <div className="space-y-1">
+                              <Label>Status</Label>
+                              <Input value={updateStatus} onChange={(e) => setUpdateStatus(e.target.value)} placeholder="Under Review" />
+                            </div>
+                            <div className="flex items-end">
+                              <Button onClick={saveUpdate} disabled={saving} className="bg-black hover:bg-gray-900 w-full sm:w-auto">
+                                <Save className="mr-2 size-4" />
+                                {saving ? "Saving…" : "Save Status"}
+                              </Button>
+                            </div>
+                            <div className="space-y-1 sm:col-span-2">
+                              <Label>Review Notes</Label>
+                              <Textarea value={updateNotes} onChange={(e) => setUpdateNotes(e.target.value)} rows={5} placeholder="Notes back to submitter, approvals, next steps…" />
+                            </div>
+                          </div>
+
+                          <div className="mt-4 rounded-lg border border-gray-100 bg-gray-50 p-4">
+                            <p className="text-xs uppercase tracking-widest text-gray-500">Submitted Payload</p>
+                            <pre className="mt-2 text-xs text-gray-800 overflow-auto whitespace-pre-wrap">
+                              {JSON.stringify(selected.payload, null, 2)}
+                            </pre>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </TabsContent>
+                </div>
+              </div>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </div>
+    </CouncilAdminGate>
+  );
+}
+

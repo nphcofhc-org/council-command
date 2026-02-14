@@ -67,8 +67,7 @@ export function HomePage() {
         icon: "TrendingUp",
         label: "Request a Social Post",
         shortLabel: "Social",
-        // Default destination until a Google Form link is added in Council Admin → Content → Home.
-        url: "/resources",
+        url: "/forms/social-media",
         row: 1 as const,
       },
     ];
