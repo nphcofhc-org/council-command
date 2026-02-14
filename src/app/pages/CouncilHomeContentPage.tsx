@@ -205,7 +205,7 @@ export function CouncilHomeContentPage() {
     <CouncilAdminGate>
       <div className="mx-auto max-w-6xl p-4 sm:p-8">
         <div className="mb-6">
-          <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-primary transition-colors">
+          <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-primary transition-colors">
             <ArrowLeft className="h-4 w-4" />
             Back to Council Admin
           </Link>
@@ -221,9 +221,9 @@ export function CouncilHomeContentPage() {
           <CardContent className="space-y-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="space-y-1">
-                <p className="text-sm text-white/70">Editor access only. Members will see the updated Home page.</p>
+                <p className="text-sm text-slate-600">Editor access only. Members will see the updated Home page.</p>
                 {lastSavedAt ? (
-                  <p className="text-xs text-white/60">Last saved: {new Date(lastSavedAt).toLocaleString()}</p>
+                  <p className="text-xs text-slate-500">Last saved: {new Date(lastSavedAt).toLocaleString()}</p>
                 ) : null}
               </div>
               <Button onClick={saveAll} disabled={saving || loading}>
@@ -234,7 +234,7 @@ export function CouncilHomeContentPage() {
 
             {message ? <p className="text-sm text-emerald-300">{message}</p> : null}
             {error ? <p className="text-sm text-rose-300">{error}</p> : null}
-            {loading ? <p className="text-sm text-white/60">Loading...</p> : null}
+            {loading ? <p className="text-sm text-slate-500">Loading...</p> : null}
 
             <div className="grid gap-6 lg:grid-cols-2">
               <Card>
@@ -330,8 +330,8 @@ export function CouncilHomeContentPage() {
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between gap-4 rounded-lg border p-4">
                   <div className="space-y-0.5">
-                    <p className="text-sm font-medium text-white">Enable Banner</p>
-                    <p className="text-xs text-white/60">Turn on/off without deleting your message.</p>
+                    <p className="text-sm font-medium text-slate-900">Enable Banner</p>
+                    <p className="text-xs text-slate-500">Turn on/off without deleting your message.</p>
                   </div>
                   <Switch
                     checked={!!config.alertEnabled}
@@ -396,7 +396,7 @@ export function CouncilHomeContentPage() {
                 {quickLinks.map((link, idx) => (
                   <div key={link.id || idx} className="rounded-lg border p-4">
                     <div className="mb-3 flex items-center justify-between gap-3">
-                      <p className="text-sm font-medium text-white/85">Link {idx + 1}</p>
+                      <p className="text-sm font-medium text-slate-800">Link {idx + 1}</p>
                       <Button type="button" variant="outline" size="sm" onClick={() => removeQuickLink(idx)}>
                         <Trash2 className="mr-2 h-4 w-4" />
                         Remove
@@ -443,7 +443,7 @@ export function CouncilHomeContentPage() {
                 {updates.map((u, idx) => (
                   <div key={u.id || idx} className="rounded-lg border p-4">
                     <div className="mb-3 flex items-center justify-between gap-3">
-                      <p className="text-sm font-medium text-white/85">Update {idx + 1}</p>
+                      <p className="text-sm font-medium text-slate-800">Update {idx + 1}</p>
                       <Button type="button" variant="outline" size="sm" onClick={() => removeUpdate(idx)}>
                         <Trash2 className="mr-2 h-4 w-4" />
                         Remove

@@ -129,28 +129,28 @@ export function DocumentViewerPage() {
           <div className="flex items-center gap-3 min-w-0">
             <Button
               variant="outline"
-              className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10"
+              className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
               onClick={back}
             >
               <ArrowLeft className="size-4" />
               Back
             </Button>
             <div className="min-w-0">
-              <p className="text-xs uppercase tracking-widest text-white/60">Document Viewer</p>
-              <h1 className="text-base sm:text-lg font-extrabold text-white truncate">{name}</h1>
+              <p className="text-xs uppercase tracking-widest text-slate-500">Document Viewer</p>
+              <h1 className="text-base sm:text-lg font-extrabold text-slate-900 truncate">{name}</h1>
             </div>
           </div>
 
           <div className="flex flex-wrap gap-2">
             {originalHref ? (
               <>
-                <Button asChild variant="outline" className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10">
+                <Button asChild variant="outline" className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10">
                   <a href={originalHref} target="_blank" rel="noreferrer">
                     <ExternalLink className="size-4" />
                     Open Original
                   </a>
                 </Button>
-                <Button asChild variant="outline" className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10">
+                <Button asChild variant="outline" className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10">
                   <a href={originalHref} download>
                     <Download className="size-4" />
                     Download
@@ -166,7 +166,7 @@ export function DocumentViewerPage() {
             <CardHeader>
               <CardTitle>Preview Unavailable</CardTitle>
             </CardHeader>
-            <CardContent className="text-sm text-white/70">{abs.reason}</CardContent>
+            <CardContent className="text-sm text-slate-600">{abs.reason}</CardContent>
           </Card>
         ) : (
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
@@ -178,18 +178,18 @@ export function DocumentViewerPage() {
             </CardHeader>
             <CardContent>
               {error ? <p className="text-sm text-rose-300">{error}</p> : null}
-              {loading ? <p className="text-sm text-white/60">Loading preview…</p> : null}
+              {loading ? <p className="text-sm text-slate-500">Loading preview…</p> : null}
 
               {kind === "pdf" ? (
                 <iframe
                   title={name}
                   src={abs.url}
-                  className="w-full h-[75vh] rounded-lg border border-white/10 bg-black/30"
+                  className="w-full h-[75vh] rounded-lg border border-black/10 bg-white/55"
                 />
               ) : null}
 
               {kind === "image" ? (
-                <div className="w-full overflow-auto rounded-lg border border-white/10 bg-white/5 p-3">
+                <div className="w-full overflow-auto rounded-lg border border-black/10 bg-white/5 p-3">
                   <img src={abs.url} alt={name} className="max-w-full h-auto" />
                 </div>
               ) : null}
@@ -197,7 +197,7 @@ export function DocumentViewerPage() {
               {kind === "docx" ? (
                 docxHtml ? (
                   <div
-                    className="docx-preview rounded-lg border border-white/10 bg-white p-4"
+                    className="docx-preview rounded-lg border border-black/10 bg-white p-4"
                     // mammoth generates HTML; we only use this for council-owned docs.
                     dangerouslySetInnerHTML={{ __html: docxHtml }}
                   />
@@ -205,7 +205,7 @@ export function DocumentViewerPage() {
               ) : null}
 
               {kind === "unknown" ? (
-                <div className="rounded-lg border border-white/10 bg-white/5 p-4 text-sm text-white/70">
+                <div className="rounded-lg border border-black/10 bg-white/5 p-4 text-sm text-slate-600">
                   This file type can’t be previewed in the portal yet. Use “Open Original” or “Download”.
                 </div>
               ) : null}
@@ -213,7 +213,7 @@ export function DocumentViewerPage() {
           </Card>
         )}
 
-        <div className="text-xs text-white/45">
+        <div className="text-xs text-slate-400">
           Tip: If PDFs are downloading instead of opening, check your browser setting for “Download PDF files instead of opening”.
         </div>
       </div>

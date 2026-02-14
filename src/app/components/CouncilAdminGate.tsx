@@ -16,7 +16,7 @@ export function CouncilAdminGate({ children }: CouncilAdminGateProps) {
   if (loading) {
     return (
       <div className="mx-auto flex min-h-[40vh] max-w-2xl items-center justify-center px-6">
-        <div className="flex items-center gap-2 text-sm text-white/60">
+        <div className="flex items-center gap-2 text-sm text-slate-500">
           <Loader2 className="h-4 w-4 animate-spin" />
           Validating council admin access...
         </div>
@@ -38,19 +38,19 @@ export function CouncilAdminGate({ children }: CouncilAdminGateProps) {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-white/75">
+            <p className="text-sm text-slate-700">
               If this is unexpected, confirm your Cloudflare Access login email and that it is listed in{" "}
               <code>SITE_EDITOR_EMAILS</code>.
             </p>
             {error ? (
-              <p className="rounded-md border border-rose-400/30 bg-black/30 px-3 py-2 text-xs text-rose-200">
+              <p className="rounded-md border border-rose-400/30 bg-white/55 px-3 py-2 text-xs text-rose-200">
                 Session check error: {error}
               </p>
             ) : null}
             <Button
               type="button"
               variant="outline"
-              className="border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10"
+              className="border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
               onClick={refetch}
             >
               Retry Access Check
@@ -66,13 +66,13 @@ export function CouncilAdminGate({ children }: CouncilAdminGateProps) {
       <div className="mx-auto max-w-2xl px-4 py-14 sm:px-8">
         <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
           <CardHeader>
-            <CardTitle className="text-white">Editor Mode Is Off</CardTitle>
+            <CardTitle className="text-slate-900">Editor Mode Is Off</CardTitle>
             <CardDescription>
               You are signed in as an admin, but you are currently viewing the portal as a regular member.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-white/75">
+            <p className="text-sm text-slate-700">
               Turn on Editor Mode to access Council Admin tools (compliance tracking, content updates).
             </p>
             <Button type="button" onClick={() => setEditorMode(true)}>

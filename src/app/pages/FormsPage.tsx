@@ -16,10 +16,10 @@ export function FormsPage() {
         >
           <div className="flex items-center gap-3 mb-1">
             <div className="w-8 h-px bg-primary" />
-            <span className="text-xs tracking-[0.2em] uppercase text-white/60">Submissions</span>
+            <span className="text-xs tracking-[0.2em] uppercase text-slate-500">Submissions</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl text-white mb-1">Forms & Requests</h1>
-          <p className="text-sm sm:text-base text-white/70">
+          <h1 className="text-2xl sm:text-3xl text-slate-900 mb-1">Forms & Requests</h1>
+          <p className="text-sm sm:text-base text-slate-600">
             Submit budgets, reimbursements, social media requests, and committee reports for review.
           </p>
         </motion.div>
@@ -39,7 +39,7 @@ export function FormsPage() {
               <Button
                 asChild
                 variant="outline"
-                className="w-full sm:w-auto border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10"
+                className="w-full sm:w-auto border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
               >
                 <Link to="/forms/my">View My Submissions</Link>
               </Button>

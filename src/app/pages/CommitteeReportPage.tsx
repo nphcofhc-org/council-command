@@ -100,15 +100,15 @@ export function CommitteeReportPage() {
     <div className="relative">
       <div className="max-w-4xl mx-auto p-4 sm:p-8 space-y-4">
         <div className="flex items-center gap-3">
-          <Button asChild variant="outline" className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10">
+          <Button asChild variant="outline" className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10">
             <Link to="/forms">
               <ArrowLeft className="size-4" />
               Back
             </Link>
           </Button>
           <div>
-            <p className="text-xs uppercase tracking-widest text-white/60">Form</p>
-            <h1 className="text-lg sm:text-xl font-extrabold text-white">Committee Report Submission</h1>
+            <p className="text-xs uppercase tracking-widest text-slate-500">Form</p>
+            <h1 className="text-lg sm:text-xl font-extrabold text-slate-900">Committee Report Submission</h1>
           </div>
         </div>
 
@@ -169,15 +169,15 @@ export function CommitteeReportPage() {
                 <Textarea value={actionItems} onChange={(e) => setActionItems(e.target.value)} rows={4} placeholder="Next steps and who owns them (if known)." />
               </div>
 
-              <div className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-3">
+              <div className="rounded-lg border border-black/10 bg-white/5 p-4 space-y-3">
                 <div className="flex items-center justify-between gap-3 flex-wrap">
                   <div>
-                    <p className="text-sm font-semibold text-white">Attachments (optional)</p>
-                    <p className="text-xs text-white/60 mt-0.5">
+                    <p className="text-sm font-semibold text-slate-900">Attachments (optional)</p>
+                    <p className="text-xs text-slate-500 mt-0.5">
                       Upload up to 5 files. Max 100MB each. (PDF, DOCX, JPG, PNG, HEIC accepted)
                     </p>
                   </div>
-                  <label className="inline-flex items-center gap-2 text-sm font-semibold rounded-md border border-white/15 bg-black/30 px-3 py-2 cursor-pointer hover:bg-white/5 hover:border-primary/40 transition">
+                  <label className="inline-flex items-center gap-2 text-sm font-semibold rounded-md border border-black/15 bg-white/55 px-3 py-2 cursor-pointer hover:bg-white/5 hover:border-primary/40 transition">
                     <Upload className="size-4" />
                     Choose Files
                     <input
@@ -196,12 +196,12 @@ export function CommitteeReportPage() {
                 {attachmentFiles.length > 0 ? (
                   <div className="space-y-2">
                     {attachmentFiles.map((f, idx) => (
-                      <div key={`${f.name}-${idx}`} className="flex items-center justify-between gap-3 rounded-md border border-white/10 bg-black/30 px-3 py-2">
+                      <div key={`${f.name}-${idx}`} className="flex items-center justify-between gap-3 rounded-md border border-black/10 bg-white/55 px-3 py-2">
                         <div className="min-w-0">
-                          <p className="text-sm text-white truncate">{f.name}</p>
-                          <p className="text-xs text-white/60">{Math.round(f.size / 1024)} KB</p>
+                          <p className="text-sm text-slate-900 truncate">{f.name}</p>
+                          <p className="text-xs text-slate-500">{Math.round(f.size / 1024)} KB</p>
                         </div>
-                        <button type="button" onClick={() => removeFile(idx)} className="text-white/60 hover:text-primary transition-colors" aria-label="Remove file">
+                        <button type="button" onClick={() => removeFile(idx)} className="text-slate-500 hover:text-primary transition-colors" aria-label="Remove file">
                           <X className="size-4" />
                         </button>
                       </div>
@@ -210,7 +210,7 @@ export function CommitteeReportPage() {
                 ) : null}
 
                 <div className="space-y-1">
-                  <Label className="text-xs text-white/60">
+                  <Label className="text-xs text-slate-500">
                     If uploads are temporarily unavailable, paste Drive link(s) here (optional fallback)
                   </Label>
                   <Textarea value={attachmentLinksFallback} onChange={(e) => setAttachmentLinksFallback(e.target.value)} rows={2} placeholder="https://drive.google.com/…" />

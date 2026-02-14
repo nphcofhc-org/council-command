@@ -110,7 +110,7 @@ export function CouncilResourcesContentPage() {
               <Button onClick={() => {
                 setForm((p) => ({ ...p, sharedForms: ensureIds(p.sharedForms) }));
                 void save();
-              }} disabled={saving || loading} className="bg-black hover:bg-gray-800">
+              }} disabled={saving || loading} className="bg-white hover:bg-gray-800">
                 <Save className="mr-2 h-4 w-4" />
                 {saving ? "Saving..." : "Save Changes"}
               </Button>

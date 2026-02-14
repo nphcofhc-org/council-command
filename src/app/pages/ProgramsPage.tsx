@@ -33,18 +33,18 @@ export function ProgramsPage() {
         >
           <div className="flex items-center gap-3 mb-1">
             <div className="w-8 h-px bg-primary" />
-            <span className="text-xs tracking-[0.2em] uppercase text-white/60">Council Programming</span>
+            <span className="text-xs tracking-[0.2em] uppercase text-slate-500">Council Programming</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl text-white mb-1">
+          <h1 className="text-2xl sm:text-3xl text-slate-900 mb-1">
             Programs <span className="text-primary">&amp;</span> Events
           </h1>
-          <p className="text-sm sm:text-base text-white/70">
+          <p className="text-sm sm:text-base text-slate-600">
             Council programming, event calendar, and member registration access
           </p>
         </motion.div>
 
         <Tabs defaultValue="calendar" className="space-y-6">
-          <TabsList className="w-full sm:w-auto flex-wrap justify-start border border-white/10 bg-white/5 backdrop-blur-xl">
+          <TabsList className="w-full sm:w-auto flex-wrap justify-start border border-black/10 bg-white/5 backdrop-blur-xl">
             <TabsTrigger value="calendar" className="text-xs sm:text-sm">Event Calendar</TabsTrigger>
             <TabsTrigger value="flyers" className="text-xs sm:text-sm">Event Materials</TabsTrigger>
             <TabsTrigger value="signup" className="text-xs sm:text-sm">Sign-Up Forms</TabsTrigger>
@@ -57,7 +57,7 @@ export function ProgramsPage() {
                 initial={{ x: -15, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.4 }}
-                className="text-lg sm:text-xl text-white mb-4"
+                className="text-lg sm:text-xl text-slate-900 mb-4"
               >
                 Upcoming Events
               </motion.h2>
@@ -75,13 +75,13 @@ export function ProgramsPage() {
                         <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start gap-3 mb-3">
-                              <div className="p-2.5 rounded-lg border border-white/10 bg-white/5 flex-shrink-0">
-                                <Calendar className="size-5 text-white" />
+                              <div className="p-2.5 rounded-lg border border-black/10 bg-white/5 flex-shrink-0">
+                                <Calendar className="size-5 text-slate-900" />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <h3 className="text-lg sm:text-xl text-white mb-1">{event.title}</h3>
-                                <p className="text-white/70 text-sm mb-3">{event.description}</p>
-                                <div className="space-y-1.5 text-sm text-white/70">
+                                <h3 className="text-lg sm:text-xl text-slate-900 mb-1">{event.title}</h3>
+                                <p className="text-slate-600 text-sm mb-3">{event.description}</p>
+                                <div className="space-y-1.5 text-sm text-slate-600">
                                   <div className="flex items-center gap-2">
                                     <Clock className="size-3.5 flex-shrink-0" />
                                     <span>{event.date}</span>
@@ -103,7 +103,7 @@ export function ProgramsPage() {
                               className={
                                 event.registration === "Open"
                                   ? "bg-primary text-primary-foreground hover:brightness-110 w-full sm:w-auto"
-                                  : "bg-white/10 text-white/40 w-full sm:w-auto cursor-default"
+                                  : "bg-white/10 text-slate-400 w-full sm:w-auto cursor-default"
                               }
                               disabled={event.registration !== "Open"}
                             >
@@ -125,7 +125,7 @@ export function ProgramsPage() {
                 whileInView={{ x: 0, opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4 }}
-                className="text-lg sm:text-xl text-white mb-4"
+                className="text-lg sm:text-xl text-slate-900 mb-4"
               >
                 Recent Events
               </motion.h2>
@@ -145,15 +145,15 @@ export function ProgramsPage() {
                         viewport={{ once: true }}
                         transition={{ delay: index * 0.05, duration: 0.3 }}
                         className={`flex flex-col sm:flex-row sm:items-center justify-between p-5 gap-2 ${
-                          index < archivedEvents.length - 1 ? "border-b border-white/10" : ""
+                          index < archivedEvents.length - 1 ? "border-b border-black/10" : ""
                         }`}
                       >
                         <div className="flex-1">
-                          <h3 className="text-white">{event.title}</h3>
-                          <p className="text-sm text-white/60">{event.date}</p>
+                          <h3 className="text-slate-900">{event.title}</h3>
+                          <p className="text-sm text-slate-500">{event.date}</p>
                         </div>
                         <div className="flex items-center gap-3">
-                          <p className="text-sm text-white/60">{event.attendees}</p>
+                          <p className="text-sm text-slate-500">{event.attendees}</p>
                           <StatusBadge status={event.status} />
                         </div>
                       </motion.div>
@@ -183,20 +183,20 @@ export function ProgramsPage() {
                         initial={{ scale: 0.95, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: index * 0.08, duration: 0.4 }}
-                        className="rounded-xl border border-white/10 bg-white/5 p-4 transition-all duration-300 group hover:border-primary/30 hover:bg-white/10"
+                        className="rounded-xl border border-black/10 bg-white/5 p-4 transition-all duration-300 group hover:border-primary/30 hover:bg-white/10"
                       >
                         <div className="aspect-[8.5/11] bg-gradient-to-br from-black via-gray-800 to-gray-700 rounded-lg mb-4 flex items-center justify-center group-hover:from-gray-800 group-hover:to-gray-600 transition-all duration-300">
-                          <FileText className="size-12 sm:size-16 text-white/15" />
+                          <FileText className="size-12 sm:size-16 text-slate-900/15" />
                         </div>
-                        <h3 className="text-white text-sm mb-1">{flyer.title}</h3>
-                        <p className="text-xs text-white/60 mb-1">{flyer.type}</p>
-                        <p className="text-xs text-white/45 mb-3">{flyer.date}</p>
+                        <h3 className="text-slate-900 text-sm mb-1">{flyer.title}</h3>
+                        <p className="text-xs text-slate-500 mb-1">{flyer.type}</p>
+                        <p className="text-xs text-slate-400 mb-3">{flyer.date}</p>
                         {flyer.fileUrl ? (
                           <Button
                             asChild
                             variant="outline"
                             size="sm"
-                            className="w-full gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10 transition-all duration-200"
+                            className="w-full gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10 transition-all duration-200"
                           >
                             <a href={flyer.fileUrl} target="_blank" rel="noreferrer">
                               <ExternalLink className="size-3" />
@@ -204,7 +204,7 @@ export function ProgramsPage() {
                             </a>
                           </Button>
                         ) : (
-                          <Button variant="outline" size="sm" disabled className="w-full gap-2 border-white/15 bg-white/5 text-white/35">
+                          <Button variant="outline" size="sm" disabled className="w-full gap-2 border-black/15 bg-white/5 text-slate-900/35">
                             <ExternalLink className="size-3" />
                             Missing
                           </Button>
@@ -236,16 +236,16 @@ export function ProgramsPage() {
                         initial={{ x: -15, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ delay: index * 0.08, duration: 0.4 }}
-                        className="flex flex-col sm:flex-row sm:items-start sm:justify-between p-4 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-colors gap-4"
+                        className="flex flex-col sm:flex-row sm:items-start sm:justify-between p-4 rounded-lg border border-black/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-colors gap-4"
                       >
                         <div className="flex items-start gap-4 flex-1 min-w-0">
-                          <div className="p-2 rounded-lg border border-white/10 bg-white/5 flex-shrink-0">
-                            <Users className="size-5 text-white" />
+                          <div className="p-2 rounded-lg border border-black/10 bg-white/5 flex-shrink-0">
+                            <Users className="size-5 text-slate-900" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-white mb-1">{form.title}</h3>
-                            <p className="text-sm text-white/70 mb-2">{form.description}</p>
-                            <p className="text-xs text-white/45">
+                            <h3 className="text-slate-900 mb-1">{form.title}</h3>
+                            <p className="text-sm text-slate-600 mb-2">{form.description}</p>
+                            <p className="text-xs text-slate-400">
                               <strong>Deadline:</strong> {form.deadline}
                             </p>
                           </div>
@@ -257,7 +257,7 @@ export function ProgramsPage() {
                               asChild
                               size="sm"
                               variant="outline"
-                              className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10 w-full sm:w-auto"
+                              className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10 w-full sm:w-auto"
                             >
                               <a href={form.formUrl} target="_blank" rel="noreferrer">
                                 <ExternalLink className="size-3" />
@@ -268,7 +268,7 @@ export function ProgramsPage() {
                             <Button
                               size="sm"
                               variant="outline"
-                              className="gap-2 border-white/15 bg-white/5 text-white/35 w-full sm:w-auto"
+                              className="gap-2 border-black/15 bg-white/5 text-slate-900/35 w-full sm:w-auto"
                               disabled
                             >
                               <ExternalLink className="size-3" />

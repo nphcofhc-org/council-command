@@ -18,7 +18,7 @@ declare global {
 // ── Shared glass button class for quick links ───────────────────────────────
 const glassButtonClass =
   "nphc-holo-btn relative overflow-hidden inline-flex items-center gap-2 px-4 py-2.5 rounded-lg cursor-pointer " +
-  "bg-white/[0.08] backdrop-blur-xl text-white border border-white/20 " +
+  "bg-white/[0.08] backdrop-blur-xl text-slate-900 border border-black/15 " +
   "shadow-[0_8px_32px_0_rgba(255,255,255,0.07)] " +
   "transition-all duration-300 text-sm " +
   "hover:bg-primary/15 hover:text-primary hover:border-primary/50 " +
@@ -227,7 +227,7 @@ export function HomePage() {
   return (
     <div>
       {/* ── Google Sites Cover Banner ─────────────────────────────────────── */}
-      <div className="relative w-full overflow-hidden bg-black h-[200px] sm:h-[240px] lg:h-[280px]">
+      <div className="relative w-full overflow-hidden bg-white h-[200px] sm:h-[240px] lg:h-[280px]">
         {bannerIsVideo ? (
           <motion.video
             initial={{ opacity: 0, scale: 1.02 }}
@@ -265,7 +265,7 @@ export function HomePage() {
               initial={{ y: -10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.35 }}
-              className={`rounded-2xl border border-white/15 bg-black/35 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl p-4 sm:p-5 border-l-4 ${alertAccent}`}
+              className={`rounded-2xl border border-black/15 bg-white/60 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl p-4 sm:p-5 border-l-4 ${alertAccent}`}
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="flex items-start gap-3">
@@ -273,8 +273,8 @@ export function HomePage() {
                     <Bell className="size-4" />
                   </div>
                   <div className="min-w-0">
-                    {alertTitle ? <p className="text-sm font-semibold text-white">{alertTitle}</p> : null}
-                    {alertMessage ? <p className="text-sm text-white/70 mt-0.5">{alertMessage}</p> : null}
+                    {alertTitle ? <p className="text-sm font-semibold text-slate-900">{alertTitle}</p> : null}
+                    {alertMessage ? <p className="text-sm text-slate-600 mt-0.5">{alertMessage}</p> : null}
                   </div>
                 </div>
 
@@ -293,7 +293,7 @@ export function HomePage() {
       ) : null}
 
       {/* ── Quick Links ───────────────────────────────────────────────────── */}
-      <div className="bg-black py-8 sm:py-10 relative overflow-hidden">
+      <div className="bg-white py-8 sm:py-10 relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.03]">
           <img src={ART_MARBLE} alt="" className="w-full h-full object-cover" />
         </div>
@@ -365,9 +365,9 @@ export function HomePage() {
           >
             <div className="flex items-center gap-3 mb-1">
               <div className="w-8 h-px bg-primary" />
-              <span className="text-xs tracking-[0.2em] uppercase text-white/60">From the Desk of the President</span>
+              <span className="text-xs tracking-[0.2em] uppercase text-slate-500">From the Desk of the President</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl text-white">
+            <h2 className="text-2xl sm:text-3xl text-slate-900">
               President&apos;s <span className="text-primary">Welcome</span>
             </h2>
           </motion.div>
@@ -384,7 +384,7 @@ export function HomePage() {
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}
-                className="nphc-holo-surface aspect-[4/5] rounded-2xl overflow-hidden bg-white/5 shadow-[0_25px_80px_rgba(0,0,0,0.55),0_0_70px_rgba(255,255,255,0.14)] ring-1 ring-white/20"
+                className="nphc-holo-surface aspect-[4/5] rounded-2xl overflow-hidden bg-white/5 shadow-[0_25px_80px_rgba(0,0,0,0.55),0_0_70px_rgba(255,255,255,0.14)] ring-1 ring-black/10"
               >
                 {presidentImageUrl ? (
                   <img
@@ -393,29 +393,29 @@ export function HomePage() {
                     className="h-full w-full object-cover object-center saturate-110 contrast-105"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-white/5 text-white/50">
+                  <div className="flex h-full w-full items-center justify-center bg-white/5 text-slate-500">
                     <span className="text-sm font-semibold uppercase tracking-wide">President Photo</span>
                   </div>
                 )}
               </motion.div>
               <div className="mt-5 text-center">
-                <h3 className="text-lg text-white">{presidentName}</h3>
-                <p className="text-white/70 text-sm">{presidentTitle}</p>
-                <p className="text-white/50 text-xs mt-1">{presidentChapter}</p>
+                <h3 className="text-lg text-slate-900">{presidentName}</h3>
+                <p className="text-slate-600 text-sm">{presidentTitle}</p>
+                <p className="text-slate-500 text-xs mt-1">{presidentChapter}</p>
               </div>
             </div>
 
             {/* President's Message */}
-            <div className="md:col-span-3 space-y-5 text-white/75">
+            <div className="md:col-span-3 space-y-5 text-slate-700">
               {welcomeParagraphs.map((paragraph, i) => (
                 <p key={i} className="leading-relaxed">{paragraph}</p>
               ))}
               <div className="pt-2">
-                <p className="text-white/60 italic">{presidentClosing}</p>
-                <p className="text-white mt-2">
+                <p className="text-slate-500 italic">{presidentClosing}</p>
+                <p className="text-slate-900 mt-2">
                   {presidentName}
                   <br />
-                  <span className="text-white/70 text-sm">{presidentTitle}</span>
+                  <span className="text-slate-600 text-sm">{presidentTitle}</span>
                 </p>
               </div>
             </div>
@@ -435,9 +435,9 @@ export function HomePage() {
           >
             <div className="flex items-center gap-3 mb-1">
               <div className="w-8 h-px bg-primary" />
-              <span className="text-xs tracking-[0.2em] uppercase text-white/60">Meetings</span>
+              <span className="text-xs tracking-[0.2em] uppercase text-slate-500">Meetings</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl text-white">
+            <h2 className="text-2xl sm:text-3xl text-slate-900">
               Next <span className="text-primary">Meeting</span>
             </h2>
           </motion.div>
@@ -449,10 +449,10 @@ export function HomePage() {
                   <>
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="text-xs uppercase tracking-widest text-white/60 mb-1">General Body</p>
-                        <h3 className="text-white text-lg leading-snug">{nextMeeting.label}</h3>
+                        <p className="text-xs uppercase tracking-widest text-slate-500 mb-1">General Body</p>
+                        <h3 className="text-slate-900 text-lg leading-snug">{nextMeeting.label}</h3>
                         {nextMeeting.mode ? (
-                          <p className="text-xs text-white/60 mt-1">{nextMeeting.mode}</p>
+                          <p className="text-xs text-slate-500 mt-1">{nextMeeting.mode}</p>
                         ) : null}
                       </div>
                       <div className="rounded-xl border border-primary/25 bg-primary/15 text-primary p-3 flex-shrink-0">
@@ -460,8 +460,8 @@ export function HomePage() {
                       </div>
                     </div>
 
-                    <div className="mt-4 space-y-1.5 text-sm text-white/75">
-                      <p><strong className="text-white">Date:</strong> {nextMeeting.dateISO}</p>
+                    <div className="mt-4 space-y-1.5 text-sm text-slate-700">
+                      <p><strong className="text-slate-900">Date:</strong> {nextMeeting.dateISO}</p>
                     </div>
 
                     {normalizeJoinUrl(nextMeeting.joinUrl) ? (
@@ -477,7 +477,7 @@ export function HomePage() {
                     ) : (
                       <button
                         disabled
-                        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white/10 text-white/40 px-4 py-2.5 text-sm font-semibold cursor-not-allowed"
+                        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white/10 text-slate-400 px-4 py-2.5 text-sm font-semibold cursor-not-allowed"
                         title="Join link will be added by Council Admin"
                       >
                         <ExternalLink className="size-4" />
@@ -485,12 +485,12 @@ export function HomePage() {
                       </button>
                     )}
 
-                    <div className="mt-4 text-xs text-white/45">
+                    <div className="mt-4 text-xs text-slate-400">
                       Admin: set the join link in Council Admin → Content → Meetings.
                     </div>
                   </>
                 ) : (
-                  <p className="text-sm text-white/60">No upcoming General Body meetings found in the 2026 calendar.</p>
+                  <p className="text-sm text-slate-500">No upcoming General Body meetings found in the 2026 calendar.</p>
                 )}
               </CardContent>
             </Card>
@@ -499,12 +499,12 @@ export function HomePage() {
               <CardContent className="p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                   <div>
-                    <p className="text-xs uppercase tracking-widest text-white/60 mb-1">Schedule List View</p>
-                    <h3 className="text-white text-lg">Executive Council & General Body</h3>
+                    <p className="text-xs uppercase tracking-widest text-slate-500 mb-1">Schedule List View</p>
+                    <h3 className="text-slate-900 text-lg">Executive Council & General Body</h3>
                   </div>
                   <a
                     href="/2026-council-calendar.html"
-                    className="inline-flex items-center justify-center rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white/85 hover:border-primary/60 hover:text-primary hover:bg-white/10 transition w-fit"
+                    className="inline-flex items-center justify-center rounded-lg border border-black/15 bg-white/5 px-3 py-2 text-sm text-slate-800 hover:border-primary/60 hover:text-primary hover:bg-white/10 transition w-fit"
                   >
                     View Full 2026 Calendar
                   </a>
@@ -512,28 +512,28 @@ export function HomePage() {
 
                 <div className="grid gap-6 md:grid-cols-2">
                   <div>
-                    <p className="text-sm font-semibold text-white mb-2">General Body Meetings</p>
+                    <p className="text-sm font-semibold text-slate-900 mb-2">General Body Meetings</p>
                     <div className="space-y-2">
                       {generalSchedule.map((m) => (
-                        <div key={`${m.kind}:${m.dateISO}`} className="rounded-lg border border-white/10 bg-white/5 p-3">
-                          <p className="text-sm text-white">{m.label}</p>
-                          <p className="text-xs text-white/60">{m.dateISO}{m.mode ? ` • ${m.mode}` : ""}</p>
+                        <div key={`${m.kind}:${m.dateISO}`} className="rounded-lg border border-black/10 bg-white/5 p-3">
+                          <p className="text-sm text-slate-900">{m.label}</p>
+                          <p className="text-xs text-slate-500">{m.dateISO}{m.mode ? ` • ${m.mode}` : ""}</p>
                         </div>
                       ))}
-                      {generalSchedule.length === 0 ? <p className="text-sm text-white/60">No General Body meetings listed yet.</p> : null}
+                      {generalSchedule.length === 0 ? <p className="text-sm text-slate-500">No General Body meetings listed yet.</p> : null}
                     </div>
                   </div>
 
                   <div>
-                    <p className="text-sm font-semibold text-white mb-2">Executive Council Meetings</p>
+                    <p className="text-sm font-semibold text-slate-900 mb-2">Executive Council Meetings</p>
                     <div className="space-y-2">
                       {execSchedule.map((m) => (
-                        <div key={`${m.kind}:${m.dateISO}`} className="rounded-lg border border-white/10 bg-white/5 p-3">
-                          <p className="text-sm text-white">{m.label}</p>
-                          <p className="text-xs text-white/60">{m.dateISO}</p>
+                        <div key={`${m.kind}:${m.dateISO}`} className="rounded-lg border border-black/10 bg-white/5 p-3">
+                          <p className="text-sm text-slate-900">{m.label}</p>
+                          <p className="text-xs text-slate-500">{m.dateISO}</p>
                         </div>
                       ))}
-                      {execSchedule.length === 0 ? <p className="text-sm text-white/60">No Executive Council meetings listed yet.</p> : null}
+                      {execSchedule.length === 0 ? <p className="text-sm text-slate-500">No Executive Council meetings listed yet.</p> : null}
                     </div>
                   </div>
                 </div>
@@ -555,9 +555,9 @@ export function HomePage() {
           >
             <div className="flex items-center gap-3 mb-1">
               <div className="w-8 h-px bg-primary" />
-              <span className="text-xs tracking-[0.2em] uppercase text-white/60">Treasury</span>
+              <span className="text-xs tracking-[0.2em] uppercase text-slate-500">Treasury</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl text-white">
+            <h2 className="text-2xl sm:text-3xl text-slate-900">
               Financial <span className="text-primary">Snapshot</span>
             </h2>
           </motion.div>
@@ -567,11 +567,11 @@ export function HomePage() {
               <CardContent className="p-6">
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                   <div className="min-w-0">
-                    <p className="text-xs uppercase tracking-widest text-white/60 mb-1">Total Funds (Cash on Hand)</p>
-                    <p className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+                    <p className="text-xs uppercase tracking-widest text-slate-500 mb-1">Total Funds (Cash on Hand)</p>
+                    <p className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
                       {(TREASURY.balances.lendingClub + TREASURY.balances.cashApp).toLocaleString("en-US", { style: "currency", currency: "USD" })}
                     </p>
-                    <p className="text-xs text-white/45 mt-2">{TREASURY.asOfLabel}</p>
+                    <p className="text-xs text-slate-400 mt-2">{TREASURY.asOfLabel}</p>
                   </div>
                   <div className="rounded-xl border border-primary/25 bg-primary/15 text-primary p-3 flex-shrink-0">
                     <Wallet className="size-5" />
@@ -579,21 +579,21 @@ export function HomePage() {
                 </div>
 
                 <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
                     <div className="flex items-center justify-between">
-                      <p className="text-xs uppercase tracking-widest text-white/60">LendingClub</p>
-                      <CreditCard className="size-4 text-white/60" />
+                      <p className="text-xs uppercase tracking-widest text-slate-500">LendingClub</p>
+                      <CreditCard className="size-4 text-slate-500" />
                     </div>
-                    <p className="text-xl font-bold text-white mt-1">
+                    <p className="text-xl font-bold text-slate-900 mt-1">
                       {TREASURY.balances.lendingClub.toLocaleString("en-US", { style: "currency", currency: "USD" })}
                     </p>
                   </div>
-                  <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
                     <div className="flex items-center justify-between">
-                      <p className="text-xs uppercase tracking-widest text-white/60">Cash App</p>
-                      <DollarSign className="size-4 text-white/60" />
+                      <p className="text-xs uppercase tracking-widest text-slate-500">Cash App</p>
+                      <DollarSign className="size-4 text-slate-500" />
                     </div>
-                    <p className="text-xl font-bold text-white mt-1">
+                    <p className="text-xl font-bold text-slate-900 mt-1">
                       {TREASURY.balances.cashApp.toLocaleString("en-US", { style: "currency", currency: "USD" })}
                     </p>
                   </div>
@@ -608,7 +608,7 @@ export function HomePage() {
                   </a>
                   <a
                     href="#/forms/reimbursement"
-                    className="inline-flex items-center justify-center rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white hover:border-primary/60 hover:text-primary hover:bg-white/10 transition w-full sm:w-auto"
+                    className="inline-flex items-center justify-center rounded-lg border border-black/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10 transition w-full sm:w-auto"
                   >
                     Reimbursement Form
                   </a>
@@ -618,7 +618,7 @@ export function HomePage() {
 
             <Card className="backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
               <CardContent className="p-6">
-                <p className="text-xs uppercase tracking-widest text-white/60 mb-1">Cash App</p>
+                <p className="text-xs uppercase tracking-widest text-slate-500 mb-1">Cash App</p>
                 <a
                   href={TREASURY.cashApp.payUrl}
                   target="_blank"
@@ -627,20 +627,20 @@ export function HomePage() {
                 >
                   {TREASURY.cashApp.cashtag}
                 </a>
-                <p className="text-sm text-white/70 mt-2">Scan or tap the link to submit payments.</p>
+                <p className="text-sm text-slate-600 mt-2">Scan or tap the link to submit payments.</p>
 
                 <div className="mt-4 flex items-center justify-between gap-4">
                   <img
                     src={TREASURY.cashApp.qrImageUrl}
                     alt="Cash App QR Code"
-                    className="size-32 rounded-xl border border-white/10 bg-white p-2"
+                    className="size-32 rounded-xl border border-black/10 bg-white p-2"
                     loading="lazy"
                   />
                   <a
                     href={TREASURY.cashApp.payUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center justify-center rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white hover:border-primary/60 hover:text-primary hover:bg-white/10 transition w-fit"
+                    className="inline-flex items-center justify-center rounded-lg border border-black/15 bg-white/5 px-3 py-2 text-sm text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10 transition w-fit"
                   >
                     Open Link
                   </a>
@@ -667,9 +667,9 @@ export function HomePage() {
           >
             <div className="flex items-center gap-3 mb-1">
               <div className="w-8 h-px bg-primary" />
-              <span className="text-xs tracking-[0.2em] uppercase text-white/60">Internal News</span>
+              <span className="text-xs tracking-[0.2em] uppercase text-slate-500">Internal News</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl text-white">
+            <h2 className="text-2xl sm:text-3xl text-slate-900">
               Internal News and <span className="text-primary">Council Updates</span>
             </h2>
           </motion.div>
@@ -690,16 +690,16 @@ export function HomePage() {
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.08, duration: 0.4 }}
                     className={`flex items-start gap-4 p-5 sm:p-6 transition-colors hover:bg-white/5 ${
-                      index < updates.length - 1 ? "border-b border-white/10" : ""
+                      index < updates.length - 1 ? "border-b border-black/10" : ""
                     }`}
                   >
                     <div className="rounded-xl border border-primary/25 bg-primary/15 text-primary p-2.5 flex-shrink-0">
                       <Clock className="size-4" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-white mb-1.5 text-sm sm:text-base">{update.title}</h3>
+                      <h3 className="text-slate-900 mb-1.5 text-sm sm:text-base">{update.title}</h3>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                        <p className="text-xs sm:text-sm text-white/60">{update.date}</p>
+                        <p className="text-xs sm:text-sm text-slate-500">{update.date}</p>
                         <span className="px-2.5 py-0.5 rounded-full w-fit border border-primary/25 bg-primary/15 text-primary text-xs">
                           {update.type}
                         </span>
@@ -726,10 +726,10 @@ export function HomePage() {
           >
             <div className="flex items-center gap-3 mb-1">
               <div className="w-8 h-px bg-primary" />
-              <span className="text-xs tracking-[0.2em] uppercase text-white/60">Social</span>
+              <span className="text-xs tracking-[0.2em] uppercase text-slate-500">Social</span>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <h2 className="text-2xl sm:text-3xl text-white">
+              <h2 className="text-2xl sm:text-3xl text-slate-900">
                 Chapter <span className="text-primary">Instagram</span>
               </h2>
               {instagramHandle ? (
@@ -737,14 +737,14 @@ export function HomePage() {
                   href={`https://www.instagram.com/${encodeURIComponent(instagramHandle)}/`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white/85 hover:border-primary/60 hover:text-primary hover:bg-white/10 transition w-fit"
+                  className="inline-flex items-center justify-center rounded-lg border border-black/15 bg-white/5 px-3 py-2 text-sm text-slate-800 hover:border-primary/60 hover:text-primary hover:bg-white/10 transition w-fit"
                 >
                   @{instagramHandle}
                   <ExternalLink className="ml-2 size-4" />
                 </a>
               ) : null}
             </div>
-            <p className="mt-2 text-sm text-white/70 max-w-2xl">
+            <p className="mt-2 text-sm text-slate-600 max-w-2xl">
               Latest posts and announcements. If embeds do not load on your device, use the profile link above.
             </p>
           </motion.div>
@@ -774,7 +774,7 @@ export function HomePage() {
             </div>
           ) : (
             <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
-              <CardContent className="p-6 text-sm text-white/70">
+              <CardContent className="p-6 text-sm text-slate-600">
                 Feed posts are not configured yet. Add post URLs in Council Admin → Home Page Editor.
               </CardContent>
             </Card>

@@ -50,7 +50,7 @@ export function MySubmissionsPage() {
     <div className="relative">
       <div className="max-w-5xl mx-auto p-4 sm:p-8 space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          <Button asChild variant="outline" className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10">
+          <Button asChild variant="outline" className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10">
             <Link to="/forms">
               <ArrowLeft className="size-4" />
               Back
@@ -58,7 +58,7 @@ export function MySubmissionsPage() {
           </Button>
           <Button
             variant="outline"
-            className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10"
+            className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
             onClick={load}
             disabled={!session.authenticated || loading}
           >
@@ -80,35 +80,35 @@ export function MySubmissionsPage() {
                 </div>
               ) : null}
               {error ? <p className="text-sm text-rose-300 font-semibold">{error}</p> : null}
-              {loading ? <p className="text-sm text-white/60">Loading…</p> : null}
+              {loading ? <p className="text-sm text-slate-500">Loading…</p> : null}
 
               {rows.length === 0 && session.authenticated && !loading ? (
-                <p className="text-sm text-white/60">No submissions yet.</p>
+                <p className="text-sm text-slate-500">No submissions yet.</p>
               ) : null}
 
               <div className="space-y-2">
                 {rows.map((r) => (
-                  <div key={r.id} className="rounded-lg border border-white/10 bg-white/5 p-4">
+                  <div key={r.id} className="rounded-lg border border-black/10 bg-white/5 p-4">
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-white">{labelForFormKey(r.formKey)}</p>
-                        <p className="text-xs text-white/60 mt-0.5">Submitted: {new Date(r.createdAt).toLocaleString()}</p>
-                        <p className="text-xs text-white/45 break-all">ID: {r.id}</p>
+                        <p className="text-sm font-semibold text-slate-900">{labelForFormKey(r.formKey)}</p>
+                        <p className="text-xs text-slate-500 mt-0.5">Submitted: {new Date(r.createdAt).toLocaleString()}</p>
+                        <p className="text-xs text-slate-400 break-all">ID: {r.id}</p>
                       </div>
-                      <p className="text-xs font-semibold text-white border border-white/15 bg-black/30 rounded-md px-2 py-1 w-fit">
+                      <p className="text-xs font-semibold text-slate-900 border border-black/15 bg-white/55 rounded-md px-2 py-1 w-fit">
                         {r.status}
                       </p>
                     </div>
                     {r.reviewNotes ? (
-                      <div className="mt-3 rounded-md bg-black/30 border border-white/10 p-3">
-                        <p className="text-xs uppercase tracking-widest text-white/60">Review Notes</p>
-                        <p className="text-sm text-white/70 mt-1 whitespace-pre-wrap">{r.reviewNotes}</p>
+                      <div className="mt-3 rounded-md bg-white/55 border border-black/10 p-3">
+                        <p className="text-xs uppercase tracking-widest text-slate-500">Review Notes</p>
+                        <p className="text-sm text-slate-600 mt-1 whitespace-pre-wrap">{r.reviewNotes}</p>
                       </div>
                     ) : null}
 
                     {Array.isArray((r.payload as any)?.receiptFiles) && (r.payload as any).receiptFiles.length > 0 ? (
-                      <div className="mt-3 rounded-md border border-white/10 bg-white/5 p-3">
-                        <p className="text-xs uppercase tracking-widest text-white/60">Receipts</p>
+                      <div className="mt-3 rounded-md border border-black/10 bg-white/5 p-3">
+                        <p className="text-xs uppercase tracking-widest text-slate-500">Receipts</p>
                         <div className="mt-2 space-y-2">
                           {(r.payload as any).receiptFiles.map((f: any) => (
                             <a
@@ -116,7 +116,7 @@ export function MySubmissionsPage() {
                               href={toViewerHref(String(f?.viewUrl || ""))}
                               target="_blank"
                               rel="noreferrer"
-                              className="block rounded-md border border-white/10 bg-black/30 px-3 py-2 text-sm text-white hover:bg-white/5 hover:border-primary/40 transition"
+                              className="block rounded-md border border-black/10 bg-white/55 px-3 py-2 text-sm text-slate-900 hover:bg-white/5 hover:border-primary/40 transition"
                             >
                               {String(f?.filename || f?.key || "Receipt")}
                             </a>
@@ -126,8 +126,8 @@ export function MySubmissionsPage() {
                     ) : null}
 
                     {Array.isArray((r.payload as any)?.mediaFiles) && (r.payload as any).mediaFiles.length > 0 ? (
-                      <div className="mt-3 rounded-md border border-white/10 bg-white/5 p-3">
-                        <p className="text-xs uppercase tracking-widest text-white/60">Social Media Assets</p>
+                      <div className="mt-3 rounded-md border border-black/10 bg-white/5 p-3">
+                        <p className="text-xs uppercase tracking-widest text-slate-500">Social Media Assets</p>
                         <div className="mt-2 space-y-2">
                           {(r.payload as any).mediaFiles.map((f: any) => (
                             <a
@@ -135,7 +135,7 @@ export function MySubmissionsPage() {
                               href={toViewerHref(String(f?.viewUrl || ""))}
                               target="_blank"
                               rel="noreferrer"
-                              className="block rounded-md border border-white/10 bg-black/30 px-3 py-2 text-sm text-white hover:bg-white/5 hover:border-primary/40 transition"
+                              className="block rounded-md border border-black/10 bg-white/55 px-3 py-2 text-sm text-slate-900 hover:bg-white/5 hover:border-primary/40 transition"
                             >
                               {String(f?.filename || f?.key || "Asset")}
                             </a>
@@ -145,8 +145,8 @@ export function MySubmissionsPage() {
                     ) : null}
 
                     {Array.isArray((r.payload as any)?.attachments) && (r.payload as any).attachments.length > 0 ? (
-                      <div className="mt-3 rounded-md border border-white/10 bg-white/5 p-3">
-                        <p className="text-xs uppercase tracking-widest text-white/60">Attachments</p>
+                      <div className="mt-3 rounded-md border border-black/10 bg-white/5 p-3">
+                        <p className="text-xs uppercase tracking-widest text-slate-500">Attachments</p>
                         <div className="mt-2 space-y-2">
                           {(r.payload as any).attachments.map((f: any) => (
                             <a
@@ -154,7 +154,7 @@ export function MySubmissionsPage() {
                               href={toViewerHref(String(f?.viewUrl || ""))}
                               target="_blank"
                               rel="noreferrer"
-                              className="block rounded-md border border-white/10 bg-black/30 px-3 py-2 text-sm text-white hover:bg-white/5 hover:border-primary/40 transition"
+                              className="block rounded-md border border-black/10 bg-white/55 px-3 py-2 text-sm text-slate-900 hover:bg-white/5 hover:border-primary/40 transition"
                             >
                               {String(f?.filename || f?.key || "Attachment")}
                             </a>
@@ -164,9 +164,9 @@ export function MySubmissionsPage() {
                     ) : null}
 
                     {String((r.payload as any)?.attachmentLinks || "").trim() ? (
-                      <div className="mt-3 rounded-md border border-white/10 bg-white/5 p-3">
-                        <p className="text-xs uppercase tracking-widest text-white/60">Attachment Links</p>
-                        <p className="mt-2 text-sm text-white/70 whitespace-pre-wrap">{String((r.payload as any).attachmentLinks)}</p>
+                      <div className="mt-3 rounded-md border border-black/10 bg-white/5 p-3">
+                        <p className="text-xs uppercase tracking-widest text-slate-500">Attachment Links</p>
+                        <p className="mt-2 text-sm text-slate-600 whitespace-pre-wrap">{String((r.payload as any).attachmentLinks)}</p>
                       </div>
                     ) : null}
                   </div>

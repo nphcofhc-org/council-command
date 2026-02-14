@@ -458,13 +458,13 @@ export function CouncilCompliancePage() {
   return (
     <CouncilLeaderGate>
       <div className="min-h-screen bg-gray-50 pb-20 font-sans text-slate-900">
-        <div className="relative overflow-hidden bg-slate-900 px-6 pb-24 pt-12 text-white md:px-12">
+        <div className="relative overflow-hidden bg-slate-900 px-6 pb-24 pt-12 text-slate-900 md:px-12">
           <div className="absolute -right-32 -top-32 h-64 w-64 rounded-full bg-slate-800 opacity-50" />
           <div className="absolute -bottom-16 -left-16 h-32 w-32 rounded-full bg-amber-500 opacity-10" />
 
           <div className="relative z-10 mx-auto max-w-4xl">
             <div className="mb-4">
-              <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-slate-300 hover:text-white">
+              <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-slate-300 hover:text-slate-900">
                 <ArrowLeft className="h-4 w-4" />
                 Back to Council Admin
               </Link>
@@ -522,7 +522,7 @@ export function CouncilCompliancePage() {
             </div>
 
             {percentage === 100 && (
-              <div className="mt-8 rounded-lg bg-slate-900 p-6 text-center text-white">
+              <div className="mt-8 rounded-lg bg-slate-900 p-6 text-center text-slate-900">
                 <Award className="mx-auto mb-3 h-12 w-12 text-amber-400" />
                 <h3 className="mb-2 text-2xl font-bold">Compliance Audit Complete</h3>
                 <p className="text-slate-300">

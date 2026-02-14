@@ -79,14 +79,14 @@ export function ForumPage() {
   return (
     <div className="mx-auto max-w-7xl p-4 sm:p-8 space-y-4">
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <Link to="/" className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-primary transition-colors">
+        <Link to="/" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-primary transition-colors">
           <ArrowLeft className="size-4" />
           Back to Home
         </Link>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10"
+            className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
             onClick={load}
             disabled={!canUse || loading}
           >
@@ -109,13 +109,13 @@ export function ForumPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           {!canUse ? (
-            <p className="text-sm text-white/70">
+            <p className="text-sm text-slate-600">
               You must be authenticated to use the forum. If you see this, refresh and complete Cloudflare Access login.
             </p>
           ) : null}
 
           {createOpen ? (
-            <div className="rounded-xl border border-white/10 p-4 sm:p-5 space-y-3 bg-white/5">
+            <div className="rounded-xl border border-black/10 p-4 sm:p-5 space-y-3 bg-white/5">
               <div className="space-y-1">
                 <Label>Topic Title</Label>
                 <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Example: 2026 signature event discussion" />
@@ -130,7 +130,7 @@ export function ForumPage() {
                 </Button>
                 <Button
                   variant="outline"
-                  className="border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10"
+                  className="border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
                   onClick={() => setCreateOpen(false)}
                   disabled={saving}
                 >
@@ -141,25 +141,25 @@ export function ForumPage() {
           ) : null}
 
           {error ? <p className="text-sm text-rose-300 font-semibold">{error}</p> : null}
-          {loading ? <p className="text-sm text-white/60">Loading...</p> : null}
+          {loading ? <p className="text-sm text-slate-500">Loading...</p> : null}
 
           {!loading && topics.length === 0 ? (
-            <p className="text-sm text-white/70">No topics yet. Create the first one.</p>
+            <p className="text-sm text-slate-600">No topics yet. Create the first one.</p>
           ) : null}
 
           <div className="grid gap-4">
             {topics.map((topic) => (
               <Link key={topic.id} to={`/forum/${encodeURIComponent(topic.id)}`} className="group">
-                <div className="rounded-xl border border-white/10 bg-white/5 p-4 sm:p-5 hover:border-primary/40 hover:bg-white/10 transition">
+                <div className="rounded-xl border border-black/10 bg-white/5 p-4 sm:p-5 hover:border-primary/40 hover:bg-white/10 transition">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-white font-semibold truncate">{topic.title}</p>
-                      <p className="text-xs text-white/60 mt-1">
+                      <p className="text-slate-900 font-semibold truncate">{topic.title}</p>
+                      <p className="text-xs text-slate-500 mt-1">
                         Updated {fmtDate(topic.updatedAt)} • Replies {replyCount.get(topic.id) ?? 0}
                       </p>
                     </div>
                     {topic.locked ? (
-                      <span className="shrink-0 rounded-full border border-white/15 bg-black/30 px-2.5 py-0.5 text-[11px] text-white/70">
+                      <span className="shrink-0 rounded-full border border-black/15 bg-white/55 px-2.5 py-0.5 text-[11px] text-slate-600">
                         Locked
                       </span>
                     ) : null}

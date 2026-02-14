@@ -61,7 +61,7 @@ export function CouncilMeetingsContentPage() {
     <CouncilAdminGate>
       <div className="mx-auto max-w-6xl p-4 sm:p-8">
         <div className="mb-6">
-          <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-primary transition-colors">
+          <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-primary transition-colors">
             <ArrowLeft className="h-4 w-4" />
             Back to Council Admin
           </Link>
@@ -76,7 +76,7 @@ export function CouncilMeetingsContentPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-sm text-white/70">Tip: keep fields short for mobile.</p>
+              <p className="text-sm text-slate-600">Tip: keep fields short for mobile.</p>
               <Button onClick={save} disabled={saving || loading}>
                 <Save className="mr-2 h-4 w-4" />
                 {saving ? "Saving..." : "Save Changes"}
@@ -85,7 +85,7 @@ export function CouncilMeetingsContentPage() {
 
             {message ? <p className="text-sm text-emerald-300">{message}</p> : null}
             {error ? <p className="text-sm text-rose-300">{error}</p> : null}
-            {loading ? <p className="text-sm text-white/60">Loading...</p> : null}
+            {loading ? <p className="text-sm text-slate-500">Loading...</p> : null}
 
             <Card>
               <CardHeader>

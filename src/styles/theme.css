@@ -3,34 +3,34 @@
 :root {
   --font-size: 16px;
   --background: #ffffff;
-  --foreground: oklch(0.145 0 0);
-  --card: #ffffff;
-  --card-foreground: oklch(0.145 0 0);
+  --foreground: #0b1220;
+  --card: rgba(255, 255, 255, 0.72);
+  --card-foreground: #0b1220;
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: #030213;
+  --popover-foreground: #0b1220;
+  --primary: #0bbdb0;
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.95 0.0058 264.53);
-  --secondary-foreground: #030213;
-  --muted: #ececf0;
-  --muted-foreground: #717182;
-  --accent: #e9ebef;
-  --accent-foreground: #030213;
+  --secondary-foreground: #0b1220;
+  --muted: rgba(2, 6, 23, 0.05);
+  --muted-foreground: rgba(2, 6, 23, 0.62);
+  --accent: rgba(11, 189, 176, 0.10);
+  --accent-foreground: #0b1220;
   --destructive: #d4183d;
   --destructive-foreground: #ffffff;
-  --border: rgba(0, 0, 0, 0.1);
+  --border: rgba(2, 6, 23, 0.10);
   --input: transparent;
-  --input-background: #f3f3f5;
-  --switch-background: #cbced4;
+  --input-background: rgba(255, 255, 255, 0.85);
+  --switch-background: rgba(2, 6, 23, 0.18);
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: oklch(0.708 0 0);
+  --ring: rgba(11, 189, 176, 0.38);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
+  --radius: 1rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: #030213;
@@ -131,28 +131,28 @@
     @apply bg-background text-foreground;
   }
 
-  .dark body {
+  body {
     background:
-      radial-gradient(1200px 700px at 15% 10%, rgba(24, 224, 208, 0.2), transparent 55%),
-      radial-gradient(1000px 600px at 85% 20%, rgba(24, 224, 208, 0.12), transparent 55%),
-      radial-gradient(900px 550px at 60% 55%, rgba(24, 224, 208, 0.08), transparent 60%),
-      radial-gradient(rgba(24, 224, 208, 0.10) 1px, transparent 1px),
-      radial-gradient(900px 700px at 50% 100%, rgba(255, 255, 255, 0.06), transparent 60%),
+      radial-gradient(1200px 700px at 15% 10%, rgba(11, 189, 176, 0.14), transparent 55%),
+      radial-gradient(900px 620px at 85% 20%, rgba(11, 189, 176, 0.10), transparent 55%),
+      radial-gradient(900px 550px at 55% 70%, rgba(2, 6, 23, 0.06), transparent 60%),
+      radial-gradient(rgba(11, 189, 176, 0.16) 1px, transparent 1px),
+      radial-gradient(rgba(2, 6, 23, 0.07) 1px, transparent 1px),
       var(--background);
     background-attachment: fixed;
     background-size:
       auto,
       auto,
       auto,
-      140px 140px,
-      auto,
+      160px 160px,
+      240px 240px,
       auto;
     background-position:
       0 0,
       0 0,
       0 0,
-      20px 30px,
-      0 0,
+      18px 26px,
+      64px 10px,
       0 0;
   }
 
@@ -223,27 +223,27 @@
 }
 
 /* Holographic glass surfaces */
-.dark .nphc-holo-surface {
+.nphc-holo-surface {
   position: relative;
   overflow: hidden;
   backdrop-filter: blur(18px);
 }
 
-.dark .nphc-holo-surface::before {
+.nphc-holo-surface::before {
   content: "";
   position: absolute;
   inset: -2px;
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(800px 220px at 15% 0%, rgba(24, 224, 208, 0.18), transparent 55%),
-    radial-gradient(700px 260px at 85% 10%, rgba(255, 255, 255, 0.09), transparent 60%),
-    linear-gradient(120deg, rgba(24, 224, 208, 0.18), rgba(255, 255, 255, 0.06), rgba(24, 224, 208, 0.10));
-  opacity: 0.35;
-  mix-blend-mode: screen;
+    radial-gradient(800px 240px at 15% 0%, rgba(11, 189, 176, 0.16), transparent 55%),
+    radial-gradient(700px 280px at 85% 10%, rgba(255, 255, 255, 0.20), transparent 60%),
+    linear-gradient(120deg, rgba(11, 189, 176, 0.14), rgba(255, 255, 255, 0.10), rgba(11, 189, 176, 0.10));
+  opacity: 0.55;
+  mix-blend-mode: overlay;
 }
 
-.dark .nphc-holo-surface::after {
+.nphc-holo-surface::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -251,60 +251,60 @@
   z-index: 0;
   background:
     radial-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px),
-    radial-gradient(rgba(24, 224, 208, 0.16) 1px, transparent 1px);
+    radial-gradient(rgba(11, 189, 176, 0.16) 1px, transparent 1px);
   background-size: 180px 180px, 240px 240px;
   background-position: 20px 40px, 60px 10px;
   opacity: 0.08;
   filter: blur(0.2px);
 }
 
-.dark .nphc-holo-surface > * {
+.nphc-holo-surface > * {
   position: relative;
   z-index: 1;
 }
 
-.dark .nphc-holo-surface:hover::before {
-  opacity: 0.55;
+.nphc-holo-surface:hover::before {
+  opacity: 0.75;
 }
 
 /* Neon top nav glow */
-.dark .nphc-holo-nav {
+.nphc-holo-nav {
   position: relative;
   overflow: hidden;
   box-shadow:
     0 10px 30px rgba(0, 0, 0, 0.55),
-    0 0 34px rgba(24, 224, 208, 0.12);
+    0 0 34px rgba(11, 189, 176, 0.16);
 }
 
-.dark .nphc-holo-nav::before {
+.nphc-holo-nav::before {
   content: "";
   position: absolute;
   inset: -2px;
   pointer-events: none;
   background: linear-gradient(
     120deg,
-    rgba(24, 224, 208, 0.00),
-    rgba(24, 224, 208, 0.22),
-    rgba(255, 255, 255, 0.10),
-    rgba(24, 224, 208, 0.18),
-    rgba(24, 224, 208, 0.00)
+    rgba(11, 189, 176, 0.00),
+    rgba(11, 189, 176, 0.26),
+    rgba(255, 255, 255, 0.18),
+    rgba(11, 189, 176, 0.22),
+    rgba(11, 189, 176, 0.00)
   );
   opacity: 0;
   filter: blur(10px);
   transition: opacity 240ms ease;
 }
 
-.dark .nphc-holo-nav:hover::before {
+.nphc-holo-nav:hover::before {
   opacity: 0.9;
 }
 
 /* Holographic buttons / quick links */
-.dark .nphc-holo-btn {
+.nphc-holo-btn {
   position: relative;
   overflow: hidden;
 }
 
-.dark .nphc-holo-btn::after {
+.nphc-holo-btn::after {
   content: "";
   position: absolute;
   top: -40%;
@@ -316,7 +316,7 @@
     110deg,
     rgba(255, 255, 255, 0) 35%,
     rgba(255, 255, 255, 0.14) 45%,
-    rgba(24, 224, 208, 0.22) 50%,
+    rgba(11, 189, 176, 0.22) 50%,
     rgba(255, 255, 255, 0.10) 55%,
     rgba(255, 255, 255, 0) 65%
   );
@@ -324,13 +324,13 @@
   transform: translateX(-20%) translateY(-10%);
 }
 
-.dark .nphc-holo-btn:hover::after {
+.nphc-holo-btn:hover::after {
   opacity: 1;
   animation: nphc-holo-sheen 900ms ease-out 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dark .nphc-holo-btn:hover::after {
+  .nphc-holo-btn:hover::after {
     animation: none;
   }
 }

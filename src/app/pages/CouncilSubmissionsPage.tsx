@@ -103,14 +103,14 @@ export function CouncilSubmissionsPage() {
     <CouncilLeaderGate>
       <div className="mx-auto max-w-7xl p-4 sm:p-8 space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-primary transition-colors">
+          <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-primary transition-colors">
             <ArrowLeft className="size-4" />
             Back to Council Admin
           </Link>
           <div className="flex gap-2">
             <Button
               variant="outline"
-              className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10"
+              className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
               onClick={load}
               disabled={loading}
             >
@@ -119,7 +119,7 @@ export function CouncilSubmissionsPage() {
             </Button>
             <Button
               variant="outline"
-              className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10"
+              className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
               onClick={exportAll}
               disabled={rows.length === 0}
             >
@@ -137,10 +137,10 @@ export function CouncilSubmissionsPage() {
           <CardContent className="space-y-4">
             {message ? <p className="text-sm text-emerald-300 font-semibold">{message}</p> : null}
             {error ? <p className="text-sm text-rose-300 font-semibold">{error}</p> : null}
-            {loading ? <p className="text-sm text-white/60">Loading…</p> : null}
+            {loading ? <p className="text-sm text-slate-500">Loading…</p> : null}
 
             <Tabs value={activeForm} onValueChange={(v) => setActiveForm(v as FormKey)} className="space-y-3">
-              <TabsList className="bg-white/5 border border-white/10 backdrop-blur-xl w-full sm:w-auto flex-wrap justify-start">
+              <TabsList className="bg-white/5 border border-black/10 backdrop-blur-xl w-full sm:w-auto flex-wrap justify-start">
                 {FORM_TABS.map((t) => (
                   <TabsTrigger key={t.key} value={t.key} className="text-xs sm:text-sm">
                     {t.label}
@@ -150,7 +150,7 @@ export function CouncilSubmissionsPage() {
 
               <div className="grid gap-4 lg:grid-cols-3">
                 <div className="lg:col-span-1 space-y-3">
-                  <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-3">
                     <Label>Status Filter (optional)</Label>
                     <Input
                       value={statusFilter}
@@ -160,20 +160,20 @@ export function CouncilSubmissionsPage() {
                     />
                   </div>
 
-                  <div className="rounded-lg border border-white/10 overflow-hidden">
+                  <div className="rounded-lg border border-black/10 overflow-hidden">
                     {rows.length === 0 ? (
-                      <div className="p-4 text-sm text-white/60">No submissions found.</div>
+                      <div className="p-4 text-sm text-slate-500">No submissions found.</div>
                     ) : (
                       <div className="max-h-[60vh] overflow-auto">
                         {rows.map((r) => (
                           <button
                             key={r.id}
                             onClick={() => setSelectedId(r.id)}
-                            className={`w-full text-left p-3 border-b border-white/10 last:border-b-0 hover:bg-white/5 transition ${
+                            className={`w-full text-left p-3 border-b border-black/10 last:border-b-0 hover:bg-white/5 transition ${
                               r.id === selectedId ? "bg-white/10" : "bg-transparent"
                             }`}
                           >
-                            <p className="text-sm font-semibold text-white truncate">
+                            <p className="text-sm font-semibold text-slate-900 truncate">
                               {r.payload?.title ||
                                 r.payload?.eventName ||
                                 r.payload?.reportTitle ||
@@ -183,8 +183,8 @@ export function CouncilSubmissionsPage() {
                                 r.payload?.eventName ||
                                 r.id}
                             </p>
-                            <p className="text-xs text-white/60 mt-1">{r.status} • {new Date(r.createdAt).toLocaleString()}</p>
-                            <p className="text-xs text-white/45 truncate">{r.createdBy || "Unknown sender"}</p>
+                            <p className="text-xs text-slate-500 mt-1">{r.status} • {new Date(r.createdAt).toLocaleString()}</p>
+                            <p className="text-xs text-slate-400 truncate">{r.createdBy || "Unknown sender"}</p>
                           </button>
                         ))}
                       </div>
@@ -194,22 +194,22 @@ export function CouncilSubmissionsPage() {
 
                 <div className="lg:col-span-2 space-y-3">
                   <TabsContent value={activeForm} className="space-y-3">
-                    <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+                    <div className="rounded-lg border border-black/10 bg-white/5 p-4">
                       {!selected ? (
-                        <p className="text-sm text-white/60">Select a submission to view details.</p>
+                        <p className="text-sm text-slate-500">Select a submission to view details.</p>
                       ) : (
                         <>
                           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                             <div>
-                              <p className="text-xs uppercase tracking-widest text-white/60">Submission</p>
-                              <p className="text-sm text-white/70 mt-1">
-                                <span className="font-semibold text-white">ID:</span> {selected.id}
+                              <p className="text-xs uppercase tracking-widest text-slate-500">Submission</p>
+                              <p className="text-sm text-slate-600 mt-1">
+                                <span className="font-semibold text-slate-900">ID:</span> {selected.id}
                               </p>
-                              <p className="text-sm text-white/70">
-                                <span className="font-semibold text-white">From:</span> {selected.createdBy || "Unknown"}
+                              <p className="text-sm text-slate-600">
+                                <span className="font-semibold text-slate-900">From:</span> {selected.createdBy || "Unknown"}
                               </p>
-                              <p className="text-sm text-white/70">
-                                <span className="font-semibold text-white">Created:</span> {new Date(selected.createdAt).toLocaleString()}
+                              <p className="text-sm text-slate-600">
+                                <span className="font-semibold text-slate-900">Created:</span> {new Date(selected.createdAt).toLocaleString()}
                               </p>
                             </div>
                           </div>
@@ -232,8 +232,8 @@ export function CouncilSubmissionsPage() {
                           </div>
 
                           {Array.isArray((selected.payload as any)?.receiptFiles) && (selected.payload as any).receiptFiles.length > 0 ? (
-                            <div className="mt-4 rounded-lg border border-white/10 bg-white/5 p-4">
-                              <p className="text-xs uppercase tracking-widest text-white/60">Receipts</p>
+                            <div className="mt-4 rounded-lg border border-black/10 bg-white/5 p-4">
+                              <p className="text-xs uppercase tracking-widest text-slate-500">Receipts</p>
                               <div className="mt-2 space-y-2">
                                 {(selected.payload as any).receiptFiles.map((f: any) => (
                                   <a
@@ -241,7 +241,7 @@ export function CouncilSubmissionsPage() {
                                     href={toViewerHref(String(f?.viewUrl || ""))}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="block rounded-md border border-white/10 bg-black/30 px-3 py-2 text-sm text-white hover:bg-white/5 hover:border-primary/40 transition"
+                                    className="block rounded-md border border-black/10 bg-white/55 px-3 py-2 text-sm text-slate-900 hover:bg-white/5 hover:border-primary/40 transition"
                                   >
                                     {String(f?.filename || f?.key || "Receipt")}
                                   </a>
@@ -251,17 +251,17 @@ export function CouncilSubmissionsPage() {
                           ) : null}
 
                           {String((selected.payload as any)?.receiptLinks || "").trim() ? (
-                            <div className="mt-4 rounded-lg border border-white/10 bg-white/5 p-4">
-                              <p className="text-xs uppercase tracking-widest text-white/60">Receipt Links</p>
-                              <p className="text-sm text-white/70 mt-2 whitespace-pre-wrap">
+                            <div className="mt-4 rounded-lg border border-black/10 bg-white/5 p-4">
+                              <p className="text-xs uppercase tracking-widest text-slate-500">Receipt Links</p>
+                              <p className="text-sm text-slate-600 mt-2 whitespace-pre-wrap">
                                 {String((selected.payload as any).receiptLinks)}
                               </p>
                             </div>
                           ) : null}
 
                           {Array.isArray((selected.payload as any)?.mediaFiles) && (selected.payload as any).mediaFiles.length > 0 ? (
-                            <div className="mt-4 rounded-lg border border-white/10 bg-white/5 p-4">
-                              <p className="text-xs uppercase tracking-widest text-white/60">Social Media Assets</p>
+                            <div className="mt-4 rounded-lg border border-black/10 bg-white/5 p-4">
+                              <p className="text-xs uppercase tracking-widest text-slate-500">Social Media Assets</p>
                               <div className="mt-2 space-y-2">
                                 {(selected.payload as any).mediaFiles.map((f: any) => (
                                   <a
@@ -269,7 +269,7 @@ export function CouncilSubmissionsPage() {
                                     href={toViewerHref(String(f?.viewUrl || ""))}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="block rounded-md border border-white/10 bg-black/30 px-3 py-2 text-sm text-white hover:bg-white/5 hover:border-primary/40 transition"
+                                    className="block rounded-md border border-black/10 bg-white/55 px-3 py-2 text-sm text-slate-900 hover:bg-white/5 hover:border-primary/40 transition"
                                   >
                                     {String(f?.filename || f?.key || "Asset")}
                                   </a>
@@ -279,17 +279,17 @@ export function CouncilSubmissionsPage() {
                           ) : null}
 
                           {String((selected.payload as any)?.mediaLinks || "").trim() ? (
-                            <div className="mt-4 rounded-lg border border-white/10 bg-white/5 p-4">
-                              <p className="text-xs uppercase tracking-widest text-white/60">Asset Links</p>
-                              <p className="text-sm text-white/70 mt-2 whitespace-pre-wrap">
+                            <div className="mt-4 rounded-lg border border-black/10 bg-white/5 p-4">
+                              <p className="text-xs uppercase tracking-widest text-slate-500">Asset Links</p>
+                              <p className="text-sm text-slate-600 mt-2 whitespace-pre-wrap">
                                 {String((selected.payload as any).mediaLinks)}
                               </p>
                             </div>
                           ) : null}
 
                           {Array.isArray((selected.payload as any)?.attachments) && (selected.payload as any).attachments.length > 0 ? (
-                            <div className="mt-4 rounded-lg border border-white/10 bg-white/5 p-4">
-                              <p className="text-xs uppercase tracking-widest text-white/60">Attachments</p>
+                            <div className="mt-4 rounded-lg border border-black/10 bg-white/5 p-4">
+                              <p className="text-xs uppercase tracking-widest text-slate-500">Attachments</p>
                               <div className="mt-2 space-y-2">
                                 {(selected.payload as any).attachments.map((f: any) => (
                                   <a
@@ -297,7 +297,7 @@ export function CouncilSubmissionsPage() {
                                     href={toViewerHref(String(f?.viewUrl || ""))}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="block rounded-md border border-white/10 bg-black/30 px-3 py-2 text-sm text-white hover:bg-white/5 hover:border-primary/40 transition"
+                                    className="block rounded-md border border-black/10 bg-white/55 px-3 py-2 text-sm text-slate-900 hover:bg-white/5 hover:border-primary/40 transition"
                                   >
                                     {String(f?.filename || f?.key || "Attachment")}
                                   </a>
@@ -307,17 +307,17 @@ export function CouncilSubmissionsPage() {
                           ) : null}
 
                           {String((selected.payload as any)?.attachmentLinks || "").trim() ? (
-                            <div className="mt-4 rounded-lg border border-white/10 bg-white/5 p-4">
-                              <p className="text-xs uppercase tracking-widest text-white/60">Attachment Links</p>
-                              <p className="text-sm text-white/70 mt-2 whitespace-pre-wrap">
+                            <div className="mt-4 rounded-lg border border-black/10 bg-white/5 p-4">
+                              <p className="text-xs uppercase tracking-widest text-slate-500">Attachment Links</p>
+                              <p className="text-sm text-slate-600 mt-2 whitespace-pre-wrap">
                                 {String((selected.payload as any).attachmentLinks)}
                               </p>
                             </div>
                           ) : null}
 
-                          <div className="mt-4 rounded-lg border border-white/10 bg-black/40 p-4">
-                            <p className="text-xs uppercase tracking-widest text-white/60">Submitted Payload</p>
-                            <pre className="mt-2 text-xs text-white/80 overflow-auto whitespace-pre-wrap">
+                          <div className="mt-4 rounded-lg border border-black/10 bg-white/60 p-4">
+                            <p className="text-xs uppercase tracking-widest text-slate-500">Submitted Payload</p>
+                            <pre className="mt-2 text-xs text-slate-800 overflow-auto whitespace-pre-wrap">
                               {JSON.stringify(selected.payload, null, 2)}
                             </pre>
                           </div>

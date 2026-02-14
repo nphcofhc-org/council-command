@@ -162,15 +162,15 @@ export function ReimbursementRequestPage() {
     <div className="relative">
       <div className="max-w-4xl mx-auto p-4 sm:p-8 space-y-4">
         <div className="flex items-center gap-3">
-          <Button asChild variant="outline" className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10">
+          <Button asChild variant="outline" className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10">
             <Link to="/forms">
               <ArrowLeft className="size-4" />
               Back
             </Link>
           </Button>
           <div>
-            <p className="text-xs uppercase tracking-widest text-white/60">Form</p>
-            <h1 className="text-lg sm:text-xl font-extrabold text-white">Expense Reimbursement</h1>
+            <p className="text-xs uppercase tracking-widest text-slate-500">Form</p>
+            <h1 className="text-lg sm:text-xl font-extrabold text-slate-900">Expense Reimbursement</h1>
           </div>
         </div>
 
@@ -278,15 +278,15 @@ export function ReimbursementRequestPage() {
                 </div>
               </div>
 
-              <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-                <p className="text-xs uppercase tracking-widest text-white/60">Total Reimbursement Amount Requested *</p>
-                <p className="text-lg font-extrabold text-white mt-1">${computedTotal.toFixed(2)}</p>
-                <p className="text-xs text-white/60 mt-1">Auto-calculated as the sum of all totals above.</p>
+              <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                <p className="text-xs uppercase tracking-widest text-slate-500">Total Reimbursement Amount Requested *</p>
+                <p className="text-lg font-extrabold text-slate-900 mt-1">${computedTotal.toFixed(2)}</p>
+                <p className="text-xs text-slate-500 mt-1">Auto-calculated as the sum of all totals above.</p>
               </div>
 
               <div className="space-y-2">
                 <Label>Upload Receipts (up to 5 files) *</Label>
-                <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+                <div className="rounded-lg border border-black/10 bg-white/5 p-3">
                   <input
                     type="file"
                     multiple
@@ -299,24 +299,24 @@ export function ReimbursementRequestPage() {
                   />
                   <div className="mt-3 space-y-2">
                     {receiptFiles.map((f, idx) => (
-                      <div key={`${f.name}-${idx}`} className="flex items-center justify-between gap-3 rounded-md border border-white/10 bg-black/30 px-3 py-2">
+                      <div key={`${f.name}-${idx}`} className="flex items-center justify-between gap-3 rounded-md border border-black/10 bg-white/55 px-3 py-2">
                         <div className="min-w-0">
-                          <p className="text-sm text-white truncate">{f.name}</p>
-                          <p className="text-xs text-white/60">{Math.round(f.size / 1024)} KB</p>
+                          <p className="text-sm text-slate-900 truncate">{f.name}</p>
+                          <p className="text-xs text-slate-500">{Math.round(f.size / 1024)} KB</p>
                         </div>
-                        <button type="button" className="text-white/60 hover:text-primary transition-colors" onClick={() => removeFile(idx)} aria-label="Remove file">
+                        <button type="button" className="text-slate-500 hover:text-primary transition-colors" onClick={() => removeFile(idx)} aria-label="Remove file">
                           <X className="size-4" />
                         </button>
                       </div>
                     ))}
                     {uploadedReceipts.length > 0 ? (
-                      <p className="text-xs text-white/60">
+                      <p className="text-xs text-slate-500">
                         Uploaded {uploadedReceipts.length} file(s).
                       </p>
                     ) : null}
                   </div>
                 </div>
-                <p className="text-xs text-white/60">
+                <p className="text-xs text-slate-500">
                   If uploads are not enabled yet, paste Google Drive links below as a temporary fallback.
                 </p>
                 <Input

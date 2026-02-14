@@ -133,7 +133,7 @@ export function CouncilContentManagerPage() {
           <CardContent className="space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm text-gray-500">{totalCount} total leadership records</p>
-              <Button onClick={save} disabled={saving || loading} className="bg-black hover:bg-gray-800">
+              <Button onClick={save} disabled={saving || loading} className="bg-white hover:bg-gray-800">
                 <Save className="mr-2 h-4 w-4" />
                 {saving ? "Saving..." : "Save Changes"}
               </Button>

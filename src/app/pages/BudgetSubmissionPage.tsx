@@ -55,15 +55,15 @@ export function BudgetSubmissionPage() {
     <div className="relative">
       <div className="max-w-4xl mx-auto p-4 sm:p-8 space-y-4">
         <div className="flex items-center gap-3">
-          <Button asChild variant="outline" className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10">
+          <Button asChild variant="outline" className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10">
             <Link to="/forms">
               <ArrowLeft className="size-4" />
               Back
             </Link>
           </Button>
           <div>
-            <p className="text-xs uppercase tracking-widest text-white/60">Form</p>
-            <h1 className="text-lg sm:text-xl font-extrabold text-white">Budget Submission</h1>
+            <p className="text-xs uppercase tracking-widest text-slate-500">Form</p>
+            <h1 className="text-lg sm:text-xl font-extrabold text-slate-900">Budget Submission</h1>
           </div>
         </div>
 

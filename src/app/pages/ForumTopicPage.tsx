@@ -85,13 +85,13 @@ export function ForumTopicPage() {
   return (
     <div className="mx-auto max-w-4xl p-4 sm:p-8 space-y-4">
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <Link to="/forum" className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-primary transition-colors">
+        <Link to="/forum" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-primary transition-colors">
           <ArrowLeft className="size-4" />
           Back to Forum
         </Link>
         <Button
           variant="outline"
-          className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10"
+          className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
           onClick={load}
           disabled={!canUse || loading}
         >
@@ -110,17 +110,17 @@ export function ForumTopicPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           {!canUse ? (
-            <p className="text-sm text-white/70">
+            <p className="text-sm text-slate-600">
               You must be authenticated to use the forum. If you see this, refresh and complete Cloudflare Access login.
             </p>
           ) : null}
 
           {message ? <p className="text-sm text-emerald-300 font-semibold">{message}</p> : null}
           {error ? <p className="text-sm text-rose-300 font-semibold">{error}</p> : null}
-          {loading ? <p className="text-sm text-white/60">Loading...</p> : null}
+          {loading ? <p className="text-sm text-slate-500">Loading...</p> : null}
 
           {!loading && posts.length === 0 ? (
-            <p className="text-sm text-white/70">No posts.</p>
+            <p className="text-sm text-slate-600">No posts.</p>
           ) : null}
 
           <div className="space-y-3">
@@ -128,11 +128,11 @@ export function ForumTopicPage() {
               <div
                 key={p.id}
                 className={`rounded-xl border p-4 sm:p-5 ${
-                  idx === 0 ? "border-primary/25 bg-primary/10" : "border-white/10 bg-white/5"
+                  idx === 0 ? "border-primary/25 bg-primary/10" : "border-black/10 bg-white/5"
                 }`}
               >
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-xs text-white/60">
+                  <p className="text-xs text-slate-500">
                     {displayEmail(p.createdBy)} • {fmtDateTime(p.createdAt)}
                   </p>
                   {idx === 0 ? (
@@ -141,13 +141,13 @@ export function ForumTopicPage() {
                     </span>
                   ) : null}
                 </div>
-                <p className="mt-2 text-sm text-white/80 whitespace-pre-wrap leading-relaxed">{p.body}</p>
+                <p className="mt-2 text-sm text-slate-800 whitespace-pre-wrap leading-relaxed">{p.body}</p>
               </div>
             ))}
           </div>
 
-          <div className="rounded-xl border border-white/10 p-4 sm:p-5 bg-white/5">
-            <p className="text-sm font-semibold text-white mb-2">Add Reply</p>
+          <div className="rounded-xl border border-black/10 p-4 sm:p-5 bg-white/5">
+            <p className="text-sm font-semibold text-slate-900 mb-2">Add Reply</p>
             <Textarea
               value={reply}
               onChange={(e) => setReply(e.target.value)}
@@ -165,9 +165,9 @@ export function ForumTopicPage() {
                 {saving ? "Posting..." : "Post Reply"}
               </Button>
               {locked ? (
-                <p className="text-xs text-white/60">Topic is locked.</p>
+                <p className="text-xs text-slate-500">Topic is locked.</p>
               ) : (
-                <p className="text-xs text-white/60">Keep it respectful and on-topic.</p>
+                <p className="text-xs text-slate-500">Keep it respectful and on-topic.</p>
               )}
             </div>
           </div>

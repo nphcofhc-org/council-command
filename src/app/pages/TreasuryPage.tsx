@@ -108,17 +108,17 @@ export function TreasuryPage() {
             <div>
               <div className="flex items-center gap-3 mb-1">
                 <div className="w-8 h-px bg-primary" />
-                <span className="text-xs tracking-[0.2em] uppercase text-white/60">Treasury</span>
+                <span className="text-xs tracking-[0.2em] uppercase text-slate-500">Treasury</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">Treasury</h1>
-              <p className="text-sm text-white/70 mt-2 max-w-3xl">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">Treasury</h1>
+              <p className="text-sm text-slate-600 mt-2 max-w-3xl">
                 High-level financial snapshot and reporting tools. Reimbursements and submissions are managed in the portal.
               </p>
             </div>
             <Button
               asChild
               variant="outline"
-              className="w-full sm:w-auto border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10"
+              className="w-full sm:w-auto border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
             >
               <Link to="/forms/reimbursement">
                 <Receipt className="mr-2 size-4" />
@@ -141,19 +141,19 @@ export function TreasuryPage() {
                 <CardDescription>Total cash on hand (LendingClub + Cash App).</CardDescription>
               </CardHeader>
               <CardContent className="grid gap-4 sm:grid-cols-3">
-                <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs uppercase tracking-widest text-white/60">Total</p>
-                  <p className="text-2xl font-extrabold text-white mt-1">{money(totalBalance)}</p>
+                <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <p className="text-xs uppercase tracking-widest text-slate-500">Total</p>
+                  <p className="text-2xl font-extrabold text-slate-900 mt-1">{money(totalBalance)}</p>
                 </div>
-                <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs uppercase tracking-widest text-white/60">LendingClub</p>
-                  <p className="text-xl font-bold text-white mt-1">{money(lendingClubBalance)}</p>
+                <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <p className="text-xs uppercase tracking-widest text-slate-500">LendingClub</p>
+                  <p className="text-xl font-bold text-slate-900 mt-1">{money(lendingClubBalance)}</p>
                 </div>
-                <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs uppercase tracking-widest text-white/60">Cash App</p>
-                  <p className="text-xl font-bold text-white mt-1">{money(cashAppBalance)}</p>
+                <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <p className="text-xs uppercase tracking-widest text-slate-500">Cash App</p>
+                  <p className="text-xl font-bold text-slate-900 mt-1">{money(cashAppBalance)}</p>
                 </div>
-                <p className="text-xs text-white/45 sm:col-span-3">{TREASURY.asOfLabel}</p>
+                <p className="text-xs text-slate-400 sm:col-span-3">{TREASURY.asOfLabel}</p>
               </CardContent>
             </Card>
 
@@ -168,7 +168,7 @@ export function TreasuryPage() {
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-xs uppercase tracking-widest text-white/60">Cashtag</p>
+                    <p className="text-xs uppercase tracking-widest text-slate-500">Cashtag</p>
                     <a href={TREASURY.cashApp.payUrl} target="_blank" rel="noreferrer" className="text-lg font-extrabold text-primary hover:underline">
                       {TREASURY.cashApp.cashtag}
                     </a>
@@ -176,14 +176,14 @@ export function TreasuryPage() {
                   <img
                     src={TREASURY.cashApp.qrImageUrl}
                     alt="Cash App QR Code"
-                    className="size-24 rounded-xl border border-white/10 bg-white p-2"
+                    className="size-24 rounded-xl border border-black/10 bg-white p-2"
                     loading="lazy"
                   />
                 </div>
                 <Button
                   asChild
                   variant="outline"
-                  className="w-full border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10"
+                  className="w-full border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
                 >
                   <a href={TREASURY.cashApp.payUrl} target="_blank" rel="noreferrer">
                     Open Cash App Link
@@ -212,7 +212,7 @@ export function TreasuryPage() {
                   className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
                     y === year
                       ? "bg-primary text-primary-foreground border-primary/60"
-                      : "bg-white/5 text-white/80 border-white/15 hover:border-primary/60 hover:text-primary"
+                      : "bg-white/5 text-slate-800 border-black/15 hover:border-primary/60 hover:text-primary"
                   }`}
                 >
                   {y}
@@ -221,16 +221,16 @@ export function TreasuryPage() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-3">
-              <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-                <p className="text-xs uppercase tracking-widest text-white/60">Income ({year})</p>
-                <p className="text-xl font-bold text-white mt-1">{money(stats.income)}</p>
+              <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                <p className="text-xs uppercase tracking-widest text-slate-500">Income ({year})</p>
+                <p className="text-xl font-bold text-slate-900 mt-1">{money(stats.income)}</p>
               </div>
-              <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-                <p className="text-xs uppercase tracking-widest text-white/60">Expenses ({year})</p>
-                <p className="text-xl font-bold text-white mt-1">{money(stats.expenses)}</p>
+              <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                <p className="text-xs uppercase tracking-widest text-slate-500">Expenses ({year})</p>
+                <p className="text-xl font-bold text-slate-900 mt-1">{money(stats.expenses)}</p>
               </div>
-              <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-                <p className="text-xs uppercase tracking-widest text-white/60">Net Flow</p>
+              <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                <p className="text-xs uppercase tracking-widest text-slate-500">Net Flow</p>
                 <p className={`text-xl font-bold mt-1 ${stats.net >= 0 ? "text-emerald-300" : "text-rose-300"}`}>
                   {money(Math.abs(stats.net))} {stats.net >= 0 ? "Surplus" : "Deficit"}
                 </p>
@@ -238,13 +238,13 @@ export function TreasuryPage() {
             </div>
 
             <div className="grid gap-5 lg:grid-cols-3">
-              <div className="lg:col-span-2 rounded-xl border border-white/10 bg-white/5 p-4 sm:p-6">
+              <div className="lg:col-span-2 rounded-xl border border-black/10 bg-white/5 p-4 sm:p-6">
                 <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
                   <div>
-                    <p className="text-xs uppercase tracking-widest text-white/60">Monthly Cash Flow</p>
-                    <p className="text-sm text-white/60 mt-0.5">{stats.count} transactions</p>
+                    <p className="text-xs uppercase tracking-widest text-slate-500">Monthly Cash Flow</p>
+                    <p className="text-sm text-slate-500 mt-0.5">{stats.count} transactions</p>
                   </div>
-                  <Badge variant="secondary" className="bg-white/10 text-white/80">
+                  <Badge variant="secondary" className="bg-white/10 text-slate-800">
                     Income vs Expenses
                   </Badge>
                 </div>
@@ -272,24 +272,24 @@ export function TreasuryPage() {
                             backdropFilter: "blur(10px)",
                           }}
                         />
-                        <Legend formatter={(value) => <span className="text-white/80">{value}</span>} />
+                        <Legend formatter={(value) => <span className="text-slate-800">{value}</span>} />
                         <Bar dataKey="Income" fill="var(--color-primary)" radius={[6, 6, 0, 0]} maxBarSize={52} />
                         <Bar dataKey="Expenses" fill="#fb7185" radius={[6, 6, 0, 0]} maxBarSize={52} />
                       </BarChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="h-full flex items-center justify-center text-sm text-white/60">No data available for {year}.</div>
+                    <div className="h-full flex items-center justify-center text-sm text-slate-500">No data available for {year}.</div>
                   )}
                 </div>
               </div>
 
-              <div className="rounded-xl border border-white/10 bg-white/5 p-4 sm:p-6">
+              <div className="rounded-xl border border-black/10 bg-white/5 p-4 sm:p-6">
                 <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
                   <div>
-                    <p className="text-xs uppercase tracking-widest text-white/60">Expense Breakdown</p>
-                    <p className="text-sm text-white/60 mt-0.5">Debits by category</p>
+                    <p className="text-xs uppercase tracking-widest text-slate-500">Expense Breakdown</p>
+                    <p className="text-sm text-slate-500 mt-0.5">Debits by category</p>
                   </div>
-                  <Badge variant="secondary" className="bg-white/10 text-white/80">
+                  <Badge variant="secondary" className="bg-white/10 text-slate-800">
                     {expenseBreakdown.length} categories
                   </Badge>
                 </div>
@@ -329,19 +329,19 @@ export function TreasuryPage() {
                           verticalAlign="bottom"
                           height={90}
                           wrapperStyle={{ fontSize: 12 }}
-                          formatter={(value) => <span className="text-white/80">{value}</span>}
+                          formatter={(value) => <span className="text-slate-800">{value}</span>}
                         />
                       </PieChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="h-full flex items-center justify-center text-sm text-white/60">No expenses recorded for {year}.</div>
+                    <div className="h-full flex items-center justify-center text-sm text-slate-500">No expenses recorded for {year}.</div>
                   )}
                 </div>
               </div>
             </div>
 
             {session.isCouncilAdmin ? (
-              <Accordion type="single" collapsible className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl">
+              <Accordion type="single" collapsible className="rounded-xl border border-black/10 bg-white/5 backdrop-blur-xl">
                 <AccordionItem value="history" className="border-none">
                   <AccordionTrigger className="px-4 sm:px-6">
                     Detailed Transaction History (Council Admin)
@@ -357,7 +357,7 @@ export function TreasuryPage() {
                         <select
                           value={accountFilter}
                           onChange={(e) => setAccountFilter(e.target.value as any)}
-                          className="w-full rounded-md border border-white/15 bg-black/30 px-3 py-2 text-sm text-white"
+                          className="w-full rounded-md border border-black/15 bg-white/55 px-3 py-2 text-sm text-slate-900"
                         >
                           <option value="all">All Accounts</option>
                           <option value="LendingClub">LendingClub</option>
@@ -369,7 +369,7 @@ export function TreasuryPage() {
                         <select
                           value={typeFilter}
                           onChange={(e) => setTypeFilter(e.target.value as any)}
-                          className="w-full rounded-md border border-white/15 bg-black/30 px-3 py-2 text-sm text-white"
+                          className="w-full rounded-md border border-black/15 bg-white/55 px-3 py-2 text-sm text-slate-900"
                         >
                           <option value="all">All</option>
                           <option value="credit">Credits</option>
@@ -378,10 +378,10 @@ export function TreasuryPage() {
                       </div>
                     </div>
 
-                    <div className="mt-4 overflow-auto rounded-lg border border-white/10">
+                    <div className="mt-4 overflow-auto rounded-lg border border-black/10">
                       <table className="w-full text-left border-collapse">
                         <thead className="bg-white/5">
-                          <tr className="text-xs uppercase tracking-widest text-white/60">
+                          <tr className="text-xs uppercase tracking-widest text-slate-500">
                             <th className="p-3 font-semibold">Date</th>
                             <th className="p-3 font-semibold">Account</th>
                             <th className="p-3 font-semibold">Description</th>
@@ -392,19 +392,19 @@ export function TreasuryPage() {
                         <tbody className="divide-y divide-white/10 text-sm">
                           {yearTxns.length === 0 ? (
                             <tr>
-                              <td colSpan={5} className="p-6 text-center text-white/60">
+                              <td colSpan={5} className="p-6 text-center text-slate-500">
                                 No transactions found.
                               </td>
                             </tr>
                           ) : (
                             yearTxns.map((t) => (
                               <tr key={t.id} className="hover:bg-white/5">
-                                <td className="p-3 text-white/70 whitespace-nowrap">{t.date}</td>
-                                <td className="p-3 text-white/70">{t.account}</td>
-                                <td className="p-3 text-white max-w-[420px] truncate" title={t.description}>
+                                <td className="p-3 text-slate-600 whitespace-nowrap">{t.date}</td>
+                                <td className="p-3 text-slate-600">{t.account}</td>
+                                <td className="p-3 text-slate-900 max-w-[420px] truncate" title={t.description}>
                                   {t.description}
                                 </td>
-                                <td className="p-3 text-white/70">{t.category}</td>
+                                <td className="p-3 text-slate-600">{t.category}</td>
                                 <td className={`p-3 text-right font-semibold ${t.type === "credit" ? "text-emerald-300" : "text-rose-300"}`}>
                                   {t.type === "debit" ? "-" : "+"} {money(t.amount)}
                                 </td>
@@ -418,7 +418,7 @@ export function TreasuryPage() {
                 </AccordionItem>
               </Accordion>
             ) : (
-              <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-white/70">
+              <div className="rounded-xl border border-black/10 bg-white/5 p-4 text-sm text-slate-600">
                 Detailed transaction history is restricted to Council Admins.
               </div>
             )}

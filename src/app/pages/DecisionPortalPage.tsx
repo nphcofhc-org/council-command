@@ -209,16 +209,16 @@ export function DecisionPortalPage() {
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="w-10 h-px bg-primary" />
-            <span className="text-xs tracking-[0.2em] uppercase text-white/60">Decision Portal</span>
+            <span className="text-xs tracking-[0.2em] uppercase text-slate-500">Decision Portal</span>
             <div className="w-10 h-px bg-primary" />
           </div>
 
-          <div className="mx-auto inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white p-2 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
+          <div className="mx-auto inline-flex items-center justify-center rounded-2xl border border-black/10 bg-white p-2 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
             <img src={LOGO_URL} alt="NPHC of Hudson County Logo" className="h-12 w-auto" />
           </div>
 
-          <h1 className="mt-5 text-2xl sm:text-3xl font-extrabold tracking-tight text-white">NPHC of Hudson County</h1>
-          <p className="text-sm text-white/70 mt-2">Interactive Decision & Confidential Voting Portal</p>
+          <h1 className="mt-5 text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">NPHC of Hudson County</h1>
+          <p className="text-sm text-slate-600 mt-2">Interactive Decision & Confidential Voting Portal</p>
         </div>
       </header>
 
@@ -227,31 +227,31 @@ export function DecisionPortalPage() {
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardHeader>
               <CardTitle>{content.title}</CardTitle>
-              <p className="text-sm text-white/70">{content.subtitle}</p>
+              <p className="text-sm text-slate-600">{content.subtitle}</p>
             </CardHeader>
             <CardContent className="space-y-4">
-              {content.summary ? <p className="text-sm text-white/75 whitespace-pre-wrap">{content.summary}</p> : null}
+              {content.summary ? <p className="text-sm text-slate-700 whitespace-pre-wrap">{content.summary}</p> : null}
 
               <div className="grid gap-3 md:grid-cols-2">
-                <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs uppercase tracking-widest text-white/60 mb-1">Option A</p>
-                  <p className="text-sm font-semibold text-white">{blockOption.label}</p>
+                <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <p className="text-xs uppercase tracking-widest text-slate-500 mb-1">Option A</p>
+                  <p className="text-sm font-semibold text-slate-900">{blockOption.label}</p>
                   {blockOption.description ? (
-                    <p className="text-sm text-white/70 mt-1 whitespace-pre-wrap">{blockOption.description}</p>
+                    <p className="text-sm text-slate-600 mt-1 whitespace-pre-wrap">{blockOption.description}</p>
                   ) : null}
                 </div>
-                <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs uppercase tracking-widest text-white/60 mb-1">Option B</p>
-                  <p className="text-sm font-semibold text-white">{unityOption.label}</p>
+                <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <p className="text-xs uppercase tracking-widest text-slate-500 mb-1">Option B</p>
+                  <p className="text-sm font-semibold text-slate-900">{unityOption.label}</p>
                   {unityOption.description ? (
-                    <p className="text-sm text-white/70 mt-1 whitespace-pre-wrap">{unityOption.description}</p>
+                    <p className="text-sm text-slate-600 mt-1 whitespace-pre-wrap">{unityOption.description}</p>
                   ) : null}
                 </div>
               </div>
 
               {links.length > 0 ? (
                 <div className="space-y-2">
-                  <p className="text-xs uppercase tracking-widest text-white/60">Links</p>
+                  <p className="text-xs uppercase tracking-widest text-slate-500">Links</p>
                   <div className="flex flex-col sm:flex-row flex-wrap gap-2">
                     {links.map((lnk) => (
                       <a
@@ -259,7 +259,7 @@ export function DecisionPortalPage() {
                         href={lnk.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center justify-center rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white hover:border-primary/60 hover:text-primary hover:bg-white/10 transition w-fit"
+                        className="inline-flex items-center justify-center rounded-lg border border-black/15 bg-white/5 px-3 py-2 text-sm text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10 transition w-fit"
                       >
                         {lnk.label}
                       </a>
@@ -286,15 +286,15 @@ export function DecisionPortalPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-5">
-              <p className="text-sm text-white/70">
+              <p className="text-sm text-slate-600">
                 Use the sliders below to weight strategic priorities and determine the higher weighted recommendation.
               </p>
 
               <div className="space-y-4">
                 <div>
                   <div className="flex items-center justify-between gap-3">
-                    <label className="text-sm font-semibold text-white">Community Impact</label>
-                    <span className="text-xs text-white/60">Weight: {impact}</span>
+                    <label className="text-sm font-semibold text-slate-900">Community Impact</label>
+                    <span className="text-xs text-slate-500">Weight: {impact}</span>
                   </div>
                   <input
                     type="range"
@@ -308,8 +308,8 @@ export function DecisionPortalPage() {
 
                 <div>
                   <div className="flex items-center justify-between gap-3">
-                    <label className="text-sm font-semibold text-white">Inter-Organizational Unity</label>
-                    <span className="text-xs text-white/60">Weight: {unity}</span>
+                    <label className="text-sm font-semibold text-slate-900">Inter-Organizational Unity</label>
+                    <span className="text-xs text-slate-500">Weight: {unity}</span>
                   </div>
                   <input
                     type="range"
@@ -323,8 +323,8 @@ export function DecisionPortalPage() {
 
                 <div>
                   <div className="flex items-center justify-between gap-3">
-                    <label className="text-sm font-semibold text-white">Feasibility</label>
-                    <span className="text-xs text-white/60">Weight: {feasibility}</span>
+                    <label className="text-sm font-semibold text-slate-900">Feasibility</label>
+                    <span className="text-xs text-slate-500">Weight: {feasibility}</span>
                   </div>
                   <input
                     type="range"
@@ -337,9 +337,9 @@ export function DecisionPortalPage() {
                 </div>
               </div>
 
-              <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-                <p className="text-lg font-bold text-white">{weighted.recommendation}</p>
-                <p className="text-xs text-white/60 mt-1">
+              <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                <p className="text-lg font-bold text-slate-900">{weighted.recommendation}</p>
+                <p className="text-xs text-slate-500 mt-1">
                   (Internal scoring only. Vote results are never shown publicly.)
                 </p>
               </div>
@@ -353,12 +353,12 @@ export function DecisionPortalPage() {
               <CardTitle>Confidential Preference Submission</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-sm text-white/70">
+              <p className="text-sm text-slate-600">
                 Submit your independent choice. Your vote is submitted confidentially for council-wide access control,
                 and never displayed publicly. (A local copy is kept on this device for continuity.)
               </p>
               {session.authenticated && hasServerVote ? (
-                <p className="text-xs text-white/60">
+                <p className="text-xs text-slate-500">
                   Note: you have already submitted a vote for this decision. Submitting again will update your vote.
                 </p>
               ) : null}
@@ -372,14 +372,14 @@ export function DecisionPortalPage() {
                 </Button>
               </div>
 
-              {confirmation ? <p className="text-sm font-semibold text-white">{confirmation}</p> : null}
+              {confirmation ? <p className="text-sm font-semibold text-slate-900">{confirmation}</p> : null}
 
               <hr className="my-2" />
 
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold text-white">Admin Export</p>
-                  <p className="text-xs text-white/60">
+                  <p className="text-sm font-semibold text-slate-900">Admin Export</p>
+                  <p className="text-xs text-slate-500">
                     Downloads council-wide vote history for this decision.
                   </p>
                 </div>
@@ -387,7 +387,7 @@ export function DecisionPortalPage() {
                   variant="outline"
                   onClick={exportVotes}
                   disabled={!session.isCouncilAdmin}
-                  className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10"
+                  className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
                 >
                   <Download className="size-4" />
                   Download Vote Data
@@ -403,12 +403,12 @@ export function DecisionPortalPage() {
               <CardTitle>Print Instructions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="text-sm text-white/70">
+              <p className="text-sm text-slate-600">
                 Use your browser’s print function to generate a PDF snapshot of the decision simulator.
               </p>
               <Button
                 variant="outline"
-                className="gap-2 border-white/15 bg-white/5 text-white hover:border-primary/60 hover:text-primary hover:bg-white/10"
+                className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
                 onClick={() => window.print()}
               >
                 <Printer className="size-4" />
