@@ -93,6 +93,25 @@ export function MySubmissionsPage() {
                         <p className="text-sm text-gray-700 mt-1 whitespace-pre-wrap">{r.reviewNotes}</p>
                       </div>
                     ) : null}
+
+                    {Array.isArray((r.payload as any)?.receiptFiles) && (r.payload as any).receiptFiles.length > 0 ? (
+                      <div className="mt-3 rounded-md border border-gray-100 bg-white p-3">
+                        <p className="text-xs uppercase tracking-widest text-gray-500">Receipts</p>
+                        <div className="mt-2 space-y-2">
+                          {(r.payload as any).receiptFiles.map((f: any) => (
+                            <a
+                              key={String(f?.key || f?.viewUrl || Math.random())}
+                              href={String(f?.viewUrl || "")}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="block rounded-md border border-gray-100 bg-gray-50 px-3 py-2 text-sm text-black hover:bg-gray-100"
+                            >
+                              {String(f?.filename || f?.key || "Receipt")}
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
                   </div>
                 ))}
               </div>
@@ -103,4 +122,3 @@ export function MySubmissionsPage() {
     </div>
   );
 }
-

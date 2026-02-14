@@ -3,9 +3,9 @@ import { useLocation, useNavigate } from "react-router";
 import { ArrowLeft, ExternalLink, Download, FileText, Image as ImageIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+// Note: tabs used to render spreadsheet previews. We intentionally removed XLSX preview due to upstream security advisories.
 
-type ViewerKind = "pdf" | "image" | "docx" | "xlsx" | "unknown";
+type ViewerKind = "pdf" | "image" | "docx" | "unknown";
 
 function getExt(path: string): string {
   const clean = path.split("#")[0]?.split("?")[0] || path;
@@ -52,22 +52,19 @@ export function DocumentViewerPage() {
     if (ext === "pdf") return "pdf";
     if (["png", "jpg", "jpeg", "webp", "gif", "svg"].includes(ext)) return "image";
     if (ext === "docx") return "docx";
-    if (ext === "xlsx") return "xlsx";
     return "unknown";
   }, [ext]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [docxHtml, setDocxHtml] = useState<string>("");
-  const [sheets, setSheets] = useState<{ name: string; rows: (string | number | null)[][] }[]>([]);
 
   useEffect(() => {
     setError(null);
     setDocxHtml("");
-    setSheets([]);
 
     if (!abs.ok) return;
-    if (kind !== "docx" && kind !== "xlsx") return;
+    if (kind !== "docx") return;
 
     let cancelled = false;
     const run = async () => {
@@ -86,23 +83,6 @@ export function DocumentViewerPage() {
           setDocxHtml(out?.value || "");
         }
 
-        if (kind === "xlsx") {
-          const XLSX = await import("xlsx");
-          const wb = XLSX.read(buf, { type: "array" });
-          const next: { name: string; rows: (string | number | null)[][] }[] = [];
-          for (const sheetName of wb.SheetNames.slice(0, 12)) {
-            const ws = wb.Sheets[sheetName];
-            if (!ws) continue;
-            const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: true }) as any[];
-            const normalized = rows
-              .slice(0, 500)
-              .map((r) => (Array.isArray(r) ? r.slice(0, 50) : []))
-              .map((r) => r.map((cell) => (cell === undefined ? null : cell)));
-            next.push({ name: sheetName, rows: normalized });
-          }
-          if (cancelled) return;
-          setSheets(next);
-        }
       } catch (e) {
         if (cancelled) return;
         setError(e instanceof Error ? e.message : "Failed to preview document.");
@@ -217,42 +197,6 @@ export function DocumentViewerPage() {
                     // mammoth generates HTML; we only use this for council-owned docs.
                     dangerouslySetInnerHTML={{ __html: docxHtml }}
                   />
-                ) : null
-              ) : null}
-
-              {kind === "xlsx" ? (
-                sheets.length ? (
-                  <Tabs defaultValue={sheets[0]?.name || "sheet"} className="space-y-3">
-                    <TabsList className="bg-white border border-gray-200 w-full sm:w-auto flex-wrap justify-start">
-                      {sheets.map((s) => (
-                        <TabsTrigger key={s.name} value={s.name} className="text-xs sm:text-sm">
-                          {s.name}
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
-                    {sheets.map((s) => (
-                      <TabsContent key={s.name} value={s.name}>
-                        <div className="overflow-auto rounded-lg border border-gray-100">
-                          <table className="min-w-full text-sm">
-                            <tbody>
-                              {s.rows.map((row, rIdx) => (
-                                <tr key={rIdx} className={rIdx === 0 ? "bg-gray-50" : ""}>
-                                  {row.map((cell, cIdx) => (
-                                    <td key={cIdx} className="border-b border-r border-gray-100 px-3 py-2 align-top">
-                                      {cell === null ? "" : String(cell)}
-                                    </td>
-                                  ))}
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                        <p className="mt-2 text-xs text-gray-400">
-                          Showing up to 500 rows x 50 columns for performance.
-                        </p>
-                      </TabsContent>
-                    ))}
-                  </Tabs>
                 ) : null
               ) : null}
 

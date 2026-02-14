@@ -19,6 +19,15 @@ const SUBMIT_ENDPOINT = "/api/forms/submit";
 const MY_ENDPOINT = "/api/forms/my";
 const ADMIN_LIST_ENDPOINT = "/api/forms/admin/list";
 const ADMIN_UPDATE_ENDPOINT = "/api/forms/admin/update";
+const RECEIPTS_UPLOAD_ENDPOINT = "/api/uploads/receipts";
+
+export type UploadedReceipt = {
+  key: string;
+  filename: string;
+  contentType: string;
+  size: number;
+  viewUrl: string;
+};
 
 async function parseError(response: Response): Promise<string> {
   try {
@@ -82,3 +91,16 @@ export async function updateSubmissionAsAdmin(input: { id: string; status: strin
   return { ok: true, id: String(data.id), status: String(data.status) };
 }
 
+export async function uploadReceipts(files: File[]): Promise<UploadedReceipt[]> {
+  const form = new FormData();
+  for (const f of files.slice(0, 5)) form.append("files", f);
+
+  const res = await fetch(RECEIPTS_UPLOAD_ENDPOINT, {
+    method: "POST",
+    credentials: "same-origin",
+    body: form,
+  });
+  if (!res.ok) throw new Error(await parseError(res));
+  const data = await res.json();
+  return Array.isArray(data?.files) ? (data.files as UploadedReceipt[]) : [];
+}

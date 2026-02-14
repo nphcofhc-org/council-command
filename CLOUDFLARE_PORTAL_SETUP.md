@@ -77,6 +77,7 @@ Cloudflare Pages -> Project -> Settings:
 This enables:
 - shared compliance checklist state
 - runtime leadership content updates from `/#/council-admin/content`
+- form submissions stored in D1 (budgets, reimbursements, social requests)
 
 Important:
 - This app uses hash routing (`/#/...`). URL fragments are not sent to Cloudflare Access.
@@ -84,6 +85,18 @@ Important:
 - Access should protect the whole portal hostname, and council-only access is enforced in-app via:
   - `COUNCIL_ADMIN_EMAILS`
   - `/api/admin/session` checks in Pages Functions
+
+## Step 5B: Receipt Uploads (Optional, but recommended)
+
+If you want reimbursements to accept receipt file uploads (PDF/JPG/PNG/HEIC) inside the portal:
+
+1. Cloudflare Dashboard -> R2 -> Create bucket:
+   - Bucket name: `nphc-portal-receipts` (or any name)
+2. Cloudflare Pages -> Project -> Settings -> Functions -> R2 bindings:
+   - Binding name: `RECEIPTS_BUCKET`
+   - Bucket: select the bucket you created
+
+Without this binding, reimbursements will still work but will require members to paste Google Drive receipt links instead of uploading.
 
 ## Step 6: 15-Minute Updates (Scheduled Deploy)
 

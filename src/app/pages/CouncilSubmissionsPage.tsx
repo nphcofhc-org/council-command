@@ -205,6 +205,34 @@ export function CouncilSubmissionsPage() {
                             </div>
                           </div>
 
+                          {Array.isArray((selected.payload as any)?.receiptFiles) && (selected.payload as any).receiptFiles.length > 0 ? (
+                            <div className="mt-4 rounded-lg border border-gray-200 p-4">
+                              <p className="text-xs uppercase tracking-widest text-gray-500">Receipts</p>
+                              <div className="mt-2 space-y-2">
+                                {(selected.payload as any).receiptFiles.map((f: any) => (
+                                  <a
+                                    key={String(f?.key || f?.viewUrl || Math.random())}
+                                    href={String(f?.viewUrl || "")}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="block rounded-md border border-gray-100 bg-white px-3 py-2 text-sm text-black hover:bg-gray-50"
+                                  >
+                                    {String(f?.filename || f?.key || "Receipt")}
+                                  </a>
+                                ))}
+                              </div>
+                            </div>
+                          ) : null}
+
+                          {String((selected.payload as any)?.receiptLinks || "").trim() ? (
+                            <div className="mt-4 rounded-lg border border-gray-200 p-4">
+                              <p className="text-xs uppercase tracking-widest text-gray-500">Receipt Links</p>
+                              <p className="text-sm text-gray-700 mt-2 whitespace-pre-wrap">
+                                {String((selected.payload as any).receiptLinks)}
+                              </p>
+                            </div>
+                          ) : null}
+
                           <div className="mt-4 rounded-lg border border-gray-100 bg-gray-50 p-4">
                             <p className="text-xs uppercase tracking-widest text-gray-500">Submitted Payload</p>
                             <pre className="mt-2 text-xs text-gray-800 overflow-auto whitespace-pre-wrap">
@@ -224,4 +252,3 @@ export function CouncilSubmissionsPage() {
     </CouncilAdminGate>
   );
 }
-
