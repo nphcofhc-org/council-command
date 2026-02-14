@@ -334,7 +334,8 @@ export function HomePage() {
                   <img
                     src={presidentImageUrl}
                     alt="President Christopher DeMarkus"
-                    className="w-full h-full object-cover"
+                    // Use object-contain to avoid cropping portraits.
+                    className="w-full h-full object-contain bg-gray-100"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-gray-100 text-gray-400">
