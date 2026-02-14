@@ -2,6 +2,7 @@ import type {
   ArchivedEvent,
   CouncilEvent,
   DelegateReport,
+  DecisionPortalContent,
   EventFlyer,
   MeetingRecord,
   NationalOrg,
@@ -116,6 +117,14 @@ export type ResourcesOverridePayload = {
 
 export function fetchResourcesOverride(): Promise<ContentResponse<ResourcesOverridePayload | null>> {
   return getJson("/api/content/resources");
+}
+
+export function fetchDecisionPortalOverride(): Promise<ContentResponse<DecisionPortalContent | null>> {
+  return getJson("/api/content/decision-portal");
+}
+
+export function saveDecisionPortalOverride(payload: DecisionPortalContent): Promise<ContentResponse<DecisionPortalContent>> {
+  return putJson("/api/content/decision-portal", payload);
 }
 
 export function saveResourcesOverride(payload: ResourcesOverridePayload): Promise<ContentResponse<ResourcesOverridePayload>> {

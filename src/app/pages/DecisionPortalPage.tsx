@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Button } from "../components/ui/button";
 import { useCouncilSession } from "../hooks/use-council-session";
 import { fetchDecisionVotesAsAdmin, fetchMyDecisionVote, submitDecisionVote } from "../data/decision-api";
+import { fetchDecisionPortalOverride } from "../data/content-api";
+import type { DecisionPortalContent } from "../data/types";
 
 type VoteChoice = "block" | "unity";
 
@@ -17,7 +19,22 @@ const LOGO_URL =
   "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/NPHC%20of%20HC%20LOGO%20Black.PNG";
 
 const STORAGE_KEY = "nphcDecisionPortalVotes";
-const DECISION_KEY = "2026-block-party-vs-unity-bbq";
+const DEFAULT_DECISION_KEY = "2026-block-party-vs-unity-bbq";
+
+const DEFAULT_CONTENT: DecisionPortalContent = {
+  decisionKey: DEFAULT_DECISION_KEY,
+  title: "2026 Summer Signature Event Decision",
+  subtitle: "Review the brief, then submit your confidential vote.",
+  summary:
+    "This decision portal supports confidential voting and a weighted decision simulator. " +
+    "The council will provide the full decision brief and links here.",
+  options: [
+    { id: "block", label: "Neighborhood Block Party", description: "" },
+    { id: "unity", label: "Unity BBQ", description: "" },
+  ],
+  links: [],
+  isOpen: true,
+};
 
 const unityScores = { impact: 3, unity: 5, feasibility: 4 };
 const blockScores = { impact: 5, unity: 4, feasibility: 3 };
@@ -46,6 +63,11 @@ export function DecisionPortalPage() {
   const [votes, setVotes] = useState<StoredVote[]>([]);
   const [confirmation, setConfirmation] = useState<string>("");
   const [hasServerVote, setHasServerVote] = useState<boolean>(false);
+  const [content, setContent] = useState<DecisionPortalContent>(DEFAULT_CONTENT);
+
+  const decisionKey = content.decisionKey || DEFAULT_DECISION_KEY;
+  const blockOption = content.options.find((o) => o.id === "block") || DEFAULT_CONTENT.options[0];
+  const unityOption = content.options.find((o) => o.id === "unity") || DEFAULT_CONTENT.options[1];
 
   useEffect(() => {
     try {
@@ -68,15 +90,31 @@ export function DecisionPortalPage() {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+    void fetchDecisionPortalOverride()
+      .then((res) => {
+        if (cancelled) return;
+        if (!res.found || !res.data) return;
+        setContent(res.data);
+      })
+      .catch(() => {
+        // ignore - keep defaults
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!session.authenticated) return;
-    void fetchMyDecisionVote(DECISION_KEY)
+    void fetchMyDecisionVote(decisionKey)
       .then((res) => {
         setHasServerVote(Boolean(res.found));
       })
       .catch(() => {
         // ignore
       });
-  }, [session.authenticated]);
+  }, [session.authenticated, decisionKey]);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(votes));
@@ -115,7 +153,7 @@ export function DecisionPortalPage() {
     }
 
     void submitDecisionVote({
-      decisionKey: DECISION_KEY,
+      decisionKey,
       choice,
       weights: {
         impact,
@@ -137,7 +175,7 @@ export function DecisionPortalPage() {
 
   const exportVotes = () => {
     if (!session.isCouncilAdmin) return;
-    void fetchDecisionVotesAsAdmin(DECISION_KEY)
+    void fetchDecisionVotesAsAdmin(decisionKey)
       .then((res) => {
         downloadJson("NPHC_DecisionPortal_Votes.json", res);
       })
@@ -169,6 +207,60 @@ export function DecisionPortalPage() {
       </header>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-8 py-10 sm:py-14 space-y-6">
+        <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.35 }}>
+          <Card className="border border-gray-200 shadow-sm">
+            <CardHeader>
+              <CardTitle>{content.title}</CardTitle>
+              <p className="text-sm text-gray-600">{content.subtitle}</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {content.summary ? <p className="text-sm text-gray-700 whitespace-pre-wrap">{content.summary}</p> : null}
+
+              <div className="grid gap-3 md:grid-cols-2">
+                <div className="rounded-lg border border-gray-100 p-4">
+                  <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Option A</p>
+                  <p className="text-sm font-semibold text-black">{blockOption.label}</p>
+                  {blockOption.description ? (
+                    <p className="text-sm text-gray-600 mt-1 whitespace-pre-wrap">{blockOption.description}</p>
+                  ) : null}
+                </div>
+                <div className="rounded-lg border border-gray-100 p-4">
+                  <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Option B</p>
+                  <p className="text-sm font-semibold text-black">{unityOption.label}</p>
+                  {unityOption.description ? (
+                    <p className="text-sm text-gray-600 mt-1 whitespace-pre-wrap">{unityOption.description}</p>
+                  ) : null}
+                </div>
+              </div>
+
+              {content.links.length > 0 ? (
+                <div className="space-y-2">
+                  <p className="text-xs uppercase tracking-widest text-gray-500">Links</p>
+                  <div className="flex flex-col sm:flex-row flex-wrap gap-2">
+                    {content.links.map((lnk) => (
+                      <a
+                        key={lnk.id}
+                        href={lnk.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center justify-center rounded-lg border border-gray-200 px-3 py-2 text-sm text-black hover:bg-black hover:text-white hover:border-black transition w-fit"
+                      >
+                        {lnk.label}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              {!content.isOpen ? (
+                <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+                  Voting is currently closed for this decision.
+                </div>
+              ) : null}
+            </CardContent>
+          </Card>
+        </motion.div>
+
         <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.35 }}>
           <Card className="border border-gray-200 shadow-sm">
             <CardHeader>
@@ -256,11 +348,11 @@ export function DecisionPortalPage() {
               ) : null}
 
               <div className="flex flex-col sm:flex-row gap-3">
-                <Button className="bg-black hover:bg-gray-900" onClick={() => submitVote("block")}>
-                  Vote: Neighborhood Block Party
+                <Button className="bg-black hover:bg-gray-900" onClick={() => submitVote("block")} disabled={!content.isOpen}>
+                  Vote: {blockOption.label}
                 </Button>
-                <Button className="bg-black hover:bg-gray-900" onClick={() => submitVote("unity")}>
-                  Vote: Unity BBQ
+                <Button className="bg-black hover:bg-gray-900" onClick={() => submitVote("unity")} disabled={!content.isOpen}>
+                  Vote: {unityOption.label}
                 </Button>
               </div>
 

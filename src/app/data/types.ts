@@ -166,6 +166,28 @@ export interface SignupForm {
   formUrl?: string;
 }
 
+// ── Decision Portal ─────────────────────────────────────────────────────────
+
+export type DecisionPortalLink = {
+  id: string;
+  label: string;
+  url: string;
+};
+
+export type DecisionPortalContent = {
+  decisionKey: string;
+  title: string;
+  subtitle: string;
+  summary: string;
+  options: Array<{
+    id: "block" | "unity";
+    label: string;
+    description: string;
+  }>;
+  links: DecisionPortalLink[];
+  isOpen: boolean;
+};
+
 // ── ResourcesPage ────────────────────────────────────────────────────────────
 
 export interface SharedForm {
