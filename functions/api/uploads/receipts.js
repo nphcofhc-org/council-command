@@ -63,7 +63,8 @@ export async function onRequest(context) {
 
     const originalFilename = sanitizeFilename(item.name);
     const ext = originalFilename.includes(".") ? originalFilename.split(".").pop() : inferExtFromType(item.type);
-    const objectKey = `receipts/${crypto.randomUUID()}.${String(ext || "bin").toLowerCase()}`;
+    // Cloudflare Pages Functions route params don't support catch-all segments, so keep keys single-segment.
+    const objectKey = `receipts-${crypto.randomUUID()}.${String(ext || "bin").toLowerCase()}`;
     const createdAt = new Date().toISOString();
 
     await env.RECEIPTS_BUCKET.put(objectKey, item.stream(), {
@@ -91,7 +92,7 @@ export async function onRequest(context) {
       filename: originalFilename,
       contentType: item.type || "application/octet-stream",
       size: item.size,
-      viewUrl: `/api/uploads/receipts/${objectKey}`,
+      viewUrl: `/api/uploads/receipts/${encodeURIComponent(objectKey)}`,
     });
   }
 

@@ -31,8 +31,7 @@ export async function onRequest(context) {
   const auth = await requireAuthenticated(request, env);
   if (!auth.ok) return auth.response;
 
-  const keyParts = Array.isArray(params?.key) ? params.key : [params?.key].filter(Boolean);
-  const objectKey = keyParts.join("/");
+  const objectKey = String(params?.key || "").trim();
   if (!objectKey) return json({ error: "Missing key." }, { status: 400 });
 
   const meta = await readUpload(env.DB, objectKey);
