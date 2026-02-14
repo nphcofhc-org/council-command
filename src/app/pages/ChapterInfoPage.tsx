@@ -48,7 +48,7 @@ function MemberPhoto({ member }: { member: LeadershipMember }) {
       <img
         src={normalized}
         alt={member.name}
-        className="w-36 h-36 rounded-xl object-cover mb-4 border-4 border-black/10 bg-white"
+        className="w-44 h-44 rounded-2xl object-cover mb-3 border-4 border-black/10 bg-white"
         onError={() => setFailed(true)}
         loading="lazy"
       />
@@ -56,8 +56,8 @@ function MemberPhoto({ member }: { member: LeadershipMember }) {
   }
 
   return (
-    <div className="w-36 h-36 rounded-xl bg-white/5 flex items-center justify-center mb-4 border-4 border-black/10 group-hover:border-black/15 transition-colors">
-      <User className="size-16 text-slate-300" />
+    <div className="w-44 h-44 rounded-2xl bg-white/5 flex items-center justify-center mb-3 border-4 border-black/10 group-hover:border-black/15 transition-colors">
+      <User className="size-20 text-slate-300" />
     </div>
   );
 }
@@ -151,14 +151,14 @@ export function ChapterInfoPage() {
                         transition={{ delay: 0.05 + index * 0.08, duration: 0.4 }}
                       >
                         <Card className="h-full transition-all duration-300 group hover:-translate-y-1 hover:border-primary/40 hover:bg-white/10">
-                          <CardContent className="p-6">
+                          <CardContent className="p-5">
                             <div className="flex flex-col items-center text-center">
                               <MemberPhoto member={officer} />
-                              <h3 className="text-slate-900 text-lg mb-1">{officer.name}</h3>
-                              <Badge variant="secondary" className="mb-3 border border-primary/25 bg-primary/15 text-primary">
+                              <h3 className="text-slate-900 text-base font-semibold leading-tight">{officer.name}</h3>
+                              <Badge variant="secondary" className="mt-2 mb-2 border border-primary/25 bg-primary/15 text-primary">
                                 {officer.title}
                               </Badge>
-                              <p className="text-sm text-slate-500 mb-4">{officer.chapter}</p>
+                              <p className="text-sm text-slate-600 mb-3 leading-snug">{officer.chapter}</p>
                               <Button
                                 asChild
                                 variant="outline"
@@ -189,14 +189,14 @@ export function ChapterInfoPage() {
                         transition={{ delay: 0.45 + index * 0.08, duration: 0.4 }}
                       >
                         <Card className="h-full transition-all duration-300 group hover:-translate-y-1 hover:border-primary/40 hover:bg-white/10">
-                          <CardContent className="p-6">
+                          <CardContent className="p-5">
                             <div className="flex flex-col items-center text-center">
                               <MemberPhoto member={chair} />
-                              <h3 className="text-slate-900 text-lg mb-1">{chair.name}</h3>
-                              <Badge variant="secondary" className="mb-3 border border-primary/25 bg-primary/15 text-primary">
+                              <h3 className="text-slate-900 text-base font-semibold leading-tight">{chair.name}</h3>
+                              <Badge variant="secondary" className="mt-2 mb-2 border border-primary/25 bg-primary/15 text-primary">
                                 {chair.title}
                               </Badge>
-                              <p className="text-sm text-slate-500 mb-4">{chair.chapter}</p>
+                              <p className="text-sm text-slate-600 mb-3 leading-snug">{chair.chapter}</p>
                               <Button
                                 asChild
                                 variant="outline"

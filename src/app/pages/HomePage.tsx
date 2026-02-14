@@ -20,7 +20,7 @@ const glassButtonClass =
   "nphc-holo-btn relative overflow-hidden inline-flex items-center gap-2 px-4 py-2.5 rounded-lg cursor-pointer " +
   "bg-white/[0.08] backdrop-blur-xl text-slate-900 border border-black/15 " +
   "shadow-[0_8px_32px_0_rgba(255,255,255,0.07)] " +
-  "transition-all duration-300 text-sm " +
+  "transition-all duration-300 text-[13px] leading-none " +
   "hover:bg-primary/15 hover:text-primary hover:border-primary/50 " +
   "hover:shadow-[0_12px_40px_0_rgba(24,224,208,0.28)] hover:-translate-y-0.5 " +
   "active:bg-primary/25 active:text-primary active:scale-[0.97]";
@@ -384,7 +384,7 @@ export function HomePage() {
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}
-                className="nphc-holo-surface aspect-[4/5] rounded-2xl overflow-hidden bg-white/5 shadow-[0_25px_80px_rgba(0,0,0,0.55),0_0_70px_rgba(255,255,255,0.14)] ring-1 ring-black/10"
+                className="nphc-holo-surface aspect-[5/6] rounded-2xl overflow-hidden bg-white/5 shadow-[0_25px_80px_rgba(0,0,0,0.35),0_0_70px_rgba(255,255,255,0.18)] ring-1 ring-black/10"
               >
                 {presidentImageUrl ? (
                   <img
@@ -406,9 +406,9 @@ export function HomePage() {
             </div>
 
             {/* President's Message */}
-            <div className="md:col-span-3 space-y-5 text-slate-700">
+            <div className="md:col-span-3 space-y-3 text-[15px] text-slate-700 leading-snug">
               {welcomeParagraphs.map((paragraph, i) => (
-                <p key={i} className="leading-relaxed">{paragraph}</p>
+                <p key={i}>{paragraph}</p>
               ))}
               <div className="pt-2">
                 <p className="text-slate-500 italic">{presidentClosing}</p>
