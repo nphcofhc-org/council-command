@@ -5,6 +5,7 @@ import { ChapterInfoPage } from "./pages/ChapterInfoPage";
 import { MeetingsPage } from "./pages/MeetingsPage";
 import { ProgramsPage } from "./pages/ProgramsPage";
 import { ResourcesPage } from "./pages/ResourcesPage";
+import { TreasuryPage } from "./pages/TreasuryPage";
 import { CouncilAdminPage } from "./pages/CouncilAdminPage";
 import { CouncilCompliancePage } from "./pages/CouncilCompliancePage";
 import { CouncilContentManagerPage } from "./pages/CouncilContentManagerPage";
@@ -38,6 +39,7 @@ export const router = createHashRouter([
       { path: "meetings-delegates", Component: MeetingsPage },
       { path: "programs-events", Component: ProgramsPage },
       { path: "resources", Component: ResourcesPage },
+      { path: "treasury", Component: TreasuryPage },
       { path: "decision-portal", Component: DecisionPortalPage },
       { path: "reports/signature-event-comparison", Component: SignatureEventComparisonReportPage },
       { path: "viewer", Component: DocumentViewerPage },
