@@ -17,7 +17,7 @@ type SectionKey = "executiveBoard" | "additionalChairs";
 
 const SECTION_META: Record<SectionKey, { title: string; prefix: string }> = {
   executiveBoard: { title: "Executive Board", prefix: "eb" },
-  additionalChairs: { title: "Additional Chairs", prefix: "ch" },
+  additionalChairs: { title: "Standing Committee Chairs", prefix: "ch" },
 };
 
 function nextMemberId(items: LeadershipMember[], prefix: string): string {
@@ -127,7 +127,7 @@ export function CouncilContentManagerPage() {
           <CardHeader>
             <CardTitle>Content Manager — Leadership</CardTitle>
             <CardDescription>
-              Manage Executive Board and Additional Chairs displayed on Chapter Information.
+              Manage Executive Board and Standing Committee Chairs displayed on Chapter Information.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">

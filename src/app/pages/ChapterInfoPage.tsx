@@ -178,7 +178,7 @@ export function ChapterInfoPage() {
                   </div>
 
                   <h3 className="mb-3 mt-8 text-sm font-semibold uppercase tracking-wide text-slate-500">
-                    Additional Chairs (2025-2026)
+                    Standing Committee Chairs (2025-2026)
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                     {leadership.additionalChairs.map((chair, index) => (
