@@ -26,6 +26,12 @@ const FORM_TABS: { key: FormKey; label: string }[] = [
   { key: "social_media_request", label: "Social Requests" },
 ];
 
+function toViewerHref(src: string): string {
+  const s = String(src || "").trim();
+  if (!s) return "";
+  return `/#/viewer?src=${encodeURIComponent(s)}`;
+}
+
 export function CouncilSubmissionsPage() {
   const [activeForm, setActiveForm] = useState<FormKey>("budget_submission");
   const [statusFilter, setStatusFilter] = useState<string>("");
@@ -156,7 +162,14 @@ export function CouncilSubmissionsPage() {
                               r.id === selectedId ? "bg-gray-50" : "bg-white"
                             }`}
                           >
-                            <p className="text-sm font-semibold text-black truncate">{r.payload?.title || r.payload?.projectName || r.payload?.payeeName || r.payload?.requestType || r.id}</p>
+                            <p className="text-sm font-semibold text-black truncate">
+                              {r.payload?.title ||
+                                r.payload?.eventName ||
+                                r.payload?.projectName ||
+                                r.payload?.payeeName ||
+                                r.payload?.eventName ||
+                                r.id}
+                            </p>
                             <p className="text-xs text-gray-500 mt-1">{r.status} • {new Date(r.createdAt).toLocaleString()}</p>
                             <p className="text-xs text-gray-400 truncate">{r.createdBy || "Unknown sender"}</p>
                           </button>
@@ -212,7 +225,7 @@ export function CouncilSubmissionsPage() {
                                 {(selected.payload as any).receiptFiles.map((f: any) => (
                                   <a
                                     key={String(f?.key || f?.viewUrl || Math.random())}
-                                    href={String(f?.viewUrl || "")}
+                                    href={toViewerHref(String(f?.viewUrl || ""))}
                                     target="_blank"
                                     rel="noreferrer"
                                     className="block rounded-md border border-gray-100 bg-white px-3 py-2 text-sm text-black hover:bg-gray-50"
@@ -229,6 +242,34 @@ export function CouncilSubmissionsPage() {
                               <p className="text-xs uppercase tracking-widest text-gray-500">Receipt Links</p>
                               <p className="text-sm text-gray-700 mt-2 whitespace-pre-wrap">
                                 {String((selected.payload as any).receiptLinks)}
+                              </p>
+                            </div>
+                          ) : null}
+
+                          {Array.isArray((selected.payload as any)?.mediaFiles) && (selected.payload as any).mediaFiles.length > 0 ? (
+                            <div className="mt-4 rounded-lg border border-gray-200 p-4">
+                              <p className="text-xs uppercase tracking-widest text-gray-500">Social Media Assets</p>
+                              <div className="mt-2 space-y-2">
+                                {(selected.payload as any).mediaFiles.map((f: any) => (
+                                  <a
+                                    key={String(f?.key || f?.viewUrl || Math.random())}
+                                    href={toViewerHref(String(f?.viewUrl || ""))}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="block rounded-md border border-gray-100 bg-white px-3 py-2 text-sm text-black hover:bg-gray-50"
+                                  >
+                                    {String(f?.filename || f?.key || "Asset")}
+                                  </a>
+                                ))}
+                              </div>
+                            </div>
+                          ) : null}
+
+                          {String((selected.payload as any)?.mediaLinks || "").trim() ? (
+                            <div className="mt-4 rounded-lg border border-gray-200 p-4">
+                              <p className="text-xs uppercase tracking-widest text-gray-500">Asset Links</p>
+                              <p className="text-sm text-gray-700 mt-2 whitespace-pre-wrap">
+                                {String((selected.payload as any).mediaLinks)}
                               </p>
                             </div>
                           ) : null}

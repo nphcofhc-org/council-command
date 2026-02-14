@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { motion } from "motion/react";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, Upload, X } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
-import { submitForm } from "../data/forms-api";
+import { submitForm, uploadSocialAssets, type UploadedSocialAsset } from "../data/forms-api";
 import { useCouncilSession } from "../hooks/use-council-session";
 
 export function SocialMediaRequestPage() {
@@ -16,40 +16,88 @@ export function SocialMediaRequestPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const [requestType, setRequestType] = useState("");
-  const [title, setTitle] = useState("");
-  const [neededBy, setNeededBy] = useState("");
+  // Social Media Intake Form (v2)
+  const [email, setEmail] = useState(session.email || "");
+  const [eventName, setEventName] = useState("");
+  const [caption, setCaption] = useState("");
   const [eventDate, setEventDate] = useState("");
-  const [eventTime, setEventTime] = useState("");
-  const [location, setLocation] = useState("");
-  const [copyText, setCopyText] = useState("");
-  const [ctaLink, setCtaLink] = useState("");
-  const [platforms, setPlatforms] = useState("Instagram, Facebook");
-  const [assetsLink, setAssetsLink] = useState("");
-  const [submitterName, setSubmitterName] = useState("");
-  const [submitterEmail, setSubmitterEmail] = useState(session.email || "");
-  const [boardReviewNeeded, setBoardReviewNeeded] = useState("No");
+  const [orgAndChapterName, setOrgAndChapterName] = useState("");
+  const [chapterHandle, setChapterHandle] = useState("");
+  const [hashtags, setHashtags] = useState("N/A");
+  const [additionalInfo, setAdditionalInfo] = useState("");
+
+  const [assetFiles, setAssetFiles] = useState<File[]>([]);
+  const [assetLinksFallback, setAssetLinksFallback] = useState("");
+  const [uploadedAssets, setUploadedAssets] = useState<UploadedSocialAsset[]>([]);
+
+  const removeFile = (index: number) => {
+    setAssetFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const validate = (): string | null => {
+    const required = [
+      ["Email", email],
+      ["Event Name", eventName],
+      ["Caption", caption],
+      ["Date of Event", eventDate],
+      ["Organization and Chapter Name", orgAndChapterName],
+      ["Chapter Social Media Handle", chapterHandle],
+      ["Any Specific Hashtags", hashtags],
+    ] as const;
+
+    for (const [label, v] of required) {
+      if (!String(v || "").trim()) return `${label} is required.`;
+    }
+
+    if (assetFiles.length === 0 && !assetLinksFallback.trim()) {
+      return "Please upload your flyers/images (preferred) or provide a Drive link.";
+    }
+
+    if (assetFiles.length > 5) return "Upload up to 5 files.";
+    return null;
+  };
 
   const submit = async () => {
     setSaving(true);
     setError(null);
     setMessage(null);
     try {
+      if (!session.authenticated) throw new Error("Unauthenticated. Please refresh and complete Access login.");
+
+      const v = validate();
+      if (v) throw new Error(v);
+
+      let uploaded: UploadedSocialAsset[] = uploadedAssets;
+      if (assetFiles.length > 0 && uploadedAssets.length === 0) {
+        try {
+          uploaded = await uploadSocialAssets(assetFiles);
+          setUploadedAssets(uploaded);
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : "Upload failed.";
+          // Allow Drive link fallback if uploads aren't configured yet.
+          if (assetLinksFallback.trim()) {
+            uploaded = [];
+          } else {
+            throw new Error(msg);
+          }
+        }
+      }
+
       const payload = {
-        requestType,
-        title,
-        neededBy,
+        email,
+        eventName,
+        caption,
         eventDate,
-        eventTime,
-        location,
-        copyText,
-        ctaLink,
-        platforms,
-        assetsLink,
-        submitterName,
-        submitterEmail,
-        boardReviewNeeded,
+        orgAndChapterName,
+        chapterHandle,
+        hashtags,
+        additionalInfo,
+        mediaFiles: uploaded,
+        mediaLinks: assetLinksFallback,
+        instructions:
+          "Please submit your request 48–72 hours in advance of your desired posting date.",
       };
+
       const res = await submitForm("social_media_request", payload);
       setMessage(`Submitted. Tracking ID: ${res.id}`);
     } catch (e) {
@@ -71,16 +119,16 @@ export function SocialMediaRequestPage() {
           </Button>
           <div>
             <p className="text-xs uppercase tracking-widest text-gray-500">Form</p>
-            <h1 className="text-lg sm:text-xl font-extrabold text-black">Social Media Request</h1>
+            <h1 className="text-lg sm:text-xl font-extrabold text-black">Social Media Intake</h1>
           </div>
         </div>
 
         <motion.div initial={{ y: 8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.35 }}>
           <Card className="border-0 shadow-lg ring-1 ring-black/5">
             <CardHeader>
-              <CardTitle>Request Flyers / Announcements</CardTitle>
+              <CardTitle>NPHC | Social Media Intake Form</CardTitle>
               <CardDescription>
-                Submit your request with copy, dates, and a Drive link to assets. The team will review and schedule.
+                Maximize your chapter&apos;s event visibility and share your announcements with the community. Please submit your request 48–72 hours in advance.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -94,62 +142,117 @@ export function SocialMediaRequestPage() {
               {error ? <p className="text-sm text-red-700 font-semibold">{error}</p> : null}
 
               <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-1 sm:col-span-2">
+                  <Label>Email *</Label>
+                  <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com" />
+                </div>
+
+                <div className="space-y-1 sm:col-span-2">
+                  <Label>Event Name *</Label>
+                  <Input value={eventName} onChange={(e) => setEventName(e.target.value)} placeholder="Provide the official name of the event." />
+                </div>
+
+                <div className="space-y-1 sm:col-span-2">
+                  <Label>Caption *</Label>
+                  <Textarea
+                    value={caption}
+                    onChange={(e) => setCaption(e.target.value)}
+                    rows={6}
+                    placeholder="Write a concise and engaging description of the event. This will be the main text accompanying the post."
+                  />
+                </div>
+
                 <div className="space-y-1">
-                  <Label>Request Type</Label>
-                  <Input value={requestType} onChange={(e) => setRequestType(e.target.value)} placeholder="Flyer, announcement, recap, reminder…" />
+                  <Label>Date of Event *</Label>
+                  <Input type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} />
                 </div>
+
                 <div className="space-y-1">
-                  <Label>Needed By (date)</Label>
-                  <Input value={neededBy} onChange={(e) => setNeededBy(e.target.value)} placeholder="2026-03-01" />
+                  <Label>Chapter Social Media Handle (IG, Facebook, etc.) *</Label>
+                  <Input value={chapterHandle} onChange={(e) => setChapterHandle(e.target.value)} placeholder="@PiThetaOmega" />
                 </div>
+
                 <div className="space-y-1 sm:col-span-2">
-                  <Label>Title / Headline</Label>
-                  <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Event name or announcement headline" />
+                  <Label>Organization and Chapter Name *</Label>
+                  <Input
+                    value={orgAndChapterName}
+                    onChange={(e) => setOrgAndChapterName(e.target.value)}
+                    placeholder="e.g., Alpha Phi Alpha Fraternity, Inc., Sigma Chi Lambda Chapter"
+                  />
                 </div>
+
+                <div className="space-y-1 sm:col-span-2">
+                  <Label>Any Specific Hashtags *</Label>
+                  <Input value={hashtags} onChange={(e) => setHashtags(e.target.value)} placeholder="#NPHCHudsonCounty, #Divine9, #[EventSpecificHashtag] or N/A" />
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-gray-200 p-4 space-y-3">
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                  <div>
+                    <p className="text-sm font-semibold text-black">Upload Flyers / Images *</p>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      Upload up to 5 files. Max 100MB each. (PDF, JPG, PNG, HEIC accepted)
+                    </p>
+                  </div>
+                  <label className="inline-flex items-center gap-2 text-sm font-semibold rounded-md border border-gray-200 bg-white px-3 py-2 cursor-pointer hover:bg-gray-50">
+                    <Upload className="size-4" />
+                    Choose Files
+                    <input
+                      type="file"
+                      multiple
+                      accept=".pdf,image/*,.heic,.heif"
+                      className="hidden"
+                      onChange={(e) => {
+                        const list = Array.from(e.target.files || []);
+                        setAssetFiles((prev) => [...prev, ...list].slice(0, 5));
+                      }}
+                    />
+                  </label>
+                </div>
+
+                {assetFiles.length > 0 ? (
+                  <div className="space-y-2">
+                    {assetFiles.map((f, idx) => (
+                      <div key={`${f.name}-${idx}`} className="flex items-center justify-between gap-3 rounded-md border border-gray-100 bg-gray-50 px-3 py-2">
+                        <div className="min-w-0">
+                          <p className="text-sm text-black truncate">{f.name}</p>
+                          <p className="text-xs text-gray-500">{Math.round(f.size / 1024)} KB</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeFile(idx)}
+                          className="text-gray-500 hover:text-black"
+                          aria-label="Remove file"
+                        >
+                          <X className="size-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+
                 <div className="space-y-1">
-                  <Label>Event Date</Label>
-                  <Input value={eventDate} onChange={(e) => setEventDate(e.target.value)} placeholder="2026-03-15" />
-                </div>
-                <div className="space-y-1">
-                  <Label>Event Time</Label>
-                  <Input value={eventTime} onChange={(e) => setEventTime(e.target.value)} placeholder="6:30 PM" />
-                </div>
-                <div className="space-y-1 sm:col-span-2">
-                  <Label>Location</Label>
-                  <Input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Virtual / address" />
-                </div>
-                <div className="space-y-1 sm:col-span-2">
-                  <Label>Platforms</Label>
-                  <Input value={platforms} onChange={(e) => setPlatforms(e.target.value)} placeholder="Instagram, Facebook, Email…" />
-                </div>
-                <div className="space-y-1 sm:col-span-2">
-                  <Label>Assets Link (Drive)</Label>
-                  <Input value={assetsLink} onChange={(e) => setAssetsLink(e.target.value)} placeholder="https://drive.google.com/…" />
-                </div>
-                <div className="space-y-1 sm:col-span-2">
-                  <Label>CTA Link (optional)</Label>
-                  <Input value={ctaLink} onChange={(e) => setCtaLink(e.target.value)} placeholder="RSVP link / registration / donation link" />
+                  <Label className="text-xs text-gray-500">
+                    If uploads are temporarily unavailable, paste Drive link(s) here (optional fallback)
+                  </Label>
+                  <Textarea
+                    value={assetLinksFallback}
+                    onChange={(e) => setAssetLinksFallback(e.target.value)}
+                    rows={2}
+                    placeholder="https://drive.google.com/…"
+                  />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <Label>Copy Text (what should be posted)</Label>
-                <Textarea value={copyText} onChange={(e) => setCopyText(e.target.value)} rows={7} placeholder="Paste the full caption/message here." />
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-1">
-                  <Label>Submitter Name</Label>
-                  <Input value={submitterName} onChange={(e) => setSubmitterName(e.target.value)} placeholder="Full name" />
-                </div>
-                <div className="space-y-1">
-                  <Label>Submitter Email</Label>
-                  <Input value={submitterEmail} onChange={(e) => setSubmitterEmail(e.target.value)} placeholder="you@email.com" />
-                </div>
-                <div className="space-y-1 sm:col-span-2">
-                  <Label>Board Review Needed?</Label>
-                  <Input value={boardReviewNeeded} onChange={(e) => setBoardReviewNeeded(e.target.value)} placeholder="Yes / No" />
-                </div>
+                <Label>Additional Info (optional)</Label>
+                <Textarea
+                  value={additionalInfo}
+                  onChange={(e) => setAdditionalInfo(e.target.value)}
+                  rows={4}
+                  placeholder="For customized posting: specific title to use, names of people in photos, extra context, etc."
+                />
               </div>
 
               <Button onClick={submit} disabled={saving || !session.authenticated} className="bg-black hover:bg-gray-900 w-full sm:w-auto">
@@ -163,4 +266,3 @@ export function SocialMediaRequestPage() {
     </div>
   );
 }
-

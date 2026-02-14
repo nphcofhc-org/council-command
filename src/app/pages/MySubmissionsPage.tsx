@@ -14,6 +14,12 @@ function labelForFormKey(key: string) {
   return key;
 }
 
+function toViewerHref(src: string): string {
+  const s = String(src || "").trim();
+  if (!s) return "";
+  return `/#/viewer?src=${encodeURIComponent(s)}`;
+}
+
 export function MySubmissionsPage() {
   const { session } = useCouncilSession();
   const [loading, setLoading] = useState(false);
@@ -101,12 +107,31 @@ export function MySubmissionsPage() {
                           {(r.payload as any).receiptFiles.map((f: any) => (
                             <a
                               key={String(f?.key || f?.viewUrl || Math.random())}
-                              href={String(f?.viewUrl || "")}
+                              href={toViewerHref(String(f?.viewUrl || ""))}
                               target="_blank"
                               rel="noreferrer"
                               className="block rounded-md border border-gray-100 bg-gray-50 px-3 py-2 text-sm text-black hover:bg-gray-100"
                             >
                               {String(f?.filename || f?.key || "Receipt")}
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {Array.isArray((r.payload as any)?.mediaFiles) && (r.payload as any).mediaFiles.length > 0 ? (
+                      <div className="mt-3 rounded-md border border-gray-100 bg-white p-3">
+                        <p className="text-xs uppercase tracking-widest text-gray-500">Social Media Assets</p>
+                        <div className="mt-2 space-y-2">
+                          {(r.payload as any).mediaFiles.map((f: any) => (
+                            <a
+                              key={String(f?.key || f?.viewUrl || Math.random())}
+                              href={toViewerHref(String(f?.viewUrl || ""))}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="block rounded-md border border-gray-100 bg-gray-50 px-3 py-2 text-sm text-black hover:bg-gray-100"
+                            >
+                              {String(f?.filename || f?.key || "Asset")}
                             </a>
                           ))}
                         </div>
