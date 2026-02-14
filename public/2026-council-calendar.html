@@ -57,10 +57,38 @@
         font-weight: 600;
         margin-top: 6px;
       }
+
+      @media print {
+        .no-print {
+          display: none !important;
+        }
+      }
     </style>
   </head>
 
   <body class="min-h-screen p-4 md:p-8 flex flex-col items-center">
+    <!-- Back navigation (this is a standalone HTML file, outside the SPA nav) -->
+    <div class="w-full max-w-6xl mb-4 no-print">
+      <a
+        href="/#/meetings-delegates"
+        class="inline-flex items-center gap-2 rounded-lg border-2 border-black px-3 py-2 text-sm font-extrabold tracking-tight uppercase hover:bg-black hover:text-white transition"
+        aria-label="Back to portal"
+      >
+        <span aria-hidden="true">←</span>
+        Back to Portal
+      </a>
+    </div>
+
+    <!-- Mobile-friendly floating back button -->
+    <a
+      href="/#/meetings-delegates"
+      class="fixed bottom-5 left-5 z-50 no-print inline-flex items-center gap-2 rounded-full border border-black bg-white px-4 py-2 text-xs font-extrabold tracking-widest uppercase shadow-sm hover:bg-black hover:text-white transition"
+      aria-label="Back to portal (floating)"
+    >
+      <span aria-hidden="true">←</span>
+      Back
+    </a>
+
     <header class="w-full max-w-6xl mb-6 border-b-2 border-black pb-6">
       <h1 class="text-4xl md:text-6xl font-extrabold tracking-tighter uppercase">
         2026 Schedule
@@ -274,4 +302,3 @@
     </script>
   </body>
 </html>
-
