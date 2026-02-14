@@ -20,6 +20,7 @@ const MY_ENDPOINT = "/api/forms/my";
 const ADMIN_LIST_ENDPOINT = "/api/forms/admin/list";
 const ADMIN_UPDATE_ENDPOINT = "/api/forms/admin/update";
 const RECEIPTS_UPLOAD_ENDPOINT = "/api/uploads/receipts";
+const SOCIAL_UPLOAD_ENDPOINT = "/api/uploads/social";
 
 export type UploadedReceipt = {
   key: string;
@@ -28,6 +29,8 @@ export type UploadedReceipt = {
   size: number;
   viewUrl: string;
 };
+
+export type UploadedSocialAsset = UploadedReceipt;
 
 async function parseError(response: Response): Promise<string> {
   try {
@@ -103,4 +106,18 @@ export async function uploadReceipts(files: File[]): Promise<UploadedReceipt[]> 
   if (!res.ok) throw new Error(await parseError(res));
   const data = await res.json();
   return Array.isArray(data?.files) ? (data.files as UploadedReceipt[]) : [];
+}
+
+export async function uploadSocialAssets(files: File[]): Promise<UploadedSocialAsset[]> {
+  const form = new FormData();
+  for (const f of files.slice(0, 5)) form.append("files", f);
+
+  const res = await fetch(SOCIAL_UPLOAD_ENDPOINT, {
+    method: "POST",
+    credentials: "same-origin",
+    body: form,
+  });
+  if (!res.ok) throw new Error(await parseError(res));
+  const data = await res.json();
+  return Array.isArray(data?.files) ? (data.files as UploadedSocialAsset[]) : [];
 }

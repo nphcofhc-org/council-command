@@ -19,7 +19,10 @@ export function requireDb(env) {
 export function requireReceiptsBucket(env) {
   if (!env.RECEIPTS_BUCKET) {
     return json(
-      { error: 'Uploads are not configured. Add an R2 binding named "RECEIPTS_BUCKET" in Cloudflare Pages settings.' },
+      {
+        error:
+          'Uploads are not configured. Add an R2 binding named "RECEIPTS_BUCKET" in Cloudflare Pages settings (used for receipts + other portal uploads).',
+      },
       { status: 503 },
     );
   }
@@ -97,4 +100,3 @@ export async function readUpload(db, objectKey) {
     },
   };
 }
-
