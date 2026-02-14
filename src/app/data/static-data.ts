@@ -56,6 +56,8 @@ export const siteConfig: SiteConfig = {
   ],
   presidentClosing: "In Unity and Service,",
   bannerImageUrl: "", // Banner is imported as a local asset in HomePage
+  instagramHandle: "",
+  instagramPostUrls: [],
   alertEnabled: false,
   alertVariant: "info",
   alertTitle: "",

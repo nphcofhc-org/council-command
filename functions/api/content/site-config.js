@@ -19,6 +19,13 @@ function sanitizeConfig(input) {
     ? input.presidentMessage.map((p) => t(p, 1200)).filter(Boolean).slice(0, 10)
     : [];
 
+  const instagramPostUrls = Array.isArray(input?.instagramPostUrls)
+    ? input.instagramPostUrls
+      .map((u) => t(u, 2048))
+      .filter((u) => /^https?:\/\//i.test(u))
+      .slice(0, 12)
+    : [];
+
   const variantRaw = t(input?.alertVariant, 32).toLowerCase();
   const alertVariant = ["info", "warning", "urgent"].includes(variantRaw) ? variantRaw : "info";
   const alertEnabled = input?.alertEnabled === true || t(input?.alertEnabled, 16).toLowerCase() === "true";
@@ -35,6 +42,8 @@ function sanitizeConfig(input) {
     presidentMessage,
     presidentClosing: t(input?.presidentClosing, 260),
     bannerImageUrl: t(input?.bannerImageUrl, 2048),
+    instagramHandle: t(input?.instagramHandle, 120),
+    instagramPostUrls,
     alertEnabled,
     alertVariant,
     alertTitle: t(input?.alertTitle, 140),

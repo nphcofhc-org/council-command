@@ -1,0 +1,166 @@
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router";
+import { MessageSquarePlus, RefreshCw, ArrowLeft } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
+import { useCouncilSession } from "../hooks/use-council-session";
+import { createForumTopic, fetchForumTopics, type ForumTopic } from "../data/forum-api";
+
+function fmtDate(value: string): string {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return value;
+  return d.toLocaleString(undefined, { month: "short", day: "numeric", year: "numeric" });
+}
+
+export function ForumPage() {
+  const { session } = useCouncilSession();
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(true);
+  const [topics, setTopics] = useState<ForumTopic[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  const [createOpen, setCreateOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const canUse = session.authenticated;
+
+  const load = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await fetchForumTopics(120);
+      setTopics(data);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load forum topics.");
+      setTopics([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!canUse) {
+      setLoading(false);
+      return;
+    }
+    void load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canUse]);
+
+  const replyCount = useMemo(() => {
+    return new Map(topics.map((t) => [t.id, Math.max(0, (t.postCount || 0) - 1)]));
+  }, [topics]);
+
+  const create = async () => {
+    const t = title.trim();
+    const b = body.trim();
+    if (!t || !b) return;
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await createForumTopic({ title: t, body: b });
+      setTitle("");
+      setBody("");
+      setCreateOpen(false);
+      navigate(`/forum/${encodeURIComponent(res.topicId)}`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to create topic.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="mx-auto max-w-7xl p-4 sm:p-8 space-y-4">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <Link to="/" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black">
+          <ArrowLeft className="size-4" />
+          Back to Home
+        </Link>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" className="gap-2" onClick={load} disabled={!canUse || loading}>
+            <RefreshCw className="size-4" />
+            Refresh
+          </Button>
+          <Button className="bg-black hover:bg-gray-800 gap-2" onClick={() => setCreateOpen((v) => !v)} disabled={!canUse}>
+            <MessageSquarePlus className="size-4" />
+            New Topic
+          </Button>
+        </div>
+      </div>
+
+      <Card className="border-0 shadow-lg ring-1 ring-black/5">
+        <CardHeader>
+          <CardTitle>Discussion Forum</CardTitle>
+          <CardDescription>
+            Members can create topics for debate, questions, and council discussion. Posts are visible to authenticated portal members.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {!canUse ? (
+            <p className="text-sm text-gray-700">
+              You must be authenticated to use the forum. If you see this, refresh and complete Cloudflare Access login.
+            </p>
+          ) : null}
+
+          {createOpen ? (
+            <div className="rounded-xl border border-gray-200 p-4 sm:p-5 space-y-3 bg-gray-50/40">
+              <div className="space-y-1">
+                <Label>Topic Title</Label>
+                <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Example: 2026 signature event discussion" />
+              </div>
+              <div className="space-y-1">
+                <Label>First Post</Label>
+                <Textarea value={body} onChange={(e) => setBody(e.target.value)} rows={6} placeholder="Start the discussion. Keep it respectful." />
+              </div>
+              <div className="flex items-center gap-2">
+                <Button onClick={create} disabled={saving || title.trim().length === 0 || body.trim().length === 0} className="bg-black hover:bg-gray-800">
+                  {saving ? "Posting..." : "Post Topic"}
+                </Button>
+                <Button variant="outline" onClick={() => setCreateOpen(false)} disabled={saving}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : null}
+
+          {error ? <p className="text-sm text-red-700 font-semibold">{error}</p> : null}
+          {loading ? <p className="text-sm text-gray-500">Loading...</p> : null}
+
+          {!loading && topics.length === 0 ? (
+            <p className="text-sm text-gray-600">No topics yet. Create the first one.</p>
+          ) : null}
+
+          <div className="grid gap-4">
+            {topics.map((topic) => (
+              <Link key={topic.id} to={`/forum/${encodeURIComponent(topic.id)}`} className="group">
+                <div className="rounded-xl border border-gray-200 p-4 sm:p-5 hover:border-black/30 hover:bg-gray-50 transition">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-black font-semibold truncate">{topic.title}</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Updated {fmtDate(topic.updatedAt)} • Replies {replyCount.get(topic.id) ?? 0}
+                      </p>
+                    </div>
+                    {topic.locked ? (
+                      <span className="shrink-0 rounded-full border border-gray-200 px-2.5 py-0.5 text-[11px] text-gray-600">
+                        Locked
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+

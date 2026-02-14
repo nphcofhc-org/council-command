@@ -33,6 +33,8 @@ function emptyConfig(): SiteConfig {
     presidentMessage: [],
     presidentClosing: "",
     bannerImageUrl: "",
+    instagramHandle: "",
+    instagramPostUrls: [],
     alertEnabled: false,
     alertVariant: "info",
     alertTitle: "",
@@ -90,6 +92,10 @@ export function CouncilHomeContentPage() {
   }, []);
 
   const messageText = useMemo(() => config.presidentMessage.join("\n\n"), [config.presidentMessage]);
+  const instagramUrlsText = useMemo(
+    () => (Array.isArray(config.instagramPostUrls) ? config.instagramPostUrls : []).join("\n"),
+    [config.instagramPostUrls],
+  );
 
   const onConfigField = (key: keyof SiteConfig, value: string) => {
     setConfig((prev) => ({ ...prev, [key]: value }));
@@ -105,6 +111,14 @@ export function CouncilHomeContentPage() {
       .map((p) => p.trim())
       .filter(Boolean);
     setConfig((prev) => ({ ...prev, presidentMessage: paragraphs }));
+  };
+
+  const onInstagramUrlsText = (value: string) => {
+    const urls = value
+      .split(/\n+/g)
+      .map((u) => u.trim())
+      .filter(Boolean);
+    setConfig((prev) => ({ ...prev, instagramPostUrls: urls }));
   };
 
   const addQuickLink = () => {
@@ -232,6 +246,34 @@ export function CouncilHomeContentPage() {
                   <div className="space-y-1">
                     <Label>Banner Image URL</Label>
                     <Input value={config.bannerImageUrl} onChange={(e) => onConfigField("bannerImageUrl", e.target.value)} />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Instagram Feed</CardTitle>
+                  <CardDescription>
+                    For a reliable feed (no API keys), paste specific Instagram post URLs (one per line) to embed on Home.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="space-y-1">
+                    <Label>Instagram Handle (optional)</Label>
+                    <Input
+                      value={config.instagramHandle || ""}
+                      onChange={(e) => onConfigField("instagramHandle", e.target.value)}
+                      placeholder="Example: nphcofhudsoncounty"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label>Post URLs (one per line)</Label>
+                    <Textarea
+                      value={instagramUrlsText}
+                      onChange={(e) => onInstagramUrlsText(e.target.value)}
+                      rows={6}
+                      placeholder={"https://www.instagram.com/p/POST_ID/\nhttps://www.instagram.com/reel/REEL_ID/"}
+                    />
                   </div>
                 </CardContent>
               </Card>

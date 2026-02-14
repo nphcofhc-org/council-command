@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Card, CardContent } from "../components/ui/card";
 import { Bell, Calendar, Clock, ExternalLink, Wallet, DollarSign, CreditCard } from "lucide-react";
 import googleBanner from "../../assets/08f5f2f8147d555bb4793ae6a060e3d0c28be71f.png";
@@ -7,6 +8,12 @@ import { DynamicIcon } from "../components/icon-resolver";
 import { useMeetingsData } from "../hooks/use-site-data";
 import { useCouncilCalendarSchedule } from "../hooks/use-council-calendar";
 import { TREASURY } from "../data/treasury";
+
+declare global {
+  interface Window {
+    instgrm?: { Embeds?: { process?: () => void } };
+  }
+}
 
 // ── Shared glass button class for quick links ───────────────────────────────
 const glassButtonClass =
@@ -34,6 +41,29 @@ export function HomePage() {
   const updates = data?.updates || [];
   const presidentImageUrl = config?.presidentImageUrl || "";
   const bannerImageUrl = config?.bannerImageUrl || "";
+  const instagramHandleRaw = config?.instagramHandle || "";
+  const instagramHandle = instagramHandleRaw.trim().replace(/^@/, "");
+  const instagramPostUrls = Array.isArray(config?.instagramPostUrls) ? config!.instagramPostUrls : [];
+
+  useEffect(() => {
+    if (instagramPostUrls.length === 0) return;
+
+    const existing = document.querySelector<HTMLScriptElement>('script[data-nphc-instagram-embed="true"]');
+    const process = () => window.instgrm?.Embeds?.process?.();
+
+    if (existing) {
+      process();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.async = true;
+    script.defer = true;
+    script.src = "https://www.instagram.com/embed.js";
+    script.setAttribute("data-nphc-instagram-embed", "true");
+    script.onload = () => process();
+    document.body.appendChild(script);
+  }, [instagramPostUrls.length]);
 
   // Required "core" quick links the council wants front-and-center.
   // If existing data doesn't include one of these URLs, we prepend it.
@@ -650,6 +680,74 @@ export function HomePage() {
           </motion.div>
         </div>
       </section>
+
+      {/* ── Instagram Feed ───────────────────────────────────────────────── */}
+      {(instagramHandle || instagramPostUrls.length > 0) ? (
+        <section className="bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
+            <motion.div
+              initial={{ x: -30, opacity: 0 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.6 }}
+              className="mb-8"
+            >
+              <div className="flex items-center gap-3 mb-1">
+                <div className="w-8 h-px bg-black" />
+                <span className="text-xs tracking-[0.2em] uppercase text-gray-500">Social</span>
+              </div>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <h2 className="text-2xl sm:text-3xl text-black">Chapter Instagram</h2>
+                {instagramHandle ? (
+                  <a
+                    href={`https://www.instagram.com/${encodeURIComponent(instagramHandle)}/`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center rounded-lg border border-gray-200 px-3 py-2 text-sm text-black hover:bg-black hover:text-white hover:border-black transition w-fit"
+                  >
+                    @{instagramHandle}
+                    <ExternalLink className="ml-2 size-4" />
+                  </a>
+                ) : null}
+              </div>
+              <p className="mt-2 text-sm text-gray-600 max-w-2xl">
+                Latest posts and announcements. If embeds do not load on your device, use the profile link above.
+              </p>
+            </motion.div>
+
+            {instagramPostUrls.length > 0 ? (
+              <div className="grid gap-6 lg:grid-cols-2">
+                {instagramPostUrls.slice(0, 6).map((url) => (
+                  <Card key={url} className="border-0 shadow-lg ring-1 ring-black/5 overflow-hidden">
+                    <CardContent className="p-0">
+                      <blockquote
+                        className="instagram-media"
+                        data-instgrm-permalink={url}
+                        data-instgrm-version="14"
+                        style={{
+                          margin: 0,
+                          padding: 0,
+                          width: "100%",
+                          maxWidth: "100%",
+                          background: "white",
+                        }}
+                      >
+                        <a href={url} target="_blank" rel="noreferrer" />
+                      </blockquote>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card className="border-0 shadow-lg ring-1 ring-black/5">
+                <CardContent className="p-6 text-sm text-gray-700">
+                  Feed posts are not configured yet. Add post URLs in Council Admin → Home Page Editor.
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }
