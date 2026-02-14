@@ -39,8 +39,10 @@ function safeText(el: Element | null): string {
 }
 
 function inferExecDateISO(year: number, execLine: string): string | null {
-  // "Exec: Thu, Jan 22" or "Exec: Thu, Feb 19"
-  const m = execLine.match(/Exec:\s*[A-Za-z]{2,3},\s*([A-Za-z]{3,4})\s+(\d{1,2})/i);
+  // "Exec: Thu, Jan 22" or "Executive Council Meeting: Thu, Feb 19"
+  const m = execLine.match(
+    /(?:Exec|Executive Council Meeting)\s*:\s*[A-Za-z]{2,3},\s*([A-Za-z]{3,4})\s+(\d{1,2})/i,
+  );
   if (!m) return null;
   const month = parseMonthAbbrev(m[1]);
   const day = Number(m[2]);
@@ -83,7 +85,12 @@ export function useCouncilCalendarSchedule(calendarPath = "/2026-council-calenda
           const execLine = safeText(card.querySelector(".mt-4.border-t"));
           const execISO = inferExecDateISO(year, execLine);
           if (execISO) {
-            parsed.push({ kind: "exec", dateISO: execISO, label: execLine.replace(/^Exec:\s*/i, "") || execLine });
+            parsed.push({
+              kind: "exec",
+              dateISO: execISO,
+              label:
+                execLine.replace(/^(?:Exec|Executive Council Meeting)\s*:\s*/i, "") || execLine,
+            });
           }
         }
 
@@ -114,4 +121,3 @@ export function useCouncilCalendarSchedule(calendarPath = "/2026-council-calenda
 
   return { loading, error, meetings, generalMeetings, execMeetings };
 }
-
