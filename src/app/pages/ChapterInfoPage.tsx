@@ -111,10 +111,10 @@ export function ChapterInfoPage() {
                                 <img
                                   src={officer.imageUrl}
                                   alt={officer.name}
-                                  className="w-28 h-28 rounded-full object-cover mb-4 border-4 border-gray-200"
+                                  className="w-28 h-28 rounded-xl object-cover mb-4 border-4 border-gray-200"
                                 />
                               ) : (
-                                <div className="w-28 h-28 rounded-full bg-gray-100 flex items-center justify-center mb-4 border-4 border-gray-200 group-hover:border-gray-300 transition-colors">
+                                <div className="w-28 h-28 rounded-xl bg-gray-100 flex items-center justify-center mb-4 border-4 border-gray-200 group-hover:border-gray-300 transition-colors">
                                   <User className="size-14 text-gray-300" />
                                 </div>
                               )}
@@ -159,10 +159,10 @@ export function ChapterInfoPage() {
                                 <img
                                   src={chair.imageUrl}
                                   alt={chair.name}
-                                  className="w-28 h-28 rounded-full object-cover mb-4 border-4 border-gray-200"
+                                  className="w-28 h-28 rounded-xl object-cover mb-4 border-4 border-gray-200"
                                 />
                               ) : (
-                                <div className="w-28 h-28 rounded-full bg-gray-100 flex items-center justify-center mb-4 border-4 border-gray-200 group-hover:border-gray-300 transition-colors">
+                                <div className="w-28 h-28 rounded-xl bg-gray-100 flex items-center justify-center mb-4 border-4 border-gray-200 group-hover:border-gray-300 transition-colors">
                                   <User className="size-14 text-gray-300" />
                                 </div>
                               )}
