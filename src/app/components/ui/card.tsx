@@ -7,17 +7,8 @@ function Card({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card"
       className={cn(
-        [
-          "nphc-holo-surface",
-          "flex flex-col gap-6 rounded-xl border backdrop-blur-xl",
-          // Black glassmorphism + subtle neon glow
-          "bg-black/55 border-white/10 text-white",
-          "shadow-[0_18px_55px_rgba(0,0,0,0.35),0_0_34px_rgba(11,189,176,0.10)]",
-          // Make legacy light-theme text utilities readable inside cards (without rewriting every page).
-          "[&_.text-slate-900]:text-white [&_.text-slate-800]:text-white/90 [&_.text-slate-700]:text-white/80",
-          "[&_.text-slate-600]:text-white/70 [&_.text-slate-500]:text-white/60 [&_.text-slate-400]:text-white/50",
-          "[&_.text-slate-300]:text-white/40",
-        ].join(" "),
+        "nphc-holo-surface bg-card text-card-foreground flex flex-col gap-6 rounded-xl border border-border backdrop-blur-xl " +
+          "shadow-[0_18px_55px_rgba(0,0,0,0.14),0_0_34px_rgba(11,189,176,0.08)]",
         className,
       )}
       {...props}
@@ -52,7 +43,7 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <p
       data-slot="card-description"
-      className={cn("text-white/65", className)}
+      className={cn("text-muted-foreground", className)}
       {...props}
     />
   );
