@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "../components/ui/card";
-import { Bell, Calendar, Clock, ExternalLink, Wallet, DollarSign, CreditCard } from "lucide-react";
+import { Bell, Calendar, Clock, ExternalLink, Wallet, DollarSign, CreditCard, ClipboardList, ChevronLeft } from "lucide-react";
 import googleBanner from "../../assets/08f5f2f8147d555bb4793ae6a060e3d0c28be71f.png";
 import { motion } from "motion/react";
 import { useHomePageData } from "../hooks/use-site-data";
@@ -31,6 +31,122 @@ const ART_INK = "https://images.unsplash.com/photo-1769181417562-be594f91fcc9?cr
 const ART_GEO = "https://images.unsplash.com/photo-1665680779817-11a0d63ee51e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHdoaXRlJTIwZ2VvbWV0cmljJTIwbWluaW1hbCUyMGFydHxlbnwxfHx8fDE3NzA1MTMyMjN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 const DEFAULT_HOME_BANNER_MEDIA_URL =
   "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/FORMAL%20NPHC%20BANNER.mp4";
+
+const FORMS_PANE_LINKS = [
+  { label: "Forms Hub", href: "#/forms", meta: "All submission forms" },
+  { label: "Budget Submission", href: "#/forms/budget", meta: "Committee budget request" },
+  { label: "Reimbursement Request", href: "#/forms/reimbursement", meta: "Upload receipts" },
+  { label: "Request a Social Post", href: "#/forms/social-media", meta: "Flyers + captions" },
+  { label: "Committee Report", href: "#/forms/committee-report", meta: "Monthly updates" },
+  { label: "My Submissions", href: "#/forms/my", meta: "Track your requests" },
+] as const;
+
+function FormsQuickPane() {
+  const [openMobile, setOpenMobile] = useState(false);
+
+  return (
+    <>
+      {/* Desktop: hover-to-open pane */}
+      <div className="hidden lg:block fixed right-0 top-24 z-40 group">
+        <div
+          className={[
+            "nphc-holo-surface w-[360px] rounded-l-2xl border border-black/10 bg-white/75 backdrop-blur-xl",
+            "shadow-[0_24px_80px_rgba(0,0,0,0.18)]",
+            "transition-transform duration-300 ease-out",
+            // Keep 56px exposed as a "handle"
+            "translate-x-[304px] group-hover:translate-x-0",
+          ].join(" ")}
+        >
+          <div className="relative">
+            {/* Handle */}
+            <div className="absolute left-0 top-0 h-full w-14 flex items-start justify-center pt-4">
+              <div className="nphc-holo-btn flex flex-col items-center gap-2 rounded-xl border border-black/10 bg-white/60 px-2 py-3 text-slate-700">
+                <ClipboardList className="size-5 text-primary" />
+                <ChevronLeft className="size-4 text-slate-500" />
+                <span className="text-[10px] tracking-[0.22em] uppercase [writing-mode:vertical-rl] rotate-180">
+                  Forms
+                </span>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="pl-16 pr-5 py-5">
+              <div className="flex items-end justify-between gap-4">
+                <div>
+                  <p className="text-[11px] tracking-[0.25em] uppercase text-slate-500">Quick Submit</p>
+                  <h3 className="text-slate-900 text-base font-semibold">Forms</h3>
+                </div>
+              </div>
+
+              <div className="mt-4 space-y-2">
+                {FORMS_PANE_LINKS.map((l) => (
+                  <a
+                    key={l.href}
+                    href={l.href}
+                    className="nphc-holo-btn block rounded-xl border border-black/10 bg-white/60 px-3 py-2.5 hover:border-primary/35 hover:bg-white/80 transition"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="text-sm text-slate-900">{l.label}</span>
+                      <ExternalLink className="size-4 text-slate-400" />
+                    </div>
+                    <div className="text-[12px] text-slate-500 mt-0.5 leading-snug">{l.meta}</div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile: tap-to-open */}
+      <div className="lg:hidden fixed right-3 bottom-3 z-40">
+        {openMobile ? (
+          <div className="nphc-holo-surface w-[92vw] max-w-sm rounded-2xl border border-black/10 bg-white/80 backdrop-blur-xl shadow-[0_24px_80px_rgba(0,0,0,0.18)]">
+            <div className="flex items-center justify-between px-4 pt-4">
+              <div className="flex items-center gap-2">
+                <ClipboardList className="size-5 text-primary" />
+                <p className="text-sm font-semibold text-slate-900">Forms</p>
+              </div>
+              <button
+                type="button"
+                className="nphc-holo-btn rounded-xl border border-black/10 bg-white/60 px-3 py-2 text-xs text-slate-700"
+                onClick={() => setOpenMobile(false)}
+                aria-label="Close forms panel"
+              >
+                Close
+              </button>
+            </div>
+            <div className="px-4 pb-4 pt-3 space-y-2">
+              {FORMS_PANE_LINKS.map((l) => (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  className="nphc-holo-btn block rounded-xl border border-black/10 bg-white/60 px-3 py-2.5 hover:border-primary/35 hover:bg-white/80 transition"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-sm text-slate-900">{l.label}</span>
+                    <ExternalLink className="size-4 text-slate-400" />
+                  </div>
+                  <div className="text-[12px] text-slate-500 mt-0.5 leading-snug">{l.meta}</div>
+                </a>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className="nphc-holo-btn rounded-2xl border border-black/10 bg-white/80 backdrop-blur-xl shadow-[0_18px_60px_rgba(0,0,0,0.16)] px-4 py-3 text-slate-900 flex items-center gap-2"
+            onClick={() => setOpenMobile(true)}
+            aria-label="Open forms panel"
+          >
+            <ClipboardList className="size-5 text-primary" />
+            <span className="text-sm font-semibold">Forms</span>
+          </button>
+        )}
+      </div>
+    </>
+  );
+}
 
 export function HomePage() {
   const { data } = useHomePageData();
@@ -247,6 +363,7 @@ export function HomePage() {
 
   return (
     <div>
+      <FormsQuickPane />
       {/* ── Google Sites Cover Banner ─────────────────────────────────────── */}
       <div className="relative w-full overflow-hidden bg-white h-[200px] sm:h-[240px] lg:h-[280px]">
         {bannerIsVideo ? (
