@@ -20,6 +20,7 @@ import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/ui/accordion";
+import { TREASURY } from "../data/treasury";
 import {
   LOGO_URL,
   reportMeta,
@@ -70,6 +71,9 @@ type DetailMode = "summary" | "full";
 
 export function SignatureEventComparisonReportPage() {
   const [detailMode, setDetailMode] = useState<DetailMode>("summary");
+
+  const treasuryTotal = TREASURY.balances.lendingClub + TREASURY.balances.cashApp;
+  const treasuryLabel = treasuryTotal.toLocaleString("en-US", { style: "currency", currency: "USD" });
 
   const radarData = useMemo(() => {
     return criteria.map((c) => ({
@@ -131,7 +135,7 @@ export function SignatureEventComparisonReportPage() {
                   Date: {reportMeta.dateLabel}
                 </Badge>
                 <Badge variant="outline" className="border-black/15 text-slate-800">
-                  Treasury: {reportMeta.treasuryLabel}
+                  Treasury: {treasuryLabel}
                 </Badge>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -179,7 +183,7 @@ export function SignatureEventComparisonReportPage() {
           </CardHeader>
           <CardContent className="grid gap-3 md:grid-cols-2">
             {keyFindings.map((k) => (
-              <div key={k} className="rounded-lg border border-black/10 bg-white/5 p-4">
+              <div key={k} className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                 <p className="text-sm text-slate-700">{k}</p>
               </div>
             ))}
@@ -232,14 +236,14 @@ export function SignatureEventComparisonReportPage() {
                 </div>
 
                 <div className="space-y-3">
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-xs uppercase tracking-widest text-slate-500">Scale Mapping</p>
                     <p className="text-sm text-slate-600 mt-2">
                       Very High=5, High=4, Moderate-High=3.5, Moderate=3, Low-Moderate=2.5, Low=2, Minimal=1.
                     </p>
                   </div>
 
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-xs uppercase tracking-widest text-slate-500">What This Means</p>
                     <p className="text-sm text-slate-600 mt-2">
                       The Block Party dominates on external impact, pillar alignment, partnerships, signature potential, and strategic fit.
@@ -247,7 +251,7 @@ export function SignatureEventComparisonReportPage() {
                     </p>
                   </div>
 
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-xs uppercase tracking-widest text-slate-500">Next Step</p>
                     <p className="text-sm text-slate-600 mt-2">Use the Decision Portal to vote after reviewing the interactive report.</p>
                     <a className="inline-flex items-center gap-2 mt-3 text-sm font-semibold text-primary hover:underline" href="#/decision-portal">
@@ -282,7 +286,7 @@ export function SignatureEventComparisonReportPage() {
                       </AccordionTrigger>
                       <AccordionContent>
                         <div className="grid gap-4 lg:grid-cols-2">
-                          <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                          <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                             <p className="text-xs uppercase tracking-widest text-slate-500">Unity BBQ</p>
                             <p className="text-sm text-slate-700 mt-2">{c.unity.summary}</p>
                             {detailMode === "full" && c.unity.strengths?.length ? (
@@ -317,7 +321,7 @@ export function SignatureEventComparisonReportPage() {
                             ) : null}
                           </div>
 
-                          <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                          <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                             <p className="text-xs uppercase tracking-widest text-slate-500">Block Party</p>
                             <p className="text-sm text-slate-700 mt-2">{c.block.summary}</p>
                             {detailMode === "full" && c.block.strengths?.length ? (
@@ -367,7 +371,7 @@ export function SignatureEventComparisonReportPage() {
                 </p>
               </CardHeader>
               <CardContent className="grid gap-6 lg:grid-cols-2">
-                <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                   <p className="text-xs uppercase tracking-widest text-slate-500">Unity BBQ Advantages</p>
                   <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
                     {keyDifferentiators.unityBBQAdvantages.map((b) => (
@@ -375,7 +379,7 @@ export function SignatureEventComparisonReportPage() {
                     ))}
                   </ul>
                 </div>
-                <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                   <p className="text-xs uppercase tracking-widest text-slate-500">Block Party Advantages</p>
                   <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
                     {keyDifferentiators.blockPartyAdvantages.map((b) => (
@@ -393,7 +397,7 @@ export function SignatureEventComparisonReportPage() {
                   <p className="text-sm text-slate-600">Highlights pulled directly from the report’s assessment summary.</p>
                 </CardHeader>
                 <CardContent className="grid gap-6 lg:grid-cols-2">
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-xs uppercase tracking-widest text-slate-500">Strengths to Leverage</p>
                     <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
                       {chapterAssessmentContext.strengthsToLeverage.map((s) => (
@@ -401,7 +405,7 @@ export function SignatureEventComparisonReportPage() {
                       ))}
                     </ul>
                   </div>
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-xs uppercase tracking-widest text-slate-500">Challenges to Address</p>
                     <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
                       {chapterAssessmentContext.challengesToAddress.map((s) => (
@@ -409,7 +413,7 @@ export function SignatureEventComparisonReportPage() {
                       ))}
                     </ul>
                   </div>
-                  <div className="lg:col-span-2 rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="lg:col-span-2 rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-xs uppercase tracking-widest text-slate-500">Assessment Conclusion</p>
                     <p className="text-sm text-slate-700 mt-2">{chapterAssessmentContext.assessmentConclusionQuote}</p>
                   </div>
@@ -426,7 +430,7 @@ export function SignatureEventComparisonReportPage() {
               </CardHeader>
               <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {evaluationFramework.map((f) => (
-                  <div key={f} className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div key={f} className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-sm font-semibold text-slate-900">{f}</p>
                   </div>
                 ))}
@@ -440,7 +444,7 @@ export function SignatureEventComparisonReportPage() {
                   <p className="text-sm text-slate-600">{concepts.unity.oneLine}</p>
                 </CardHeader>
                 <CardContent className="space-y-5">
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-xs uppercase tracking-widest text-slate-500">Target Audience</p>
                     <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
                       {concepts.unity.targetAudience.map((s) => (
@@ -448,7 +452,7 @@ export function SignatureEventComparisonReportPage() {
                       ))}
                     </ul>
                   </div>
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-xs uppercase tracking-widest text-slate-500">Primary Objectives</p>
                     <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
                       {concepts.unity.primaryObjectives.map((s) => (
@@ -465,7 +469,7 @@ export function SignatureEventComparisonReportPage() {
                   <p className="text-sm text-slate-600">{concepts.block.oneLine}</p>
                 </CardHeader>
                 <CardContent className="space-y-5">
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-xs uppercase tracking-widest text-slate-500">Target Audience</p>
                     <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
                       {concepts.block.targetAudience.map((s) => (
@@ -473,7 +477,7 @@ export function SignatureEventComparisonReportPage() {
                       ))}
                     </ul>
                   </div>
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-xs uppercase tracking-widest text-slate-500">Primary Objectives</p>
                     <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
                       {concepts.block.primaryObjectives.map((s) => (
@@ -499,7 +503,7 @@ export function SignatureEventComparisonReportPage() {
                   ))}
                 </ul>
                 {detailMode === "full" ? (
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-xs uppercase tracking-widest text-slate-500">Rationale</p>
                     <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
                       {recommendations.primary.rationale.map((b) => (
@@ -527,7 +531,7 @@ export function SignatureEventComparisonReportPage() {
                 </div>
                 {detailMode === "full" ? (
                   <div className="space-y-4">
-                    <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                    <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                       <p className="text-xs uppercase tracking-widest text-slate-500">Advantages</p>
                       <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
                         {recommendations.alternative.advantages.map((b) => (
@@ -535,7 +539,7 @@ export function SignatureEventComparisonReportPage() {
                         ))}
                       </ul>
                     </div>
-                    <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                    <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                       <p className="text-xs uppercase tracking-widest text-slate-500">Limitations</p>
                       <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
                         {recommendations.alternative.limitations.map((b) => (
@@ -545,7 +549,7 @@ export function SignatureEventComparisonReportPage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-sm text-slate-600">
                       Switch to <b>Full Report</b> to view advantages, limitations, and risk mitigation notes.
                     </p>
@@ -560,7 +564,7 @@ export function SignatureEventComparisonReportPage() {
                 <p className="text-sm text-slate-600">Use these to guide deliberation before submitting votes.</p>
               </CardHeader>
               <CardContent className="grid gap-6 lg:grid-cols-2">
-                <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                   <p className="text-xs uppercase tracking-widest text-slate-500">Questions for the Full Body</p>
                   <ol className="mt-2 list-decimal ml-5 text-sm text-slate-600 space-y-1">
                     {decisionFramework.questions.map((q1) => (
@@ -568,7 +572,7 @@ export function SignatureEventComparisonReportPage() {
                     ))}
                   </ol>
                 </div>
-                <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                   <p className="text-xs uppercase tracking-widest text-slate-500">Voting Options</p>
                   <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
                     {decisionFramework.votingOptions.map((q1) => (
@@ -577,7 +581,7 @@ export function SignatureEventComparisonReportPage() {
                   </ul>
                 </div>
                 {detailMode === "full" ? (
-                  <div className="lg:col-span-2 rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="lg:col-span-2 rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-xs uppercase tracking-widest text-slate-500">Final Committee Statement</p>
                     <p className="text-sm text-slate-700 mt-2">{decisionFramework.closingStatement}</p>
                   </div>
@@ -639,7 +643,7 @@ export function SignatureEventComparisonReportPage() {
                 </div>
 
                 <div className="space-y-3">
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-xs uppercase tracking-widest text-slate-500">Unity BBQ</p>
                     <p className="text-sm font-semibold text-slate-900 mt-1">
                       {money(budgetRanges.unity_bbq.min)} - {money(budgetRanges.unity_bbq.max)}
@@ -655,7 +659,7 @@ export function SignatureEventComparisonReportPage() {
                     ) : null}
                   </div>
 
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-xs uppercase tracking-widest text-slate-500">Block Party</p>
                     <p className="text-sm font-semibold text-slate-900 mt-1">
                       {money(budgetRanges.block_party.min)} - {money(budgetRanges.block_party.max)}
@@ -681,7 +685,7 @@ export function SignatureEventComparisonReportPage() {
                   <p className="text-sm text-slate-600">Report-provided ranges for sponsorship, in-kind support, and other cost offsets.</p>
                 </CardHeader>
                 <CardContent className="grid gap-6 lg:grid-cols-2">
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-xs uppercase tracking-widest text-slate-500">Block Party</p>
                     <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
                       {financialModels.block.revenuePotential.map((r) => (
@@ -717,7 +721,7 @@ export function SignatureEventComparisonReportPage() {
                     </div>
                   </div>
 
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-xs uppercase tracking-widest text-slate-500">Unity BBQ</p>
                     <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
                       {financialModels.unity.revenuePotential.map((r) => (
@@ -743,7 +747,7 @@ export function SignatureEventComparisonReportPage() {
                   <CardTitle>{riskMitigation.title}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-6 lg:grid-cols-2">
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-xs uppercase tracking-widest text-slate-500">Block Party Mitigation</p>
                     <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
                       {riskMitigation.bullets.map((b) => (
@@ -751,7 +755,7 @@ export function SignatureEventComparisonReportPage() {
                       ))}
                     </ul>
                   </div>
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-xs uppercase tracking-widest text-slate-500">Unity BBQ Introduction (2027)</p>
                     <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
                       {riskMitigation.unityBBQIntroduction2027.map((b) => (
@@ -769,7 +773,7 @@ export function SignatureEventComparisonReportPage() {
                 <p className="text-sm text-slate-600">Block Party has a moderate risk profile; Unity BBQ is lower-risk operationally.</p>
               </CardHeader>
               <CardContent className="grid gap-6 lg:grid-cols-2">
-                <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                   <p className="text-xs uppercase tracking-widest text-slate-500">{riskMatrix.blockParty.title}</p>
                   <div className="mt-3 overflow-x-auto">
                     <table className="w-full text-sm">
@@ -793,7 +797,7 @@ export function SignatureEventComparisonReportPage() {
                   </div>
                 </div>
 
-                <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                   <p className="text-xs uppercase tracking-widest text-slate-500">{riskMatrix.unityBBQ.title}</p>
                   <p className="text-sm text-slate-600 mt-2">{riskMatrix.unityBBQ.overall}</p>
                   <ul className="mt-3 list-disc ml-5 text-sm text-slate-600 space-y-1">
@@ -814,7 +818,7 @@ export function SignatureEventComparisonReportPage() {
                   <div className="space-y-3">
                     <SectionTitle>Block Party - August 2026</SectionTitle>
                     {implementationTimeline.blockParty.map((t) => (
-                      <div key={t.label} className="rounded-lg border border-black/10 bg-white/5 p-4">
+                      <div key={t.label} className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                         <p className="text-sm font-semibold text-slate-900">{t.label}</p>
                         <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
                           {t.bullets.map((b) => (
@@ -827,7 +831,7 @@ export function SignatureEventComparisonReportPage() {
                   <div className="space-y-3">
                     <SectionTitle>Unity BBQ - 2027</SectionTitle>
                     {implementationTimeline.unityBBQ.map((t) => (
-                      <div key={t.label} className="rounded-lg border border-black/10 bg-white/5 p-4">
+                      <div key={t.label} className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                         <p className="text-sm font-semibold text-slate-900">{t.label}</p>
                         <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
                           {t.bullets.map((b) => (
@@ -847,7 +851,7 @@ export function SignatureEventComparisonReportPage() {
                   <CardTitle>Success Metrics</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-6 lg:grid-cols-2">
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-sm font-semibold text-slate-900">{successMetrics.blockParty.title}</p>
                     <p className="text-xs uppercase tracking-widest text-slate-500 mt-3">Quantitative</p>
                     <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
@@ -869,7 +873,7 @@ export function SignatureEventComparisonReportPage() {
                     </ul>
                   </div>
 
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-sm font-semibold text-slate-900">{successMetrics.unityBBQ.title}</p>
                     <p className="text-xs uppercase tracking-widest text-slate-500 mt-3">Quantitative</p>
                     <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">

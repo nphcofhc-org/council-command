@@ -43,12 +43,15 @@ export function IntroSplash({
   session,
   directory,
   logoUrl,
+  fallbackLogoUrl,
 }: {
   session: CouncilSession;
   directory: MemberDirectory | null;
   logoUrl: string;
+  fallbackLogoUrl?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [imgSrc, setImgSrc] = useState(logoUrl);
 
   const display = useMemo(() => sessionDisplayName(session, directory), [session, directory]);
   const role = useMemo(() => sessionRoleLabel(session), [session]);
@@ -59,6 +62,10 @@ export function IntroSplash({
     if (wasShownThisSession()) return;
     setOpen(true);
   }, [session.authenticated]);
+
+  useEffect(() => {
+    setImgSrc(logoUrl);
+  }, [logoUrl]);
 
   const greetingLine = display.designation
     ? `Hello, ${display.designation}`
@@ -90,7 +97,14 @@ export function IntroSplash({
                 transition={{ delay: 0.05, duration: 0.5 }}
                 className="rounded-2xl border border-white/20 bg-white/10 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]"
               >
-                <img src={logoUrl} alt="NPHC" className="h-10 w-auto" />
+                <img
+                  src={imgSrc}
+                  alt="NPHC"
+                  className="h-10 w-auto"
+                  onError={() => {
+                    if (fallbackLogoUrl && imgSrc !== fallbackLogoUrl) setImgSrc(fallbackLogoUrl);
+                  }}
+                />
               </motion.div>
               <div className="min-w-0">
                 <p className="text-[11px] tracking-[0.28em] uppercase text-white/80">NPHC Portal</p>

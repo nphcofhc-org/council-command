@@ -66,12 +66,13 @@ export function MainLayout() {
   const logoUrl =
     config?.logoUrl ||
     "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/NPHC%20of%20HC%20LOGO%20Black.PNG";
+  const faviconLogoUrl = "/icons/nphc-hc-192.png";
   const identity = sessionDisplayName(session, directory);
   const role = sessionRoleLabel(session);
 
   return (
     <div className="min-h-screen bg-background text-foreground lg:flex">
-      <IntroSplash session={session} directory={directory} logoUrl={logoUrl} />
+      <IntroSplash session={session} directory={directory} logoUrl={faviconLogoUrl} fallbackLogoUrl={logoUrl} />
       {/* Desktop Sidebar Navigation */}
       <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:sticky lg:top-0 lg:h-screen border-r border-white/10 bg-black text-white nphc-holo-surface">
         <div className="px-6 pt-6 pb-4 border-b border-white/10">

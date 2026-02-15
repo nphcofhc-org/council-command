@@ -620,7 +620,7 @@ export function HomePage() {
                     <p className="text-sm font-semibold text-slate-900 mb-2">General Body Meetings</p>
                     <div className="space-y-2">
                       {generalSchedule.map((m) => (
-                        <div key={`${m.kind}:${m.dateISO}`} className="rounded-lg border border-black/10 bg-white/5 p-3">
+                        <div key={`${m.kind}:${m.dateISO}`} className="rounded-lg border border-black/10 bg-white/5 p-3 nphc-raised">
                           <p className="text-sm text-slate-900">{m.label}</p>
                           <p className="text-xs text-slate-500">{m.dateISO}{m.mode ? ` • ${m.mode}` : ""}</p>
                         </div>
@@ -633,7 +633,7 @@ export function HomePage() {
                     <p className="text-sm font-semibold text-slate-900 mb-2">Executive Council Meetings</p>
                     <div className="space-y-2">
                       {execSchedule.map((m) => (
-                        <div key={`${m.kind}:${m.dateISO}`} className="rounded-lg border border-black/10 bg-white/5 p-3">
+                        <div key={`${m.kind}:${m.dateISO}`} className="rounded-lg border border-black/10 bg-white/5 p-3 nphc-raised">
                           <p className="text-sm text-slate-900">{m.label}</p>
                           <p className="text-xs text-slate-500">{m.dateISO}</p>
                         </div>
@@ -684,7 +684,7 @@ export function HomePage() {
                 </div>
 
                 <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <div className="flex items-center justify-between">
                       <p className="text-xs uppercase tracking-widest text-slate-500">LendingClub</p>
                       <CreditCard className="size-4 text-slate-500" />
@@ -693,7 +693,7 @@ export function HomePage() {
                       {TREASURY.balances.lendingClub.toLocaleString("en-US", { style: "currency", currency: "USD" })}
                     </p>
                   </div>
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <div className="flex items-center justify-between">
                       <p className="text-xs uppercase tracking-widest text-slate-500">Cash App</p>
                       <DollarSign className="size-4 text-slate-500" />
