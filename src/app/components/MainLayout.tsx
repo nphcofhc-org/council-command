@@ -150,7 +150,7 @@ export function MainLayout() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14">
             {/* Mobile: hamburger + title */}
-            <div className="flex items-center gap-3 lg:hidden">
+            <div className={["flex items-center gap-3", showMobileChrome ? "" : "lg:hidden"].join(" ")}>
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
                 className="nphc-holo-btn p-2 -ml-2 hover:bg-white/10 rounded-lg transition-colors"
