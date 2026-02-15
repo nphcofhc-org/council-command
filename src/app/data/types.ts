@@ -141,6 +141,7 @@ export interface CouncilEvent {
   description: string;
   type: string;
   registration: string;            // "Open", "Coming Soon", "Closed"
+  linkUrl?: string;
 }
 
 export interface ArchivedEvent {

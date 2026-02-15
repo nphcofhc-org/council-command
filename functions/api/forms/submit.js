@@ -15,6 +15,7 @@ function formLabel(formKey) {
   if (formKey === "reimbursement_request") return "Reimbursement Request";
   if (formKey === "social_media_request") return "Social Media Intake";
   if (formKey === "committee_report") return "Committee Report";
+  if (formKey === "event_submission") return "Event Submission";
   return formKey;
 }
 
@@ -63,6 +64,14 @@ function summarizeLines(formKey, payload) {
       `Committee: ${String(p.committeeName || "").trim()}`,
       `Title: ${String(p.reportTitle || "").trim()}`,
       `Period: ${String(p.reportingPeriod || "").trim()}`,
+    ].filter(Boolean);
+  }
+  if (formKey === "event_submission") {
+    return [
+      `Event Name: ${String(p.eventName || "").trim()}`,
+      `Event Date: ${String(p.eventDate || "").trim()}`,
+      `Location: ${String(p.location || "").trim()}`,
+      `Host: ${String(p.hostingOrgChapter || "").trim()}`,
     ].filter(Boolean);
   }
   return [];

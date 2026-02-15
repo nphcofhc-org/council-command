@@ -97,6 +97,17 @@ export async function fetchHomePageData(): Promise<HomePageData> {
     const mergeConfig = (override: Partial<HomePageData["config"]> | null | undefined): HomePageData["config"] => {
       if (!override) return base.config;
       const merged = { ...base.config, ...override } as HomePageData["config"];
+
+      const preferNonEmptyString = (overrideValue: unknown, baseValue: string): string => {
+        const s = String(overrideValue ?? "").trim();
+        return s ? s : String(baseValue || "").trim();
+      };
+
+      // Preserve critical string defaults when overrides omit or accidentally clear them.
+      merged.instagramHandle = preferNonEmptyString(override.instagramHandle, base.config.instagramHandle);
+      merged.bannerImageUrl = preferNonEmptyString(override.bannerImageUrl, base.config.bannerImageUrl);
+      merged.presidentImageUrl = preferNonEmptyString(override.presidentImageUrl, base.config.presidentImageUrl);
+
       // Preserve base defaults when overrides omit or clear arrays.
       if (Array.isArray(override.presidentMessage) && override.presidentMessage.length > 0) {
         merged.presidentMessage = override.presidentMessage;

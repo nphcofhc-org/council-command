@@ -2,7 +2,8 @@ export type FormKey =
   | "budget_submission"
   | "reimbursement_request"
   | "social_media_request"
-  | "committee_report";
+  | "committee_report"
+  | "event_submission";
 
 export type FormSubmissionRow = {
   id: string;

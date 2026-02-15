@@ -44,6 +44,7 @@ export function defaultNotificationSettings() {
       reimbursement_request: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: true },
       social_media_request: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: false },
       committee_report: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: false },
+      event_submission: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: false },
     },
   };
 }
@@ -67,7 +68,7 @@ export async function getNotificationSettings(db) {
       reimbursement_request: normalizeRule(rulesIn?.reimbursement_request),
       social_media_request: normalizeRule(rulesIn?.social_media_request),
       committee_report: normalizeRule(rulesIn?.committee_report),
+      event_submission: normalizeRule(rulesIn?.event_submission),
     },
   };
 }
-

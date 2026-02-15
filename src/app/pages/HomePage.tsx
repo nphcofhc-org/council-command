@@ -28,8 +28,12 @@ const glassButtonClass =
 const DEFAULT_HOME_BANNER_MEDIA_URL =
   "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/FORMAL%20NPHC%20BANNER%20(2).mp4";
 
+const ORIGINAL_INTERNAL_NEWS_IMAGE_URL = "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/original.jpeg";
+const EVENTS_ENDPOINT = "/api/events/upcoming";
+
 const FORMS_PANE_LINKS = [
   { label: "Forms Hub", href: "#/forms", meta: "All submission forms" },
+  { label: "Event Submission", href: "#/forms/events", meta: "Add an upcoming event" },
   { label: "Budget Submission", href: "#/forms/budget", meta: "Committee budget request" },
   { label: "Reimbursement Request", href: "#/forms/reimbursement", meta: "Upload receipts" },
   { label: "Request a Social Post", href: "#/forms/social-media", meta: "Flyers + captions" },
@@ -162,7 +166,8 @@ export function HomePage() {
   const { data } = useHomePageData();
   const { data: meetingsData } = useMeetingsData();
   const { generalMeetings, execMeetings } = useCouncilCalendarSchedule("/2026-council-calendar.html");
-  const [bannerError, setBannerError] = useState(false);
+  const [bannerCandidateIndex, setBannerCandidateIndex] = useState(0);
+  const [memberEvents, setMemberEvents] = useState<any[]>([]);
 
   // While loading, data is null — use safe defaults so layout doesn't jump
   const config = data?.config;
@@ -173,9 +178,22 @@ export function HomePage() {
   const instagramHandleRaw = config?.instagramHandle || "";
   const instagramHandle = instagramHandleRaw.trim().replace(/^@/, "");
   const instagramPostUrls = Array.isArray(config?.instagramPostUrls) ? config!.instagramPostUrls : [];
-  const bannerMediaUrl = (bannerImageUrl || DEFAULT_HOME_BANNER_MEDIA_URL || googleBanner).trim();
-  const effectiveBannerUrl = bannerError ? googleBanner : bannerMediaUrl;
-  const bannerIsVideo = /\.mp4(?:\?|$)/i.test(effectiveBannerUrl);
+  const bannerCandidates = [
+    String(bannerImageUrl || "").trim(),
+    String(DEFAULT_HOME_BANNER_MEDIA_URL || "").trim(),
+    String(googleBanner || "").trim(),
+  ].filter(Boolean);
+
+  // If an admin override points at a broken URL, fall back to our known-good default.
+  useEffect(() => {
+    setBannerCandidateIndex(0);
+  }, [bannerImageUrl]);
+
+  const effectiveBannerUrl = bannerCandidates[Math.min(bannerCandidateIndex, bannerCandidates.length - 1)] || googleBanner;
+  const bannerIsVideo = /\.mp4(?:\?|$)/i.test(String(effectiveBannerUrl || ""));
+  const advanceBannerFallback = () => {
+    setBannerCandidateIndex((i) => Math.min(i + 1, Math.max(0, bannerCandidates.length - 1)));
+  };
 
   useEffect(() => {
     if (!instagramHandle && instagramPostUrls.length === 0) return;
@@ -199,6 +217,26 @@ export function HomePage() {
     const t = window.setTimeout(() => process(), 200);
     return () => window.clearTimeout(t);
   }, [instagramHandle, instagramPostUrls.length]);
+
+  // Approved member events (used for the Programs calendar + Home "What's New" rollup).
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(EVENTS_ENDPOINT, { method: "GET", credentials: "same-origin", headers: { accept: "application/json" } });
+        if (!res.ok) return;
+        const body = await res.json();
+        if (cancelled) return;
+        const events = Array.isArray(body?.events) ? body.events : [];
+        setMemberEvents(events);
+      } catch {
+        // ignore
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Required "core" quick links the council wants front-and-center.
   // If existing data doesn't include one of these URLs, we prepend it.
@@ -252,6 +290,14 @@ export function HomePage() {
         url: "https://gateway.nphchq.com/app/login?action=userspending&chapterId=6044",
         row: 2 as const,
       },
+      {
+        id: "ql-core-groupme",
+        icon: "ExternalLink",
+        label: "GroupMe (Chapter Chat)",
+        shortLabel: "GroupMe",
+        url: "https://groupme.com/join_group/70420685/kdLSkGLw",
+        row: 2 as const,
+      },
     ];
 
     const hasMinutes = rawQuickLinks.some((l) => (l?.url || "").includes("tab=records") || (l?.label || "").toLowerCase().includes("minutes"));
@@ -260,6 +306,7 @@ export function HomePage() {
     const hasSocial = rawQuickLinks.some((l) => (l?.shortLabel || "").toLowerCase() === "social" || (l?.label || "").toLowerCase().includes("social"));
     const hasHq = rawQuickLinks.some((l) => (l?.url || "").trim() === "https://www.nphchq.com/" || (l?.label || "").toLowerCase().includes("nphc hq"));
     const hasGateway = rawQuickLinks.some((l) => (l?.url || "").includes("gateway.nphchq.com") || (l?.label || "").toLowerCase().includes("gateway"));
+    const hasGroupMe = rawQuickLinks.some((l) => (l?.url || "").includes("groupme.com/join_group/70420685") || (l?.label || "").toLowerCase().includes("groupme"));
 
     const missing = required.filter((r) => {
       if (r.id === "ql-core-minutes") return !hasMinutes;
@@ -268,6 +315,7 @@ export function HomePage() {
       if (r.id === "ql-core-social-post") return !hasSocial;
       if (r.id === "ql-core-nphc-hq") return !hasHq;
       if (r.id === "ql-core-gateway") return !hasGateway;
+      if (r.id === "ql-core-groupme") return !hasGroupMe;
       return true;
     });
 
@@ -374,12 +422,54 @@ export function HomePage() {
     }
     : null;
 
+  const toEpoch = (ymd: string): number => {
+    const raw = String(ymd || "").trim();
+    if (!raw) return Number.NaN;
+    const t = Date.parse(raw);
+    return Number.isFinite(t) ? t : Number.NaN;
+  };
+
+  const now = new Date();
+  const twoWeeksFromNow = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+  const upcomingMemberEvents = memberEvents
+    .map((e) => {
+      const dateISO = toYmd(e?.eventDate) || String(e?.eventDate || "").trim();
+      const time = [String(e?.startTime || "").trim(), String(e?.endTime || "").trim()].filter(Boolean).join("–");
+      return {
+        id: `evt-${String(e?.id || "").trim()}`,
+        dateISO,
+        dateLabel: time ? `${dateISO} • ${time}` : dateISO,
+        title: String(e?.eventName || "").trim(),
+        host: String(e?.hostingOrgChapter || "").trim(),
+        linkUrl: String(e?.eventLinkUrl || "").trim() || String(e?.flyerLinks || "").trim() || "",
+      };
+    })
+    .filter((e) => {
+      if (!e.title || !e.dateISO) return false;
+      const t = toEpoch(e.dateISO);
+      if (!Number.isFinite(t)) return false;
+      return t >= now.getTime() && t <= twoWeeksFromNow.getTime();
+    })
+    .sort((a, b) => String(a.dateISO).localeCompare(String(b.dateISO)))
+    .slice(0, 5);
+
+  const updatesWithUpcomingEvents = [
+    ...upcomingMemberEvents.map((e) => ({
+      id: e.id,
+      date: e.dateLabel,
+      title: `${e.title}${e.host ? ` — ${e.host}` : ""}`,
+      type: "Upcoming Event",
+      linkUrl: e.linkUrl,
+    })),
+    ...updates.map((u: any) => ({ ...u })),
+  ];
+
   return (
     <div>
       <FormsQuickPane />
       {/* ── Google Sites Cover Banner ─────────────────────────────────────── */}
       <div className="relative w-full overflow-hidden bg-black">
-        <div className="relative w-full aspect-[24/7] sm:aspect-[24/6] lg:aspect-[24/5] max-h-[420px]">
+        <div className="relative w-full h-[220px] sm:h-[280px] md:h-[360px] lg:h-[460px] xl:h-[560px] 2xl:h-[620px]">
           {bannerIsVideo ? (
             <motion.video
               initial={{ opacity: 0 }}
@@ -391,7 +481,7 @@ export function HomePage() {
               muted
               playsInline
               preload="metadata"
-              onError={() => setBannerError(true)}
+              onError={advanceBannerFallback}
             >
               <source src={effectiveBannerUrl} type="video/mp4" />
             </motion.video>
@@ -403,7 +493,7 @@ export function HomePage() {
               src={effectiveBannerUrl}
               alt="NPHC Hudson County"
               className="absolute inset-0 h-full w-full object-contain object-center"
-              onError={() => setBannerError(true)}
+              onError={advanceBannerFallback}
             />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent pointer-events-none" />
@@ -801,7 +891,61 @@ export function HomePage() {
           >
             <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
               <CardContent className="p-0">
-                {updates.map((update, index) => (
+                {/* Featured: PKQ BHM PS 15 (compacted from docx) */}
+                <div className="p-5 sm:p-6 border-b border-black/10">
+                  <div className="flex flex-col lg:flex-row gap-5">
+                    <div className="lg:w-60 flex-shrink-0">
+                      <div className="rounded-xl border border-black/10 bg-white/5 overflow-hidden aspect-[4/3]">
+                        <img
+                          src={ORIGINAL_INTERNAL_NEWS_IMAGE_URL}
+                          alt="Program image"
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-3 flex-wrap">
+                        <div>
+                          <p className="text-xs uppercase tracking-widest text-slate-500 mb-1">Featured Program</p>
+                          <h3 className="text-slate-900 text-base sm:text-lg font-semibold">
+                            Legacy in Letters: The Divine Nine &amp; Black Excellence
+                          </h3>
+                          <p className="text-sm text-slate-600 mt-1">
+                            Hosted by Rho Kappa Omega Chapter · In partnership with BLESC (Jersey City, NJ)
+                          </p>
+                        </div>
+                        <span className="px-2.5 py-0.5 rounded-full w-fit border border-primary/25 bg-primary/15 text-primary text-xs">
+                          Program Notice
+                        </span>
+                      </div>
+
+                      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                        <div className="rounded-lg border border-black/10 bg-white/5 p-3 nphc-raised">
+                          <p className="text-xs uppercase tracking-widest text-slate-500 mb-1">Date &amp; Time</p>
+                          <p className="text-sm text-slate-900 font-semibold">Tuesday, February 24, 2026</p>
+                          <p className="text-xs text-slate-500 mt-0.5">3:30 PM – 5:30 PM</p>
+                        </div>
+                        <div className="rounded-lg border border-black/10 bg-white/5 p-3 nphc-raised">
+                          <p className="text-xs uppercase tracking-widest text-slate-500 mb-1">Location</p>
+                          <p className="text-sm text-slate-900 font-semibold">PS #15 School</p>
+                          <p className="text-xs text-slate-500 mt-0.5">Jersey City, NJ</p>
+                        </div>
+                      </div>
+
+                      <div className="mt-3 rounded-lg border border-black/10 bg-white/5 p-3 nphc-raised">
+                        <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">Program Objectives (Compact)</p>
+                        <ul className="list-disc ml-5 text-sm text-slate-700 space-y-1">
+                          <li>Introduce youth (ages 11–15) to the Divine Nine history, values, and service impact.</li>
+                          <li>Provide positive role models and pathways of leadership, scholarship, and excellence.</li>
+                          <li>Interactive presentations, signature traditions, Q&amp;A + trivia, and fellowship over a hot meal.</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {updatesWithUpcomingEvents.map((update: any, index: number) => (
                   <motion.div
                     key={update.id}
                     initial={{ x: -15, opacity: 0 }}
@@ -809,14 +953,27 @@ export function HomePage() {
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.08, duration: 0.4 }}
                     className={`flex items-start gap-4 p-5 sm:p-6 transition-colors hover:bg-white/5 ${
-                      index < updates.length - 1 ? "border-b border-black/10" : ""
+                      index < updatesWithUpcomingEvents.length - 1 ? "border-b border-black/10" : ""
                     }`}
                   >
                     <div className="rounded-xl border border-primary/25 bg-primary/15 text-primary p-2.5 flex-shrink-0">
                       <Clock className="size-4" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-slate-900 mb-1.5 text-sm sm:text-base">{update.title}</h3>
+                      <h3 className="text-slate-900 mb-1.5 text-sm sm:text-base">
+                        {update.linkUrl ? (
+                          <a
+                            href={update.linkUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="hover:text-primary transition-colors"
+                          >
+                            {update.title}
+                          </a>
+                        ) : (
+                          update.title
+                        )}
+                      </h3>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                         <p className="text-xs sm:text-sm text-slate-500">{update.date}</p>
                         <span className="px-2.5 py-0.5 rounded-full w-fit border border-primary/25 bg-primary/15 text-primary text-xs">

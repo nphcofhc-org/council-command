@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { motion } from "motion/react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { DollarSign, Receipt, Megaphone, ListChecks, FileText } from "lucide-react";
+import { DollarSign, Receipt, Megaphone, ListChecks, FileText, CalendarDays } from "lucide-react";
 
 export function FormsPage() {
   return (
@@ -59,6 +59,23 @@ export function FormsPage() {
             <CardContent>
               <Button asChild className="w-full">
                 <Link to="/forms/budget">Open Form</Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <CalendarDays className="size-5" />
+                Event Submission
+              </CardTitle>
+              <CardDescription>
+                Share an upcoming chapter event for review. Approved events appear in the Programs &amp; Events calendar.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild className="w-full">
+                <Link to="/forms/events">Open Form</Link>
               </Button>
             </CardContent>
           </Card>

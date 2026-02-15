@@ -1,21 +1,76 @@
+import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Badge } from "../components/ui/badge";
-import { Calendar, FileText, Users, MapPin, Clock, ExternalLink } from "lucide-react";
+import { Calendar, FileText, Users, MapPin, Clock, ExternalLink, PlayCircle, X } from "lucide-react";
 import { Button } from "../components/ui/button";
+import { Link } from "react-router";
 import { motion } from "motion/react";
 import { useProgramsData } from "../hooks/use-site-data";
 import { StatusBadge } from "../components/status-badge";
 
 const ART_MARBLE = "https://images.unsplash.com/photo-1678756466078-1ff0d7b09431?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25vY2hyb21lJTIwYWJzdHJhY3QlMjBtYXJibGUlMjB0ZXh0dXJlfGVufDF8fHx8MTc3MDUxMzIyM3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
+const BOWLING_HIGHLIGHT_URL = "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/1.mp4";
+const EVENTS_ENDPOINT = "/api/events/upcoming";
 
 export function ProgramsPage() {
   const { data } = useProgramsData();
+  const [showHighlight, setShowHighlight] = useState(false);
+  const [memberEvents, setMemberEvents] = useState<any[]>([]);
+  const [eventsError, setEventsError] = useState<string | null>(null);
 
   const upcomingEvents = data?.upcomingEvents || [];
   const archivedEvents = data?.archivedEvents || [];
   const eventFlyers = data?.eventFlyers || [];
   const signupForms = data?.signupForms || [];
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(EVENTS_ENDPOINT, { method: "GET", credentials: "same-origin", headers: { accept: "application/json" } });
+        if (!res.ok) return;
+        const body = await res.json();
+        if (cancelled) return;
+        const events = Array.isArray(body?.events) ? body.events : [];
+        setMemberEvents(events);
+      } catch (e) {
+        if (!cancelled) setEventsError(e instanceof Error ? e.message : "Failed to load member events.");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const mergedUpcoming = useMemo(() => {
+    const mapped = memberEvents
+      .map((e) => {
+        const date = String(e?.eventDate || "").trim();
+        const time = [String(e?.startTime || "").trim(), String(e?.endTime || "").trim()].filter(Boolean).join("–");
+        const dateLabel = time ? `${date} • ${time}` : date;
+        const link = String(e?.eventLinkUrl || "").trim() || String(e?.flyerLinks || "").trim() || "";
+        return {
+          id: `member-${String(e?.id || "").trim()}`,
+          title: String(e?.eventName || "").trim(),
+          date: dateLabel,
+          location: String(e?.location || "").trim() || "TBD",
+          description: String(e?.description || "").trim() || "Member-submitted event (approved).",
+          type: "Member Event",
+          registration: link ? "Open" : "Approved",
+          linkUrl: link || undefined,
+        };
+      })
+      .filter((e) => e.title && e.date);
+
+    const all = [...upcomingEvents, ...mapped];
+    // Best-effort sort by ISO date prefix if present.
+    return all.sort((a, b) => {
+      const da = String(a.date || "").slice(0, 10);
+      const db = String(b.date || "").slice(0, 10);
+      return da.localeCompare(db);
+    });
+  }, [memberEvents, upcomingEvents]);
 
   return (
     <div className="relative min-h-screen">
@@ -24,6 +79,31 @@ export function ProgramsPage() {
       </div>
 
       <div className="p-4 sm:p-8 max-w-7xl mx-auto relative z-10">
+        {/* Highlight Modal */}
+        {showHighlight ? (
+          <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="w-full max-w-3xl rounded-2xl border border-white/15 bg-black/50 shadow-[0_30px_90px_rgba(0,0,0,0.6)] overflow-hidden">
+              <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-white/10">
+                <div className="min-w-0">
+                  <p className="text-xs tracking-[0.22em] uppercase text-white/60">Highlight</p>
+                  <p className="text-sm font-semibold text-white truncate">Bowling Night (Most Recent)</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowHighlight(false)}
+                  className="nphc-holo-btn rounded-xl border border-white/15 bg-white/5 p-2 text-white/80 hover:text-white hover:border-primary/60 transition-colors"
+                  aria-label="Close highlight video"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+              <div className="bg-black">
+                <video src={BOWLING_HIGHLIGHT_URL} controls autoPlay playsInline className="w-full h-auto" />
+              </div>
+            </div>
+          </div>
+        ) : null}
+
         {/* Page Header */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
@@ -43,6 +123,23 @@ export function ProgramsPage() {
           </p>
         </motion.div>
 
+        {/* Bowling Highlight */}
+        <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl mb-6">
+          <CardContent className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="min-w-0">
+              <p className="text-xs uppercase tracking-widest text-slate-500 mb-1">Video</p>
+              <p className="text-slate-900 font-semibold truncate">Bowling Night Highlight</p>
+              <p className="text-sm text-slate-600 mt-1">
+                Click to play the most recent bowling night recap video.
+              </p>
+            </div>
+            <Button className="gap-2 w-full sm:w-auto" onClick={() => setShowHighlight(true)}>
+              <PlayCircle className="size-4" />
+              Play Video
+            </Button>
+          </CardContent>
+        </Card>
+
         <Tabs defaultValue="calendar" className="space-y-6">
           <TabsList className="w-full sm:w-auto flex-wrap justify-start border border-black/10 bg-white/5 backdrop-blur-xl">
             <TabsTrigger value="calendar" className="text-xs sm:text-sm">Event Calendar</TabsTrigger>
@@ -61,8 +158,17 @@ export function ProgramsPage() {
               >
                 Upcoming Events
               </motion.h2>
+              {eventsError ? <p className="text-sm text-slate-500 mb-3">{eventsError}</p> : null}
+              <div className="mb-4">
+                <Button asChild variant="outline" className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10">
+                  <Link to="/forms/events">
+                    <Users className="size-4" />
+                    Submit an Event
+                  </Link>
+                </Button>
+              </div>
               <div className="space-y-4">
-                {upcomingEvents.map((event, index) => (
+                {mergedUpcoming.map((event: any, index: number) => (
                   <motion.div
                     key={event.id}
                     initial={{ y: 20, opacity: 0 }}
@@ -98,17 +204,29 @@ export function ProgramsPage() {
                             <Badge className="w-fit border border-primary/25 bg-primary/15 text-primary hover:bg-primary/15">
                               {event.type}
                             </Badge>
-                            <Button
-                              size="sm"
-                              className={
-                                event.registration === "Open"
-                                  ? "bg-primary text-primary-foreground hover:brightness-110 w-full sm:w-auto"
-                                  : "bg-white/10 text-slate-400 w-full sm:w-auto cursor-default"
-                              }
-                              disabled={event.registration !== "Open"}
-                            >
-                              {event.registration}
-                            </Button>
+                            {event.registration === "Open" && event.linkUrl ? (
+                              <Button
+                                asChild
+                                size="sm"
+                                className="bg-primary text-primary-foreground hover:brightness-110 w-full sm:w-auto"
+                              >
+                                <a href={event.linkUrl} target="_blank" rel="noreferrer">
+                                  View Details
+                                </a>
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                className={
+                                  event.registration === "Open"
+                                    ? "bg-primary text-primary-foreground hover:brightness-110 w-full sm:w-auto"
+                                    : "bg-white/10 text-slate-400 w-full sm:w-auto cursor-default"
+                                }
+                                disabled={event.registration !== "Open"}
+                              >
+                                {event.registration}
+                              </Button>
+                            )}
                           </div>
                         </div>
                       </CardContent>

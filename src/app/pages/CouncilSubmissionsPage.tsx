@@ -25,6 +25,7 @@ const FORM_TABS: { key: FormKey; label: string }[] = [
   { key: "reimbursement_request", label: "Reimbursements" },
   { key: "social_media_request", label: "Social Requests" },
   { key: "committee_report", label: "Committee Reports" },
+  { key: "event_submission", label: "Event Submissions" },
 ];
 
 function toViewerHref(src: string): string {
