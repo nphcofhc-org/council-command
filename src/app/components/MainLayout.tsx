@@ -27,9 +27,15 @@ export function MainLayout() {
   const { editorMode, toggleEditorMode } = useEditorMode();
   const { device: previewDevice, setDevice: setPreviewDevice } = usePreviewDevice();
 
-  const forceMobileChrome = session.isSiteEditor && editorMode && previewDevice === "mobile";
-  const showDesktopSidebar = !forceMobileChrome;
-  const showMobileChrome = forceMobileChrome;
+  const isFramed = (() => {
+    try {
+      return window.self !== window.top;
+    } catch {
+      return false;
+    }
+  })();
+  const mobilePreviewActive = session.isSiteEditor && editorMode && previewDevice === "mobile" && !isFramed;
+  const iframeSrc = `/#${location.pathname}${location.search || ""}`;
 
   const navItems = session.isCouncilAdmin
     ? [...baseNavItems, { to: "/council-admin", label: "Council Admin", icon: Shield }]
@@ -60,8 +66,7 @@ export function MainLayout() {
   return (
     <div className="min-h-screen bg-background text-foreground lg:flex">
       {/* Desktop Sidebar Navigation */}
-      {showDesktopSidebar ? (
-        <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:sticky lg:top-0 lg:h-screen border-r border-white/10 bg-black text-white nphc-holo-surface">
+      <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:sticky lg:top-0 lg:h-screen border-r border-white/10 bg-black text-white nphc-holo-surface">
         <div className="px-6 pt-6 pb-4 border-b border-white/10">
           <NavLink to="/" className="inline-flex items-center gap-3">
             <img
@@ -135,22 +140,16 @@ export function MainLayout() {
           <p className="text-white/55 text-xs">{footerText}</p>
           <p className="text-white/35 text-[11px] mt-1">{footerSubtext}</p>
         </div>
-        </aside>
-      ) : null}
+      </aside>
 
       {/* Main Column */}
       <div className="flex min-h-screen flex-1 flex-col w-full">
       {/* Top Navigation Bar */}
-      <nav
-        className={[
-          "nphc-holo-nav sticky top-0 z-50 border-b border-black/10 bg-white/60 text-slate-900 backdrop-blur-xl",
-          showMobileChrome ? "" : "lg:hidden",
-        ].join(" ")}
-      >
+      <nav className="lg:hidden nphc-holo-nav sticky top-0 z-50 border-b border-black/10 bg-white/60 text-slate-900 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14">
             {/* Mobile: hamburger + title */}
-            <div className={["flex items-center gap-3", showMobileChrome ? "" : "lg:hidden"].join(" ")}>
+            <div className="flex items-center gap-3 lg:hidden">
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
                 className="nphc-holo-btn p-2 -ml-2 hover:bg-white/10 rounded-lg transition-colors"
@@ -184,7 +183,7 @@ export function MainLayout() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className={["fixed inset-0 bg-white/70 z-40", showMobileChrome ? "" : "lg:hidden"].join(" ")}
+              className="fixed inset-0 bg-white/70 z-40 lg:hidden"
               onClick={() => setMobileOpen(false)}
             />
             <motion.div
@@ -192,10 +191,7 @@ export function MainLayout() {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className={[
-                "fixed bottom-0 left-0 top-14 z-40 w-72 overflow-y-auto border-r border-black/10 bg-white/70 backdrop-blur-xl",
-                showMobileChrome ? "" : "lg:hidden",
-              ].join(" ")}
+              className="fixed bottom-0 left-0 top-14 z-40 w-72 overflow-y-auto border-r border-black/10 bg-white/70 backdrop-blur-xl lg:hidden"
             >
               <div className="py-4">
                 <div className="px-6 pb-4 mb-2 border-b border-black/10">
@@ -252,9 +248,21 @@ export function MainLayout() {
 
       {/* Page Content */}
       <main className="flex-1">
-        {showMobileChrome ? (
-          <div className="mx-auto max-w-[420px] min-h-screen bg-background border-x border-black/10 shadow-[0_24px_80px_rgba(0,0,0,0.12)]">
-            <Outlet />
+        {mobilePreviewActive ? (
+          <div className="px-4 py-6 sm:px-8">
+            <div className="mx-auto w-fit">
+              <div className="mb-3 flex items-center justify-between gap-3 text-xs text-slate-500">
+                <span className="tracking-widest uppercase">Mobile Preview</span>
+                <span className="text-slate-400">390×844</span>
+              </div>
+              <div className="rounded-[28px] border border-black/15 bg-white/40 shadow-[0_24px_80px_rgba(0,0,0,0.18)] overflow-hidden">
+                <iframe
+                  title="NPHC Mobile Preview"
+                  src={iframeSrc}
+                  className="block w-[390px] h-[844px] bg-white"
+                />
+              </div>
+            </div>
           </div>
         ) : (
           <Outlet />

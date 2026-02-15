@@ -6,6 +6,12 @@ const PREVIEW_STORAGE_KEY = "nphc-preview-device";
 type PreviewDevice = "auto" | "mobile" | "desktop";
 
 function readPreviewDevice(): PreviewDevice {
+  // Don't recurse previews inside an iframe preview.
+  try {
+    if (window.self !== window.top) return "auto";
+  } catch {
+    // ignore
+  }
   try {
     const raw = String(localStorage.getItem(PREVIEW_STORAGE_KEY) || "").trim();
     if (raw === "mobile" || raw === "desktop" || raw === "auto") return raw;
@@ -46,21 +52,11 @@ export function usePreviewDevice() {
 }
 
 export function useIsMobile() {
-  const { device } = usePreviewDevice();
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(
     undefined,
   );
 
   React.useEffect(() => {
-    if (device === "mobile") {
-      setIsMobile(true);
-      return;
-    }
-    if (device === "desktop") {
-      setIsMobile(false);
-      return;
-    }
-
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
     const onChange = () => {
       setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
@@ -68,7 +64,7 @@ export function useIsMobile() {
     mql.addEventListener("change", onChange);
     setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     return () => mql.removeEventListener("change", onChange);
-  }, [device]);
+  }, []);
 
   return !!isMobile;
 }
