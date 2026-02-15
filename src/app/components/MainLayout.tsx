@@ -51,7 +51,7 @@ export function MainLayout() {
   return (
     <div className="min-h-screen bg-background text-foreground lg:flex">
       {/* Desktop Sidebar Navigation */}
-      <aside className="hidden lg:flex lg:fixed lg:inset-y-0 lg:w-64 lg:flex-col border-r border-white/10 bg-black text-white nphc-holo-surface">
+      <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:sticky lg:top-0 lg:h-screen border-r border-white/10 bg-black text-white nphc-holo-surface">
         <div className="px-6 pt-6 pb-4 border-b border-white/10">
           <p className="text-[11px] tracking-[0.25em] uppercase text-white/55">
             {councilName.includes("National") ? "National Pan-Hellenic Council" : councilName}
@@ -98,7 +98,7 @@ export function MainLayout() {
       </aside>
 
       {/* Main Column */}
-      <div className="flex min-h-screen flex-col lg:pl-64 w-full">
+      <div className="flex min-h-screen flex-1 flex-col w-full">
       {/* Top Navigation Bar */}
       <nav className="lg:hidden nphc-holo-nav sticky top-0 z-50 border-b border-black/10 bg-white/60 text-slate-900 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
