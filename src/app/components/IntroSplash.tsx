@@ -81,14 +81,14 @@ export function IntroSplash({
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 10, opacity: 0, scale: 0.98 }}
             transition={{ type: "spring", damping: 28, stiffness: 320 }}
-            className="nphc-glass w-[92vw] max-w-xl rounded-3xl border border-white/20 bg-white/20 p-7 shadow-[0_40px_140px_rgba(0,0,0,0.35)] text-slate-900"
+            className="nphc-holo-surface w-[92vw] max-w-xl rounded-3xl border border-white/15 bg-black/55 p-7 shadow-[0_40px_140px_rgba(0,0,0,0.45)] text-white"
           >
             <div className="flex items-center gap-4">
               <motion.div
                 initial={{ rotate: -6, scale: 0.96, opacity: 0 }}
                 animate={{ rotate: 0, scale: 1, opacity: 1 }}
                 transition={{ delay: 0.05, duration: 0.5 }}
-                className="rounded-2xl border border-white/25 bg-white/30 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]"
+                className="rounded-2xl border border-white/20 bg-white/10 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]"
               >
                 <img src={logoUrl} alt="NPHC" className="h-10 w-auto" />
               </motion.div>
@@ -114,7 +114,7 @@ export function IntroSplash({
 
               <button
                 type="button"
-                className="nphc-holo-btn rounded-xl border border-white/25 bg-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/30 transition"
+                className="nphc-holo-btn rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/15 transition"
                 onClick={() => {
                   markShownThisSession();
                   setOpen(false);
@@ -129,4 +129,3 @@ export function IntroSplash({
     </AnimatePresence>
   );
 }
-
