@@ -55,7 +55,7 @@ export const siteConfig: SiteConfig = {
     "As we navigate the fastest-growing county in the state, we lead with a focus on institutional health and fraternal unity.",
   ],
   presidentClosing: "In Unity and Service,",
-  bannerImageUrl: "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/FORMAL%20NPHC%20BANNER%20(1).mp4",
+  bannerImageUrl: "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/FORMAL%20NPHC%20BANNER%20(2).mp4",
   instagramHandle: "nphcofhudsoncounty",
   instagramPostUrls: [],
   alertEnabled: false,

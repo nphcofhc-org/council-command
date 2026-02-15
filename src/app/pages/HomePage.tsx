@@ -26,7 +26,7 @@ const glassButtonClass =
   "active:bg-primary/25 active:text-primary active:scale-[0.97]";
 
 const DEFAULT_HOME_BANNER_MEDIA_URL =
-  "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/FORMAL%20NPHC%20BANNER%20(1).mp4";
+  "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/FORMAL%20NPHC%20BANNER%20(2).mp4";
 
 const FORMS_PANE_LINKS = [
   { label: "Forms Hub", href: "#/forms", meta: "All submission forms" },
