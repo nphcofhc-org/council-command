@@ -1,4 +1,5 @@
 import type { LeadershipContent } from "./leadership";
+import type { MemberDirectory } from "./member-directory";
 
 export type CouncilSession = {
   authenticated: boolean;
@@ -23,6 +24,7 @@ export type LeadershipContentResponse = {
 const SESSION_ENDPOINT = "/api/admin/session";
 const COMPLIANCE_ENDPOINT = "/api/admin/compliance";
 const LEADERSHIP_ENDPOINT = "/api/content/chapter-leadership";
+const MEMBER_DIRECTORY_ENDPOINT = "/api/content/member-directory";
 
 async function parseError(response: Response): Promise<string> {
   try {
@@ -154,6 +156,63 @@ export async function saveLeadershipContent(content: LeadershipContent): Promise
     data: {
       executiveBoard: Array.isArray(data?.data?.executiveBoard) ? data.data.executiveBoard : [],
       additionalChairs: Array.isArray(data?.data?.additionalChairs) ? data.data.additionalChairs : [],
+    },
+    updatedAt: data?.updatedAt ? String(data.updatedAt) : null,
+    updatedBy: data?.updatedBy ? String(data.updatedBy) : null,
+  };
+}
+
+export type MemberDirectoryResponse = {
+  found: boolean;
+  data: MemberDirectory;
+  updatedAt: string | null;
+  updatedBy: string | null;
+};
+
+export async function fetchMemberDirectory(): Promise<MemberDirectoryResponse> {
+  const response = await fetch(MEMBER_DIRECTORY_ENDPOINT, {
+    method: "GET",
+    credentials: "same-origin",
+    headers: {
+      accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response));
+  }
+
+  const data = await response.json();
+  return {
+    found: Boolean(data?.found),
+    data: {
+      entries: Array.isArray(data?.data?.entries) ? data.data.entries : [],
+    },
+    updatedAt: data?.updatedAt ? String(data.updatedAt) : null,
+    updatedBy: data?.updatedBy ? String(data.updatedBy) : null,
+  };
+}
+
+export async function saveMemberDirectory(directory: MemberDirectory): Promise<MemberDirectoryResponse> {
+  const response = await fetch(MEMBER_DIRECTORY_ENDPOINT, {
+    method: "PUT",
+    credentials: "same-origin",
+    headers: {
+      "content-type": "application/json",
+      accept: "application/json",
+    },
+    body: JSON.stringify(directory),
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response));
+  }
+
+  const data = await response.json();
+  return {
+    found: Boolean(data?.found),
+    data: {
+      entries: Array.isArray(data?.data?.entries) ? data.data.entries : [],
     },
     updatedAt: data?.updatedAt ? String(data.updatedAt) : null,
     updatedBy: data?.updatedBy ? String(data.updatedBy) : null,

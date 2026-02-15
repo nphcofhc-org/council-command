@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Shield, FileText, Lock, AlertTriangle, ClipboardCheck, SlidersHorizontal, Home, Calendar, TrendingUp, FolderOpen, Target, Inbox, Mail } from "lucide-react";
+import { Shield, FileText, Lock, AlertTriangle, ClipboardCheck, SlidersHorizontal, Home, Calendar, TrendingUp, FolderOpen, Target, Inbox, Mail, Users } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { motion } from "motion/react";
@@ -136,6 +136,43 @@ export function CouncilAdminPage() {
                   ) : (
                     <>
                       <Home className="mr-2 size-4" />
+                      Enable Editor Mode
+                    </>
+                  )}
+                </Button>
+              ) : (
+                <Button type="button" variant="outline" className="w-full sm:w-auto border-black/15 bg-white/5 text-slate-400" disabled>
+                  <Lock className="mr-2 size-4" />
+                  Site Administration Only
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+            <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h3 className="text-base text-slate-900 sm:text-lg">Member Directory</h3>
+                <p className="text-sm text-slate-600">
+                  Set display names and greetings shown in the header and welcome animation.
+                </p>
+              </div>
+              {session.isSiteEditor ? (
+                <Button
+                  type="button"
+                  variant={editorMode ? "outline" : "default"}
+                  className={editorMode ? "w-full sm:w-auto border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10" : "w-full sm:w-auto"}
+                  onClick={() => setEditorMode(true)}
+                  asChild={editorMode}
+                >
+                  {editorMode ? (
+                    <Link to="/council-admin/content/members">
+                      <Users className="mr-2 size-4" />
+                      Edit Members
+                    </Link>
+                  ) : (
+                    <>
+                      <Users className="mr-2 size-4" />
                       Enable Editor Mode
                     </>
                   )}

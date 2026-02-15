@@ -6,6 +6,9 @@ import { useSiteConfig } from "../hooks/use-site-data";
 import { useCouncilSession } from "../hooks/use-council-session";
 import { useEditorMode } from "../hooks/use-editor-mode";
 import { usePreviewDevice } from "./ui/use-mobile";
+import { useMemberDirectory } from "../hooks/use-member-directory";
+import { sessionDisplayName, sessionRoleLabel } from "../utils/user-display";
+import { IntroSplash } from "./IntroSplash";
 
 const baseNavItems = [
   { to: "/", label: "Home", icon: Home },
@@ -26,6 +29,7 @@ export function MainLayout() {
   const { session } = useCouncilSession();
   const { editorMode, toggleEditorMode } = useEditorMode();
   const { device: previewDevice, setDevice: setPreviewDevice } = usePreviewDevice();
+  const { directory } = useMemberDirectory();
 
   const isFramed = (() => {
     try {
@@ -62,9 +66,12 @@ export function MainLayout() {
   const logoUrl =
     config?.logoUrl ||
     "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/NPHC%20of%20HC%20LOGO%20Black.PNG";
+  const identity = sessionDisplayName(session, directory);
+  const role = sessionRoleLabel(session);
 
   return (
     <div className="min-h-screen bg-background text-foreground lg:flex">
+      <IntroSplash session={session} directory={directory} logoUrl={logoUrl} />
       {/* Desktop Sidebar Navigation */}
       <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:sticky lg:top-0 lg:h-screen border-r border-white/10 bg-black text-white nphc-holo-surface">
         <div className="px-6 pt-6 pb-4 border-b border-white/10">
@@ -81,7 +88,9 @@ export function MainLayout() {
           </p>
           <p className="text-white text-sm mt-1">Hudson County, NJ</p>
           <div className="mt-4 flex items-center justify-between gap-3">
-            <span className="text-xs text-white/35 tracking-widest uppercase">Portal</span>
+            <span className="text-xs text-white/35 tracking-widest uppercase">
+              Portal · {identity.name} — {role}
+            </span>
             {session.isSiteEditor ? (
               <button
                 type="button"
@@ -170,6 +179,14 @@ export function MainLayout() {
 
             {/* Desktop: portal label */}
             <div className="hidden lg:flex" />
+
+            <div className="flex items-center gap-2">
+              {session.authenticated ? (
+                <span className="text-[11px] text-slate-600 truncate max-w-[40vw]">
+                  {identity.name} — {role}
+                </span>
+              ) : null}
+            </div>
           </div>
         </div>
       </nav>
