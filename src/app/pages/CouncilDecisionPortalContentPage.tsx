@@ -133,7 +133,7 @@ export function CouncilDecisionPortalContentPage() {
                   <p className="text-xs text-gray-500">Last saved: {new Date(lastSavedAt).toLocaleString()}</p>
                 ) : null}
               </div>
-              <Button onClick={save} disabled={saving || loading} className="bg-white hover:bg-gray-800">
+              <Button onClick={save} disabled={saving || loading} className="bg-primary text-primary-foreground hover:brightness-110">
                 <Save className="mr-2 h-4 w-4" />
                 {saving ? "Saving..." : "Save Changes"}
               </Button>
