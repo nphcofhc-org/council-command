@@ -3,6 +3,7 @@ import { Download, Printer, Scale } from "lucide-react";
 import { motion } from "motion/react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
 import { useCouncilSession } from "../hooks/use-council-session";
 import { fetchDecisionVotesAsAdmin, fetchMyDecisionVote, submitDecisionVote } from "../data/decision-api";
 import { fetchDecisionPortalOverride } from "../data/content-api";
@@ -20,11 +21,12 @@ const LOGO_URL =
 
 const STORAGE_KEY = "nphcDecisionPortalVotes";
 const DEFAULT_DECISION_KEY = "2026-block-party-vs-unity-bbq";
+const REVIEW_STORAGE_KEY = "nphc-signature-report-reviewed";
 
 const DEFAULT_CONTENT: DecisionPortalContent = {
   decisionKey: DEFAULT_DECISION_KEY,
-  title: "Signature Event Analysis",
-  subtitle: "Review the committee analysis, then submit your confidential preference.",
+  title: "Chapter Feedback Module",
+  subtitle: "Submit your confidential preference after reviewing the interactive report.",
   summary:
     "This section supports a chapter-wide, data-driven decision on the 2026 signature event.\n\n" +
     "Members are asked to:\n" +
@@ -69,6 +71,8 @@ export function DecisionPortalPage() {
   const [confirmation, setConfirmation] = useState<string>("");
   const [hasServerVote, setHasServerVote] = useState<boolean>(false);
   const [content, setContent] = useState<DecisionPortalContent>(DEFAULT_CONTENT);
+  const [reviewed, setReviewed] = useState<boolean>(false);
+  const [blockedOpen, setBlockedOpen] = useState(false);
 
   const decisionKey = content.decisionKey || DEFAULT_DECISION_KEY;
   const blockOption = content.options.find((o) => o.id === "block") || DEFAULT_CONTENT.options[0];
@@ -99,6 +103,14 @@ export function DecisionPortalPage() {
   }, []);
 
   useEffect(() => {
+    try {
+      setReviewed(Boolean(localStorage.getItem(REVIEW_STORAGE_KEY)));
+    } catch {
+      setReviewed(false);
+    }
+  }, []);
+
+  useEffect(() => {
     let cancelled = false;
     void fetchDecisionPortalOverride()
       .then((res) => {
@@ -124,6 +136,17 @@ export function DecisionPortalPage() {
         // ignore
       });
   }, [session.authenticated, decisionKey]);
+
+  const ensureReviewed = (): boolean => {
+    try {
+      const ok = Boolean(localStorage.getItem(REVIEW_STORAGE_KEY));
+      setReviewed(ok);
+      return ok;
+    } catch {
+      setReviewed(false);
+      return false;
+    }
+  };
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(votes));
@@ -152,6 +175,11 @@ export function DecisionPortalPage() {
   }, [impact, unity, feasibility]);
 
   const submitVote = (choice: VoteChoice) => {
+    if (!ensureReviewed()) {
+      setBlockedOpen(true);
+      return;
+    }
+
     const payload = { choice, timestamp: new Date().toISOString() };
     setVotes((prev) => [...prev, payload].slice(-500));
 
@@ -184,6 +212,10 @@ export function DecisionPortalPage() {
 
   const exportVotes = () => {
     if (!session.isCouncilAdmin) return;
+    if (!ensureReviewed()) {
+      setBlockedOpen(true);
+      return;
+    }
     void fetchDecisionVotesAsAdmin(decisionKey)
       .then((res) => {
         downloadJson("NPHC_DecisionPortal_Votes.json", res);
@@ -211,7 +243,7 @@ export function DecisionPortalPage() {
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="w-10 h-px bg-primary" />
-            <span className="text-xs tracking-[0.2em] uppercase text-slate-500">Signature Event Analysis</span>
+            <span className="text-xs tracking-[0.2em] uppercase text-slate-500">Chapter Feedback Module</span>
             <div className="w-10 h-px bg-primary" />
           </div>
 
@@ -220,17 +252,35 @@ export function DecisionPortalPage() {
           </div>
 
           <h1 className="mt-5 text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">NPHC of Hudson County</h1>
-          <p className="text-sm text-slate-600 mt-2">Interactive Analysis & Confidential Preference Submission</p>
+          <p className="text-sm text-slate-600 mt-2">Confidential Chapter Feedback (Unlocked After Report Review)</p>
         </div>
       </header>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-8 py-10 sm:py-14 space-y-6">
+        {!reviewed ? (
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl border border-amber-400/25">
+            <CardHeader>
+              <CardTitle>Locked Until Review Complete</CardTitle>
+              <p className="text-sm text-slate-600">
+                You must review the interactive report before submitting chapter feedback.
+              </p>
+            </CardHeader>
+            <CardContent className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+              <p className="text-sm text-slate-700">
+                Open the report and review all tabs/criteria. Once unlocked, return here to submit your confidential preference.
+              </p>
+              <Button asChild className="w-fit">
+                <a href="#/reports/signature-event-comparison">Open Interactive Report</a>
+              </Button>
+            </CardContent>
+          </Card>
+        ) : null}
         <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.35 }}>
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardHeader>
-              <CardTitle>Signature Event Analysis</CardTitle>
+              <CardTitle>Chapter Feedback Module</CardTitle>
               <p className="text-sm text-slate-600">
-                Review the committee analysis, then submit your confidential preference for the 2026 signature event.
+                Review the interactive report, then submit your confidential preference for the 2026 signature event.
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -369,7 +419,7 @@ export function DecisionPortalPage() {
         <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.05, duration: 0.35 }}>
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardHeader>
-              <CardTitle>Confidential Preference Submission</CardTitle>
+              <CardTitle>Chapter Feedback Module</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-slate-600">
@@ -383,10 +433,20 @@ export function DecisionPortalPage() {
               ) : null}
 
               <div className="flex flex-col sm:flex-row gap-3">
-                <Button onClick={() => submitVote("block")} disabled={!content.isOpen}>
+                <Button
+                  onClick={() => submitVote("block")}
+                  disabled={!content.isOpen}
+                  className={!reviewed ? "opacity-45 grayscale cursor-pointer" : ""}
+                  aria-disabled={!reviewed}
+                >
                   Vote: {blockOption.label}
                 </Button>
-                <Button onClick={() => submitVote("unity")} disabled={!content.isOpen}>
+                <Button
+                  onClick={() => submitVote("unity")}
+                  disabled={!content.isOpen}
+                  className={!reviewed ? "opacity-45 grayscale cursor-pointer" : ""}
+                  aria-disabled={!reviewed}
+                >
                   Vote: {unityOption.label}
                 </Button>
               </div>
@@ -437,6 +497,22 @@ export function DecisionPortalPage() {
           </Card>
         </motion.div>
       </div>
+
+      <Dialog open={blockedOpen} onOpenChange={setBlockedOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Wait a minute pal, you havent reviewed all of the information. — Mr.President</DialogTitle>
+          </DialogHeader>
+          <div className="text-sm text-slate-600">
+            Go back to the interactive report, review all tabs, and expand each criteria item before submitting feedback.
+          </div>
+          <div className="mt-4">
+            <Button asChild className="w-fit">
+              <a href="#/reports/signature-event-comparison">Open Interactive Report</a>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -10,7 +10,7 @@ import { useMemberDirectory } from "../hooks/use-member-directory";
 import { sessionDisplayName, sessionRoleLabel } from "../utils/user-display";
 import { IntroSplash } from "./IntroSplash";
 
-const baseNavItems = [
+const baseNavItems: Array<{ to: string; label: string; icon: any; danger?: boolean }> = [
   { to: "/", label: "Home", icon: Home },
   { to: "/chapter-information", label: "Chapter Info", icon: Users },
   { to: "/meetings-delegates", label: "Meetings & Delegates", icon: Calendar },
@@ -19,7 +19,12 @@ const baseNavItems = [
   { to: "/treasury", label: "Treasury", icon: Wallet },
   { to: "/forms", label: "Forms", icon: ClipboardList },
   { to: "/forum", label: "Forum", icon: MessagesSquare },
-  { to: "/decision-portal", label: "Signature Event Analysis", icon: Target },
+  {
+    to: "/reports/signature-event-comparison",
+    label: "For Your Consideration: Signature Event Comparison",
+    icon: Target,
+    danger: true,
+  },
 ];
 
 export function MainLayout() {
@@ -66,7 +71,7 @@ export function MainLayout() {
   const logoUrl =
     config?.logoUrl ||
     "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/NPHC%20of%20HC%20LOGO%20Black.PNG";
-  const faviconLogoUrl = "/icons/nphc-hc-192.png";
+  const faviconLogoUrl = "/favicon.png";
   const identity = sessionDisplayName(session, directory);
   const role = sessionRoleLabel(session);
 
@@ -134,9 +139,13 @@ export function MainLayout() {
               end={item.to === "/"}
               className={({ isActive }) =>
                 `nphc-holo-btn flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all duration-200 drop-shadow-[0_0_12px_rgba(24,224,208,0.10)] ${
-                  isActive
-                    ? "bg-primary/10 text-primary border border-primary/25 drop-shadow-[0_0_14px_rgba(11,189,176,0.35)]"
-                    : "text-white/75 hover:bg-white/10 hover:text-primary border border-transparent"
+                  item.danger
+                    ? isActive
+                      ? "bg-rose-500/10 text-rose-200 border border-rose-400/35 drop-shadow-[0_0_16px_rgba(244,63,94,0.35)]"
+                      : "text-rose-200/85 border border-transparent hover:bg-rose-500/10 hover:text-rose-200 hover:border-rose-400/35 drop-shadow-[0_0_16px_rgba(244,63,94,0.18)]"
+                    : isActive
+                      ? "bg-primary/10 text-primary border border-primary/25 drop-shadow-[0_0_14px_rgba(11,189,176,0.35)]"
+                      : "text-white/75 hover:bg-white/10 hover:text-primary border border-transparent"
                 }`
               }
             >
@@ -240,7 +249,11 @@ export function MainLayout() {
                       end={item.to === "/"}
                       className={({ isActive }) =>
                         `flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-200 ${
-                          isActive
+                          item.danger
+                            ? isActive
+                              ? "bg-rose-500/10 text-rose-700 drop-shadow-[0_0_14px_rgba(244,63,94,0.25)]"
+                              : "text-rose-700/80 hover:bg-rose-500/10 hover:text-rose-700 hover:drop-shadow-[0_0_12px_rgba(244,63,94,0.18)]"
+                            : isActive
                               ? "bg-white/10 text-primary drop-shadow-[0_0_12px_rgba(24,224,208,0.55)]"
                               : "text-slate-600 hover:bg-white/5 hover:text-primary hover:drop-shadow-[0_0_12px_rgba(24,224,208,0.35)]"
                           }`

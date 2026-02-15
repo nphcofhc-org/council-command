@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link as LinkIcon, Printer, FileText, ChevronRight } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -20,6 +20,7 @@ import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/ui/accordion";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
 import { TREASURY } from "../data/treasury";
 import {
   LOGO_URL,
@@ -69,11 +70,33 @@ function SectionTitle({ children, id }: { children: React.ReactNode; id?: string
 
 type DetailMode = "summary" | "full";
 
+const REVIEW_STORAGE_KEY = "nphc-signature-report-reviewed";
+
 export function SignatureEventComparisonReportPage() {
   const [detailMode, setDetailMode] = useState<DetailMode>("summary");
+  const [activeTab, setActiveTab] = useState("comparison");
+  const [visitedTabs, setVisitedTabs] = useState<Record<string, boolean>>({ comparison: true });
+  const [openedCriteria, setOpenedCriteria] = useState<Record<string, boolean>>({});
+  const [blockedOpen, setBlockedOpen] = useState(false);
 
   const treasuryTotal = TREASURY.balances.lendingClub + TREASURY.balances.cashApp;
   const treasuryLabel = treasuryTotal.toLocaleString("en-US", { style: "currency", currency: "USD" });
+
+  const requiredTabs = ["comparison", "concepts", "recommendations", "finance"] as const;
+  const openedCriteriaCount = Object.values(openedCriteria).filter(Boolean).length;
+  const tabsVisitedCount = requiredTabs.filter((t) => visitedTabs[t]).length;
+  const allTabsVisited = tabsVisitedCount === requiredTabs.length;
+  const allCriteriaOpened = openedCriteriaCount >= criteria.length;
+  const isReviewed = allTabsVisited && allCriteriaOpened;
+
+  useEffect(() => {
+    if (!isReviewed) return;
+    try {
+      localStorage.setItem(REVIEW_STORAGE_KEY, String(Date.now()));
+    } catch {
+      // ignore
+    }
+  }, [isReviewed]);
 
   const radarData = useMemo(() => {
     return criteria.map((c) => ({
@@ -190,7 +213,13 @@ export function SignatureEventComparisonReportPage() {
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="comparison">
+        <Tabs
+          value={activeTab}
+          onValueChange={(v) => {
+            setActiveTab(v);
+            setVisitedTabs((p) => ({ ...p, [v]: true }));
+          }}
+        >
           <TabsList className="w-full justify-start bg-white/5 border border-black/10 backdrop-blur-xl">
             <TabsTrigger value="comparison">Comparison</TabsTrigger>
             <TabsTrigger value="concepts">Concepts</TabsTrigger>
@@ -253,10 +282,9 @@ export function SignatureEventComparisonReportPage() {
 
                   <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-xs uppercase tracking-widest text-slate-500">Next Step</p>
-                    <p className="text-sm text-slate-600 mt-2">Use the Decision Portal to vote after reviewing the interactive report.</p>
-                    <a className="inline-flex items-center gap-2 mt-3 text-sm font-semibold text-primary hover:underline" href="#/decision-portal">
-                      Go to Decision Portal <ChevronRight className="size-4" />
-                    </a>
+                    <p className="text-sm text-slate-600 mt-2">
+                      Complete the Chapter Feedback Module after reviewing all tabs and expanding each criteria item at least once.
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -268,7 +296,15 @@ export function SignatureEventComparisonReportPage() {
                 <p className="text-sm text-slate-600">Tap a criterion to see the committee’s scoring language and the rationale in digest form.</p>
               </CardHeader>
               <CardContent>
-                <Accordion type="single" collapsible className="w-full">
+                <Accordion
+                  type="single"
+                  collapsible
+                  className="w-full"
+                  onValueChange={(v) => {
+                    if (!v) return;
+                    setOpenedCriteria((p) => ({ ...p, [v]: true }));
+                  }}
+                >
                   {criteria.map((c) => (
                     <AccordionItem key={c.id} value={c.id}>
                       <AccordionTrigger>
@@ -644,6 +680,13 @@ export function SignatureEventComparisonReportPage() {
 
                 <div className="space-y-3">
                   <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
+                    <p className="text-xs uppercase tracking-widest text-slate-500">Estimate Note</p>
+                    <p className="text-sm text-slate-600 mt-2">
+                      All figures shown are rough estimates. Actual out-of-pocket costs may be reduced through donations, in-kind
+                      support from member chapters and community partners, and fundraising initiatives.
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-xs uppercase tracking-widest text-slate-500">Unity BBQ</p>
                     <p className="text-sm font-semibold text-slate-900 mt-1">
                       {money(budgetRanges.unity_bbq.min)} - {money(budgetRanges.unity_bbq.max)}
@@ -677,6 +720,60 @@ export function SignatureEventComparisonReportPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {detailMode === "full" ? (
+              <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+                <CardHeader>
+                  <CardTitle>Block Party Notes (Jersey City)</CardTitle>
+                  <p className="text-sm text-slate-600">
+                    Local execution considerations to inform planning assumptions (permits, insurance, and admin lead time).
+                  </p>
+                </CardHeader>
+                <CardContent className="grid gap-6 lg:grid-cols-2">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
+                    <p className="text-xs uppercase tracking-widest text-slate-500">Permits + Lead Time</p>
+                    <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
+                      <li>
+                        Permit applications should be filed roughly <strong className="text-slate-900">60–120 days</strong> in advance (verify in the permitting checklist).
+                      </li>
+                      <li>
+                        Source:{" "}
+                        <a
+                          className="text-primary font-semibold hover:underline"
+                          href="https://jerseycityculture.org/events/special-event-permits/"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Jersey City Office of Cultural Affairs
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
+                    <p className="text-xs uppercase tracking-widest text-slate-500">Insurance</p>
+                    <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
+                      <li>
+                        Plan for <strong className="text-slate-900">$1M general liability</strong> coverage.
+                      </li>
+                      <li>
+                        Single-day special event policies often range roughly <strong className="text-slate-900">$150–$400</strong> (varies by vendor and event profile).
+                      </li>
+                      <li>
+                        Source:{" "}
+                        <a
+                          className="text-primary font-semibold hover:underline"
+                          href="https://grouppps.com/new-jersey-special-event-permits-2/"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          PPS (NJ Special Event Permits overview)
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : null}
 
             {detailMode === "full" ? (
               <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
@@ -908,6 +1005,80 @@ export function SignatureEventComparisonReportPage() {
             ) : null}
           </TabsContent>
         </Tabs>
+
+        {/* ── Chapter Feedback Module Gate ───────────────────────────────── */}
+        <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+          <CardHeader>
+            <CardTitle>Chapter Feedback Module</CardTitle>
+            <p className="text-sm text-slate-600">
+              Voting is unlocked only after you review the full report content.
+            </p>
+          </CardHeader>
+          <CardContent className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge variant="outline" className="border-black/15 text-slate-800">
+                  Tabs reviewed: {tabsVisitedCount}/{requiredTabs.length}
+                </Badge>
+                <Badge variant="outline" className="border-black/15 text-slate-800">
+                  Criteria opened: {openedCriteriaCount}/{criteria.length}
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className={
+                    isReviewed
+                      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700"
+                      : "border-black/15 text-slate-800"
+                  }
+                >
+                  Status: {isReviewed ? "Unlocked" : "Locked"}
+                </Badge>
+              </div>
+              <p className="text-sm text-slate-600 mt-3">
+                Requirement: visit all tabs and expand each criteria item at least once.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Button
+                className={`gap-2 ${!isReviewed ? "opacity-50 grayscale cursor-pointer" : ""}`}
+                onClick={() => {
+                  if (!isReviewed) {
+                    setBlockedOpen(true);
+                    return;
+                  }
+                  window.location.hash = "#/decision-portal";
+                }}
+                aria-disabled={!isReviewed}
+                data-locked={!isReviewed}
+                title={isReviewed ? "Open Chapter Feedback Module" : "Locked until all report content is reviewed"}
+              >
+                Chapter Feedback Module
+                <ChevronRight className="size-4" />
+              </Button>
+              {!isReviewed ? (
+                <button
+                  type="button"
+                  className="text-xs text-slate-500 hover:text-primary transition-colors text-left"
+                  onClick={() => setBlockedOpen(true)}
+                >
+                  Why is this locked?
+                </button>
+              ) : null}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Dialog open={blockedOpen} onOpenChange={setBlockedOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Wait a minute pal, you havent reviewed all of the information. — Mr.President</DialogTitle>
+            </DialogHeader>
+            <div className="text-sm text-slate-600">
+              Please review all tabs and expand each criteria item before submitting chapter feedback.
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

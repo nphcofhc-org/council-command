@@ -14,8 +14,8 @@ import { fetchDecisionPortalOverride, saveDecisionPortalOverride } from "../data
 function emptyDecisionPortal(): DecisionPortalContent {
   return {
     decisionKey: "2026-block-party-vs-unity-bbq",
-    title: "2026 Summer Signature Event Decision",
-    subtitle: "Review the brief, then submit your confidential vote.",
+    title: "Chapter Feedback Module",
+    subtitle: "Review the interactive report, then submit your confidential preference.",
     summary: "",
     options: [
       { id: "block", label: "Neighborhood Block Party", description: "" },
@@ -120,7 +120,7 @@ export function CouncilDecisionPortalContentPage() {
 
         <Card className="border-0 shadow-lg ring-1 ring-black/5">
           <CardHeader>
-            <CardTitle>Content Manager — Decision Portal</CardTitle>
+            <CardTitle>Content Manager — Chapter Feedback Module</CardTitle>
             <CardDescription>
               This is the brief members see above the vote buttons. Set the decision text, links, and whether voting is open.
             </CardDescription>
