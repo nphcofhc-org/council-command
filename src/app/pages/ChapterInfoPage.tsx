@@ -56,9 +56,21 @@ function MemberPhoto({ member }: { member: LeadershipMember }) {
     );
   }
 
+  const initials = (() => {
+    const parts = String(member.name || "")
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+    const first = parts[0]?.[0] || "";
+    const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] || "") : (parts[0]?.[1] || "");
+    return (first + last).toUpperCase().slice(0, 2) || "?";
+  })();
+
   return (
-    <div className="w-44 h-44 rounded-2xl bg-white/5 flex items-center justify-center mb-3 border-4 border-black/10 group-hover:border-black/15 transition-colors">
-      <User className="size-20 text-slate-300" />
+    <div className="w-44 h-44 rounded-2xl bg-white/5 flex flex-col items-center justify-center mb-3 border-4 border-black/10 group-hover:border-black/15 transition-colors overflow-hidden">
+      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 via-white/10 to-black/5">
+        <span className="text-4xl font-extrabold tracking-tight text-slate-700">{initials}</span>
+      </div>
     </div>
   );
 }

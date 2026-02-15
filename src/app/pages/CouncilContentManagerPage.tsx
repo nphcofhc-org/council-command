@@ -157,7 +157,14 @@ export function CouncilContentManagerPage() {
                     {form[section].map((member, index) => (
                       <div key={member.id || `${section}-${index}`} className="rounded-lg border p-4">
                         <div className="mb-3 flex items-center justify-between">
-                          <p className="text-sm font-medium text-gray-700">Record {index + 1}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-medium text-gray-700">Record {index + 1}</p>
+                            {!String(member.imageUrl || "").trim() ? (
+                              <span className="inline-flex items-center rounded-full border border-amber-300/60 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-amber-800">
+                                Photo missing
+                              </span>
+                            ) : null}
+                          </div>
                           <Button
                             type="button"
                             variant="outline"
