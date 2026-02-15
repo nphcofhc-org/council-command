@@ -144,14 +144,20 @@
     content: "";
     position: fixed;
     inset: 0;
-    z-index: -1;
+    z-index: 0;
     pointer-events: none;
     background-image: url("https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/NPHC%20LOGO%20FINAL%20BLACK%20ON%20WHITECLEAR%20(1).svg");
     background-repeat: no-repeat;
     background-position: center;
-    background-size: min(820px, 92vw);
-    opacity: 0.08;
-    filter: blur(0.2px);
+    background-size: min(980px, 92vw);
+    opacity: 0.12;
+    mix-blend-mode: multiply;
+  }
+
+  /* Keep the app content above the watermark layer */
+  #root {
+    position: relative;
+    z-index: 1;
   }
 
   /**
