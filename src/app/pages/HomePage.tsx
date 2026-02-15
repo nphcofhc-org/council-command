@@ -361,34 +361,36 @@ export function HomePage() {
     <div>
       <FormsQuickPane />
       {/* ── Google Sites Cover Banner ─────────────────────────────────────── */}
-      <div className="relative w-full overflow-hidden bg-white h-[220px] sm:h-[260px] lg:h-[340px]">
-        {bannerIsVideo ? (
-          <motion.video
-            initial={{ opacity: 0, scale: 1.02 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-            className="absolute inset-0 h-full w-full object-cover object-center"
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="metadata"
-            onError={() => setBannerError(true)}
-          >
-            <source src={effectiveBannerUrl} type="video/mp4" />
-          </motion.video>
-        ) : (
-          <motion.img
-            initial={{ opacity: 0, scale: 1.02 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-            src={effectiveBannerUrl}
-            alt="NPHC Hudson County"
-            className="absolute inset-0 h-full w-full object-cover object-center"
-            onError={() => setBannerError(true)}
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
+      <div className="relative w-full overflow-hidden bg-black">
+        <div className="relative w-full aspect-[24/7] sm:aspect-[24/6] lg:aspect-[24/5] max-h-[420px]">
+          {bannerIsVideo ? (
+            <motion.video
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              className="absolute inset-0 h-full w-full object-contain object-center"
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              onError={() => setBannerError(true)}
+            >
+              <source src={effectiveBannerUrl} type="video/mp4" />
+            </motion.video>
+          ) : (
+            <motion.img
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              src={effectiveBannerUrl}
+              alt="NPHC Hudson County"
+              className="absolute inset-0 h-full w-full object-contain object-center"
+              onError={() => setBannerError(true)}
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent pointer-events-none" />
+        </div>
       </div>
 
       {/* ── Alert / Notifications Banner (Home) ───────────────────────────── */}
