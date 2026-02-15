@@ -17,8 +17,8 @@ declare global {
 
 // ── Shared glass button class for quick links ───────────────────────────────
 const glassButtonClass =
-  "nphc-holo-btn relative overflow-hidden inline-flex items-center gap-2 px-4 py-2.5 rounded-lg cursor-pointer " +
-  "bg-white/[0.08] backdrop-blur-xl text-slate-900 border border-black/15 " +
+  "nphc-holo-btn nphc-glass relative overflow-hidden inline-flex items-center gap-2 px-4 py-2.5 rounded-lg cursor-pointer " +
+  "bg-white/55 text-slate-900 border border-black/10 " +
   "shadow-[0_8px_32px_0_rgba(255,255,255,0.07)] " +
   "transition-all duration-300 text-[13px] leading-none " +
   "hover:bg-primary/15 hover:text-primary hover:border-primary/50 " +

@@ -265,6 +265,47 @@
   opacity: 0.75;
 }
 
+/* Frosted glass card surfaces (neutral, works on white background) */
+.nphc-glass {
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+}
+
+.nphc-glass::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(900px 420px at 15% 0%, rgba(255, 255, 255, 0.72), transparent 62%),
+    radial-gradient(760px 380px at 90% 12%, rgba(255, 255, 255, 0.34), transparent 64%),
+    linear-gradient(140deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.14) 52%, rgba(2, 6, 23, 0.05));
+  opacity: 1;
+}
+
+.nphc-glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+    radial-gradient(rgba(2, 6, 23, 0.10) 1px, transparent 1px);
+  background-size: 240px 240px, 340px 340px;
+  background-position: 18px 28px, 72px 16px;
+  opacity: 0.10;
+  filter: blur(0.15px);
+}
+
+.nphc-glass > * {
+  position: relative;
+  z-index: 1;
+}
+
 /* Neon top nav glow */
 .nphc-holo-nav {
   position: relative;
