@@ -98,6 +98,9 @@ export type MeetingsOverridePayload = {
   upcomingMeetings: UpcomingMeeting[];
   meetingRecords: MeetingRecord[];
   delegateReports: DelegateReport[];
+  featuredDeckTitle?: string;
+  featuredDeckImageUrl?: string;
+  featuredDeckUrl?: string;
 };
 
 export function fetchMeetingsOverride(): Promise<ContentResponse<MeetingsOverridePayload | null>> {

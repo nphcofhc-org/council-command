@@ -263,6 +263,9 @@ export interface MeetingsPageData {
   upcomingMeetings: UpcomingMeeting[];
   meetingRecords: MeetingRecord[];
   delegateReports: DelegateReport[];
+  featuredDeckTitle?: string;       // Optional featured deck (for "Next General Body" callout)
+  featuredDeckImageUrl?: string;    // Cover image URL for the featured deck
+  featuredDeckUrl?: string;         // Link to slides/PDF/etc (will be opened in Viewer if internal)
 }
 
 export interface ProgramsPageData {

@@ -164,7 +164,7 @@ export function HomePage() {
   const bannerIsVideo = /\.mp4(?:\?|$)/i.test(effectiveBannerUrl);
 
   useEffect(() => {
-    if (instagramPostUrls.length === 0) return;
+    if (!instagramHandle && instagramPostUrls.length === 0) return;
 
     const existing = document.querySelector<HTMLScriptElement>('script[data-nphc-instagram-embed="true"]');
     const process = () => window.instgrm?.Embeds?.process?.();
@@ -181,7 +181,10 @@ export function HomePage() {
     script.setAttribute("data-nphc-instagram-embed", "true");
     script.onload = () => process();
     document.body.appendChild(script);
-  }, [instagramPostUrls.length]);
+    // Also re-process after React renders embeds.
+    const t = window.setTimeout(() => process(), 200);
+    return () => window.clearTimeout(t);
+  }, [instagramHandle, instagramPostUrls.length]);
 
   // Required "core" quick links the council wants front-and-center.
   // If existing data doesn't include one of these URLs, we prepend it.
@@ -192,7 +195,7 @@ export function HomePage() {
         icon: "Calendar",
         label: "Next Meeting",
         shortLabel: "Next",
-        url: "/meetings-delegates",
+        url: "/meetings-delegates?focus=next-general",
         row: 1 as const,
       },
       {
@@ -876,7 +879,34 @@ export function HomePage() {
           ) : (
             <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
               <CardContent className="p-6 text-sm text-slate-600">
-                Feed posts are not configured yet. Add post URLs in Council Admin → Home Page Editor.
+                {/* Profile embed fallback */}
+                <blockquote
+                  className="instagram-media"
+                  data-instgrm-permalink={`https://www.instagram.com/${encodeURIComponent(instagramHandle)}/`}
+                  data-instgrm-version="14"
+                  style={{
+                    background: "#FFF",
+                    border: 0,
+                    borderRadius: 12,
+                    boxShadow: "0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15)",
+                    margin: 0,
+                    maxWidth: 540,
+                    minWidth: 326,
+                    padding: 0,
+                    width: "100%",
+                  }}
+                >
+                  <div style={{ padding: 16 }}>
+                    <a
+                      href={`https://www.instagram.com/${encodeURIComponent(instagramHandle)}/`}
+                      style={{ background: "#FFFFFF", lineHeight: 0, padding: 0, textAlign: "center", textDecoration: "none", width: "100%" }}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      View this profile on Instagram
+                    </a>
+                  </div>
+                </blockquote>
               </CardContent>
             </Card>
           )}

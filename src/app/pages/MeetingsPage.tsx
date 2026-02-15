@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Badge } from "../components/ui/badge";
-import { Calendar, FileText, Clock, ExternalLink } from "lucide-react";
+import { Calendar, FileText, Clock, ExternalLink, Sparkles, Image as ImageIcon } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { motion } from "motion/react";
 import { useLocation } from "react-router";
@@ -10,6 +10,7 @@ import { useMeetingsData } from "../hooks/use-site-data";
 import { StatusBadge } from "../components/status-badge";
 import { Link } from "react-router";
 import { useCouncilCalendarSchedule } from "../hooks/use-council-calendar";
+import { useEffect, useMemo, useRef } from "react";
 
 const ART_GEO = "https://images.unsplash.com/photo-1665680779817-11a0d63ee51e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHdoaXRlJTIwZ2VvbWV0cmljJTIwbWluaW1hbCUyMGFydHxlbnwxfHx8fDE3NzA1MTMyMjN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 
@@ -33,6 +34,8 @@ function normalizeJoinUrl(input: string | null | undefined): string | null {
 export function MeetingsPage() {
   const { data } = useMeetingsData();
   const location = useLocation();
+  const focus = new URLSearchParams(location.search || "").get("focus") || "";
+  const nextGeneralRef = useRef<HTMLDivElement | null>(null);
 
   const calendarHref = "/2026-council-calendar.html";
   const { generalMeetings, execMeetings } = useCouncilCalendarSchedule(calendarHref);
@@ -67,6 +70,9 @@ export function MeetingsPage() {
   }
 
   const nowISO = toYmd(new Date().toISOString()) || "";
+  const nextGeneral = generalMeetings.find((m) => m.dateISO >= nowISO) || generalMeetings[0] || null;
+  const nextGeneralISO = nextGeneral?.dateISO || "";
+
   const scheduleRows = [...generalMeetings, ...execMeetings]
     .filter((m) => m.dateISO >= nowISO)
     .sort((a, b) => (a.dateISO < b.dateISO ? -1 : a.dateISO > b.dateISO ? 1 : 0))
@@ -78,7 +84,28 @@ export function MeetingsPage() {
       location: m.mode || (m.kind === "exec" ? "Executive Council Meeting" : "General Body Meeting"),
       joinUrl: joinByDate.get(m.dateISO)?.joinUrl || "",
       joinLabel: joinByDate.get(m.dateISO)?.joinLabel || "Join Google Meet",
+      kind: m.kind as "exec" | "general",
     }));
+
+  const featuredDeck = useMemo(() => {
+    const title = String(data?.featuredDeckTitle || "").trim();
+    const imageUrl = String(data?.featuredDeckImageUrl || "").trim();
+    const url = String(data?.featuredDeckUrl || "").trim();
+    return {
+      title: title || "Meeting Deck",
+      imageUrl,
+      url,
+    };
+  }, [data?.featuredDeckTitle, data?.featuredDeckImageUrl, data?.featuredDeckUrl]);
+
+  useEffect(() => {
+    if (focus !== "next-general") return;
+    // Smooth scroll into the "Next General Body Meeting" callout.
+    const t = window.setTimeout(() => {
+      nextGeneralRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 150);
+    return () => window.clearTimeout(t);
+  }, [focus]);
 
   return (
     <div className="relative min-h-screen">
@@ -121,6 +148,116 @@ export function MeetingsPage() {
               transition={{ delay: 0.1, duration: 0.5 }}
               className="space-y-4"
             >
+              <div ref={nextGeneralRef} id="next-general-body" />
+              <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl border border-primary/20">
+                <CardHeader>
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 text-primary">
+                        <Sparkles className="size-4" />
+                        <p className="text-xs tracking-[0.22em] uppercase">Highlighted</p>
+                      </div>
+                      <CardTitle className="text-lg sm:text-xl mt-1">Next General Body Meeting</CardTitle>
+                      <p className="text-sm text-slate-600 mt-2">
+                        This is the meeting members should prioritize. Use the links below for the deck and Social Media Intake.
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Button asChild variant="outline" size="sm" className="w-fit">
+                        <Link to="/forms/social-media">Social Media Intake</Link>
+                      </Button>
+                      <Button asChild variant="outline" size="sm" className="w-fit">
+                        <a href={calendarHref}>View 2026 Calendar</a>
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="grid gap-4 lg:grid-cols-[1.3fr_0.7fr]">
+                  <div className="rounded-2xl border border-black/10 bg-white/5 p-4 nphc-raised">
+                    {nextGeneral ? (
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="min-w-0">
+                          <p className="text-xs uppercase tracking-widest text-slate-500 mb-1">General Body</p>
+                          <h3 className="text-slate-900 text-lg leading-snug">{nextGeneral.label}</h3>
+                          <p className="text-sm text-slate-600 mt-1">{nextGeneral.dateISO}</p>
+                          {nextGeneral.mode ? <p className="text-xs text-slate-500 mt-1">{nextGeneral.mode}</p> : null}
+                        </div>
+                        <Badge className="w-fit border border-primary/25 bg-primary/15 text-primary hover:bg-primary/15">
+                          Upcoming
+                        </Badge>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-slate-600">No upcoming General Body meetings found in the 2026 calendar.</p>
+                    )}
+
+                    <div className="mt-4 flex flex-col sm:flex-row gap-2">
+                      {normalizeJoinUrl(nextGeneralISO ? joinByDate.get(nextGeneralISO)?.joinUrl : "") ? (
+                        <Button asChild className="gap-2">
+                          <a
+                            href={normalizeJoinUrl(nextGeneralISO ? joinByDate.get(nextGeneralISO)?.joinUrl : "") || "#"}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <ExternalLink className="size-4" />
+                            {joinByDate.get(nextGeneralISO)?.joinLabel || "Join Google Meet"}
+                          </a>
+                        </Button>
+                      ) : (
+                        <Button disabled className="gap-2">
+                          <ExternalLink className="size-4" />
+                          Join link (coming soon)
+                        </Button>
+                      )}
+
+                      {featuredDeck.url ? (
+                        <Button asChild variant="outline" className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10">
+                          {featuredDeck.url.trim().startsWith("/") ? (
+                            <Link to={toViewer(featuredDeck.url)}>
+                              <FileText className="size-4" />
+                              View Deck
+                            </Link>
+                          ) : (
+                            <a href={featuredDeck.url} target="_blank" rel="noreferrer">
+                              <FileText className="size-4" />
+                              View Deck
+                            </a>
+                          )}
+                        </Button>
+                      ) : (
+                        <Button asChild variant="outline" className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10">
+                          <Link to="/meetings-delegates?tab=records">
+                            <FileText className="size-4" />
+                            Meeting Archive
+                          </Link>
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-black/10 bg-white/5 p-4 nphc-raised">
+                    <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">Deck Preview</p>
+                    {featuredDeck.imageUrl ? (
+                      <img
+                        src={featuredDeck.imageUrl}
+                        alt={featuredDeck.title}
+                        className="w-full aspect-[4/3] rounded-xl border border-black/10 bg-white object-cover"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full aspect-[4/3] rounded-xl border border-black/10 bg-white/60 flex items-center justify-center text-slate-500">
+                        <div className="flex flex-col items-center gap-2">
+                          <ImageIcon className="size-6" />
+                          <p className="text-xs text-center max-w-[24ch]">
+                            Add a deck cover image in Council Admin → Content → Meetings.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    <p className="text-sm text-slate-700 mt-3 font-semibold">{featuredDeck.title}</p>
+                  </div>
+                </CardContent>
+              </Card>
+
               <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <CardHeader>
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -138,7 +275,12 @@ export function MeetingsPage() {
                         initial={{ x: -15, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ delay: index * 0.08, duration: 0.4 }}
-                        className="flex flex-col sm:flex-row items-start gap-4 p-4 rounded-lg border border-black/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-colors group"
+                        className={[
+                          "flex flex-col sm:flex-row items-start gap-4 p-4 rounded-lg border border-black/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-colors group",
+                          meeting.kind === "general" && meeting.dateISO === nextGeneralISO
+                            ? "border-primary/40 bg-primary/5 shadow-[0_20px_60px_rgba(11,189,176,0.18)]"
+                            : "",
+                        ].join(" ")}
                       >
                         <div className="p-3 rounded-xl border border-primary/25 bg-primary/15 text-primary text-center min-w-[4rem] flex-shrink-0">
                           <div className="text-2xl">{Number(meeting.dateISO.slice(8, 10))}</div>
@@ -159,7 +301,7 @@ export function MeetingsPage() {
                             </div>
                             <div className="flex flex-col items-start sm:items-end gap-2">
                               <Badge className="w-fit border border-primary/25 bg-primary/15 text-primary hover:bg-primary/15">
-                                {meeting.type}
+                                {meeting.kind === "general" && meeting.dateISO === nextGeneralISO ? "Next General Body" : meeting.type}
                               </Badge>
                               {normalizeJoinUrl(meeting.joinUrl) ? (
                                 <Button asChild variant="outline" size="sm" className="w-full sm:w-auto gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10">

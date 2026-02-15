@@ -21,6 +21,9 @@ function sanitizeList(input, limit, mapFn) {
 
 function sanitizePayload(input) {
   return {
+    featuredDeckTitle: t(input?.featuredDeckTitle, 160),
+    featuredDeckImageUrl: t(input?.featuredDeckImageUrl, 800),
+    featuredDeckUrl: t(input?.featuredDeckUrl, 800),
     upcomingMeetings: sanitizeList(input?.upcomingMeetings, 60, (raw, idx) => ({
       id: t(raw?.id || `upcoming-${idx + 1}`, 64) || `upcoming-${idx + 1}`,
       title: t(raw?.title, 160),
@@ -28,6 +31,8 @@ function sanitizePayload(input) {
       time: t(raw?.time, 40),
       location: t(raw?.location, 160),
       type: t(raw?.type, 80),
+      joinUrl: t(raw?.joinUrl, 800),
+      joinLabel: t(raw?.joinLabel, 120),
     })).filter((m) => m.title && m.date),
     meetingRecords: sanitizeList(input?.meetingRecords, 200, (raw, idx) => ({
       id: t(raw?.id || `record-${idx + 1}`, 64) || `record-${idx + 1}`,

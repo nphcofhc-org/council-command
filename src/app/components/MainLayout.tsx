@@ -149,6 +149,14 @@ export function MainLayout() {
         <div className="px-6 py-4 border-t border-white/10">
           <p className="text-white/55 text-xs">{footerText}</p>
           <p className="text-white/35 text-[11px] mt-1">{footerSubtext}</p>
+          <a
+            href="https://www.xdesignlabs.co/"
+            target="_blank"
+            rel="noreferrer"
+            className="mt-2 inline-flex text-[11px] text-white/35 hover:text-primary transition-colors"
+          >
+            Created by Xceptional Design Lab, LLC
+          </a>
         </div>
       </aside>
 
@@ -257,6 +265,14 @@ export function MainLayout() {
                   ) : null}
                   <p className="text-slate-400 text-xs">Internal Use Only</p>
                   <p className="text-slate-300 text-xs mt-1">&copy; 2026 NPHC of Hudson County</p>
+                  <a
+                    href="https://www.xdesignlabs.co/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-2 inline-flex text-xs text-slate-500 hover:text-primary transition-colors"
+                  >
+                    Created by Xceptional Design Lab, LLC
+                  </a>
                 </div>
               </div>
             </motion.div>

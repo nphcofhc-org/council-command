@@ -20,6 +20,9 @@ export function CouncilMeetingsContentPage() {
     upcomingMeetings: [],
     meetingRecords: [],
     delegateReports: [],
+    featuredDeckTitle: "",
+    featuredDeckImageUrl: "",
+    featuredDeckUrl: "",
   });
 
   useEffect(() => {
@@ -86,6 +89,43 @@ export function CouncilMeetingsContentPage() {
             {message ? <p className="text-sm text-emerald-300">{message}</p> : null}
             {error ? <p className="text-sm text-rose-300">{error}</p> : null}
             {loading ? <p className="text-sm text-slate-500">Loading...</p> : null}
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Featured Deck (Meetings Callout)</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="space-y-1 md:col-span-2">
+                    <Label>Deck Title</Label>
+                    <Input
+                      value={form.featuredDeckTitle || ""}
+                      onChange={(e) => setForm((p) => ({ ...p, featuredDeckTitle: e.target.value }))}
+                      placeholder="e.g., February 2026 General Body Meeting Deck"
+                    />
+                  </div>
+                  <div className="space-y-1 md:col-span-2">
+                    <Label>Deck Cover Image URL</Label>
+                    <Input
+                      value={form.featuredDeckImageUrl || ""}
+                      onChange={(e) => setForm((p) => ({ ...p, featuredDeckImageUrl: e.target.value }))}
+                      placeholder="https://..."
+                    />
+                    <p className="text-xs text-slate-500 mt-1">
+                      Tip: use a direct image URL (PNG/JPG). If the image is private, it will not render.
+                    </p>
+                  </div>
+                  <div className="space-y-1 md:col-span-2">
+                    <Label>Deck Link URL (Slides/PDF)</Label>
+                    <Input
+                      value={form.featuredDeckUrl || ""}
+                      onChange={(e) => setForm((p) => ({ ...p, featuredDeckUrl: e.target.value }))}
+                      placeholder="/docs/your-deck.pdf or https://..."
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
             <Card>
               <CardHeader>
