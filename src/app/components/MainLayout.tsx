@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { useSiteConfig } from "../hooks/use-site-data";
 import { useCouncilSession } from "../hooks/use-council-session";
 import { useEditorMode } from "../hooks/use-editor-mode";
+import { usePreviewDevice } from "./ui/use-mobile";
 
 const baseNavItems = [
   { to: "/", label: "Home", icon: Home },
@@ -24,6 +25,11 @@ export function MainLayout() {
   const { data: config } = useSiteConfig();
   const { session } = useCouncilSession();
   const { editorMode, toggleEditorMode } = useEditorMode();
+  const { device: previewDevice, setDevice: setPreviewDevice } = usePreviewDevice();
+
+  const forceMobileChrome = session.isSiteEditor && editorMode && previewDevice === "mobile";
+  const showDesktopSidebar = !forceMobileChrome;
+  const showMobileChrome = forceMobileChrome;
 
   const navItems = session.isCouncilAdmin
     ? [...baseNavItems, { to: "/council-admin", label: "Council Admin", icon: Shield }]
@@ -47,12 +53,24 @@ export function MainLayout() {
   const councilName = config?.councilName || "NPHC Hudson County";
   const footerText = config?.footerText || "© 2026 National Pan-Hellenic Council of Hudson County";
   const footerSubtext = config?.footerSubtext || "Internal Governance Portal · Authorized Access Only";
+  const logoUrl =
+    config?.logoUrl ||
+    "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/NPHC%20of%20HC%20LOGO%20Black.PNG";
 
   return (
     <div className="min-h-screen bg-background text-foreground lg:flex">
       {/* Desktop Sidebar Navigation */}
-      <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:sticky lg:top-0 lg:h-screen border-r border-white/10 bg-black text-white nphc-holo-surface">
+      {showDesktopSidebar ? (
+        <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:sticky lg:top-0 lg:h-screen border-r border-white/10 bg-black text-white nphc-holo-surface">
         <div className="px-6 pt-6 pb-4 border-b border-white/10">
+          <NavLink to="/" className="inline-flex items-center gap-3">
+            <img
+              src={logoUrl}
+              alt="NPHC of Hudson County"
+              className="h-9 w-auto brightness-0 invert"
+              loading="eager"
+            />
+          </NavLink>
           <p className="text-[11px] tracking-[0.25em] uppercase text-white/55">
             {councilName.includes("National") ? "National Pan-Hellenic Council" : councilName}
           </p>
@@ -69,6 +87,28 @@ export function MainLayout() {
               </button>
             ) : null}
           </div>
+
+          {session.isSiteEditor && editorMode ? (
+            <div className="mt-3 flex items-center gap-2">
+              <span className="text-[10px] tracking-[0.22em] uppercase text-white/40">Preview</span>
+              <button
+                type="button"
+                onClick={() => setPreviewDevice(previewDevice === "mobile" ? "desktop" : "mobile")}
+                className="nphc-holo-btn rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[10px] tracking-widest uppercase text-white/70 hover:text-white hover:border-primary/60 transition-colors"
+                title="Toggle between desktop and mobile preview"
+              >
+                {previewDevice === "mobile" ? "Mobile" : "Desktop"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewDevice("auto")}
+                className="nphc-holo-btn rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[10px] tracking-widest uppercase text-white/55 hover:text-white hover:border-primary/60 transition-colors"
+                title="Return to auto (real device width)"
+              >
+                Auto
+              </button>
+            </div>
+          ) : null}
         </div>
 
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
@@ -78,7 +118,7 @@ export function MainLayout() {
               to={item.to}
               end={item.to === "/"}
               className={({ isActive }) =>
-                `nphc-holo-btn flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all duration-200 ${
+                `nphc-holo-btn flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all duration-200 drop-shadow-[0_0_12px_rgba(24,224,208,0.10)] ${
                   isActive
                     ? "bg-primary/10 text-primary border border-primary/25 drop-shadow-[0_0_14px_rgba(11,189,176,0.35)]"
                     : "text-white/75 hover:bg-white/10 hover:text-primary border border-transparent"
@@ -95,12 +135,18 @@ export function MainLayout() {
           <p className="text-white/55 text-xs">{footerText}</p>
           <p className="text-white/35 text-[11px] mt-1">{footerSubtext}</p>
         </div>
-      </aside>
+        </aside>
+      ) : null}
 
       {/* Main Column */}
       <div className="flex min-h-screen flex-1 flex-col w-full">
       {/* Top Navigation Bar */}
-      <nav className="lg:hidden nphc-holo-nav sticky top-0 z-50 border-b border-black/10 bg-white/60 text-slate-900 backdrop-blur-xl">
+      <nav
+        className={[
+          "nphc-holo-nav sticky top-0 z-50 border-b border-black/10 bg-white/60 text-slate-900 backdrop-blur-xl",
+          showMobileChrome ? "" : "lg:hidden",
+        ].join(" ")}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14">
             {/* Mobile: hamburger + title */}
@@ -112,9 +158,12 @@ export function MainLayout() {
               >
                 {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
               </button>
-              <span className="text-sm tracking-wide">
-                NPHC <span className="text-primary">Hudson County</span>
-              </span>
+              <NavLink to="/" className="flex items-center gap-2">
+                <img src={logoUrl} alt="NPHC" className="h-7 w-auto" />
+                <span className="text-sm tracking-wide">
+                  NPHC <span className="text-primary">Hudson County</span>
+                </span>
+              </NavLink>
             </div>
 
             {/* Desktop Navigation Links */}
@@ -135,7 +184,7 @@ export function MainLayout() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-white/70 z-40 lg:hidden"
+              className={["fixed inset-0 bg-white/70 z-40", showMobileChrome ? "" : "lg:hidden"].join(" ")}
               onClick={() => setMobileOpen(false)}
             />
             <motion.div
@@ -143,7 +192,10 @@ export function MainLayout() {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed bottom-0 left-0 top-14 z-40 w-72 overflow-y-auto border-r border-black/10 bg-white/70 backdrop-blur-xl lg:hidden"
+              className={[
+                "fixed bottom-0 left-0 top-14 z-40 w-72 overflow-y-auto border-r border-black/10 bg-white/70 backdrop-blur-xl",
+                showMobileChrome ? "" : "lg:hidden",
+              ].join(" ")}
             >
               <div className="py-4">
                 <div className="px-6 pb-4 mb-2 border-b border-black/10">
@@ -200,7 +252,13 @@ export function MainLayout() {
 
       {/* Page Content */}
       <main className="flex-1">
-        <Outlet />
+        {showMobileChrome ? (
+          <div className="mx-auto max-w-[420px] min-h-screen bg-background border-x border-black/10 shadow-[0_24px_80px_rgba(0,0,0,0.12)]">
+            <Outlet />
+          </div>
+        ) : (
+          <Outlet />
+        )}
       </main>
 
       {/* Footer */}

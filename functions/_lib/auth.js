@@ -84,7 +84,17 @@ export async function getSessionState(request, env) {
     }
   }
   const allowlist = parseCouncilAdminEmails(env.COUNCIL_ADMIN_EMAILS || "");
-  const siteEditors = parseSiteEditorEmails(env.SITE_EDITOR_EMAILS || "");
+  const siteEditorRaw =
+    env.SITE_ADMIN_EMAILS ||
+    env.SITE_EDITOR_EMAILS ||
+    "";
+  const fallbackPresidentEmail = "president.nphcofhc@gmail.com";
+  const siteEditors = (() => {
+    const parsed = parseSiteEditorEmails(siteEditorRaw);
+    if (parsed.length > 0) return parsed;
+    // Safe default: if the allowlist isn't configured, only allow the president.
+    return [fallbackPresidentEmail];
+  })();
   const isAuthenticated = email.length > 0;
   const isCouncilAdmin = isAuthenticated && allowlist.includes(email);
   // Site editors are a tighter allowlist used for content updates.

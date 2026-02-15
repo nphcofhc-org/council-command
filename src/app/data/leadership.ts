@@ -5,6 +5,10 @@ export type LeadershipMember = {
   chapter: string;
   email?: string;
   imageUrl?: string | null;
+  profession?: string;
+  degrees?: string[];
+  committees?: string[];
+  funFacts?: string[];
 };
 
 export type LeadershipContent = {
@@ -17,7 +21,13 @@ export const DEFAULT_CONTACT_EMAIL = "nphcofhudsoncounty@gmail.com";
 export const DEFAULT_LEADERSHIP_CONTENT: LeadershipContent = {
   executiveBoard: [
     { id: "eb-1", title: "President", name: "Christopher DeMarkus", chapter: "Alpha Phi Alpha Fraternity, Inc." },
-    { id: "eb-2", title: "Vice President", name: "Kimberly Conway", chapter: "Alpha Kappa Alpha Sorority, Inc." },
+    {
+      id: "eb-2",
+      title: "Vice President",
+      name: "Kimberly Conway",
+      chapter: "Alpha Kappa Alpha Sorority, Inc.",
+      committees: ["Program Committee (Chair)"],
+    },
     { id: "eb-3", title: "Secretary", name: "April Stitt", chapter: "Sigma Gamma Rho Sorority, Inc." },
     { id: "eb-4", title: "Treasurer", name: "Gibrill Kamara", chapter: "Alpha Phi Alpha Fraternity, Inc." },
     { id: "eb-5", title: "Financial Secretary", name: "Chris Gadsden", chapter: "Phi Beta Sigma Fraternity, Inc." },

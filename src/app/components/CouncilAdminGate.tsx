@@ -40,7 +40,7 @@ export function CouncilAdminGate({ children }: CouncilAdminGateProps) {
           <CardContent className="space-y-4">
             <p className="text-sm text-slate-700">
               If this is unexpected, confirm your Cloudflare Access login email and that it is listed in{" "}
-              <code>SITE_EDITOR_EMAILS</code>.
+              <code>SITE_ADMIN_EMAILS</code> (or legacy <code>SITE_EDITOR_EMAILS</code>).
             </p>
             {error ? (
               <p className="rounded-md border border-rose-400/30 bg-white/55 px-3 py-2 text-xs text-rose-200">

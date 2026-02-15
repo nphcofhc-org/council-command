@@ -38,8 +38,33 @@ function sanitizeMember(raw, fallbackPrefix, index) {
   const email = sanitizeText(raw?.email, 160);
   const imageUrlRaw = sanitizeText(raw?.imageUrl, 2048);
   const imageUrl = imageUrlRaw || null;
+  const profession = sanitizeText(raw?.profession, 160);
 
-  return { id, name, title, chapter, email: email || undefined, imageUrl };
+  const sanitizeStringList = (value, maxItems = 10, maxLen = 120) => {
+    if (!Array.isArray(value)) return undefined;
+    const list = value
+      .map((v) => sanitizeText(v, maxLen))
+      .filter(Boolean)
+      .slice(0, maxItems);
+    return list.length > 0 ? list : undefined;
+  };
+
+  const degrees = sanitizeStringList(raw?.degrees, 12, 140);
+  const committees = sanitizeStringList(raw?.committees, 12, 140);
+  const funFacts = sanitizeStringList(raw?.funFacts, 10, 160);
+
+  return {
+    id,
+    name,
+    title,
+    chapter,
+    email: email || undefined,
+    imageUrl,
+    profession: profession || undefined,
+    degrees,
+    committees,
+    funFacts,
+  };
 }
 
 function sanitizeList(list, prefix) {

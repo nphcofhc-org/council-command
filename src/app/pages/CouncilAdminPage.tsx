@@ -106,7 +106,7 @@ export function CouncilAdminPage() {
               ) : (
                 <Button type="button" variant="outline" className="w-full sm:w-auto border-black/15 bg-white/5 text-slate-400" disabled>
                   <Lock className="mr-2 size-4" />
-                  President Only
+                  Site Administration Only
                 </Button>
               )}
             </CardContent>
@@ -143,7 +143,7 @@ export function CouncilAdminPage() {
               ) : (
                 <Button type="button" variant="outline" className="w-full sm:w-auto border-black/15 bg-white/5 text-slate-400" disabled>
                   <Lock className="mr-2 size-4" />
-                  President Only
+                  Site Administration Only
                 </Button>
               )}
             </CardContent>
@@ -167,7 +167,7 @@ export function CouncilAdminPage() {
               ) : (
                 <Button type="button" variant="outline" className="w-full sm:w-auto border-black/15 bg-white/5 text-slate-400" disabled>
                   <Lock className="mr-2 size-4" />
-                  President Only
+                  Site Administration Only
                 </Button>
               )}
             </CardContent>
@@ -191,7 +191,7 @@ export function CouncilAdminPage() {
               ) : (
                 <Button type="button" variant="outline" className="w-full sm:w-auto border-black/15 bg-white/5 text-slate-400" disabled>
                   <Lock className="mr-2 size-4" />
-                  President Only
+                  Site Administration Only
                 </Button>
               )}
             </CardContent>
@@ -215,7 +215,7 @@ export function CouncilAdminPage() {
               ) : (
                 <Button type="button" variant="outline" className="w-full sm:w-auto border-black/15 bg-white/5 text-slate-400" disabled>
                   <Lock className="mr-2 size-4" />
-                  President Only
+                  Site Administration Only
                 </Button>
               )}
             </CardContent>
@@ -239,7 +239,7 @@ export function CouncilAdminPage() {
               ) : (
                 <Button type="button" variant="outline" className="w-full sm:w-auto border-black/15 bg-white/5 text-slate-400" disabled>
                   <Lock className="mr-2 size-4" />
-                  President Only
+                  Site Administration Only
                 </Button>
               )}
             </CardContent>
@@ -280,7 +280,7 @@ export function CouncilAdminPage() {
               ) : (
                 <Button type="button" variant="outline" className="w-full sm:w-auto border-black/15 bg-white/5 text-slate-400" disabled>
                   <Lock className="mr-2 size-4" />
-                  President Only
+                  Site Administration Only
                 </Button>
               )}
             </CardContent>

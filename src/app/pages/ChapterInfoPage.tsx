@@ -3,12 +3,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../co
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Badge } from "../components/ui/badge";
-import { Mail, FileText, Calendar, User } from "lucide-react";
+import { Mail, FileText, Calendar, User, Award, Briefcase, Sparkles } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { motion } from "motion/react";
 import { useChapterInfoData } from "../hooks/use-site-data";
 import { StatusBadge } from "../components/status-badge";
 import { fetchLeadershipContent } from "../data/admin-api";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../components/ui/dialog";
 import {
   DEFAULT_CONTACT_EMAIL,
   DEFAULT_LEADERSHIP_CONTENT,
@@ -65,6 +66,7 @@ function MemberPhoto({ member }: { member: LeadershipMember }) {
 export function ChapterInfoPage() {
   const { data } = useChapterInfoData();
   const [leadership, setLeadership] = useState<LeadershipContent>(DEFAULT_LEADERSHIP_CONTENT);
+  const [selectedMember, setSelectedMember] = useState<LeadershipMember | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -89,6 +91,8 @@ export function ChapterInfoPage() {
     const subject = encodeURIComponent(`Contact Request: ${member.title} (${member.name})`);
     return `mailto:${recipient}?subject=${subject}`;
   };
+
+  const selectedContactHref = selectedMember ? toContactHref(selectedMember) : "#";
 
   return (
     <div className="relative min-h-screen">
@@ -153,7 +157,14 @@ export function ChapterInfoPage() {
                         <Card className="h-full transition-all duration-300 group hover:-translate-y-1 hover:border-primary/40 hover:bg-white/10">
                           <CardContent className="p-5">
                             <div className="flex flex-col items-center text-center">
-                              <MemberPhoto member={officer} />
+                              <button
+                                type="button"
+                                className="nphc-holo-btn rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                onClick={() => setSelectedMember(officer)}
+                                aria-label={`View profile for ${officer.name}`}
+                              >
+                                <MemberPhoto member={officer} />
+                              </button>
                               <h3 className="text-slate-900 text-base font-semibold leading-tight">{officer.name}</h3>
                               <Badge variant="secondary" className="mt-2 mb-2 border border-primary/25 bg-primary/15 text-primary">
                                 {officer.title}
@@ -191,7 +202,14 @@ export function ChapterInfoPage() {
                         <Card className="h-full transition-all duration-300 group hover:-translate-y-1 hover:border-primary/40 hover:bg-white/10">
                           <CardContent className="p-5">
                             <div className="flex flex-col items-center text-center">
-                              <MemberPhoto member={chair} />
+                              <button
+                                type="button"
+                                className="nphc-holo-btn rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                onClick={() => setSelectedMember(chair)}
+                                aria-label={`View profile for ${chair.name}`}
+                              >
+                                <MemberPhoto member={chair} />
+                              </button>
                               <h3 className="text-slate-900 text-base font-semibold leading-tight">{chair.name}</h3>
                               <Badge variant="secondary" className="mt-2 mb-2 border border-primary/25 bg-primary/15 text-primary">
                                 {chair.title}
@@ -384,6 +402,98 @@ export function ChapterInfoPage() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <Dialog open={!!selectedMember} onOpenChange={(open) => setSelectedMember(open ? selectedMember : null)}>
+        <DialogContent className="nphc-glass bg-white/70 border border-black/10 shadow-[0_36px_120px_rgba(0,0,0,0.22)] max-w-2xl">
+          {selectedMember ? (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-slate-900">{selectedMember.name}</DialogTitle>
+                <DialogDescription className="text-slate-600">
+                  {selectedMember.title} {selectedMember.chapter ? `• ${selectedMember.chapter}` : ""}
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="grid gap-5 sm:grid-cols-[180px_1fr]">
+                <div className="flex flex-col items-center sm:items-start">
+                  <MemberPhoto member={selectedMember} />
+                  <a
+                    href={selectedContactHref}
+                    className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:brightness-110 transition"
+                  >
+                    <Mail className="size-4" />
+                    Contact
+                  </a>
+                </div>
+
+                <div className="space-y-3 text-sm">
+                  {selectedMember.profession ? (
+                    <div className="flex items-start gap-2">
+                      <Briefcase className="mt-0.5 size-4 text-slate-500" />
+                      <div>
+                        <p className="text-slate-500 text-xs tracking-widest uppercase">Profession</p>
+                        <p className="text-slate-800">{selectedMember.profession}</p>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {Array.isArray(selectedMember.degrees) && selectedMember.degrees.length > 0 ? (
+                    <div className="flex items-start gap-2">
+                      <Award className="mt-0.5 size-4 text-slate-500" />
+                      <div>
+                        <p className="text-slate-500 text-xs tracking-widest uppercase">Degrees / Certifications</p>
+                        <ul className="mt-1 space-y-1 text-slate-800 list-disc list-inside">
+                          {selectedMember.degrees.map((d) => (
+                            <li key={d}>{d}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {Array.isArray(selectedMember.committees) && selectedMember.committees.length > 0 ? (
+                    <div className="flex items-start gap-2">
+                      <FileText className="mt-0.5 size-4 text-slate-500" />
+                      <div>
+                        <p className="text-slate-500 text-xs tracking-widest uppercase">Committees</p>
+                        <ul className="mt-1 space-y-1 text-slate-800 list-disc list-inside">
+                          {selectedMember.committees.map((c) => (
+                            <li key={c}>{c}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {Array.isArray(selectedMember.funFacts) && selectedMember.funFacts.length > 0 ? (
+                    <div className="flex items-start gap-2">
+                      <Sparkles className="mt-0.5 size-4 text-slate-500" />
+                      <div>
+                        <p className="text-slate-500 text-xs tracking-widest uppercase">Fun Facts</p>
+                        <ul className="mt-1 space-y-1 text-slate-800 list-disc list-inside">
+                          {selectedMember.funFacts.map((f) => (
+                            <li key={f}>{f}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {!selectedMember.profession &&
+                  (!selectedMember.degrees || selectedMember.degrees.length === 0) &&
+                  (!selectedMember.committees || selectedMember.committees.length === 0) &&
+                  (!selectedMember.funFacts || selectedMember.funFacts.length === 0) ? (
+                    <p className="text-slate-600">
+                      Profile details aren&apos;t filled in yet. (Admin can add profession, degrees/certifications,
+                      committees, and fun facts.)
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+            </>
+          ) : null}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
