@@ -42,6 +42,7 @@ import {
   successMetrics,
   decisionFramework,
   references,
+  jerseyCityBlockPartyCostAnalysis,
 } from "../data/signature-event-comparison";
 
 function money(n: number) {
@@ -729,7 +730,17 @@ export function SignatureEventComparisonReportPage() {
                     Local execution considerations to inform planning assumptions (permits, insurance, and admin lead time).
                   </p>
                 </CardHeader>
-                <CardContent className="grid gap-6 lg:grid-cols-2">
+                <CardContent className="space-y-6">
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
+                    <p className="text-xs uppercase tracking-widest text-slate-500">Additional Figures (Reference Only)</p>
+                    <p className="text-sm text-slate-600 mt-2">{jerseyCityBlockPartyCostAnalysis.overview}</p>
+                    <p className="text-xs text-slate-500 mt-2">
+                      If any of these conflict with the committee report, treat the committee report as the primary source of truth for the
+                      chapter decision.
+                    </p>
+                  </div>
+
+                  <div className="grid gap-6 lg:grid-cols-2">
                   <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
                     <p className="text-xs uppercase tracking-widest text-slate-500">Permits + Lead Time</p>
                     <ul className="mt-2 list-disc ml-5 text-sm text-slate-600 space-y-1">
@@ -770,6 +781,33 @@ export function SignatureEventComparisonReportPage() {
                         </a>
                       </li>
                     </ul>
+                  </div>
+                  </div>
+
+                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
+                    <p className="text-xs uppercase tracking-widest text-slate-500">100-Person Budget Scenarios</p>
+                    <div className="mt-3 grid gap-3 md:grid-cols-3">
+                      {jerseyCityBlockPartyCostAnalysis.scenarios.map((s) => (
+                        <div key={s.name} className="rounded-xl border border-black/10 bg-white/60 p-4 nphc-raised">
+                          <p className="text-sm font-semibold text-slate-900">{s.name}</p>
+                          <p className="mt-2 text-2xl font-extrabold tracking-tight text-slate-900">
+                            {money(s.total)}
+                          </p>
+                          <ul className="mt-3 list-disc ml-5 text-xs text-slate-600 space-y-1">
+                            {s.notes.map((n) => (
+                              <li key={n}>{n}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-4 grid gap-3 md:grid-cols-2">
+                      {jerseyCityBlockPartyCostAnalysis.caveats.map((c) => (
+                        <div key={c} className="rounded-xl border border-black/10 bg-white/60 p-4 nphc-raised">
+                          <p className="text-sm text-slate-700">{c}</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </CardContent>
               </Card>

@@ -43,7 +43,7 @@ function FormsQuickPane() {
   return (
     <>
       {/* Desktop: hover-to-open pane */}
-      <div className="hidden lg:block fixed right-0 top-24 z-40 group">
+      <div className="hidden lg:block fixed right-0 top-24 z-40 group" data-tour="forms-rail">
         <div
           className={[
             "nphc-holo-surface w-[360px] rounded-l-2xl border border-black/10 bg-white/75 backdrop-blur-xl",
@@ -80,6 +80,13 @@ function FormsQuickPane() {
                     key={l.href}
                     href={l.href}
                     className="nphc-holo-btn block rounded-xl border border-black/10 bg-white/60 px-3 py-2.5 hover:border-primary/35 hover:bg-white/80 transition"
+                    data-tour={
+                      l.href === "#/forms/reimbursement"
+                        ? "forms-reimbursement"
+                        : l.href === "#/forms/social-media"
+                          ? "forms-social"
+                          : undefined
+                    }
                   >
                     <div className="flex items-center justify-between gap-3">
                       <span className="text-sm text-slate-900">{l.label}</span>
@@ -95,7 +102,7 @@ function FormsQuickPane() {
       </div>
 
       {/* Mobile: tap-to-open */}
-      <div className="lg:hidden fixed right-3 bottom-3 z-40">
+      <div className="lg:hidden fixed right-3 bottom-3 z-40" data-tour="forms-rail">
         {openMobile ? (
           <div className="nphc-holo-surface w-[92vw] max-w-sm rounded-2xl border border-black/10 bg-white/80 backdrop-blur-xl shadow-[0_24px_80px_rgba(0,0,0,0.18)]">
             <div className="flex items-center justify-between px-4 pt-4">
@@ -118,6 +125,13 @@ function FormsQuickPane() {
                   key={l.href}
                   href={l.href}
                   className="nphc-holo-btn block rounded-xl border border-black/10 bg-white/60 px-3 py-2.5 hover:border-primary/35 hover:bg-white/80 transition"
+                  data-tour={
+                    l.href === "#/forms/reimbursement"
+                      ? "forms-reimbursement"
+                      : l.href === "#/forms/social-media"
+                        ? "forms-social"
+                        : undefined
+                  }
                 >
                   <div className="flex items-center justify-between gap-3">
                     <span className="text-sm text-slate-900">{l.label}</span>
@@ -439,6 +453,7 @@ export function HomePage() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.15, duration: 0.5 }}
             className="flex flex-wrap lg:flex-nowrap items-center justify-start gap-3 sm:gap-4 overflow-x-auto pb-2"
+            data-tour="quick-links"
           >
             {[...row1Links, ...row2Links].map((link, i) => (
               <motion.a

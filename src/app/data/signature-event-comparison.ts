@@ -51,6 +51,58 @@ export const reportMeta: ReportMeta = {
   links: [],
 };
 
+export const jerseyCityBlockPartyCostAnalysis = {
+  title: "Jersey City Block Party Cost Analysis (Nonprofit Reference)",
+  overview:
+    "The figures below are third-party reference estimates for a 100-person community block party and are provided as additional context only. They are not a replacement for the committee’s signature-event budget estimate, which assumes a larger community-facing initiative (e.g., supplies/backpacks, signage, permits/insurance, and broader logistics).",
+  requirements: [
+    {
+      label: "Permitting",
+      detail:
+        "Jersey City special event permitting guidance indicates early submission/lead time (verify current requirements for the chosen venue/street closure).",
+      sourceLabel: "Jersey City Office of Cultural Affairs",
+      sourceUrl: "https://jerseycityculture.org/events/special-event-permits/",
+    },
+    {
+      label: "$1M General Liability Insurance (Typical)",
+      detail:
+        "Special-event policies often range roughly $150–$400 for a single-day event, depending on risk profile and vendor.",
+      sourceLabel: "PPS NJ Special Event Permits Overview",
+      sourceUrl: "https://grouppps.com/new-jersey-special-event-permits-2/",
+    },
+  ],
+  scenarios: [
+    {
+      name: "Lean Nonprofit Block Party (100 people)",
+      total: 1000,
+      notes: [
+        "Potluck-style food + basic drinks/paper goods.",
+        "Minimal rentals and DIY entertainment.",
+      ],
+    },
+    {
+      name: "Moderate Block Party (100 people)",
+      total: 2700,
+      notes: [
+        "Partially catered food + rentals.",
+        "Bounce house + DJ/sound.",
+      ],
+    },
+    {
+      name: "Full-Service Block Party (100 people)",
+      total: 6000,
+      notes: [
+        "Catering + tents/rentals.",
+        "Enhanced entertainment + staffing/extras.",
+      ],
+    },
+  ],
+  caveats: [
+    "These are reference scenarios for ~100 attendees. The committee’s Block Party estimate ($5,000–$10,000) includes broader signature-event scope and may be higher depending on supply distribution goals and partner requirements.",
+    "Actual out-of-pocket costs can be reduced with donations, in-kind support, sponsors, and fundraising.",
+  ],
+};
+
 export const keyFindings: string[] = [
   'Documented "ticket fatigue" with declining attendance at paid events and member calls for more accessible programming.',
   "Leadership capacity is stretched, with multiple vacant positions and reliance on a small core group of active members.",

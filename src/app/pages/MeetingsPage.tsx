@@ -134,7 +134,7 @@ export function MeetingsPage() {
         </motion.div>
 
         <Tabs key={initialTab} defaultValue={initialTab} className="space-y-6">
-          <TabsList className="w-full sm:w-auto flex-wrap justify-start border border-black/10 bg-white/5 backdrop-blur-xl">
+          <TabsList className="w-full sm:w-auto flex-wrap justify-start border border-black/10 bg-white/5 backdrop-blur-xl" data-tour="meeting-tabs">
             <TabsTrigger value="upcoming" className="text-xs sm:text-sm">Upcoming Meetings</TabsTrigger>
             <TabsTrigger value="records" className="text-xs sm:text-sm">Agendas & Minutes</TabsTrigger>
             <TabsTrigger value="reports" className="text-xs sm:text-sm">Delegate Reports</TabsTrigger>
@@ -149,7 +149,7 @@ export function MeetingsPage() {
               className="space-y-4"
             >
               <div ref={nextGeneralRef} id="next-general-body" />
-              <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl border border-primary/20">
+              <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl border border-primary/20" data-tour="next-general-callout">
                 <CardHeader>
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0">
@@ -194,6 +194,7 @@ export function MeetingsPage() {
                       {normalizeJoinUrl(nextGeneralISO ? joinByDate.get(nextGeneralISO)?.joinUrl : "") ? (
                         <Button asChild className="gap-2">
                           <a
+                            data-tour="join-next-general"
                             href={normalizeJoinUrl(nextGeneralISO ? joinByDate.get(nextGeneralISO)?.joinUrl : "") || "#"}
                             target="_blank"
                             rel="noreferrer"

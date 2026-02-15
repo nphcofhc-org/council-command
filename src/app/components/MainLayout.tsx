@@ -1,4 +1,4 @@
-import { Outlet, NavLink, useLocation } from "react-router";
+import { Outlet, NavLink, useLocation, useNavigate } from "react-router";
 import { useState, useEffect } from "react";
 import { Home, Users, Calendar, TrendingUp, FolderOpen, Wallet, Shield, Menu, X, Target, ClipboardList, MessagesSquare } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
@@ -9,6 +9,7 @@ import { usePreviewDevice } from "./ui/use-mobile";
 import { useMemberDirectory } from "../hooks/use-member-directory";
 import { sessionDisplayName, sessionRoleLabel } from "../utils/user-display";
 import { IntroSplash } from "./IntroSplash";
+import { GuidedTour } from "./GuidedTour";
 
 const baseNavItems: Array<{ to: string; label: string; icon: any; danger?: boolean }> = [
   { to: "/", label: "Home", icon: Home },
@@ -29,7 +30,9 @@ const baseNavItems: Array<{ to: string; label: string; icon: any; danger?: boole
 
 export function MainLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [tourRequested, setTourRequested] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { data: config } = useSiteConfig();
   const { session } = useCouncilSession();
   const { editorMode, toggleEditorMode } = useEditorMode();
@@ -78,8 +81,17 @@ export function MainLayout() {
   return (
     <div className="min-h-screen bg-background text-foreground lg:flex">
       <IntroSplash session={session} directory={directory} logoUrl={faviconLogoUrl} fallbackLogoUrl={logoUrl} />
+      <GuidedTour
+        session={session}
+        forceOpen={tourRequested}
+        onForceOpenHandled={() => setTourRequested(false)}
+        onNavigate={(route) => navigate(route)}
+      />
       {/* Desktop Sidebar Navigation */}
-      <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:sticky lg:top-0 lg:h-screen border-r border-white/10 bg-black text-white nphc-holo-surface">
+      <aside
+        className="hidden lg:flex lg:w-64 lg:flex-col lg:sticky lg:top-0 lg:h-screen border-r border-white/10 bg-black text-white nphc-holo-surface"
+        data-tour="nav"
+      >
         <div className="px-6 pt-6 pb-4 border-b border-white/10">
           <NavLink to="/" className="inline-flex items-center gap-3">
             <img
@@ -97,15 +109,27 @@ export function MainLayout() {
             <span className="text-xs text-white/35 tracking-widest uppercase">
               Portal · {identity.name} — {role}
             </span>
-            {session.isSiteEditor ? (
-              <button
-                type="button"
-                onClick={toggleEditorMode}
-                className="nphc-holo-btn rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[10px] tracking-widest uppercase text-white/70 hover:text-white hover:border-primary/60 transition-colors"
-              >
-                {editorMode ? "Editor" : "Member"}
-              </button>
-            ) : null}
+            <div className="flex items-center gap-2">
+              {session.authenticated ? (
+                <button
+                  type="button"
+                  onClick={() => setTourRequested(true)}
+                  className="nphc-holo-btn rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[10px] tracking-widest uppercase text-white/70 hover:text-white hover:border-primary/60 transition-colors"
+                  title="Start the portal tour"
+                >
+                  Tour
+                </button>
+              ) : null}
+              {session.isSiteEditor ? (
+                <button
+                  type="button"
+                  onClick={toggleEditorMode}
+                  className="nphc-holo-btn rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[10px] tracking-widest uppercase text-white/70 hover:text-white hover:border-primary/60 transition-colors"
+                >
+                  {editorMode ? "Editor" : "Member"}
+                </button>
+              ) : null}
+            </div>
           </div>
 
           {session.isSiteEditor && editorMode ? (
@@ -247,6 +271,7 @@ export function MainLayout() {
                     <NavLink
                       to={item.to}
                       end={item.to === "/"}
+                      data-tour={item.to === "/forum" ? "nav-forum" : undefined}
                       className={({ isActive }) =>
                         `flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-200 ${
                           item.danger
