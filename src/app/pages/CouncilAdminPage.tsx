@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Shield, FileText, Lock, AlertTriangle, ClipboardCheck, SlidersHorizontal, Home, Calendar, TrendingUp, FolderOpen, Target, Inbox, Mail, Users, Wallet } from "lucide-react";
+import { Shield, FileText, Lock, ClipboardCheck, SlidersHorizontal, Home, Calendar, TrendingUp, FolderOpen, Target, Inbox, Mail, Users, Wallet } from "lucide-react";
 import { Button } from "../components/ui/button";
-import { Alert, AlertDescription } from "../components/ui/alert";
 import { motion } from "motion/react";
 import { useCouncilAdminData } from "../hooks/use-site-data";
 import { StatusBadge } from "../components/status-badge";
@@ -50,22 +49,6 @@ export function CouncilAdminPage() {
         </div>
 
         <div className="p-4 sm:p-8 max-w-7xl mx-auto relative z-10">
-        {/* Restricted Access Banner */}
-        <motion.div
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Alert className="mb-6 border-rose-400/30 bg-rose-500/10 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
-            <AlertTriangle className="size-4 text-rose-300" />
-            <AlertDescription className="text-rose-100 ml-1 text-sm">
-              <strong>Restricted Access {"\u2013"} Council Leadership Only.</strong>{" "}
-              This section contains confidential council documents and administrative tools.
-              Access is limited to Executive Board members and authorized personnel.
-            </AlertDescription>
-          </Alert>
-        </motion.div>
-
         {/* Page Header */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
@@ -434,7 +417,12 @@ export function CouncilAdminPage() {
                                 size="sm"
                                 className="gap-2 w-full sm:w-auto border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10 transition-all duration-200"
                               >
-                                {isInternalFile(doc.fileUrl) ? (
+                                {doc.fileUrl.startsWith("/council-admin/") ? (
+                                  <Link to={doc.fileUrl}>
+                                    <Lock className="size-3.5" />
+                                    View
+                                  </Link>
+                                ) : isInternalFile(doc.fileUrl) ? (
                                   <Link to={toViewer(doc.fileUrl)}>
                                     <Lock className="size-3.5" />
                                     View
@@ -460,6 +448,11 @@ export function CouncilAdminPage() {
                           </div>
                         </motion.div>
                       ))}
+                      {section.documents.length === 0 ? (
+                        <div className="rounded-lg border border-black/10 bg-white/5 p-4 text-sm text-slate-500">
+                          No documents in this category.
+                        </div>
+                      ) : null}
                     </div>
                   </CardContent>
                 </Card>

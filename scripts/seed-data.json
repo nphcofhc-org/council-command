@@ -244,35 +244,7 @@
     {
       "category": "Financial",
       "iconName": "DollarSign",
-      "documents": [
-        {
-          "id": "idoc-1",
-          "name": "2026 Fiscal Outlook and Budget Plan",
-          "updated": "February 2026",
-          "status": "Current",
-          "fileUrl": "/docs/nphc-of-hudson-county-2026-fiscal-outlook-and-budget-plan.docx"
-        },
-        {
-          "id": "idoc-2",
-          "name": "Proposed 2026 Annual Budget Estimate",
-          "updated": "February 2026",
-          "status": "Draft",
-          "fileUrl": "/docs/national-pan-hellenic-council-of-hudson-county-proposed-2026-annual-budget-estimate.docx"
-        }
-      ]
-    },
-    {
-      "category": "Strategic Planning",
-      "iconName": "Target",
-      "documents": [
-        {
-          "id": "idoc-3",
-          "name": "2024-2025 Operational Audit and Strategy Review",
-          "updated": "February 2026",
-          "status": "Reference",
-          "fileUrl": "/docs/hudson-county-nphc-2024-2025-operational-audit-and-strategy-review.docx"
-        }
-      ]
+      "documents": []
     },
     {
       "category": "Governance",
@@ -282,8 +254,8 @@
           "id": "idoc-4",
           "name": "Comprehensive Data Brief for Intranet Integration",
           "updated": "February 2026",
-          "status": "Reference",
-          "fileUrl": "/docs/nphc-of-hudson-county-comprehensive-data-brief-for-intranet-integration.docx"
+          "status": "Live",
+          "fileUrl": "/council-admin/data-brief"
         }
       ]
     }
