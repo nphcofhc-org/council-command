@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "../components/ui/card";
-import { Bell, Calendar, Clock, ExternalLink, Wallet, DollarSign, CreditCard, ClipboardList, ChevronLeft } from "lucide-react";
+import { Bell, Calendar, Clock, ExternalLink, ClipboardList, ChevronLeft } from "lucide-react";
 import googleBanner from "../../assets/08f5f2f8147d555bb4793ae6a060e3d0c28be71f.png";
 import { motion } from "motion/react";
 import { useHomePageData } from "../hooks/use-site-data";
 import { DynamicIcon } from "../components/icon-resolver";
 import { useMeetingsData } from "../hooks/use-site-data";
 import { useCouncilCalendarSchedule } from "../hooks/use-council-calendar";
-import { TREASURY } from "../data/treasury";
 
 declare global {
   interface Window {
@@ -749,114 +748,6 @@ export function HomePage() {
                       {execSchedule.length === 0 ? <p className="text-sm text-slate-500">No Executive Council meetings listed yet.</p> : null}
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Treasury Snapshot ────────────────────────────────────────────── */}
-      <section className="relative">
-        <div className="px-4 sm:px-8 lg:px-10 py-12 sm:py-14">
-          <motion.div
-            initial={{ x: -30, opacity: 0 }}
-            whileInView={{ x: 0, opacity: 1 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.6 }}
-            className="mb-6"
-          >
-            <div className="flex items-center gap-3 mb-1">
-              <div className="w-8 h-px bg-primary" />
-              <span className="text-xs tracking-[0.2em] uppercase text-slate-500">Treasury</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl text-slate-900">
-              Financial <span className="text-primary">Snapshot</span>
-            </h2>
-          </motion.div>
-
-          <div className="grid gap-6 lg:grid-cols-3">
-            <Card className="lg:col-span-2 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between gap-4 flex-wrap">
-                  <div className="min-w-0">
-                    <p className="text-xs uppercase tracking-widest text-slate-500 mb-1">Total Funds (Cash on Hand)</p>
-                    <p className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
-                      {(TREASURY.balances.lendingClub + TREASURY.balances.cashApp).toLocaleString("en-US", { style: "currency", currency: "USD" })}
-                    </p>
-                    <p className="text-xs text-slate-400 mt-2">{TREASURY.asOfLabel}</p>
-                  </div>
-                  <div className="rounded-xl border border-primary/25 bg-primary/15 text-primary p-3 flex-shrink-0">
-                    <Wallet className="size-5" />
-                  </div>
-                </div>
-
-                <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs uppercase tracking-widest text-slate-500">LendingClub</p>
-                      <CreditCard className="size-4 text-slate-500" />
-                    </div>
-                    <p className="text-xl font-bold text-slate-900 mt-1">
-                      {TREASURY.balances.lendingClub.toLocaleString("en-US", { style: "currency", currency: "USD" })}
-                    </p>
-                  </div>
-                  <div className="rounded-lg border border-black/10 bg-white/5 p-4 nphc-raised">
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs uppercase tracking-widest text-slate-500">Cash App</p>
-                      <DollarSign className="size-4 text-slate-500" />
-                    </div>
-                    <p className="text-xl font-bold text-slate-900 mt-1">
-                      {TREASURY.balances.cashApp.toLocaleString("en-US", { style: "currency", currency: "USD" })}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-5 flex flex-col sm:flex-row gap-2">
-                  <a
-                    href="#/treasury"
-                    className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground px-4 py-2.5 text-sm font-semibold hover:brightness-110 transition w-full sm:w-auto"
-                  >
-                    View Treasury Page
-                  </a>
-                  <a
-                    href="#/forms/reimbursement"
-                    className="inline-flex items-center justify-center rounded-lg border border-black/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10 transition w-full sm:w-auto"
-                  >
-                    Reimbursement Form
-                  </a>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
-              <CardContent className="p-6">
-                <p className="text-xs uppercase tracking-widest text-slate-500 mb-1">Cash App</p>
-                <a
-                  href={TREASURY.cashApp.payUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-xl font-extrabold text-primary hover:underline"
-                >
-                  {TREASURY.cashApp.cashtag}
-                </a>
-                <p className="text-sm text-slate-600 mt-2">Scan or tap the link to submit payments.</p>
-
-                <div className="mt-4 flex items-center justify-between gap-4">
-                  <img
-                    src={TREASURY.cashApp.qrImageUrl}
-                    alt="Cash App QR Code"
-                    className="size-32 rounded-xl border border-black/10 bg-white p-2"
-                    loading="lazy"
-                  />
-                  <a
-                    href={TREASURY.cashApp.payUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center justify-center rounded-lg border border-black/15 bg-white/5 px-3 py-2 text-sm text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10 transition w-fit"
-                  >
-                    Open Link
-                  </a>
                 </div>
               </CardContent>
             </Card>

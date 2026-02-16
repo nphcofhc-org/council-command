@@ -12,6 +12,59 @@ function normalizeEmail(value) {
   return String(value).trim().toLowerCase();
 }
 
+function normalizeTitle(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+const EXEC_TREASURY_ACCESS_TITLES = new Set(["president", "vice president", "treasurer"]);
+
+async function readLeadershipFromDb(db) {
+  if (!db) return null;
+  try {
+    const row = await db
+      .prepare(
+        `SELECT payload_json
+         FROM portal_content_state
+         WHERE section_key = 'chapter_leadership'
+         LIMIT 1`,
+      )
+      .first();
+
+    if (!row?.payload_json) return null;
+    const parsed = JSON.parse(row.payload_json || "{}");
+    const executiveBoard = Array.isArray(parsed?.executiveBoard) ? parsed.executiveBoard : [];
+    const additionalChairs = Array.isArray(parsed?.additionalChairs) ? parsed.additionalChairs : [];
+    return { executiveBoard, additionalChairs };
+  } catch {
+    return null;
+  }
+}
+
+function buildLeadershipAccessMaps(leadership) {
+  const leadershipEmails = new Set();
+  const treasuryAccessEmails = new Set();
+
+  const add = (emailRaw) => {
+    const email = normalizeEmail(emailRaw);
+    if (email) leadershipEmails.add(email);
+    return email;
+  };
+
+  for (const member of leadership?.executiveBoard || []) {
+    const email = add(member?.email);
+    const title = normalizeTitle(member?.title);
+    if (email && EXEC_TREASURY_ACCESS_TITLES.has(title)) {
+      treasuryAccessEmails.add(email);
+    }
+  }
+
+  for (const chair of leadership?.additionalChairs || []) {
+    add(chair?.email);
+  }
+
+  return { leadershipEmails, treasuryAccessEmails };
+}
+
 export function getAuthenticatedEmail(request) {
   for (const headerName of EMAIL_HEADER_CANDIDATES) {
     const value = request.headers.get(headerName);
@@ -96,7 +149,26 @@ export async function getSessionState(request, env) {
     return [fallbackPresidentEmail];
   })();
   const isAuthenticated = email.length > 0;
-  const isCouncilAdmin = isAuthenticated && allowlist.includes(email);
+  let isCouncilAdmin = isAuthenticated && allowlist.includes(email);
+  let isTreasuryAdmin = false;
+
+  // Prefer DB-backed leadership/role checks as the source of truth.
+  // If no leadership data is configured yet, fall back to env allowlists to avoid lockouts.
+  if (isAuthenticated && env.DB) {
+    const leadership = await readLeadershipFromDb(env.DB);
+    if (leadership) {
+      const maps = buildLeadershipAccessMaps(leadership);
+      const hasLeadershipEntries = maps.leadershipEmails.size > 0;
+      const hasTreasuryEntries = maps.treasuryAccessEmails.size > 0;
+
+      if (hasLeadershipEntries) {
+        isCouncilAdmin = maps.leadershipEmails.has(email);
+      }
+      if (hasTreasuryEntries) {
+        isTreasuryAdmin = maps.treasuryAccessEmails.has(email);
+      }
+    }
+  }
   // Site editors are a tighter allowlist used for content updates.
   // This is intentionally separate from COUNCIL_ADMIN_EMAILS.
   const isSiteEditor = isAuthenticated && siteEditors.includes(email);
@@ -105,6 +177,7 @@ export async function getSessionState(request, env) {
     email,
     isAuthenticated,
     isCouncilAdmin,
+    isTreasuryAdmin,
     isSiteEditor,
   };
 }

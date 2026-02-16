@@ -5,6 +5,7 @@ export type CouncilSession = {
   authenticated: boolean;
   email: string | null;
   isCouncilAdmin: boolean;
+  isTreasuryAdmin: boolean;
   isSiteEditor: boolean;
 };
 
@@ -54,6 +55,7 @@ export async function fetchCouncilSession(): Promise<CouncilSession> {
     authenticated: Boolean(data?.authenticated),
     email: data?.email ? String(data.email) : null,
     isCouncilAdmin: Boolean(data?.isCouncilAdmin),
+    isTreasuryAdmin: Boolean(data?.isTreasuryAdmin),
     isSiteEditor: Boolean(data?.isSiteEditor),
   };
 }

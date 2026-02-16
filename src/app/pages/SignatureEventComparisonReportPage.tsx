@@ -21,7 +21,8 @@ import { Badge } from "../components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/ui/accordion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
-import { TREASURY } from "../data/treasury";
+import { fetchTreasuryData } from "../data/treasury-api";
+import { useCouncilSession } from "../hooks/use-council-session";
 import {
   LOGO_URL,
   reportMeta,
@@ -74,14 +75,33 @@ type DetailMode = "summary" | "full";
 const REVIEW_STORAGE_KEY = "nphc-signature-report-reviewed";
 
 export function SignatureEventComparisonReportPage() {
+  const { session } = useCouncilSession();
   const [detailMode, setDetailMode] = useState<DetailMode>("summary");
   const [activeTab, setActiveTab] = useState("comparison");
   const [visitedTabs, setVisitedTabs] = useState<Record<string, boolean>>({ comparison: true });
   const [openedCriteria, setOpenedCriteria] = useState<Record<string, boolean>>({});
   const [blockedOpen, setBlockedOpen] = useState(false);
+  const [treasuryLabel, setTreasuryLabel] = useState("Confidential");
 
-  const treasuryTotal = TREASURY.balances.lendingClub + TREASURY.balances.cashApp;
-  const treasuryLabel = treasuryTotal.toLocaleString("en-US", { style: "currency", currency: "USD" });
+  useEffect(() => {
+    let cancelled = false;
+    if (!session.isTreasuryAdmin) {
+      setTreasuryLabel("Confidential");
+      return;
+    }
+    void fetchTreasuryData()
+      .then(({ treasury }) => {
+        if (cancelled) return;
+        const total = (treasury?.balances?.lendingClub || 0) + (treasury?.balances?.cashApp || 0);
+        setTreasuryLabel(total.toLocaleString("en-US", { style: "currency", currency: "USD" }));
+      })
+      .catch(() => {
+        if (!cancelled) setTreasuryLabel("Confidential");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [session.isTreasuryAdmin]);
 
   const requiredTabs = ["comparison", "concepts", "recommendations", "finance"] as const;
   const openedCriteriaCount = Object.values(openedCriteria).filter(Boolean).length;

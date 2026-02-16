@@ -1,6 +1,7 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Shield, FileText, Lock, AlertTriangle, ClipboardCheck, SlidersHorizontal, Home, Calendar, TrendingUp, FolderOpen, Target, Inbox, Mail, Users } from "lucide-react";
+import { Shield, FileText, Lock, AlertTriangle, ClipboardCheck, SlidersHorizontal, Home, Calendar, TrendingUp, FolderOpen, Target, Inbox, Mail, Users, Wallet } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { motion } from "motion/react";
@@ -11,6 +12,7 @@ import { Link } from "react-router";
 import { CouncilLeaderGate } from "../components/CouncilLeaderGate";
 import { useCouncilSession } from "../hooks/use-council-session";
 import { useEditorMode } from "../hooks/use-editor-mode";
+import { fetchTreasuryData, type TreasuryPayload } from "../data/treasury-api";
 
 const ART_MARBLE = "https://images.unsplash.com/photo-1678756466078-1ff0d7b09431?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25vY2hyb21lJTIwYWJzdHJhY3QlMjBtYXJibGUlMjB0ZXh0dXJlfGVufDF8fHx8MTc3MDUxMzIyM3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 
@@ -18,11 +20,27 @@ export function CouncilAdminPage() {
   const { data } = useCouncilAdminData();
   const { session } = useCouncilSession();
   const { editorMode, setEditorMode } = useEditorMode();
+  const [treasury, setTreasury] = useState<TreasuryPayload | null>(null);
 
   const internalDocuments = data?.internalDocuments || [];
   const tasks = data?.tasks || [];
   const toViewer = (url: string) => `/viewer?src=${encodeURIComponent(url)}`;
   const isInternalFile = (url: string) => url.trim().startsWith("/");
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!session.isTreasuryAdmin) return;
+    void fetchTreasuryData()
+      .then((payload) => {
+        if (!cancelled) setTreasury(payload.treasury);
+      })
+      .catch(() => {
+        if (!cancelled) setTreasury(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [session.isTreasuryAdmin]);
 
   return (
     <CouncilLeaderGate>
@@ -64,6 +82,46 @@ export function CouncilAdminPage() {
             Internal documents, financial records, and strategic planning
           </p>
         </motion.div>
+
+        {session.isTreasuryAdmin ? (
+          <motion.div
+            initial={{ y: -12, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.18, duration: 0.45 }}
+            className="mb-6"
+          >
+            <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Wallet className="size-5" />
+                  Treasury Snapshot (Restricted)
+                </CardTitle>
+                <CardDescription>Confidential balances for executive oversight.</CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-4 sm:grid-cols-3">
+                <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <p className="text-xs uppercase tracking-widest text-slate-500">Total</p>
+                  <p className="text-2xl font-extrabold text-slate-900 mt-1">
+                    {((treasury?.balances?.lendingClub || 0) + (treasury?.balances?.cashApp || 0)).toLocaleString("en-US", { style: "currency", currency: "USD" })}
+                  </p>
+                </div>
+                <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <p className="text-xs uppercase tracking-widest text-slate-500">LendingClub</p>
+                  <p className="text-xl font-bold text-slate-900 mt-1">
+                    {(treasury?.balances?.lendingClub || 0).toLocaleString("en-US", { style: "currency", currency: "USD" })}
+                  </p>
+                </div>
+                <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <p className="text-xs uppercase tracking-widest text-slate-500">Cash App</p>
+                  <p className="text-xl font-bold text-slate-900 mt-1">
+                    {(treasury?.balances?.cashApp || 0).toLocaleString("en-US", { style: "currency", currency: "USD" })}
+                  </p>
+                </div>
+                <p className="text-xs text-slate-500 sm:col-span-3">{treasury?.asOfLabel || "Loading treasury snapshot..."}</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ) : null}
 
         <motion.div
           initial={{ y: -20, opacity: 0 }}

@@ -12,6 +12,7 @@ const DEV_FALLBACK_SESSION: CouncilSession = {
   authenticated: true,
   email: "local-dev@nphc.local",
   isCouncilAdmin: true,
+  isTreasuryAdmin: true,
   isSiteEditor: true,
 };
 
@@ -19,6 +20,7 @@ const DEFAULT_SESSION: CouncilSession = {
   authenticated: false,
   email: null,
   isCouncilAdmin: false,
+  isTreasuryAdmin: false,
   isSiteEditor: false,
 };
 

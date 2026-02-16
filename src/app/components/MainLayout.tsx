@@ -17,7 +17,6 @@ const baseNavItems: Array<{ to: string; label: string; icon: any; danger?: boole
   { to: "/meetings-delegates", label: "Meetings & Delegates", icon: Calendar },
   { to: "/programs-events", label: "Programs & Events", icon: TrendingUp },
   { to: "/resources", label: "Resources", icon: FolderOpen },
-  { to: "/treasury", label: "Treasury", icon: Wallet },
   { to: "/forms", label: "Forms", icon: ClipboardList },
   { to: "/forum", label: "Forum", icon: MessagesSquare },
   {
@@ -49,9 +48,12 @@ export function MainLayout() {
   const mobilePreviewActive = session.isSiteEditor && editorMode && previewDevice === "mobile" && !isFramed;
   const iframeSrc = `/#${location.pathname}${location.search || ""}`;
 
-  const navItems = session.isCouncilAdmin
-    ? [...baseNavItems, { to: "/council-admin", label: "Council Admin", icon: Shield }]
-    : baseNavItems;
+  const navItems = [
+    ...baseNavItems.slice(0, 5),
+    ...(session.isTreasuryAdmin ? [{ to: "/treasury", label: "Treasury", icon: Wallet }] : []),
+    ...baseNavItems.slice(5),
+    ...(session.isCouncilAdmin ? [{ to: "/council-admin", label: "Council Admin", icon: Shield }] : []),
+  ];
 
   // Close mobile nav on route change
   useEffect(() => {

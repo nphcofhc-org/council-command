@@ -8,6 +8,7 @@ export async function onRequestGet({ request, env }) {
     authenticated: session.isAuthenticated,
     email: session.email || null,
     isCouncilAdmin: session.isCouncilAdmin,
+    isTreasuryAdmin: Boolean(session.isTreasuryAdmin),
     isSiteEditor: Boolean(session.isSiteEditor),
   });
 }

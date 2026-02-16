@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "motion/react";
-import { BarChart3, CreditCard, DollarSign, Receipt, Wallet } from "lucide-react";
+import { BarChart3, CreditCard, DollarSign, Lock, Wallet } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -22,7 +22,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../co
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { useCouncilSession } from "../hooks/use-council-session";
-import { TREASURY, TREASURY_TRANSACTIONS, type TreasuryAccount, type TreasuryTxnType } from "../data/treasury";
+import { fetchTreasuryData, type TreasuryAccount, type TreasuryPayload, type TreasuryTransaction, type TreasuryTxnType } from "../data/treasury-api";
 
 function money(n: number) {
   return n.toLocaleString("en-US", { style: "currency", currency: "USD" });
@@ -37,27 +37,59 @@ function monthKey(isoDate: string): string {
 const PIE_COLORS = ["#18e0d0", "#22c55e", "#60a5fa", "#f59e0b", "#fb7185", "#a78bfa", "#f97316", "#34d399"];
 
 export function TreasuryPage() {
-  const { session } = useCouncilSession();
+  const { session, loading: sessionLoading } = useCouncilSession();
+  const [treasury, setTreasury] = useState<TreasuryPayload | null>(null);
+  const [transactions, setTransactions] = useState<TreasuryTransaction[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const [year, setYear] = useState<string>("2026");
   const [typeFilter, setTypeFilter] = useState<"all" | TreasuryTxnType>("all");
   const [accountFilter, setAccountFilter] = useState<"all" | TreasuryAccount>("all");
   const [search, setSearch] = useState<string>("");
 
-  const lendingClubBalance = TREASURY.balances.lendingClub;
-  const cashAppBalance = TREASURY.balances.cashApp;
+  useEffect(() => {
+    let cancelled = false;
+    if (sessionLoading) return;
+    if (!session.isTreasuryAdmin) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setLoadError(null);
+    void fetchTreasuryData()
+      .then((data) => {
+        if (cancelled) return;
+        setTreasury(data.treasury);
+        setTransactions(data.transactions);
+      })
+      .catch((e) => {
+        if (cancelled) return;
+        setLoadError(e instanceof Error ? e.message : "Failed to load treasury data.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session.isTreasuryAdmin, sessionLoading]);
+
+  const lendingClubBalance = treasury?.balances?.lendingClub || 0;
+  const cashAppBalance = treasury?.balances?.cashApp || 0;
   const totalBalance = lendingClubBalance + cashAppBalance;
 
   const yearTxns = useMemo(() => {
     const needle = search.trim().toLowerCase();
-    return TREASURY_TRANSACTIONS.filter((t) => {
+    return transactions.filter((t) => {
       const matchesYear = t.date.startsWith(year);
       const matchesType = typeFilter === "all" || t.type === typeFilter;
       const matchesAccount = accountFilter === "all" || t.account === accountFilter;
       const matchesSearch = !needle || t.description.toLowerCase().includes(needle) || t.category.toLowerCase().includes(needle);
       return matchesYear && matchesType && matchesAccount && matchesSearch;
     }).sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
-  }, [accountFilter, search, typeFilter, year]);
+  }, [accountFilter, search, transactions, typeFilter, year]);
 
   const stats = useMemo(() => {
     const income = yearTxns.filter((t) => t.type === "credit").reduce((acc, t) => acc + t.amount, 0);
@@ -96,6 +128,31 @@ export function TreasuryPage() {
 
   const years = ["2026", "2025", "2024", "2023"];
 
+  if (!sessionLoading && !session.isTreasuryAdmin) {
+    return (
+      <div className="relative p-4 sm:p-8">
+        <div className="max-w-3xl mx-auto">
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Lock className="size-5" />
+                Access Denied
+              </CardTitle>
+              <CardDescription>
+                Treasury access is restricted to the President, Vice President, and Treasurer.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild variant="outline" className="border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10">
+                <Link to="/">Return Home</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative">
       <header className="relative overflow-hidden py-12 sm:py-16 px-4 sm:px-8">
@@ -112,24 +169,25 @@ export function TreasuryPage() {
               </div>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">Treasury</h1>
               <p className="text-sm text-slate-600 mt-2 max-w-3xl">
-                High-level financial snapshot and reporting tools. Reimbursements and submissions are managed in the portal.
+                High-level financial snapshot and reporting tools.
               </p>
             </div>
-            <Button
-              asChild
-              variant="outline"
-              className="w-full sm:w-auto border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
-            >
-              <Link to="/forms/reimbursement">
-                <Receipt className="mr-2 size-4" />
-                Reimbursement Form
-              </Link>
-            </Button>
           </div>
         </div>
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 sm:py-10 space-y-6">
+        {loading ? (
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+            <CardContent className="p-6 text-sm text-slate-600">Loading treasury data...</CardContent>
+          </Card>
+        ) : null}
+        {loadError ? (
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+            <CardContent className="p-6 text-sm text-rose-300">{loadError}</CardContent>
+          </Card>
+        ) : null}
+
         <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.35 }}>
           <div className="grid gap-4 lg:grid-cols-3">
             <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl lg:col-span-2">
@@ -153,7 +211,7 @@ export function TreasuryPage() {
                   <p className="text-xs uppercase tracking-widest text-slate-500">Cash App</p>
                   <p className="text-xl font-bold text-slate-900 mt-1">{money(cashAppBalance)}</p>
                 </div>
-                <p className="text-xs text-slate-400 sm:col-span-3">{TREASURY.asOfLabel}</p>
+                <p className="text-xs text-slate-400 sm:col-span-3">{treasury?.asOfLabel || ""}</p>
               </CardContent>
             </Card>
 
@@ -169,12 +227,12 @@ export function TreasuryPage() {
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="text-xs uppercase tracking-widest text-slate-500">Cashtag</p>
-                    <a href={TREASURY.cashApp.payUrl} target="_blank" rel="noreferrer" className="text-lg font-extrabold text-primary hover:underline">
-                      {TREASURY.cashApp.cashtag}
+                    <a href={treasury?.cashApp?.payUrl || "#"} target="_blank" rel="noreferrer" className="text-lg font-extrabold text-primary hover:underline">
+                      {treasury?.cashApp?.cashtag || "$NPHCofHC"}
                     </a>
                   </div>
                   <img
-                    src={TREASURY.cashApp.qrImageUrl}
+                    src={treasury?.cashApp?.qrImageUrl || "/assets/cashapp-nphcofhc-qr.png"}
                     alt="Cash App QR Code"
                     className="size-24 rounded-xl border border-black/10 bg-white p-2"
                     loading="lazy"
@@ -185,7 +243,7 @@ export function TreasuryPage() {
                   variant="outline"
                   className="w-full border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
                 >
-                  <a href={TREASURY.cashApp.payUrl} target="_blank" rel="noreferrer">
+                  <a href={treasury?.cashApp?.payUrl || "#"} target="_blank" rel="noreferrer">
                     Open Cash App Link
                   </a>
                 </Button>
@@ -340,11 +398,11 @@ export function TreasuryPage() {
               </div>
             </div>
 
-            {session.isCouncilAdmin ? (
+            {session.isTreasuryAdmin ? (
               <Accordion type="single" collapsible className="rounded-xl border border-black/10 bg-white/5 backdrop-blur-xl">
                 <AccordionItem value="history" className="border-none">
                   <AccordionTrigger className="px-4 sm:px-6">
-                    Detailed Transaction History (Council Admin)
+                    Detailed Transaction History
                   </AccordionTrigger>
                   <AccordionContent className="px-4 sm:px-6 pb-6">
                     <div className="grid gap-4 md:grid-cols-3">
@@ -419,7 +477,7 @@ export function TreasuryPage() {
               </Accordion>
             ) : (
               <div className="rounded-xl border border-black/10 bg-white/5 p-4 text-sm text-slate-600">
-                Detailed transaction history is restricted to Council Admins.
+                Detailed transaction history is restricted.
               </div>
             )}
           </CardContent>
