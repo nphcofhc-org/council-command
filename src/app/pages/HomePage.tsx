@@ -597,7 +597,7 @@ export function HomePage() {
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}
-                className="nphc-holo-surface aspect-[4/5] rounded-2xl overflow-hidden bg-white/5 shadow-[0_25px_80px_rgba(0,0,0,0.35),0_0_70px_rgba(255,255,255,0.18)] ring-1 ring-black/10"
+                className="aspect-[4/5] rounded-2xl overflow-hidden bg-transparent shadow-[0_0_70px_rgba(255,255,255,0.18)]"
               >
                 {presidentImageUrl ? (
                   <img
@@ -606,7 +606,7 @@ export function HomePage() {
                     className="h-full w-full object-contain object-center"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-white/5 text-slate-500">
+                  <div className="flex h-full w-full items-center justify-center bg-transparent text-slate-500">
                     <span className="text-sm font-semibold uppercase tracking-wide">President Photo</span>
                   </div>
                 )}
