@@ -48,7 +48,7 @@ export const siteConfig: SiteConfig = {
   presidentName: "Christopher DeMarkus",
   presidentTitle: "Council President",
   presidentChapter: "Alpha Phi Alpha Fraternity, Inc.",
-  presidentImageUrl: "",
+  presidentImageUrl: "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/Your%20paragraph%20text%20(1).png",
   presidentMessage: [
     "Welcome to the NPHC of Hudson County digital portal. Our Council is committed to the principles of cooperation and service throughout the Bergen Neck and beyond.",
     "From the urban heights of Jersey City to the waterfronts of Bayonne and Hoboken, this portal serves as a strategic resource for our member chapters to ensure operational alignment, rigorous governance, and impactful community service.",
