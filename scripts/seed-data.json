@@ -256,6 +256,13 @@
           "updated": "February 2026",
           "status": "Live",
           "fileUrl": "/council-admin/data-brief"
+        },
+        {
+          "id": "idoc-5",
+          "name": "Exec Council Meeting Workspace (Feb 19)",
+          "updated": "February 2026",
+          "status": "Live",
+          "fileUrl": "/council-admin/exec-council-meeting"
         }
       ]
     }

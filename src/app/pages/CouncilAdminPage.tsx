@@ -132,6 +132,23 @@ export function CouncilAdminPage() {
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
+                <h3 className="text-base text-slate-900 sm:text-lg">Exec Council Meeting (2/19)</h3>
+                <p className="text-sm text-slate-600">
+                  Access the dedicated repository workspace and materials for tomorrow&apos;s executive council session.
+                </p>
+              </div>
+              <Button asChild className="w-full sm:w-auto">
+                <Link to="/council-admin/exec-council-meeting">
+                  <Calendar className="mr-2 size-4" />
+                  Open Workspace
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+            <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
                 <h3 className="text-base text-slate-900 sm:text-lg">Content Manager</h3>
                 <p className="text-sm text-slate-600">
                   Update leadership names, chapters, emails, and photo URLs.
