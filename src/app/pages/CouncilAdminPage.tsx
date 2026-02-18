@@ -134,13 +134,13 @@ export function CouncilAdminPage() {
               <div>
                 <h3 className="text-base text-slate-900 sm:text-lg">Exec Council Meeting (2/19)</h3>
                 <p className="text-sm text-slate-600">
-                  Access the dedicated repository workspace and materials for tomorrow&apos;s executive council session.
+                  Open the in-portal deck and live voting workspace for the executive council session.
                 </p>
               </div>
               <Button asChild className="w-full sm:w-auto">
                 <Link to="/council-admin/exec-council-meeting">
                   <Calendar className="mr-2 size-4" />
-                  Open Workspace
+                  Open Deck
                 </Link>
               </Button>
             </CardContent>
