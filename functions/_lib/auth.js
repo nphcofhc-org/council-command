@@ -58,10 +58,6 @@ function buildLeadershipAccessMaps(leadership) {
     }
   }
 
-  for (const chair of leadership?.additionalChairs || []) {
-    add(chair?.email);
-  }
-
   return { leadershipEmails, treasuryAccessEmails };
 }
 
