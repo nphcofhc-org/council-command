@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { ArrowLeft, FileText } from "lucide-react";
 import { motion } from "motion/react";
-import { CouncilLeaderGate } from "../components/CouncilLeaderGate";
+import { CouncilAdminGate } from "../components/CouncilAdminGate";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/ui/accordion";
 import { Button } from "../components/ui/button";
@@ -66,7 +66,7 @@ const BRIEF_SECTIONS = [
 
 export function CouncilDataBriefPage() {
   return (
-    <CouncilLeaderGate>
+    <CouncilAdminGate>
       <div className="relative min-h-screen p-4 sm:p-8">
         <div className="mx-auto max-w-6xl space-y-4">
           <Button
@@ -114,7 +114,6 @@ export function CouncilDataBriefPage() {
           </motion.div>
         </div>
       </div>
-    </CouncilLeaderGate>
+    </CouncilAdminGate>
   );
 }
-

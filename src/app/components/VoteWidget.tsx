@@ -10,8 +10,9 @@ export function VoteWidget({
 }: {
   voteKey: string; label: string; description?: string; compact?: boolean; dropUp?: boolean;
 }) {
-  const { votes, castVote, resetVote } = useMeeting();
+  const { votes, myVotes, castVote, resetVote } = useMeeting();
   const v        = votes[voteKey] ?? { yay: 0, nay: 0 };
+  const myVote   = myVotes[voteKey] ?? null;
   const total    = v.yay + v.nay;
   const yayPct   = total > 0 ? Math.round((v.yay / total) * 100) : 0;
   const nayPct   = total > 0 ? Math.round((v.nay / total) * 100) : 0;
@@ -176,14 +177,19 @@ export function VoteWidget({
 
       {/* Label */}
       <div style={{ color: '#D0D0D0', fontSize: 'clamp(0.82rem,1.4vw,1rem)', fontWeight: 700, lineHeight: 1.3 }}>{label}</div>
+      {myVote ? (
+        <div style={{ color: '#A6A6A6', fontSize: '0.66rem', fontWeight: 600 }}>
+          Your vote: <span style={{ color: '#E0E0E0' }}>{myVote.toUpperCase()}</span>
+        </div>
+      ) : null}
 
       {/* YAY / NAY buttons */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
         <button
           onClick={() => castVote(voteKey, 'yay')}
-          style={{ background: '#fff', color: '#0A0A0A', border: 'none', borderRadius: 9, padding: 'clamp(12px,2%,18px)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, transition: 'all 0.15s', fontFamily: 'inherit' }}
+          style={{ background: myVote === 'yay' ? '#E5F0FF' : '#fff', color: '#0A0A0A', border: myVote === 'yay' ? '1px solid #93C5FD' : 'none', borderRadius: 9, padding: 'clamp(12px,2%,18px)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, transition: 'all 0.15s', fontFamily: 'inherit' }}
           onMouseEnter={e => { e.currentTarget.style.background = '#F0F0F0'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = '#fff'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = myVote === 'yay' ? '#E5F0FF' : '#fff'; }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <Check size={14} strokeWidth={3} />
@@ -194,7 +200,7 @@ export function VoteWidget({
         </button>
         <button
           onClick={() => castVote(voteKey, 'nay')}
-          style={{ background: 'transparent', color: '#B0B0B0', border: '1px solid #333', borderRadius: 9, padding: 'clamp(12px,2%,18px)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, transition: 'all 0.15s', fontFamily: 'inherit' }}
+          style={{ background: myVote === 'nay' ? 'rgba(239,68,68,0.08)' : 'transparent', color: '#B0B0B0', border: myVote === 'nay' ? '1px solid #7F1D1D' : '1px solid #333', borderRadius: 9, padding: 'clamp(12px,2%,18px)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, transition: 'all 0.15s', fontFamily: 'inherit' }}
           onMouseEnter={e => { e.currentTarget.style.borderColor = '#505050'; }}
           onMouseLeave={e => { e.currentTarget.style.borderColor = '#333'; }}
         >

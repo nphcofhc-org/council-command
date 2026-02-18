@@ -106,6 +106,32 @@ export function CouncilAdminPage() {
           </motion.div>
         ) : null}
 
+        {!session.isSiteEditor ? (
+          <motion.div
+            initial={{ y: -14, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.22, duration: 0.45 }}
+            className="space-y-4"
+          >
+            <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+              <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h3 className="text-base text-slate-900 sm:text-lg">Exec Council Meeting Deck</h3>
+                  <p className="text-sm text-slate-600">
+                    Your role currently has council workspace access only. Editing tools are restricted to Site Administration.
+                  </p>
+                </div>
+                <Button asChild className="w-full sm:w-auto">
+                  <Link to="/council-admin/exec-council-meeting">
+                    <Calendar className="mr-2 size-4" />
+                    Open Deck
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ) : (
+        <>
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -551,6 +577,8 @@ export function CouncilAdminPage() {
             </motion.div>
           </TabsContent>
         </Tabs>
+        </>
+        )}
         </div>
       </div>
     </CouncilLeaderGate>

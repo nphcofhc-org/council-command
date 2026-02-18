@@ -15,7 +15,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { fetchComplianceState, saveComplianceState } from "../data/admin-api";
-import { CouncilLeaderGate } from "../components/CouncilLeaderGate";
+import { CouncilAdminGate } from "../components/CouncilAdminGate";
 import { useCouncilSession } from "../hooks/use-council-session";
 
 type TimelineItem = {
@@ -456,7 +456,7 @@ export function CouncilCompliancePage() {
   const percentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
   return (
-    <CouncilLeaderGate>
+    <CouncilAdminGate>
       <div className="min-h-screen bg-gray-50 pb-20 font-sans text-slate-900">
         <div className="relative overflow-hidden bg-slate-900 px-6 pb-24 pt-12 text-slate-900 md:px-12">
           <div className="absolute -right-32 -top-32 h-64 w-64 rounded-full bg-slate-800 opacity-50" />
@@ -537,6 +537,6 @@ export function CouncilCompliancePage() {
           <p>Information based on NPHC Council Annual Report requirements.</p>
         </div>
       </div>
-    </CouncilLeaderGate>
+    </CouncilAdminGate>
   );
 }

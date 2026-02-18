@@ -5,8 +5,17 @@ import { CouncilLeaderGate } from "../components/CouncilLeaderGate";
 import { Card, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { MeetingDeck } from "../components/MeetingDeck";
+import { useCouncilSession } from "../hooks/use-council-session";
 
 export function CouncilExecMeetingPage() {
+  const { session } = useCouncilSession();
+  const defaultMemberName = (session.email || "")
+    .split("@")[0]
+    .split(/[._-]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+
   return (
     <CouncilLeaderGate>
       <div className="relative min-h-screen p-2 sm:p-4">
@@ -42,7 +51,7 @@ export function CouncilExecMeetingPage() {
             transition={{ delay: 0.1, duration: 0.35 }}
             className="overflow-hidden rounded-xl border border-black/10 shadow-[0_20px_60px_rgba(0,0,0,0.28)]"
           >
-            <MeetingDeck />
+            <MeetingDeck voterEmail={session.email} defaultMemberName={defaultMemberName} />
           </motion.div>
         </div>
       </div>

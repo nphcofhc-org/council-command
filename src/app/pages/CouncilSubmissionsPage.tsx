@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { ArrowLeft, Download, RefreshCw, Save } from "lucide-react";
-import { CouncilLeaderGate } from "../components/CouncilLeaderGate";
+import { CouncilAdminGate } from "../components/CouncilAdminGate";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
@@ -101,7 +101,7 @@ export function CouncilSubmissionsPage() {
   };
 
   return (
-    <CouncilLeaderGate>
+    <CouncilAdminGate>
       <div className="mx-auto max-w-7xl p-4 sm:p-8 space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-primary transition-colors">
@@ -332,6 +332,6 @@ export function CouncilSubmissionsPage() {
           </CardContent>
         </Card>
       </div>
-    </CouncilLeaderGate>
+    </CouncilAdminGate>
   );
 }

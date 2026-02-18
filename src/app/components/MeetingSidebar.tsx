@@ -9,9 +9,10 @@ import { WORKER_SOURCE } from '../services/CloudflareSync';
 
 // ─── Mini vote card ───────────────────────────────────────────────────────────
 
-function SideVoteCard({ label, yay, nay, onYay, onNay, onReset, onClose }: {
+function SideVoteCard({ label, yay, nay, onYay, onNay, myVote, onReset, onClose }: {
   label: string; yay: number; nay: number;
   onYay: () => void; onNay: () => void;
+  myVote?: 'yay' | 'nay' | null;
   onReset?: () => void; onClose?: () => void;
 }) {
   const total  = yay + nay;
@@ -26,13 +27,18 @@ function SideVoteCard({ label, yay, nay, onYay, onNay, onReset, onClose }: {
           {onClose && <button onClick={onClose} title="Close" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#363636', padding: 2 }}><X size={11} /></button>}
         </div>
       </div>
+      {myVote ? (
+        <div style={{ color: '#8A8A8A', fontSize: '0.62rem', fontWeight: 600, marginBottom: 8 }}>
+          Your vote: <span style={{ color: '#C8C8C8' }}>{myVote.toUpperCase()}</span>
+        </div>
+      ) : null}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: total > 0 ? 8 : 0 }}>
-        <button onClick={onYay} style={{ padding: '10px 6px', background: '#fff', border: 'none', borderRadius: 7, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, fontFamily: 'inherit' }}>
+        <button onClick={onYay} style={{ padding: '10px 6px', background: myVote === 'yay' ? '#E5F0FF' : '#fff', border: myVote === 'yay' ? '1px solid #93C5FD' : 'none', borderRadius: 7, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, fontFamily: 'inherit' }}>
           <Check size={12} color="#0A0A0A" strokeWidth={3} />
           <span style={{ color: '#0A0A0A', fontWeight: 800, fontSize: '0.78rem' }}>YAY</span>
           <span style={{ color: '#505050', fontWeight: 700, fontSize: '0.85rem' }}>{yay}</span>
         </button>
-        <button onClick={onNay} style={{ padding: '10px 6px', background: 'transparent', border: '1px solid #303030', borderRadius: 7, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, fontFamily: 'inherit' }}>
+        <button onClick={onNay} style={{ padding: '10px 6px', background: myVote === 'nay' ? 'rgba(239,68,68,0.08)' : 'transparent', border: myVote === 'nay' ? '1px solid #7F1D1D' : '1px solid #303030', borderRadius: 7, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, fontFamily: 'inherit' }}>
           <X size={12} color="#808080" strokeWidth={3} />
           <span style={{ color: '#B0B0B0', fontWeight: 800, fontSize: '0.78rem' }}>NAY</span>
           <span style={{ color: '#606060', fontWeight: 700, fontSize: '0.85rem' }}>{nay}</span>
@@ -158,7 +164,7 @@ function CloudflarePanel({ onClose }: { onClose: () => void }) {
         {/* Info */}
         <div style={{ background: '#0E0E0E', border: '1px solid #1C1C1C', borderRadius: 7, padding: '12px 14px' }}>
           <div style={{ color: '#484848', fontSize: '0.68rem', lineHeight: 1.65 }}>
-            Once connected, votes, motions, and hand raises sync every <strong style={{ color: '#606060' }}>3 seconds</strong> across all devices — no page refresh needed. Each action is also sent immediately (optimistic update) so the UI feels instant.
+            Once connected, votes, motions, and hand raises sync every <strong style={{ color: '#606060' }}>3 seconds</strong> across all devices — no page refresh needed. Votes are recorded per user identity (one active vote per person per item).
           </div>
         </div>
       </div>
@@ -174,7 +180,7 @@ export function MeetingSidebar({ currentSlide, externalTab }: { currentSlide: nu
   const {
     memberName, setMemberName,
     workerUrl, connected, syncing, lastSynced, resetMeeting,
-    votes, castVote, resetVote,
+    votes, myVotes, myFloorVotes, castVote, resetVote,
     hands, myHandId, raiseHand, lowerMyHand, lowerAllHands,
     motions, submitMotion, secondMotion,
     floorVotes, createFloorVote, castFloorVote, closeFloorVote,
@@ -359,7 +365,7 @@ export function MeetingSidebar({ currentSlide, externalTab }: { currentSlide: nu
                 {slideVoteKeys.map(key => {
                   const v = votes[key] ?? { yay: 0, nay: 0 };
                   const info = VOTE_LABELS[key] ?? { label: key };
-                  return <SideVoteCard key={key} label={info.label} yay={v.yay} nay={v.nay} onYay={() => castVote(key, 'yay')} onNay={() => castVote(key, 'nay')} onReset={() => resetVote(key)} />;
+                  return <SideVoteCard key={key} label={info.label} yay={v.yay} nay={v.nay} myVote={myVotes[key]} onYay={() => castVote(key, 'yay')} onNay={() => castVote(key, 'nay')} onReset={() => resetVote(key)} />;
                 })}
               </div>
             )}
@@ -375,7 +381,7 @@ export function MeetingSidebar({ currentSlide, externalTab }: { currentSlide: nu
                   Floor Votes
                 </div>
                 {activeFloor.map(fv => (
-                  <SideVoteCard key={fv.id} label={fv.question} yay={fv.yay} nay={fv.nay} onYay={() => castFloorVote(fv.id, 'yay')} onNay={() => castFloorVote(fv.id, 'nay')} onClose={() => closeFloorVote(fv.id)} />
+                  <SideVoteCard key={fv.id} label={fv.question} yay={fv.yay} nay={fv.nay} myVote={myFloorVotes[fv.id]} onYay={() => castFloorVote(fv.id, 'yay')} onNay={() => castFloorVote(fv.id, 'nay')} onClose={() => closeFloorVote(fv.id)} />
                 ))}
               </div>
             )}

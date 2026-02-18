@@ -374,9 +374,14 @@ function DeckInner() {
 
 // ─── Exported wrapper ─────────────────────────────────────────────────────────
 
-export function MeetingDeck() {
+type MeetingDeckProps = {
+  voterEmail?: string | null;
+  defaultMemberName?: string;
+};
+
+export function MeetingDeck({ voterEmail, defaultMemberName }: MeetingDeckProps) {
   return (
-    <MeetingProvider>
+    <MeetingProvider voterEmail={voterEmail} defaultMemberName={defaultMemberName}>
       <DeckInner />
     </MeetingProvider>
   );
