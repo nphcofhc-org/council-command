@@ -116,6 +116,13 @@ function getAccessJwt(request) {
   return "";
 }
 
+function getEmailFromAccessJwt(request) {
+  const token = getAccessJwt(request);
+  if (!token) return "";
+  const payload = decodeJwtPayload(token);
+  return normalizeEmail(payload?.email || payload?.sub || "");
+}
+
 async function getAccessIdentityViaCdnCgi(request) {
   const url = new URL(request.url);
   const cookie = request.headers.get("cookie") || "";
@@ -163,6 +170,9 @@ export function parseSiteEditorEmails(rawValue) {
 
 export async function getSessionState(request, env) {
   let email = getAuthenticatedEmail(request);
+  if (!email) {
+    email = getEmailFromAccessJwt(request);
+  }
   if (!email) {
     try {
       const identity = await getAccessIdentityViaCdnCgi(request);

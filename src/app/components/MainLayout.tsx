@@ -78,6 +78,7 @@ export function MainLayout() {
   const faviconLogoUrl = "/favicon.png";
   const identity = sessionDisplayName(session, directory);
   const role = sessionRoleLabel(session);
+  const sidebarIdentity = session.authenticated ? `${identity.name} — ${role}` : "Sign in required";
 
   return (
     <div className="min-h-screen bg-background text-foreground lg:flex">
@@ -108,7 +109,7 @@ export function MainLayout() {
           <p className="text-white text-sm mt-1">Hudson County, NJ</p>
           <div className="mt-4 flex items-center justify-between gap-3">
             <span className="text-xs text-white/35 tracking-widest uppercase">
-              Portal · {identity.name} — {role}
+              Portal · {sidebarIdentity}
             </span>
             <div className="flex items-center gap-2">
               {session.authenticated ? (
