@@ -19,6 +19,13 @@ import {
 
 const ART_INK = "https://images.unsplash.com/photo-1769181417562-be594f91fcc9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHdoaXRlJTIwYWJzdHJhY3QlMjBpbmslMjBicnVzaCUyMHN0cm9rZXN8ZW58MXx8fHwxNzcwNTEzMjIyfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 
+const ROLE_EMAIL_FALLBACKS: Record<string, string> = {
+  president: "president.nphcofhc@gmail.com",
+  "vice president": "vp.nphcofhc@gmail.com",
+  secretary: "nphcofhudsoncountysecretary@gmail.com",
+  treasurer: "treasurer.nphcofhc@gmail.com",
+};
+
 function normalizeDriveImageUrl(raw: string | null | undefined): string {
   const input = String(raw || "").trim();
   if (!input) return "";
@@ -82,6 +89,7 @@ export function ChapterInfoPage() {
   const { data } = useChapterInfoData();
   const [leadership, setLeadership] = useState<LeadershipContent>(DEFAULT_LEADERSHIP_CONTENT);
   const [selectedMember, setSelectedMember] = useState<LeadershipMember | null>(null);
+  const [copiedContact, setCopiedContact] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -101,13 +109,20 @@ export function ChapterInfoPage() {
 
   const delegates = data?.delegates || [];
   const documents = data?.governingDocuments || [];
+  const resolveContactEmail = (member: LeadershipMember) => {
+    const direct = String(member.email || "").trim();
+    if (direct) return direct;
+    const byRole = ROLE_EMAIL_FALLBACKS[String(member.title || "").trim().toLowerCase()];
+    return byRole || DEFAULT_CONTACT_EMAIL;
+  };
   const toContactHref = (member: LeadershipMember) => {
-    const recipient = member.email || DEFAULT_CONTACT_EMAIL;
+    const recipient = resolveContactEmail(member);
     const subject = encodeURIComponent(`Contact Request: ${member.title} (${member.name})`);
     return `mailto:${recipient}?subject=${subject}`;
   };
 
   const selectedContactHref = selectedMember ? toContactHref(selectedMember) : "#";
+  const selectedContactEmail = selectedMember ? resolveContactEmail(selectedMember) : "";
 
   return (
     <div className="relative min-h-screen">
@@ -439,6 +454,25 @@ export function ChapterInfoPage() {
                     <Mail className="size-4" />
                     Contact
                   </a>
+                  <div className="mt-2 w-full rounded-lg border border-black/10 bg-white/50 px-3 py-2 text-xs text-slate-700">
+                    <p className="text-[10px] uppercase tracking-widest text-slate-500 mb-1">Contact Email</p>
+                    <p className="break-all font-medium">{selectedContactEmail}</p>
+                    <button
+                      type="button"
+                      className="mt-2 inline-flex items-center rounded-md border border-black/15 bg-white/70 px-2 py-1 text-[11px] font-semibold text-slate-700 hover:border-primary/50 hover:text-primary transition"
+                      onClick={async () => {
+                        try {
+                          await navigator.clipboard.writeText(selectedContactEmail);
+                          setCopiedContact(selectedContactEmail);
+                          window.setTimeout(() => setCopiedContact(""), 1200);
+                        } catch {
+                          // ignore clipboard failures
+                        }
+                      }}
+                    >
+                      {copiedContact === selectedContactEmail ? "Copied" : "Copy Email"}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="space-y-3 text-sm">
