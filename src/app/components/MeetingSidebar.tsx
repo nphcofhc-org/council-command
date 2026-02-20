@@ -2,10 +2,42 @@ import { useState, useEffect } from 'react';
 import {
   Hand, MessageSquare, Gavel, Check, X, Plus, RotateCcw,
   Wifi, WifiOff, Settings, Copy, ChevronDown, ChevronUp,
-  RefreshCw, Trash2, AlertCircle, CheckCircle2
+  RefreshCw, Trash2, AlertCircle, CheckCircle2, Download, FileDown, Sparkles
 } from 'lucide-react';
 import { useMeeting, SLIDE_VOTES, VOTE_LABELS } from './MeetingContext';
 import { WORKER_SOURCE } from '../services/CloudflareSync';
+import { requestMeetingAssist } from '../data/meeting-assistant-api';
+
+function csvCell(value: unknown): string {
+  const raw = String(value ?? '');
+  const escaped = raw.replace(/"/g, '""');
+  return `"${escaped}"`;
+}
+
+function rowsToCsv(rows: Array<Array<unknown>>): string {
+  return rows.map((row) => row.map(csvCell).join(',')).join('\n');
+}
+
+function safeFilePart(value: string): string {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60) || 'meeting';
+}
+
+function downloadText(filename: string, content: string, mime = 'text/plain;charset=utf-8') {
+  const blob = new Blob([content], { type: mime });
+  const href = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = href;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(href), 1000);
+}
 
 // ─── Mini vote card ───────────────────────────────────────────────────────────
 
@@ -180,10 +212,10 @@ export function MeetingSidebar({ currentSlide, externalTab }: { currentSlide: nu
   const {
     memberName, setMemberName,
     workerUrl, connected, syncing, lastSynced, resetMeeting,
-    votes, myVotes, myFloorVotes, castVote, resetVote,
+    votes, voteSelections, myVotes, myFloorVotes, castVote, resetVote,
     hands, myHandId, raiseHand, lowerMyHand, lowerAllHands,
     motions, submitMotion, secondMotion,
-    floorVotes, createFloorVote, castFloorVote, closeFloorVote,
+    floorVotes, floorVoteSelections, createFloorVote, castFloorVote, closeFloorVote,
   } = useMeeting();
 
   const [tab,              setTab]              = useState<Section>(externalTab ?? 'hand');
@@ -192,6 +224,10 @@ export function MeetingSidebar({ currentSlide, externalTab }: { currentSlide: nu
   const [showNewFloorVote, setShowNewFloorVote]  = useState(false);
   const [showCFPanel,      setShowCFPanel]       = useState(false);
   const [showResetConfirm, setShowResetConfirm]  = useState(false);
+  const [aiMode,           setAiMode]            = useState<'facilitator' | 'summary' | 'minutes'>('facilitator');
+  const [aiBusy,           setAiBusy]            = useState(false);
+  const [aiError,          setAiError]           = useState('');
+  const [aiOutput,         setAiOutput]          = useState('');
 
   const slideVoteKeys = SLIDE_VOTES[currentSlide] ?? [];
   const activeFloor   = floorVotes.filter(v => !v.closed);
@@ -206,6 +242,165 @@ export function MeetingSidebar({ currentSlide, externalTab }: { currentSlide: nu
   ) : null;
 
   useEffect(() => { if (externalTab) setTab(externalTab); }, [externalTab]);
+
+  const buildSnapshot = () => {
+    const now = new Date();
+    const meetingKey = safeFilePart(now.toISOString().slice(0, 16));
+    const voteDetails = Object.entries(voteSelections).map(([key, bucket]) => {
+      const label = VOTE_LABELS[key]?.label || key;
+      const tally = votes[key] || { yay: 0, nay: 0 };
+      const selections = Object.values(bucket || {});
+      return {
+        key,
+        label,
+        yay: tally.yay,
+        nay: tally.nay,
+        total: tally.yay + tally.nay,
+        selections,
+      };
+    });
+
+    const floorVoteDetails = floorVotes.map((vote) => ({
+      ...vote,
+      total: vote.yay + vote.nay,
+      selections: Object.values(floorVoteSelections[vote.id] || {}),
+    }));
+
+    return {
+      exportedAt: now.toISOString(),
+      meetingKey,
+      currentSlide: currentSlide + 1,
+      memberName: memberName || 'Anonymous',
+      connected,
+      votes: voteDetails,
+      motions,
+      hands,
+      floorVotes: floorVoteDetails,
+    };
+  };
+
+  const exportMeetingJson = () => {
+    const snapshot = buildSnapshot();
+    downloadText(
+      `nphc-meeting-record-${snapshot.meetingKey}.json`,
+      JSON.stringify(snapshot, null, 2),
+      'application/json;charset=utf-8',
+    );
+  };
+
+  const exportMeetingCsv = () => {
+    const snapshot = buildSnapshot();
+    const base = `nphc-meeting-${snapshot.meetingKey}`;
+
+    const voteRows: Array<Array<unknown>> = [
+      ['vote_key', 'vote_label', 'yay', 'nay', 'total', 'voter_id', 'voter_label', 'selection', 'updated_at'],
+    ];
+    for (const vote of snapshot.votes) {
+      if (vote.selections.length === 0) {
+        voteRows.push([vote.key, vote.label, vote.yay, vote.nay, vote.total, '', '', '', '']);
+      } else {
+        for (const selection of vote.selections) {
+          voteRows.push([
+            vote.key,
+            vote.label,
+            vote.yay,
+            vote.nay,
+            vote.total,
+            selection.voterId || '',
+            selection.voterLabel || '',
+            selection.option || '',
+            selection.updatedAt || '',
+          ]);
+        }
+      }
+    }
+
+    const motionRows: Array<Array<unknown>> = [
+      ['order', 'author', 'motion_text', 'seconded', 'time'],
+      ...motions.map((motion, idx) => [motions.length - idx, motion.author, motion.text, motion.seconded ? 'Yes' : 'No', motion.time]),
+    ];
+
+    const handRows: Array<Array<unknown>> = [
+      ['position', 'name', 'time', 'is_self'],
+      ...hands.map((hand, idx) => [idx + 1, hand.name, hand.time, hand.id === myHandId ? 'Yes' : 'No']),
+    ];
+
+    const floorRows: Array<Array<unknown>> = [
+      ['floor_vote_id', 'question', 'closed', 'yay', 'nay', 'total', 'voter_id', 'voter_label', 'selection', 'updated_at'],
+    ];
+    for (const vote of snapshot.floorVotes) {
+      if (vote.selections.length === 0) {
+        floorRows.push([vote.id, vote.question, vote.closed ? 'Yes' : 'No', vote.yay, vote.nay, vote.total, '', '', '', '']);
+      } else {
+        for (const selection of vote.selections) {
+          floorRows.push([
+            vote.id,
+            vote.question,
+            vote.closed ? 'Yes' : 'No',
+            vote.yay,
+            vote.nay,
+            vote.total,
+            selection.voterId || '',
+            selection.voterLabel || '',
+            selection.option || '',
+            selection.updatedAt || '',
+          ]);
+        }
+      }
+    }
+
+    downloadText(`${base}-votes.csv`, rowsToCsv(voteRows), 'text/csv;charset=utf-8');
+    downloadText(`${base}-motions.csv`, rowsToCsv(motionRows), 'text/csv;charset=utf-8');
+    downloadText(`${base}-hands.csv`, rowsToCsv(handRows), 'text/csv;charset=utf-8');
+    downloadText(`${base}-floor-votes.csv`, rowsToCsv(floorRows), 'text/csv;charset=utf-8');
+  };
+
+  const buildAiContext = () => {
+    const snapshot = buildSnapshot();
+    const lines: string[] = [];
+    lines.push(`Current slide: ${snapshot.currentSlide}`);
+    lines.push(`Chair/member label: ${snapshot.memberName}`);
+    lines.push(`Connected to sync: ${snapshot.connected ? 'yes' : 'no'}`);
+    lines.push('');
+    lines.push('Structured Votes:');
+    for (const vote of snapshot.votes) {
+      lines.push(`- ${vote.label}: YAY ${vote.yay}, NAY ${vote.nay}, TOTAL ${vote.total}`);
+    }
+    if (snapshot.votes.length === 0) lines.push('- None yet');
+    lines.push('');
+    lines.push('Motions:');
+    for (const motion of snapshot.motions) {
+      lines.push(`- ${motion.author} (${motion.time})${motion.seconded ? ' [Seconded]' : ''}: ${motion.text}`);
+    }
+    if (snapshot.motions.length === 0) lines.push('- None yet');
+    lines.push('');
+    lines.push('Raised Hands:');
+    for (const hand of snapshot.hands) {
+      lines.push(`- ${hand.name} (${hand.time})`);
+    }
+    if (snapshot.hands.length === 0) lines.push('- None right now');
+    lines.push('');
+    lines.push('Floor Votes:');
+    for (const floor of snapshot.floorVotes) {
+      lines.push(`- ${floor.question} [${floor.closed ? 'Closed' : 'Open'}]: YAY ${floor.yay}, NAY ${floor.nay}, TOTAL ${floor.total}`);
+    }
+    if (snapshot.floorVotes.length === 0) lines.push('- None yet');
+
+    return lines.join('\n');
+  };
+
+  const runAiAssist = async () => {
+    setAiBusy(true);
+    setAiError('');
+    try {
+      const text = await requestMeetingAssist(aiMode, buildAiContext());
+      setAiOutput(text);
+    } catch (e: any) {
+      setAiError(e?.message || 'Failed to generate AI output.');
+    } finally {
+      setAiBusy(false);
+    }
+  };
 
   return (
     <div style={{ height: '100%', background: '#0C0C0C', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
@@ -416,6 +611,61 @@ export function MeetingSidebar({ currentSlide, externalTab }: { currentSlide: nu
                 <Plus size={12} /> New Floor Vote
               </button>
             )}
+
+            <div style={{ background: '#111111', border: '1px solid #252525', borderRadius: 10, padding: '11px 12px', marginBottom: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <Sparkles size={13} color="#8A8A8A" />
+                  <span style={{ color: '#A0A0A0', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                    AI Facilitation
+                  </span>
+                </div>
+                <select
+                  value={aiMode}
+                  onChange={(e) => setAiMode(e.target.value as 'facilitator' | 'summary' | 'minutes')}
+                  style={{ background: '#0C0C0C', border: '1px solid #2A2A2A', color: '#B0B0B0', borderRadius: 6, fontSize: '0.66rem', padding: '4px 8px', fontFamily: 'inherit' }}
+                >
+                  <option value="facilitator">Chair Script</option>
+                  <option value="summary">Summary</option>
+                  <option value="minutes">Minutes Draft</option>
+                </select>
+              </div>
+
+              <button
+                onClick={runAiAssist}
+                disabled={aiBusy}
+                style={{ width: '100%', padding: '8px 10px', background: aiBusy ? '#161616' : '#F0F0F0', border: `1px solid ${aiBusy ? '#2A2A2A' : '#FFFFFF'}`, borderRadius: 7, cursor: aiBusy ? 'wait' : 'pointer', color: aiBusy ? '#555' : '#0A0A0A', fontWeight: 800, fontSize: '0.72rem', fontFamily: 'inherit', letterSpacing: '0.04em', marginBottom: aiOutput ? 8 : 0 }}>
+                {aiBusy ? 'Generating…' : 'Generate AI Assistance'}
+              </button>
+
+              {aiError ? (
+                <div style={{ marginTop: 8, color: '#C07070', fontSize: '0.66rem', lineHeight: 1.5 }}>
+                  {aiError}
+                </div>
+              ) : null}
+
+              {aiOutput ? (
+                <div style={{ marginTop: 8 }}>
+                  <div style={{ maxHeight: 170, overflowY: 'auto', border: '1px solid #252525', borderRadius: 7, background: '#0C0C0C', padding: '8px 9px', whiteSpace: 'pre-wrap', color: '#B8B8B8', fontSize: '0.68rem', lineHeight: 1.55 }}>
+                    {aiOutput}
+                  </div>
+                  <div style={{ display: 'flex', gap: 6, marginTop: 7 }}>
+                    <button
+                      onClick={() => navigator.clipboard.writeText(aiOutput)}
+                      style={{ flex: 1, padding: '6px 8px', background: 'transparent', border: '1px solid #2A2A2A', borderRadius: 7, cursor: 'pointer', color: '#808080', fontSize: '0.66rem', fontFamily: 'inherit' }}
+                    >
+                      Copy
+                    </button>
+                    <button
+                      onClick={() => downloadText(`nphc-ai-${aiMode}-${safeFilePart(new Date().toISOString())}.txt`, aiOutput)}
+                      style={{ flex: 1, padding: '6px 8px', background: 'transparent', border: '1px solid #2A2A2A', borderRadius: 7, cursor: 'pointer', color: '#808080', fontSize: '0.66rem', fontFamily: 'inherit' }}
+                    >
+                      Download
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+            </div>
           </div>
         )}
       </div>
@@ -457,6 +707,24 @@ export function MeetingSidebar({ currentSlide, externalTab }: { currentSlide: nu
           <span style={{ color: '#282828', fontSize: '0.6rem' }}>
             {handCount}H · {motionCount}M · {Object.values(votes).filter(v => v.yay + v.nay > 0).length + activeFloor.length}V
           </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <button
+              onClick={exportMeetingJson}
+              title="Download full meeting record (JSON)"
+              style={{ background: 'none', border: '1px solid #252525', borderRadius: 5, cursor: 'pointer', color: '#5A5A5A', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 3, fontSize: '0.6rem', fontFamily: 'inherit' }}
+            >
+              <Download size={10} />
+              JSON
+            </button>
+            <button
+              onClick={exportMeetingCsv}
+              title="Download votes, motions, hands, and floor votes as CSV files"
+              style={{ background: 'none', border: '1px solid #252525', borderRadius: 5, cursor: 'pointer', color: '#5A5A5A', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 3, fontSize: '0.6rem', fontFamily: 'inherit' }}
+            >
+              <FileDown size={10} />
+              CSV
+            </button>
+          </div>
           {showResetConfirm ? (
             <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
               <span style={{ color: '#505050', fontSize: '0.62rem' }}>Reset all?</span>
