@@ -493,7 +493,7 @@ export function HomePage() {
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent pointer-events-none" />
 
-          <div className="absolute inset-x-0 top-2 sm:top-3 z-20 px-3 sm:px-6 lg:px-10" data-tour="quick-links">
+          <div className="absolute inset-x-0 bottom-3 sm:bottom-4 z-20 px-3 sm:px-6 lg:px-10" data-tour="quick-links">
             <motion.div
               initial={{ y: 12, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
