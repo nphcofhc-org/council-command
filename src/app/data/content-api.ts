@@ -14,6 +14,7 @@ import type {
   UpcomingMeeting,
   Update,
 } from "./types";
+import type { RollCallContent } from "./roll-call";
 
 type ContentResponse<T> = {
   found: boolean;
@@ -173,4 +174,12 @@ export function fetchMemberAlerts(): Promise<ContentResponse<MemberAlerts | null
 
 export function saveMemberAlerts(payload: MemberAlerts): Promise<ContentResponse<MemberAlerts>> {
   return putJson("/api/content/member-alerts", payload);
+}
+
+export function fetchRollCallContent(): Promise<ContentResponse<RollCallContent | null>> {
+  return getJson("/api/content/roll-call");
+}
+
+export function saveRollCallContent(payload: RollCallContent): Promise<ContentResponse<RollCallContent>> {
+  return putJson("/api/content/roll-call", payload);
 }
