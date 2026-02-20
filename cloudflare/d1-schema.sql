@@ -11,3 +11,16 @@ CREATE TABLE IF NOT EXISTS portal_content_state (
   updated_at TEXT NOT NULL,
   updated_by TEXT
 );
+
+CREATE TABLE IF NOT EXISTS portal_activity_log (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  email TEXT,
+  event_type TEXT NOT NULL,
+  path TEXT,
+  user_agent TEXT,
+  ip_mask TEXT,
+  created_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_portal_activity_created_at ON portal_activity_log(created_at);
+CREATE INDEX IF NOT EXISTS idx_portal_activity_email ON portal_activity_log(email);

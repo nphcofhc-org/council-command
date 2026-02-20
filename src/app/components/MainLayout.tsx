@@ -10,6 +10,7 @@ import { useMemberDirectory } from "../hooks/use-member-directory";
 import { sessionDisplayName, sessionRoleLabel } from "../utils/user-display";
 import { IntroSplash } from "./IntroSplash";
 import { GuidedTour } from "./GuidedTour";
+import { trackPortalActivity } from "../data/admin-api";
 
 const baseNavItems: Array<{ to: string; label: string; icon: any; danger?: boolean }> = [
   { to: "/", label: "Home", icon: Home },
@@ -58,6 +59,11 @@ export function MainLayout() {
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (!session.authenticated) return;
+    void trackPortalActivity(location.pathname || "/", "page_view");
+  }, [location.pathname, session.authenticated]);
 
   // Prevent body scroll when mobile nav is open
   useEffect(() => {

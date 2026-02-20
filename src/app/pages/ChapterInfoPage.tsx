@@ -40,16 +40,19 @@ function normalizeDriveImageUrl(raw: string | null | undefined): string {
   }
 }
 
-function MemberPhoto({ member }: { member: LeadershipMember }) {
+function MemberPhoto({ member, size = "md" }: { member: LeadershipMember; size?: "md" | "xl" }) {
   const [failed, setFailed] = useState(false);
   const normalized = normalizeDriveImageUrl(member.imageUrl);
+  const classes = size === "xl"
+    ? "w-60 h-60 rounded-3xl"
+    : "w-44 h-44 rounded-2xl";
 
   if (normalized && !failed) {
     return (
       <img
         src={normalized}
         alt={member.name}
-        className="w-44 h-44 rounded-2xl object-cover mb-3 border-4 border-black/10 bg-white"
+        className={`${classes} object-cover mb-3 border-4 border-black/10 bg-white`}
         onError={() => setFailed(true)}
         loading="lazy"
       />
@@ -67,9 +70,9 @@ function MemberPhoto({ member }: { member: LeadershipMember }) {
   })();
 
   return (
-    <div className="w-44 h-44 rounded-2xl bg-white/5 flex flex-col items-center justify-center mb-3 border-4 border-black/10 group-hover:border-black/15 transition-colors overflow-hidden">
+    <div className={`${classes} bg-white/5 flex flex-col items-center justify-center mb-3 border-4 border-black/10 group-hover:border-black/15 transition-colors overflow-hidden`}>
       <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 via-white/10 to-black/5">
-        <span className="text-4xl font-extrabold tracking-tight text-slate-700">{initials}</span>
+        <span className={`${size === "xl" ? "text-5xl" : "text-4xl"} font-extrabold tracking-tight text-slate-700`}>{initials}</span>
       </div>
     </div>
   );
@@ -171,7 +174,7 @@ export function ChapterInfoPage() {
                             <div className="flex flex-col items-center text-center">
                               <button
                                 type="button"
-                                className="nphc-holo-btn rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                className="nphc-holo-btn cursor-zoom-in rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                                 onClick={() => setSelectedMember(officer)}
                                 aria-label={`View profile for ${officer.name}`}
                               >
@@ -216,7 +219,7 @@ export function ChapterInfoPage() {
                             <div className="flex flex-col items-center text-center">
                               <button
                                 type="button"
-                                className="nphc-holo-btn rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                className="nphc-holo-btn cursor-zoom-in rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                                 onClick={() => setSelectedMember(chair)}
                                 aria-label={`View profile for ${chair.name}`}
                               >
@@ -426,9 +429,9 @@ export function ChapterInfoPage() {
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="grid gap-5 sm:grid-cols-[180px_1fr]">
+              <div className="grid gap-5 sm:grid-cols-[250px_1fr]">
                 <div className="flex flex-col items-center sm:items-start">
-                  <MemberPhoto member={selectedMember} />
+                  <MemberPhoto member={selectedMember} size="xl" />
                   <a
                     href={selectedContactHref}
                     className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:brightness-110 transition"

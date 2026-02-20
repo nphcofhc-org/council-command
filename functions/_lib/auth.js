@@ -1,3 +1,5 @@
+import { applyAccessOverrides, readAccessOverrides } from "./access-controls";
+
 const EMAIL_HEADER_CANDIDATES = [
   "cf-access-authenticated-user-email",
   "x-cf-access-authenticated-user-email",
@@ -231,7 +233,7 @@ export async function getSessionState(request, env) {
     isCouncilAdmin = true;
   }
 
-  return {
+  let resolved = {
     email,
     isAuthenticated,
     isCouncilAdmin,
@@ -239,4 +241,29 @@ export async function getSessionState(request, env) {
     isSiteEditor,
     isPresident,
   };
+
+  if (isAuthenticated && env.DB) {
+    try {
+      const overrides = await readAccessOverrides(env.DB);
+      resolved = applyAccessOverrides(resolved, email, overrides);
+      // Keep role relationships coherent after overrides.
+      if (resolved.isSiteEditor) resolved.isCouncilAdmin = true;
+      if (resolved.isPresident) {
+        resolved.isCouncilAdmin = true;
+        resolved.isTreasuryAdmin = true;
+        resolved.isSiteEditor = true;
+      }
+    } catch {
+      // ignore override resolution errors
+    }
+  }
+
+  if (isFallbackPresident) {
+    resolved.isCouncilAdmin = true;
+    resolved.isTreasuryAdmin = true;
+    resolved.isSiteEditor = true;
+    resolved.isPresident = true;
+  }
+
+  return resolved;
 }

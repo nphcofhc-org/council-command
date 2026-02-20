@@ -20,7 +20,7 @@ export async function onRequest(context) {
     return json({ error: "Unauthenticated." }, { status: 401 });
   }
   if (!session.isTreasuryAdmin) {
-    return json({ error: "Forbidden: treasury access requires President, Vice President, or Treasurer role." }, { status: 403 });
+    return json({ error: "Forbidden: treasury access requires President, Treasurer, or Financial Secretary role." }, { status: 403 });
   }
 
   return json({
@@ -29,4 +29,3 @@ export async function onRequest(context) {
     transactions: treasuryData.TREASURY_TRANSACTIONS,
   });
 }
-

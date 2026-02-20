@@ -10,6 +10,38 @@ export type CouncilSession = {
   isPresident: boolean;
 };
 
+export type AccessOverrideEntry = {
+  email: string;
+  isCouncilAdmin: boolean | null;
+  isTreasuryAdmin: boolean | null;
+  isSiteEditor: boolean | null;
+  isPresident: boolean | null;
+  note: string;
+  updatedAt?: string | null;
+  updatedBy?: string | null;
+};
+
+export type SiteMaintenanceMetrics = {
+  pageViews24h: number;
+  pageViews7d: number;
+  distinctUsers7d: number;
+  activeUsers15m: number;
+  topPages7d: Array<{ path: string; hits: number }>;
+  recentActivity: Array<{
+    email: string | null;
+    eventType: string;
+    path: string | null;
+    createdAt: string | null;
+  }>;
+};
+
+export type SiteMaintenancePayload = {
+  overrides: AccessOverrideEntry[];
+  metrics: SiteMaintenanceMetrics;
+  knownUsers: string[];
+  viewer: string | null;
+};
+
 export type ComplianceState = {
   checkedItems: Record<string, boolean>;
   updatedAt: string | null;
@@ -27,6 +59,8 @@ const SESSION_ENDPOINT = "/api/admin/session";
 const COMPLIANCE_ENDPOINT = "/api/admin/compliance";
 const LEADERSHIP_ENDPOINT = "/api/content/chapter-leadership";
 const MEMBER_DIRECTORY_ENDPOINT = "/api/content/member-directory";
+const SITE_MAINTENANCE_ENDPOINT = "/api/admin/site-maintenance";
+const ANALYTICS_TRACK_ENDPOINT = "/api/analytics/track";
 
 async function parseError(response: Response): Promise<string> {
   try {
@@ -221,4 +255,119 @@ export async function saveMemberDirectory(directory: MemberDirectory): Promise<M
     updatedAt: data?.updatedAt ? String(data.updatedAt) : null,
     updatedBy: data?.updatedBy ? String(data.updatedBy) : null,
   };
+}
+
+function normalizeOverrideEntry(raw: any): AccessOverrideEntry | null {
+  const email = raw?.email ? String(raw.email).trim().toLowerCase() : "";
+  if (!email) return null;
+
+  const toFlag = (value: any): boolean | null => {
+    if (value === true || value === false) return value;
+    return null;
+  };
+
+  return {
+    email,
+    isCouncilAdmin: toFlag(raw?.isCouncilAdmin),
+    isTreasuryAdmin: toFlag(raw?.isTreasuryAdmin),
+    isSiteEditor: toFlag(raw?.isSiteEditor),
+    isPresident: toFlag(raw?.isPresident),
+    note: String(raw?.note || "").trim(),
+    updatedAt: raw?.updatedAt ? String(raw.updatedAt) : null,
+    updatedBy: raw?.updatedBy ? String(raw.updatedBy) : null,
+  };
+}
+
+export async function fetchSiteMaintenancePayload(): Promise<SiteMaintenancePayload> {
+  const response = await fetch(SITE_MAINTENANCE_ENDPOINT, {
+    method: "GET",
+    credentials: "same-origin",
+    headers: {
+      accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response));
+  }
+
+  const data = await response.json();
+  const overridesRaw = Array.isArray(data?.overrides) ? data.overrides : [];
+  const overrides = overridesRaw.map(normalizeOverrideEntry).filter(Boolean) as AccessOverrideEntry[];
+  const metricsRaw = data?.metrics || {};
+
+  return {
+    overrides,
+    metrics: {
+      pageViews24h: Number(metricsRaw?.pageViews24h || 0),
+      pageViews7d: Number(metricsRaw?.pageViews7d || 0),
+      distinctUsers7d: Number(metricsRaw?.distinctUsers7d || 0),
+      activeUsers15m: Number(metricsRaw?.activeUsers15m || 0),
+      topPages7d: Array.isArray(metricsRaw?.topPages7d)
+        ? metricsRaw.topPages7d.map((row: any) => ({
+          path: String(row?.path || ""),
+          hits: Number(row?.hits || 0),
+        }))
+        : [],
+      recentActivity: Array.isArray(metricsRaw?.recentActivity)
+        ? metricsRaw.recentActivity.map((row: any) => ({
+          email: row?.email ? String(row.email) : null,
+          eventType: String(row?.eventType || ""),
+          path: row?.path ? String(row.path) : null,
+          createdAt: row?.createdAt ? String(row.createdAt) : null,
+        }))
+        : [],
+    },
+    knownUsers: Array.isArray(data?.knownUsers) ? data.knownUsers.map((v: any) => String(v).trim().toLowerCase()).filter(Boolean) : [],
+    viewer: data?.viewer ? String(data.viewer).trim().toLowerCase() : null,
+  };
+}
+
+export async function saveSiteMaintenanceOverrides(entries: AccessOverrideEntry[]): Promise<{
+  saved: boolean;
+  entries: AccessOverrideEntry[];
+  updatedAt: string | null;
+  updatedBy: string | null;
+}> {
+  const response = await fetch(SITE_MAINTENANCE_ENDPOINT, {
+    method: "PUT",
+    credentials: "same-origin",
+    headers: {
+      "content-type": "application/json",
+      accept: "application/json",
+    },
+    body: JSON.stringify({ entries }),
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response));
+  }
+
+  const data = await response.json();
+  const savedEntries = Array.isArray(data?.entries) ? data.entries.map(normalizeOverrideEntry).filter(Boolean) as AccessOverrideEntry[] : [];
+  return {
+    saved: Boolean(data?.saved),
+    entries: savedEntries,
+    updatedAt: data?.updatedAt ? String(data.updatedAt) : null,
+    updatedBy: data?.updatedBy ? String(data.updatedBy) : null,
+  };
+}
+
+export async function trackPortalActivity(path: string, eventType = "page_view"): Promise<void> {
+  try {
+    await fetch(ANALYTICS_TRACK_ENDPOINT, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "content-type": "application/json",
+        accept: "application/json",
+      },
+      body: JSON.stringify({
+        path: String(path || "").trim(),
+        eventType: String(eventType || "page_view").trim() || "page_view",
+      }),
+    });
+  } catch {
+    // telemetry should never block UI
+  }
 }
