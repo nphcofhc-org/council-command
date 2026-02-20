@@ -11,7 +11,6 @@ import { StatusBadge } from "../components/status-badge";
 import { Link } from "react-router";
 import { useCouncilCalendarSchedule } from "../hooks/use-council-calendar";
 import { useEffect, useMemo, useRef } from "react";
-import { MeetingRollCallManager } from "../components/MeetingRollCallManager";
 
 const ART_GEO = "https://images.unsplash.com/photo-1665680779817-11a0d63ee51e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHdoaXRlJTIwZ2VvbWV0cmljJTIwbWluaW1hbCUyMGFydHxlbnwxfHx8fDE3NzA1MTMyMjN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 
@@ -46,8 +45,7 @@ export function MeetingsPage() {
   const meetingRecords = data?.meetingRecords || [];
   const delegateReports = data?.delegateReports || [];
   const tab = new URLSearchParams(location.search || "").get("tab") || "";
-  const initialTab =
-    tab === "records" ? "records" : tab === "reports" ? "reports" : tab === "rollcall" ? "rollcall" : "upcoming";
+  const initialTab = tab === "records" ? "records" : tab === "reports" ? "reports" : "upcoming";
   const toViewer = (url: string) => `/viewer?src=${encodeURIComponent(url)}`;
   const isInternalFile = (url: string) => url.trim().startsWith("/");
 
@@ -87,15 +85,6 @@ export function MeetingsPage() {
       joinUrl: joinByDate.get(m.dateISO)?.joinUrl || "",
       joinLabel: joinByDate.get(m.dateISO)?.joinLabel || "Join Google Meet",
       kind: m.kind as "exec" | "general",
-    }));
-
-  const rollCallMeetingOptions = [...generalMeetings, ...execMeetings]
-    .sort((a, b) => (a.dateISO < b.dateISO ? -1 : a.dateISO > b.dateISO ? 1 : 0))
-    .map((m) => ({
-      meetingKey: `${m.kind}-${m.dateISO}`,
-      meetingKind: m.kind as "general" | "exec",
-      meetingLabel: m.label,
-      dateISO: m.dateISO,
     }));
 
   const featuredDeck = useMemo(() => {
@@ -149,7 +138,6 @@ export function MeetingsPage() {
             <TabsTrigger value="upcoming" className="text-xs sm:text-sm">Upcoming Meetings</TabsTrigger>
             <TabsTrigger value="records" className="text-xs sm:text-sm">Agendas & Minutes</TabsTrigger>
             <TabsTrigger value="reports" className="text-xs sm:text-sm">Delegate Reports</TabsTrigger>
-            <TabsTrigger value="rollcall" className="text-xs sm:text-sm">Roll Call</TabsTrigger>
           </TabsList>
 
           {/* Upcoming Meetings */}
@@ -610,17 +598,6 @@ export function MeetingsPage() {
                   </p>
                 </CardContent>
               </Card>
-            </motion.div>
-          </TabsContent>
-
-          {/* Roll Call */}
-          <TabsContent value="rollcall" className="space-y-4">
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.1, duration: 0.5 }}
-            >
-              <MeetingRollCallManager meetingOptions={rollCallMeetingOptions} />
             </motion.div>
           </TabsContent>
         </Tabs>

@@ -11,6 +11,7 @@ import {
   MEMBER_ORGANIZATIONS,
   OFFICER_ROLES,
   type AttendanceStatus,
+  type RollCallContent,
   type RollCallRecord,
 } from "../data/roll-call";
 import { fetchRollCallContent, saveRollCallContent } from "../data/content-api";
@@ -90,6 +91,22 @@ function statusMeta(value: AttendanceStatus) {
   return STATUS_META.find((s) => s.value === value) || STATUS_META[STATUS_META.length - 1];
 }
 
+function mergeSeedWithSaved(saved: RollCallContent | null | undefined): RollCallContent {
+  const mergedByKey = new Map<string, RollCallRecord>();
+  for (const seed of DEFAULT_ROLL_CALL_CONTENT.records) {
+    mergedByKey.set(seed.meetingKey, seed);
+  }
+  for (const row of saved?.records || []) {
+    mergedByKey.set(row.meetingKey, row);
+  }
+  return {
+    quorumMinimum: Number.isFinite(Number(saved?.quorumMinimum))
+      ? Math.max(1, Math.min(9, Math.trunc(Number(saved?.quorumMinimum))))
+      : DEFAULT_ROLL_CALL_CONTENT.quorumMinimum,
+    records: Array.from(mergedByKey.values()).sort((a, b) => (a.dateISO < b.dateISO ? -1 : a.dateISO > b.dateISO ? 1 : 0)),
+  };
+}
+
 export function MeetingRollCallManager({ meetingOptions }: { meetingOptions: MeetingOption[] }) {
   const { session } = useCouncilSession();
   const canEdit = session.isCouncilAdmin;
@@ -107,11 +124,7 @@ export function MeetingRollCallManager({ meetingOptions }: { meetingOptions: Mee
     Promise.all([fetchRollCallContent().catch(() => null), fetchLeadershipContent().catch(() => null)])
       .then(([rollCallPayload, leadershipPayload]) => {
         if (cancelled) return;
-        if (rollCallPayload?.found && rollCallPayload.data) {
-          setRollCall(rollCallPayload.data);
-        } else {
-          setRollCall(DEFAULT_ROLL_CALL_CONTENT);
-        }
+        setRollCall(mergeSeedWithSaved(rollCallPayload?.found ? rollCallPayload.data : null));
         if (leadershipPayload?.found && leadershipPayload.data) {
           setLeadership(leadershipPayload.data);
         }
@@ -191,6 +204,41 @@ export function MeetingRollCallManager({ meetingOptions }: { meetingOptions: Mee
     ? Math.max(1, Math.min(9, Math.trunc(Number(rollCall.quorumMinimum))))
     : 5;
   const quorumMet = presentOrganizations >= quorumMinimum;
+
+  const presentCountForRecord = (record: RollCallRecord) => {
+    let count = 0;
+    for (const org of MEMBER_ORGANIZATIONS) {
+      if ((record.orgStatus[org.key] || "") === "present") count += 1;
+    }
+    return count;
+  };
+
+  const historicalRecords = useMemo(
+    () => [...rollCall.records].sort((a, b) => (a.dateISO > b.dateISO ? -1 : a.dateISO < b.dateISO ? 1 : 0)),
+    [rollCall.records],
+  );
+
+  const yearlyReport = useMemo(() => {
+    const yearMap = new Map<string, RollCallRecord[]>();
+    for (const record of historicalRecords) {
+      const year = String(record.dateISO || "").slice(0, 4);
+      if (!year) continue;
+      const list = yearMap.get(year) || [];
+      list.push(record);
+      yearMap.set(year, list);
+    }
+
+    return Array.from(yearMap.entries())
+      .sort((a, b) => (a[0] > b[0] ? -1 : 1))
+      .map(([year, records]) => {
+        const totalMeetings = records.length;
+        const quorumMetMeetings = records.filter((r) => presentCountForRecord(r) >= quorumMinimum).length;
+        const avgPresent = totalMeetings
+          ? Math.round((records.reduce((acc, r) => acc + presentCountForRecord(r), 0) / totalMeetings) * 10) / 10
+          : 0;
+        return { year, records, totalMeetings, quorumMetMeetings, avgPresent };
+      });
+  }, [historicalRecords, quorumMinimum]);
 
   const upsertSelectedRecord = (patch: Partial<RollCallRecord>) => {
     if (!selectedMeeting) return;
@@ -377,19 +425,22 @@ export function MeetingRollCallManager({ meetingOptions }: { meetingOptions: Mee
         <CardHeader>
           <CardTitle className="text-base sm:text-lg">Member Organization Roll Call</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
-          {MEMBER_ORGANIZATIONS.map((org) => {
-            const value = selectedRecord.orgStatus[org.key] || "";
-            const meta = statusMeta(value);
-            return (
-              <div key={org.key} className="rounded-xl border border-black/10 bg-white/35 p-3">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex items-center gap-2">
-                    <Users className="size-4 text-slate-500" />
-                    <p className="text-sm font-medium text-slate-900">{org.name}</p>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2">
+        <CardContent className="space-y-3">
+          <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
+            {MEMBER_ORGANIZATIONS.map((org) => {
+              const value = selectedRecord.orgStatus[org.key] || "";
+              const meta = statusMeta(value);
+              return (
+                <div key={org.key} className="rounded-xl border border-black/10 bg-white/35 p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <Users className="size-4 text-slate-500" />
+                      <p className="text-sm font-medium text-slate-900">{org.name}</p>
+                    </div>
                     <Badge className={`border ${meta.className}`}>{meta.label}</Badge>
+                  </div>
+
+                  <div className="mt-2 flex flex-wrap gap-1.5">
                     {STATUS_META.slice(0, 4).map((option) => {
                       const active = value === option.value;
                       return (
@@ -398,7 +449,7 @@ export function MeetingRollCallManager({ meetingOptions }: { meetingOptions: Mee
                           type="button"
                           disabled={!canEdit}
                           onClick={() => setOrgStatus(org.key, option.value)}
-                          className={`rounded-lg border px-2.5 py-1 text-xs font-medium transition ${option.className} ${
+                          className={`rounded-lg border px-2 py-1 text-[11px] font-medium transition ${option.className} ${
                             active ? "ring-2 ring-primary/35" : "opacity-70 hover:opacity-100"
                           } ${!canEdit ? "cursor-not-allowed opacity-55" : ""}`}
                         >
@@ -408,9 +459,9 @@ export function MeetingRollCallManager({ meetingOptions }: { meetingOptions: Mee
                     })}
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
 
           <div className={`rounded-xl border px-3 py-2 text-sm ${quorumMet ? "border-emerald-300/50 bg-emerald-500/10 text-emerald-800" : "border-rose-300/50 bg-rose-500/10 text-rose-800"}`}>
             <div className="flex items-center gap-2">
@@ -419,6 +470,58 @@ export function MeetingRollCallManager({ meetingOptions }: { meetingOptions: Mee
                 ? `Quorum met (${presentOrganizations} organizations present).`
                 : `No quorum (${presentOrganizations} organizations present; ${quorumMinimum} required).`}
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl border border-black/10">
+        <CardHeader>
+          <CardTitle className="text-base sm:text-lg">Historical Attendance Reports</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            {yearlyReport.map((year) => (
+              <div key={year.year} className="rounded-xl border border-black/10 bg-white/35 p-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-base font-semibold text-slate-900">FY {year.year}</p>
+                  <Badge variant="secondary" className="border border-black/10 bg-white/50 text-slate-700">
+                    {year.totalMeetings} meetings
+                  </Badge>
+                </div>
+                <div className="mt-2 space-y-1 text-sm text-slate-700">
+                  <p>
+                    Quorum met: <strong>{year.quorumMetMeetings}/{year.totalMeetings}</strong>
+                  </p>
+                  <p>
+                    Avg orgs present: <strong>{year.avgPresent}</strong>
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
+            {historicalRecords.map((record) => {
+              const present = presentCountForRecord(record);
+              const met = present >= quorumMinimum;
+              return (
+                <div key={record.meetingKey} className="rounded-xl border border-black/10 bg-white/35 p-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">{record.dateISO}</p>
+                      <p className="text-xs text-slate-500">{record.meetingKind === "exec" ? "Executive Council" : "General Body"}</p>
+                    </div>
+                    <Badge className={`border ${met ? "border-emerald-300/50 bg-emerald-500/10 text-emerald-700" : "border-rose-300/50 bg-rose-500/10 text-rose-700"}`}>
+                      {met ? "Quorum" : "No Quorum"}
+                    </Badge>
+                  </div>
+                  <p className="mt-2 text-xs text-slate-600">{record.meetingLabel}</p>
+                  <p className="mt-2 text-xs text-slate-700">
+                    Present organizations: <strong>{present}</strong>
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </CardContent>
       </Card>
@@ -441,4 +544,3 @@ export function MeetingRollCallManager({ meetingOptions }: { meetingOptions: Mee
     </div>
   );
 }
-
