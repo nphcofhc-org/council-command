@@ -117,16 +117,22 @@ export function CouncilAdminPage() {
               <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h3 className="text-base text-slate-900 sm:text-lg">Exec Council Meeting Deck</h3>
-                  <p className="text-sm text-slate-600">
-                    Your role currently has council workspace access only. Editing tools are restricted to Site Administration.
-                  </p>
+                  <p className="text-sm text-slate-600">Open the current meeting deck or retrieve the 2/19 archived copy.</p>
                 </div>
-                <Button asChild className="w-full sm:w-auto">
-                  <Link to="/council-admin/exec-council-meeting">
-                    <Calendar className="mr-2 size-4" />
-                    Open Deck
-                  </Link>
-                </Button>
+                <div className="flex w-full flex-col gap-2 sm:w-auto">
+                  <Button asChild className="w-full sm:w-auto">
+                    <Link to="/council-admin/exec-council-meeting?deck=2026-02-23">
+                      <Calendar className="mr-2 size-4" />
+                      Open 2/23 Deck
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full sm:w-auto border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10">
+                    <Link to="/council-admin/exec-council-meeting?deck=2026-02-19">
+                      <FileText className="mr-2 size-4" />
+                      Retrieve 2/19 Copy
+                    </Link>
+                  </Button>
+                </div>
               </CardContent>
             </Card>
             {session.isTreasuryAdmin ? (
@@ -176,17 +182,23 @@ export function CouncilAdminPage() {
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h3 className="text-base text-slate-900 sm:text-lg">Exec Council Meeting (2/19)</h3>
-                <p className="text-sm text-slate-600">
-                  Open the in-portal deck and live voting workspace for the executive council session.
-                </p>
+                <h3 className="text-base text-slate-900 sm:text-lg">Exec Council Deck Library</h3>
+                <p className="text-sm text-slate-600">Use the current 2/23 deck or retrieve the archived 2/19 copy.</p>
               </div>
-              <Button asChild className="w-full sm:w-auto">
-                <Link to="/council-admin/exec-council-meeting">
-                  <Calendar className="mr-2 size-4" />
-                  Open Deck
-                </Link>
-              </Button>
+              <div className="flex w-full flex-col gap-2 sm:w-auto">
+                <Button asChild className="w-full sm:w-auto">
+                  <Link to="/council-admin/exec-council-meeting?deck=2026-02-23">
+                    <Calendar className="mr-2 size-4" />
+                    Open 2/23 Deck
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="w-full sm:w-auto border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10">
+                  <Link to="/council-admin/exec-council-meeting?deck=2026-02-19">
+                    <FileText className="mr-2 size-4" />
+                    Retrieve 2/19 Copy
+                  </Link>
+                </Button>
+              </div>
             </CardContent>
           </Card>
 

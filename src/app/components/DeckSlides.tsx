@@ -22,6 +22,7 @@ const LOGO_URL       = 'https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/NPHC
 const CANDIDATE_1    = 'https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/NPHC%20Executive%20Council%20(1).png';
 const CANDIDATE_2    = 'https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/NPHC%20Executive%20Council%20(2).png';
 const CANDIDATE_3    = 'https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/NPHC%20Executive%20Council%20(3).png';
+const D9_TRENTON_URL = 'https://d9intrenton.my.canva.site/home/';
 
 // ─── Primitives ──────────────────────────────────────────────────────────────
 
@@ -41,7 +42,7 @@ function Badge({ children, solid }: { children: React.ReactNode; solid?: boolean
 
 // ─── Slide 1: Cover ──────────────────────────────────────────────────────────
 
-export function Slide1Cover({ isMobile = false }: { isMobile?: boolean }) {
+export function Slide1Cover({ isMobile = false, meetingDateLabel = 'February 2026' }: { isMobile?: boolean; meetingDateLabel?: string }) {
   return (
     <div style={{ width: '100%', height: '100%', background: BLACK, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
       {/* Dot grid */}
@@ -58,7 +59,7 @@ export function Slide1Cover({ isMobile = false }: { isMobile?: boolean }) {
           Executive Council<br />Meeting
         </h1>
         <h2 style={{ color: '#BEBEBE', margin: isMobile ? '10px 0 0' : '10px 0 0', fontSize: isMobile ? '1.25rem' : 'clamp(1.1rem,2.2vw,1.6rem)', fontWeight: 300, letterSpacing: '0.12em' }}>
-          February 2026
+          {meetingDateLabel}
         </h2>
         <div style={{ width: 52, height: 2, margin: `${isMobile ? 14 : 10}px 0`, background: 'linear-gradient(90deg,#606060,#C0C0C0,#606060)', borderRadius: 99 }} />
         <p style={{ color: '#9A9A9A', fontSize: isMobile ? '0.85rem' : 'clamp(0.72rem,1.2vw,0.95rem)', letterSpacing: '0.26em', textTransform: 'uppercase', margin: 0 }}>
@@ -94,7 +95,7 @@ const agendaItems: { num: string; title: string; sub?: string; tags?: AgendaTag[
   { num: '13', title: 'Adjournment' },
 ];
 
-export function Slide2Agenda({ isMobile = false }: { isMobile?: boolean }) {
+export function Slide2Agenda({ isMobile = false, meetingDateLabel = 'February 2026' }: { isMobile?: boolean; meetingDateLabel?: string }) {
   const [meetingStarted, setMeetingStarted] = useState(false);
 
   return (
@@ -102,7 +103,7 @@ export function Slide2Agenda({ isMobile = false }: { isMobile?: boolean }) {
       {!isMobile && <div style={{ width: 3, background: 'linear-gradient(180deg,transparent,#808080,#404040,#808080,transparent)', flexShrink: 0 }} />}
       <div style={{ flex: 1, padding: isMobile ? '16px 16px 12px' : 'clamp(16px,3.5%,40px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <div style={{ marginBottom: isMobile ? 12 : 14, flexShrink: 0 }}>
-          <Label>February 2026</Label>
+          <Label>{meetingDateLabel}</Label>
           <h1 style={{ color: BLACK, margin: '5px 0 0', fontSize: isMobile ? '1.55rem' : 'clamp(1.45rem,3vw,2.2rem)', fontWeight: 700 }}>Order of Business</h1>
           <SilverLine my={isMobile ? 10 : 8} />
         </div>
@@ -319,6 +320,29 @@ export function Slide5Financials({ isMobile = false }: { isMobile?: boolean }) {
             </p>
           </div>
           <VoteWidget voteKey="d9-sponsorship" label="$500 D9 Sponsorship Fee" description={isMobile ? undefined : 'Approve funding for NPHC delegation to the Trenton summit'} />
+          <a
+            href={D9_TRENTON_URL}
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              alignSelf: 'flex-start',
+              background: '#FFFFFF',
+              color: SILVER_L,
+              border: `1px solid ${BORDER2}`,
+              borderRadius: 8,
+              padding: isMobile ? '6px 10px' : '5px 10px',
+              fontSize: isMobile ? '0.82rem' : 'clamp(0.62rem,1.05vw,0.78rem)',
+              fontWeight: 700,
+              letterSpacing: '0.04em',
+              textDecoration: 'none',
+            }}
+          >
+            Open D9 in Trenton Link
+            <ExternalLink size={12} />
+          </a>
           {!isMobile && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
               {['Civic advocacy at the state level', 'NPHC delegation representation', 'Legislative networking'].map(item => (

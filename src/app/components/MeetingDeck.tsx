@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ChevronLeft, ChevronRight, LayoutGrid, X,
@@ -25,18 +25,8 @@ function useIsMobile() {
 
 // ─── Slide registry ──────────────────────────────────────────────────────────
 
-type SlideComp = React.ComponentType<{ isMobile?: boolean }>;
-
-const SLIDES: { id: number; label: string; component: SlideComp }[] = [
-  { id: 1, label: 'Title & Cover',             component: Slide1Cover },
-  { id: 2, label: 'Order of Business',         component: Slide2Agenda },
-  { id: 3, label: '2026 Vision: Four Pillars', component: Slide3Vision },
-  { id: 4, label: 'Board Ratification',        component: Slide4Ratification },
-  { id: 5, label: 'Financials & Compliance',   component: Slide5Financials },
-  { id: 6, label: 'Innovation & Programming',  component: Slide6NewBusiness },
-  { id: 7, label: 'Success Recap',             component: Slide7SuccessRecap },
-  { id: 8, label: 'Closing & Adjournment',     component: Slide8Adjournment },
-];
+type SlideComp = React.ComponentType<{ isMobile?: boolean; meetingDateLabel?: string }>;
+type DeckSlide = { id: number; label: string; component: SlideComp };
 
 const VOTE_SLIDES = new Set([2, 4, 5, 8]);
 const BORDER_LIGHT = '#E0E0E0';
@@ -50,7 +40,13 @@ const variants = {
 
 // ─── Inner deck (needs context) ───────────────────────────────────────────────
 
-function DeckInner({ canControl = true }: { canControl?: boolean }) {
+function DeckInner({
+  canControl = true,
+  meetingDateLabel = 'February 2026',
+}: {
+  canControl?: boolean;
+  meetingDateLabel?: string;
+}) {
   const isMobile = useIsMobile();
   const { myHandId, raiseHand, lowerMyHand, memberName } = useMeeting();
 
@@ -63,6 +59,27 @@ function DeckInner({ canControl = true }: { canControl?: boolean }) {
   const [mobileTab,     setMobileTab]     = useState<'hand' | 'motion' | 'vote'>('hand');
   const containerRef = useRef<HTMLDivElement>(null);
   const touchX = useRef(0);
+  const slides = useMemo<DeckSlide[]>(
+    () => [
+      {
+        id: 1,
+        label: 'Title & Cover',
+        component: (props) => <Slide1Cover {...props} meetingDateLabel={meetingDateLabel} />,
+      },
+      {
+        id: 2,
+        label: 'Order of Business',
+        component: (props) => <Slide2Agenda {...props} meetingDateLabel={meetingDateLabel} />,
+      },
+      { id: 3, label: '2026 Vision: Four Pillars', component: Slide3Vision },
+      { id: 4, label: 'Board Ratification', component: Slide4Ratification },
+      { id: 5, label: 'Financials & Compliance', component: Slide5Financials },
+      { id: 6, label: 'Innovation & Programming', component: Slide6NewBusiness },
+      { id: 7, label: 'Success Recap', component: Slide7SuccessRecap },
+      { id: 8, label: 'Closing & Adjournment', component: Slide8Adjournment },
+    ],
+    [meetingDateLabel],
+  );
 
   useEffect(() => {
     if (!isMobile) setMobileSheet(false);
@@ -83,7 +100,7 @@ function DeckInner({ canControl = true }: { canControl?: boolean }) {
   }, [current]);
 
   const prev = useCallback(() => { if (current > 0) goTo(current - 1); }, [current, goTo]);
-  const next = useCallback(() => { if (current < SLIDES.length - 1) goTo(current + 1); }, [current, goTo]);
+  const next = useCallback(() => { if (current < slides.length - 1) goTo(current + 1); }, [current, goTo, slides.length]);
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
@@ -115,8 +132,8 @@ function DeckInner({ canControl = true }: { canControl?: boolean }) {
     setMobileSheet(true);
   };
 
-  const SlideComponent = SLIDES[current].component;
-  const progress    = ((current + 1) / SLIDES.length) * 100;
+  const SlideComponent = slides[current].component;
+  const progress    = ((current + 1) / slides.length) * 100;
   const isVoteSlide = VOTE_SLIDES.has(current + 1);
   const isCoverSlide = current === 0;
 
@@ -142,12 +159,12 @@ function DeckInner({ canControl = true }: { canControl?: boolean }) {
         <div style={{ height: 48, background: 'rgba(255,255,255,0.97)', borderBottom: `1px solid ${BORDER_LIGHT}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 14px', flexShrink: 0, backdropFilter: 'blur(10px)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ color: '#222', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.02em' }}>
-              {String(current + 1).padStart(2, '0')}
-              <span style={{ color: '#CCC' }}> / {SLIDES.length}</span>
-            </span>
+                {String(current + 1).padStart(2, '0')}
+                <span style={{ color: '#CCC' }}> / {slides.length}</span>
+              </span>
             <div style={{ width: 1, height: 16, background: BORDER_LIGHT }} />
             <span style={{ color: '#888', fontSize: '0.78rem', maxWidth: '28ch', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {SLIDES[current].label}
+              {slides[current].label}
             </span>
             {isVoteSlide && (
               <span style={{ background: '#C62828', color: '#fff', fontSize: '0.52rem', fontWeight: 800, padding: '2px 7px', borderRadius: 99, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Vote</span>
@@ -172,7 +189,7 @@ function DeckInner({ canControl = true }: { canControl?: boolean }) {
               initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
               style={{ position: 'absolute', top: 51, left: 0, right: 0, zIndex: 40, background: 'rgba(255,255,255,0.98)', borderBottom: `1px solid ${BORDER_LIGHT}`, padding: 10, display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 6, backdropFilter: 'blur(10px)' }}
             >
-              {SLIDES.map((s, i) => (
+              {slides.map((s, i) => (
                 <button key={s.id} onClick={() => goTo(i)} style={{ background: i === current ? 'rgba(0,0,0,0.06)' : 'rgba(0,0,0,0.02)', border: `1px solid ${i === current ? '#C0C0C0' : BORDER_LIGHT}`, borderRadius: 7, padding: '7px 9px', cursor: 'pointer', textAlign: 'left' }}>
                   <div style={{ color: i === current ? '#222' : '#BBB', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.1em', marginBottom: 2 }}>{String(i + 1).padStart(2, '0')}</div>
                   <div style={{ color: i === current ? '#444' : '#999', fontSize: '0.68rem', lineHeight: 1.3 }}>{s.label}</div>
@@ -197,11 +214,11 @@ function DeckInner({ canControl = true }: { canControl?: boolean }) {
             <ChevronLeft size={17} />
           </button>
           <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
-            {SLIDES.map((_, i) => (
+            {slides.map((_, i) => (
               <button key={i} onClick={() => goTo(i)} style={{ width: i === current ? 22 : 7, height: 7, borderRadius: 99, background: i === current ? '#333' : i < current ? '#BBB' : '#DDD', border: 'none', cursor: 'pointer', padding: 0, transition: 'all 0.3s' }} />
             ))}
           </div>
-          <button onClick={next} disabled={current === SLIDES.length - 1} style={{ background: current === SLIDES.length - 1 ? 'transparent' : 'rgba(0,0,0,0.06)', border: `1px solid ${current === SLIDES.length - 1 ? '#EEE' : '#C0C0C0'}`, borderRadius: 8, width: 38, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: current === SLIDES.length - 1 ? 'not-allowed' : 'pointer', color: current === SLIDES.length - 1 ? '#DDD' : '#333' }}>
+          <button onClick={next} disabled={current === slides.length - 1} style={{ background: current === slides.length - 1 ? 'transparent' : 'rgba(0,0,0,0.06)', border: `1px solid ${current === slides.length - 1 ? '#EEE' : '#C0C0C0'}`, borderRadius: 8, width: 38, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: current === slides.length - 1 ? 'not-allowed' : 'pointer', color: current === slides.length - 1 ? '#DDD' : '#333' }}>
             <ChevronRight size={17} />
           </button>
         </div>
@@ -287,10 +304,10 @@ function DeckInner({ canControl = true }: { canControl?: boolean }) {
           <div style={{ position: 'absolute', top: 3, left: 0, right: 0, height: 40, zIndex: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 12px', background: isCoverSlide ? 'rgba(10,10,10,0.92)' : 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', borderBottom: `1px solid ${isCoverSlide ? '#222' : BORDER_LIGHT}` }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
               <span style={{ color: isCoverSlide ? '#888' : '#555', fontSize: '0.72rem', fontWeight: 700 }}>
-                {String(current + 1).padStart(2, '0')}<span style={{ color: isCoverSlide ? '#333' : '#CCC' }}> / {SLIDES.length}</span>
+                {String(current + 1).padStart(2, '0')}<span style={{ color: isCoverSlide ? '#333' : '#CCC' }}> / {slides.length}</span>
               </span>
               <div style={{ width: 1, height: 14, background: isCoverSlide ? '#333' : BORDER_LIGHT }} />
-              <span style={{ color: isCoverSlide ? '#666' : '#888', fontSize: '0.72rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '26ch' }}>{SLIDES[current].label}</span>
+              <span style={{ color: isCoverSlide ? '#666' : '#888', fontSize: '0.72rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '26ch' }}>{slides[current].label}</span>
               {isVoteSlide && <span style={{ background: isCoverSlide ? '#C62828' : '#C62828', color: '#fff', fontSize: '0.54rem', fontWeight: 800, padding: '2px 8px', borderRadius: 99, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Vote</span>}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -318,7 +335,7 @@ function DeckInner({ canControl = true }: { canControl?: boolean }) {
               <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}
                 style={{ position: 'absolute', top: 43, left: 0, right: 0, zIndex: 25, background: isCoverSlide ? 'rgba(8,8,8,0.97)' : 'rgba(255,255,255,0.98)', backdropFilter: 'blur(14px)', borderBottom: `1px solid ${isCoverSlide ? '#222' : BORDER_LIGHT}`, padding: 10, display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 7 }}
               >
-                {SLIDES.map((s, i) => (
+                {slides.map((s, i) => (
                   <button key={s.id} onClick={() => goTo(i)} style={{ background: i === current ? (isCoverSlide ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)') : (isCoverSlide ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)'), border: `1px solid ${i === current ? (isCoverSlide ? '#3C3C3C' : '#C0C0C0') : (isCoverSlide ? '#222' : BORDER_LIGHT)}`, borderRadius: 7, padding: '8px 10px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}>
                     <div style={{ color: i === current ? (isCoverSlide ? '#E0E0E0' : '#222') : (isCoverSlide ? '#404040' : '#BBB'), fontSize: '0.64rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 3, display: 'flex', justifyContent: 'space-between' }}>
                       <span>{String(i + 1).padStart(2, '0')}</span>
@@ -345,7 +362,7 @@ function DeckInner({ canControl = true }: { canControl?: boolean }) {
                 onMouseLeave={e => { e.currentTarget.style.color = isCoverSlide ? '#666' : '#888'; e.currentTarget.style.borderColor = isCoverSlide ? '#333' : BORDER_LIGHT; }}
               ><ChevronLeft size={14} /></button>
             )}
-            {current < SLIDES.length - 1 && (
+            {current < slides.length - 1 && (
               <button onClick={next} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', zIndex: 15, background: isCoverSlide ? 'rgba(10,10,10,0.8)' : 'rgba(255,255,255,0.9)', border: `1px solid ${isCoverSlide ? '#333' : BORDER_LIGHT}`, borderRadius: 8, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: isCoverSlide ? '#666' : '#888', backdropFilter: 'blur(4px)' }}
                 onMouseEnter={e => { e.currentTarget.style.color = isCoverSlide ? '#E0E0E0' : '#222'; e.currentTarget.style.borderColor = isCoverSlide ? '#505050' : '#BBB'; }}
                 onMouseLeave={e => { e.currentTarget.style.color = isCoverSlide ? '#666' : '#888'; e.currentTarget.style.borderColor = isCoverSlide ? '#333' : BORDER_LIGHT; }}
@@ -356,7 +373,7 @@ function DeckInner({ canControl = true }: { canControl?: boolean }) {
           {/* Bottom bar — light */}
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 40, background: isCoverSlide ? 'rgba(8,8,8,0.95)' : 'rgba(255,255,255,0.95)', borderTop: `1px solid ${isCoverSlide ? '#222' : BORDER_LIGHT}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 14px', backdropFilter: 'blur(8px)', zIndex: 20 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              {SLIDES.map((_, i) => (
+              {slides.map((_, i) => (
                 <button key={i} onClick={() => goTo(i)} style={{ width: i === current ? 20 : 6, height: 6, borderRadius: 99, background: i === current ? (isCoverSlide ? 'linear-gradient(90deg,#A0A0A0,#E0E0E0)' : 'linear-gradient(90deg,#555,#222)') : i < current ? (isCoverSlide ? '#383838' : '#BBB') : (isCoverSlide ? '#202020' : '#DDD'), border: 'none', cursor: 'pointer', padding: 0, transition: 'all 0.3s ease' }} />
               ))}
             </div>
@@ -365,7 +382,7 @@ function DeckInner({ canControl = true }: { canControl?: boolean }) {
               <button onClick={prev} disabled={current === 0} style={{ background: 'transparent', border: `1px solid ${current === 0 ? (isCoverSlide ? '#1A1A1A' : '#EEE') : (isCoverSlide ? '#333' : BORDER_LIGHT)}`, borderRadius: 6, padding: '4px 10px', display: 'flex', alignItems: 'center', gap: 4, color: current === 0 ? (isCoverSlide ? '#2A2A2A' : '#DDD') : (isCoverSlide ? '#808080' : '#666'), cursor: current === 0 ? 'not-allowed' : 'pointer', fontSize: '0.72rem', fontWeight: 600, fontFamily: 'inherit' }}>
                 <ChevronLeft size={11} /> Prev
               </button>
-              <button onClick={next} disabled={current === SLIDES.length - 1} style={{ background: current === SLIDES.length - 1 ? 'transparent' : (isCoverSlide ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'), border: `1px solid ${current === SLIDES.length - 1 ? (isCoverSlide ? '#1A1A1A' : '#EEE') : (isCoverSlide ? '#3C3C3C' : '#C0C0C0')}`, borderRadius: 6, padding: '4px 10px', display: 'flex', alignItems: 'center', gap: 4, color: current === SLIDES.length - 1 ? (isCoverSlide ? '#2A2A2A' : '#DDD') : (isCoverSlide ? '#D0D0D0' : '#333'), cursor: current === SLIDES.length - 1 ? 'not-allowed' : 'pointer', fontSize: '0.72rem', fontWeight: 700, fontFamily: 'inherit' }}>
+              <button onClick={next} disabled={current === slides.length - 1} style={{ background: current === slides.length - 1 ? 'transparent' : (isCoverSlide ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'), border: `1px solid ${current === slides.length - 1 ? (isCoverSlide ? '#1A1A1A' : '#EEE') : (isCoverSlide ? '#3C3C3C' : '#C0C0C0')}`, borderRadius: 6, padding: '4px 10px', display: 'flex', alignItems: 'center', gap: 4, color: current === slides.length - 1 ? (isCoverSlide ? '#2A2A2A' : '#DDD') : (isCoverSlide ? '#D0D0D0' : '#333'), cursor: current === slides.length - 1 ? 'not-allowed' : 'pointer', fontSize: '0.72rem', fontWeight: 700, fontFamily: 'inherit' }}>
                 Next <ChevronRight size={11} />
               </button>
             </div>
@@ -393,12 +410,13 @@ type MeetingDeckProps = {
   voterEmail?: string | null;
   defaultMemberName?: string;
   canControl?: boolean;
+  meetingDateLabel?: string;
 };
 
-export function MeetingDeck({ voterEmail, defaultMemberName, canControl = true }: MeetingDeckProps) {
+export function MeetingDeck({ voterEmail, defaultMemberName, canControl = true, meetingDateLabel }: MeetingDeckProps) {
   return (
     <MeetingProvider voterEmail={voterEmail} defaultMemberName={defaultMemberName} canControl={canControl}>
-      <DeckInner canControl={canControl} />
+      <DeckInner canControl={canControl} meetingDateLabel={meetingDateLabel} />
     </MeetingProvider>
   );
 }

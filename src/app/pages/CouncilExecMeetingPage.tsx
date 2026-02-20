@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { ArrowLeft, Presentation } from "lucide-react";
 import { motion } from "motion/react";
 import { CouncilLeaderGate } from "../components/CouncilLeaderGate";
@@ -9,6 +9,14 @@ import { useCouncilSession } from "../hooks/use-council-session";
 
 export function CouncilExecMeetingPage() {
   const { session } = useCouncilSession();
+  const location = useLocation();
+  const deckParam = new URLSearchParams(location.search || "").get("deck") || "";
+  const isArchiveDeck = deckParam === "2026-02-19";
+  const meetingDateLabel = isArchiveDeck ? "February 19, 2026" : "February 23, 2026";
+  const deckTitle = isArchiveDeck ? "Executive Council Meeting Deck — 2/19 Archive Copy" : "Executive Council Meeting Deck — 2/23 Session";
+  const deckDescription = isArchiveDeck
+    ? "Archived copy of the 2/19 deck for retrieval and review."
+    : "Current 2/23 meeting deck leveraging the 2/19 content baseline.";
   const defaultMemberName = (session.email || "")
     .split("@")[0]
     .split(/[._-]+/)
@@ -36,11 +44,19 @@ export function CouncilExecMeetingPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl">
                   <Presentation className="size-6 text-primary" />
-                  Executive Council Meeting Deck & Voting
+                  {deckTitle}
                 </CardTitle>
                 <CardDescription>
-                  Restricted in-portal workspace for meeting slides, floor motions, and live voting.
+                  {deckDescription}
                 </CardDescription>
+                <div className="flex flex-wrap gap-2 pt-2">
+                  <Button asChild size="sm" variant={isArchiveDeck ? "outline" : "default"}>
+                    <Link to="/council-admin/exec-council-meeting?deck=2026-02-23">Open 2/23 Deck</Link>
+                  </Button>
+                  <Button asChild size="sm" variant={isArchiveDeck ? "default" : "outline"}>
+                    <Link to="/council-admin/exec-council-meeting?deck=2026-02-19">Open 2/19 Copy</Link>
+                  </Button>
+                </div>
               </CardHeader>
             </Card>
           </motion.div>
@@ -51,7 +67,12 @@ export function CouncilExecMeetingPage() {
             transition={{ delay: 0.1, duration: 0.35 }}
             className="overflow-hidden rounded-xl border border-black/10 shadow-[0_20px_60px_rgba(0,0,0,0.28)]"
           >
-            <MeetingDeck voterEmail={session.email} defaultMemberName={defaultMemberName} canControl />
+            <MeetingDeck
+              voterEmail={session.email}
+              defaultMemberName={defaultMemberName}
+              canControl
+              meetingDateLabel={meetingDateLabel}
+            />
           </motion.div>
         </div>
       </div>
