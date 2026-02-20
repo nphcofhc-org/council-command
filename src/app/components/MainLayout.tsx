@@ -168,13 +168,13 @@ export function MainLayout() {
   const councilName = config?.councilName || "NPHC Hudson County";
   const footerText = config?.footerText || "© 2026 National Pan-Hellenic Council of Hudson County";
   const footerSubtext = config?.footerSubtext || "Internal Governance Portal · Authorized Access Only";
+  const sidebarCouncilTitle = "NPHC of Hudson County";
   const logoUrl =
     config?.logoUrl ||
     "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/NPHC%20of%20HC%20LOGO%20Black.PNG";
   const faviconLogoUrl = "/favicon.png";
   const identity = sessionDisplayNameWithProfile(session, directory, profile);
   const role = sessionRoleLabel(session);
-  const sidebarIdentity = session.authenticated ? `${identity.name} — ${role}` : "Sign in required";
   const profileRequired = session.authenticated && !profileLoading && !isProfileComplete(profile);
   const canShowMemberAlert =
     session.authenticated &&
@@ -276,13 +276,20 @@ export function MainLayout() {
               loading="eager"
             />
           </NavLink>
-          <p className="text-[11px] tracking-[0.25em] uppercase text-white/55">
-            {councilName.includes("National") ? "National Pan-Hellenic Council" : councilName}
+          <p className="text-[11px] tracking-[0.2em] uppercase text-white/65 leading-snug">
+            {sidebarCouncilTitle}
           </p>
-          <p className="text-white text-sm mt-1">Hudson County, NJ</p>
+          {session.authenticated ? (
+            <div className="mt-2 space-y-0.5">
+              <p className="text-white text-sm leading-tight">{identity.name}</p>
+              <p className="text-[10px] tracking-[0.2em] uppercase text-white/45">{role}</p>
+            </div>
+          ) : (
+            <p className="mt-2 text-white/45 text-xs tracking-wider uppercase">Sign in required</p>
+          )}
           <div className="mt-4 flex items-center justify-between gap-3">
-            <span className="text-xs text-white/35 tracking-widest uppercase">
-              Portal · {sidebarIdentity}
+            <span className="text-[10px] text-white/35 tracking-[0.22em] uppercase">
+              Portal
             </span>
             <div className="flex items-center gap-2">
               {session.authenticated ? (
@@ -349,7 +356,7 @@ export function MainLayout() {
               }
             >
               <item.icon className="size-5" />
-              <span className="truncate">{item.label}</span>
+              <span className={item.danger ? "text-[12px] leading-tight" : "truncate"}>{item.label}</span>
             </NavLink>
           ))}
         </nav>
@@ -373,9 +380,9 @@ export function MainLayout() {
       {/* Top Navigation Bar */}
       <nav className="lg:hidden nphc-holo-nav sticky top-0 z-50 border-b border-black/10 bg-white/60 text-slate-900 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-14">
+          <div className="flex items-start justify-between gap-2 py-2 min-h-[58px]">
             {/* Mobile: hamburger + title */}
-            <div className="flex items-center gap-3 lg:hidden">
+            <div className="flex min-w-0 items-start gap-2 lg:hidden">
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
                 className="nphc-holo-btn p-2 -ml-2 hover:bg-white/10 rounded-lg transition-colors"
@@ -383,12 +390,19 @@ export function MainLayout() {
               >
                 {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
               </button>
-              <NavLink to="/" className="flex items-center gap-2">
-                <img src={logoUrl} alt="NPHC" className="h-7 w-auto" />
-                <span className="text-sm tracking-wide">
-                  NPHC <span className="text-primary">Hudson County</span>
-                </span>
-              </NavLink>
+              <div className="min-w-0">
+                <NavLink to="/" className="flex min-w-0 items-center gap-2">
+                  <img src={logoUrl} alt="NPHC" className="h-6 w-auto" />
+                  <span className="text-sm tracking-wide whitespace-nowrap">
+                    NPHC <span className="text-primary">of Hudson County</span>
+                  </span>
+                </NavLink>
+                {session.authenticated ? (
+                  <p className="mt-0.5 text-[11px] text-slate-600 truncate">
+                    {identity.name} — {role}
+                  </p>
+                ) : null}
+              </div>
             </div>
 
             {/* Desktop Navigation Links */}
@@ -396,14 +410,6 @@ export function MainLayout() {
 
             {/* Desktop: portal label */}
             <div className="hidden lg:flex" />
-
-            <div className="flex items-center gap-2">
-              {session.authenticated ? (
-                <span className="text-[11px] text-slate-600 truncate max-w-[40vw]">
-                  {identity.name} — {role}
-                </span>
-              ) : null}
-            </div>
           </div>
         </div>
       </nav>

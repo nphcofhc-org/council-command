@@ -14,15 +14,11 @@ declare global {
   }
 }
 
-// ── Shared glass button class for quick links ───────────────────────────────
-const glassButtonClass =
-  "nphc-holo-btn nphc-glass relative overflow-hidden inline-flex items-center gap-2 px-4 py-2.5 rounded-lg cursor-pointer " +
-  "bg-white/55 text-slate-900 border border-black/10 " +
-  "shadow-[0_8px_32px_0_rgba(255,255,255,0.07)] " +
-  "transition-all duration-300 text-[13px] leading-none " +
-  "hover:bg-primary/15 hover:text-primary hover:border-primary/50 " +
-  "hover:shadow-[0_12px_40px_0_rgba(24,224,208,0.28)] hover:-translate-y-0.5 " +
-  "active:bg-primary/25 active:text-primary active:scale-[0.97]";
+const bannerQuickLinkClass =
+  "nphc-holo-btn relative overflow-hidden inline-flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-[12px] sm:text-[13px] " +
+  "border border-white/25 bg-white/10 text-white backdrop-blur-xl " +
+  "shadow-[0_12px_34px_rgba(0,0,0,0.38),0_0_20px_rgba(24,224,208,0.22)] " +
+  "transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/65 hover:bg-primary/20 hover:text-white";
 
 const DEFAULT_HOME_BANNER_MEDIA_URL =
   "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/FORMAL%20NPHC%20BANNER%20(2).mp4";
@@ -496,6 +492,33 @@ export function HomePage() {
             />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent pointer-events-none" />
+
+          <div className="absolute inset-x-0 top-2 sm:top-3 z-20 px-3 sm:px-6 lg:px-10" data-tour="quick-links">
+            <motion.div
+              initial={{ y: 12, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.15, duration: 0.45 }}
+              className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-2 sm:gap-2.5"
+            >
+              {[...row1Links, ...row2Links].map((link, i) => (
+                <motion.a
+                  key={link.id}
+                  initial={{ y: 10, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.18 + i * 0.04, duration: 0.32 }}
+                  whileTap={{ scale: 0.96 }}
+                  href={toHref(link.url)}
+                  className={`${bannerQuickLinkClass} flex-shrink-0`}
+                  target={isExternalUrl(link.url) ? "_blank" : undefined}
+                  rel={isExternalUrl(link.url) ? "noreferrer" : undefined}
+                >
+                  <DynamicIcon name={link.icon} className="size-4 relative z-10 flex-shrink-0" />
+                  <span className="hidden sm:inline relative z-10">{link.label}</span>
+                  <span className="sm:hidden relative z-10">{link.shortLabel}</span>
+                </motion.a>
+              ))}
+            </motion.div>
+          </div>
         </div>
       </div>
 
@@ -534,40 +557,9 @@ export function HomePage() {
         </div>
       ) : null}
 
-      {/* ── Quick Links ───────────────────────────────────────────────────── */}
-      <div className="bg-white py-8 sm:py-10 relative overflow-hidden">
-        <div className="px-4 sm:px-8 lg:px-10 relative z-10">
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.15, duration: 0.5 }}
-            className="flex flex-wrap lg:flex-nowrap items-center justify-start gap-3 sm:gap-4 overflow-x-auto pb-2"
-            data-tour="quick-links"
-          >
-            {[...row1Links, ...row2Links].map((link, i) => (
-              <motion.a
-                key={link.id}
-                initial={{ y: 15, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2 + i * 0.05, duration: 0.35 }}
-                whileTap={{ scale: 0.95 }}
-                href={toHref(link.url)}
-                className={glassButtonClass + " flex-shrink-0"}
-                target={isExternalUrl(link.url) ? "_blank" : undefined}
-                rel={isExternalUrl(link.url) ? "noreferrer" : undefined}
-              >
-                <DynamicIcon name={link.icon} className="size-4 relative z-10 flex-shrink-0" />
-                <span className="hidden sm:inline relative z-10">{link.label}</span>
-                <span className="sm:hidden relative z-10 text-xs">{link.shortLabel}</span>
-              </motion.a>
-            ))}
-          </motion.div>
-        </div>
-      </div>
-
       {/* ── President's Welcome ───────────────────────────────────────────── */}
       <section className="relative overflow-hidden">
-        <div className="px-4 sm:px-8 lg:px-10 py-14 sm:py-20 relative z-10">
+        <div className="px-4 sm:px-8 lg:px-10 py-8 sm:py-12 relative z-10">
           <motion.div
             initial={{ x: -30, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
