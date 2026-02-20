@@ -249,7 +249,7 @@ export function MeetingsPage() {
                         <div className="flex flex-col items-center gap-2">
                           <ImageIcon className="size-6" />
                           <p className="text-xs text-center max-w-[24ch]">
-                            Add a deck cover image in Council Admin → Content → Meetings.
+                            Add a deck cover image in Council Command Center → Content → Meetings.
                           </p>
                         </div>
                       </div>
@@ -328,7 +328,7 @@ export function MeetingsPage() {
                 <CardContent className="pt-6">
                   <p className="text-sm text-slate-700">
                     <strong className="text-slate-900">Note:</strong> Dates on this page are sourced directly from the 2026 Council Calendar.
-                    Council Admin can add the Google Meet join link for each meeting (shown above when available).
+                    Council Command Center can add the Google Meet join link for each meeting (shown above when available).
                   </p>
                 </CardContent>
               </Card>

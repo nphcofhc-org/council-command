@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Shield, FileText, Lock, ClipboardCheck, SlidersHorizontal, Home, Calendar, TrendingUp, FolderOpen, Target, Inbox, Mail, Users, Wallet } from "lucide-react";
+import { Shield, FileText, Lock, ClipboardCheck, SlidersHorizontal, Home, Calendar, TrendingUp, FolderOpen, Target, Inbox, Mail, Users, Wallet, Wrench } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { motion } from "motion/react";
 import { useCouncilAdminData } from "../hooks/use-site-data";
@@ -60,7 +60,7 @@ export function CouncilAdminPage() {
             <Shield className="size-5 text-primary" />
             <span className="text-xs tracking-[0.2em] uppercase text-slate-500">Executive Access</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl text-slate-900 mb-1">Council Admin</h1>
+          <h1 className="text-2xl sm:text-3xl text-slate-900 mb-1">Council Command Center</h1>
           <p className="text-sm sm:text-base text-slate-600">
             Internal documents, financial records, and strategic planning
           </p>
@@ -129,6 +129,24 @@ export function CouncilAdminPage() {
                 </Button>
               </CardContent>
             </Card>
+            {session.isTreasuryAdmin ? (
+              <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+                <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <h3 className="text-base text-slate-900 sm:text-lg">Treasury Dashboard</h3>
+                    <p className="text-sm text-slate-600">
+                      Restricted treasury reporting and account records.
+                    </p>
+                  </div>
+                  <Button asChild className="w-full sm:w-auto">
+                    <Link to="/council-admin/treasury">
+                      <Wallet className="mr-2 size-4" />
+                      Open Treasury
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : null}
           </motion.div>
         ) : (
         <>
@@ -171,6 +189,44 @@ export function CouncilAdminPage() {
               </Button>
             </CardContent>
           </Card>
+
+          {session.isTreasuryAdmin ? (
+            <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+              <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h3 className="text-base text-slate-900 sm:text-lg">Treasury Dashboard</h3>
+                  <p className="text-sm text-slate-600">
+                    Restricted treasury reporting and transaction management.
+                  </p>
+                </div>
+                <Button asChild className="w-full sm:w-auto">
+                  <Link to="/council-admin/treasury">
+                    <Wallet className="mr-2 size-4" />
+                    Open Treasury
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ) : null}
+
+          {session.isPresident ? (
+            <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+              <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h3 className="text-base text-slate-900 sm:text-lg">Site Maintenance</h3>
+                  <p className="text-sm text-slate-600">
+                    President-only maintenance controls for portal operations.
+                  </p>
+                </div>
+                <Button asChild className="w-full sm:w-auto">
+                  <Link to="/council-admin/site-maintenance">
+                    <Wrench className="mr-2 size-4" />
+                    Open Maintenance
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ) : null}
 
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">

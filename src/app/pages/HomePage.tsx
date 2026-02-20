@@ -350,7 +350,7 @@ export function HomePage() {
       pathOnly === "/meetings-delegates" ||
       pathOnly === "/programs-events" ||
       pathOnly === "/resources" ||
-      pathOnly === "/treasury" ||
+      pathOnly === "/council-admin/treasury" ||
       pathOnly === "/decision-portal" ||
       pathOnly === "/viewer" ||
       pathOnly === "/figma-staging" ||
@@ -690,7 +690,7 @@ export function HomePage() {
                       <button
                         disabled
                         className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white/10 text-slate-400 px-4 py-2.5 text-sm font-semibold cursor-not-allowed"
-                        title="Join link will be added by Council Admin"
+                        title="Join link will be added by Council Command Center"
                       >
                         <ExternalLink className="size-4" />
                         Join link (coming soon)
@@ -698,7 +698,7 @@ export function HomePage() {
                     )}
 
                     <div className="mt-4 text-xs text-slate-400">
-                      Admin: set the join link in Council Admin → Content → Meetings.
+                      Admin: set the join link in Council Command Center → Content → Meetings.
                     </div>
                   </>
                 ) : (

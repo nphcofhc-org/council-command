@@ -32,6 +32,7 @@ import { CouncilMemberDirectoryPage } from "./pages/CouncilMemberDirectoryPage";
 import { EventSubmissionPage } from "./pages/EventSubmissionPage";
 import { CouncilDataBriefPage } from "./pages/CouncilDataBriefPage";
 import { CouncilExecMeetingPage } from "./pages/CouncilExecMeetingPage";
+import { CouncilSiteMaintenancePage } from "./pages/CouncilSiteMaintenancePage";
 
 // Hash routing is the most reliable option for static hosting + Google Sites embedding
 // (no server-side rewrite rules needed to handle deep links).
@@ -45,7 +46,6 @@ export const router = createHashRouter([
       { path: "meetings-delegates", Component: MeetingsPage },
       { path: "programs-events", Component: ProgramsPage },
       { path: "resources", Component: ResourcesPage },
-      { path: "treasury", Component: TreasuryPage },
       { path: "decision-portal", Component: DecisionPortalPage },
       { path: "forum", Component: ForumPage },
       { path: "forum/:id", Component: ForumTopicPage },
@@ -70,6 +70,8 @@ export const router = createHashRouter([
       { path: "council-admin/content/members", Component: CouncilMemberDirectoryPage },
       { path: "council-admin/data-brief", Component: CouncilDataBriefPage },
       { path: "council-admin/exec-council-meeting", Component: CouncilExecMeetingPage },
+      { path: "council-admin/site-maintenance", Component: CouncilSiteMaintenancePage },
+      { path: "council-admin/treasury", Component: TreasuryPage },
       { path: "council-admin/notifications", Component: CouncilNotificationSettingsPage },
       { path: "council-admin/submissions", Component: CouncilSubmissionsPage },
     ],

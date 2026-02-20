@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useLocation, useNavigate } from "react-router";
 import { useState, useEffect } from "react";
-import { Home, Users, Calendar, TrendingUp, FolderOpen, Wallet, Shield, Menu, X, Target, ClipboardList, MessagesSquare } from "lucide-react";
+import { Home, Users, Calendar, TrendingUp, FolderOpen, Shield, Menu, X, Target, ClipboardList, MessagesSquare } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useSiteConfig } from "../hooks/use-site-data";
 import { useCouncilSession } from "../hooks/use-council-session";
@@ -50,9 +50,8 @@ export function MainLayout() {
 
   const navItems = [
     ...baseNavItems.slice(0, 5),
-    ...(session.isTreasuryAdmin ? [{ to: "/treasury", label: "Treasury", icon: Wallet }] : []),
     ...baseNavItems.slice(5),
-    ...(session.isCouncilAdmin || session.isSiteEditor ? [{ to: "/council-admin", label: "Council Admin", icon: Shield }] : []),
+    ...(session.isCouncilAdmin || session.isSiteEditor ? [{ to: "/council-admin", label: "Council Command Center", icon: Shield }] : []),
   ];
 
   // Close mobile nav on route change

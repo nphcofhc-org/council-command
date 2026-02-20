@@ -27,7 +27,7 @@ export function CouncilExecMeetingPage() {
           >
             <Link to="/council-admin">
               <ArrowLeft className="size-4" />
-              Back to Council Admin
+              Back to Council Command Center
             </Link>
           </Button>
 

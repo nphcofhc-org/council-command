@@ -100,7 +100,7 @@ export function CouncilNotificationSettingsPage() {
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-primary transition-colors">
             <ArrowLeft className="size-4" />
-            Back to Council Admin
+            Back to Council Command Center
           </Link>
           <Button onClick={save} disabled={saving || loading} className="gap-2">
             <Save className="size-4" />

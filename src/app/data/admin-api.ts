@@ -7,6 +7,7 @@ export type CouncilSession = {
   isCouncilAdmin: boolean;
   isTreasuryAdmin: boolean;
   isSiteEditor: boolean;
+  isPresident: boolean;
 };
 
 export type ComplianceState = {
@@ -57,6 +58,7 @@ export async function fetchCouncilSession(): Promise<CouncilSession> {
     isCouncilAdmin: Boolean(data?.isCouncilAdmin),
     isTreasuryAdmin: Boolean(data?.isTreasuryAdmin),
     isSiteEditor: Boolean(data?.isSiteEditor),
+    isPresident: Boolean(data?.isPresident),
   };
 }
 

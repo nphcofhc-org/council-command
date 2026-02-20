@@ -139,12 +139,12 @@ export function TreasuryPage() {
                 Access Denied
               </CardTitle>
               <CardDescription>
-                Treasury access is restricted to the President, Vice President, and Treasurer.
+                Treasury access is restricted to the President, Treasurer, and Financial Secretary.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button asChild variant="outline" className="border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10">
-                <Link to="/">Return Home</Link>
+                <Link to="/council-admin">Return to Council Command Center</Link>
               </Button>
             </CardContent>
           </Card>
@@ -165,9 +165,9 @@ export function TreasuryPage() {
             <div>
               <div className="flex items-center gap-3 mb-1">
                 <div className="w-8 h-px bg-primary" />
-                <span className="text-xs tracking-[0.2em] uppercase text-slate-500">Treasury</span>
+                <span className="text-xs tracking-[0.2em] uppercase text-slate-500">Council Command Center</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">Treasury</h1>
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">Treasury Dashboard</h1>
               <p className="text-sm text-slate-600 mt-2 max-w-3xl">
                 High-level financial snapshot and reporting tools.
               </p>

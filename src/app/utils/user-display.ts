@@ -24,6 +24,7 @@ export function lookupDirectoryEntry(directory: MemberDirectory | null | undefin
 }
 
 export function sessionRoleLabel(session: CouncilSession): string {
+  if (session.isPresident) return "President";
   if (session.isSiteEditor) return "Site Administration";
   if (session.isCouncilAdmin) return "Council Leadership";
   return "Member";
@@ -35,4 +36,3 @@ export function sessionDisplayName(session: CouncilSession, directory?: MemberDi
   const designation = (entry?.designation || "").trim() || undefined;
   return { name, designation };
 }
-

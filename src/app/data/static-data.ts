@@ -142,7 +142,7 @@ export const upcomingMeetings: UpcomingMeeting[] = [
     time: "",
     location: "In-Person",
     type: "General Body",
-    joinUrl: "", // Set in Council Admin → Content → Meetings
+    joinUrl: "", // Set in Council Command Center → Content → Meetings
     joinLabel: "Join Google Meet",
   },
   {
@@ -152,7 +152,7 @@ export const upcomingMeetings: UpcomingMeeting[] = [
     time: "",
     location: "Executive Council Meeting",
     type: "Executive Council",
-    joinUrl: "", // Set in Council Admin → Content → Meetings
+    joinUrl: "", // Set in Council Command Center → Content → Meetings
     joinLabel: "Join Google Meet",
   },
   {
@@ -162,7 +162,7 @@ export const upcomingMeetings: UpcomingMeeting[] = [
     time: "",
     location: "Virtual Meeting",
     type: "General Body",
-    joinUrl: "", // Set in Council Admin → Content → Meetings
+    joinUrl: "", // Set in Council Command Center → Content → Meetings
     joinLabel: "Join Google Meet",
   },
   {

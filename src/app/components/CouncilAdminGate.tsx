@@ -73,7 +73,7 @@ export function CouncilAdminGate({ children }: CouncilAdminGateProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-slate-700">
-              Turn on Editor Mode to access Council Admin tools (compliance tracking, content updates).
+              Turn on Editor Mode to access Council Command Center tools (compliance tracking, content updates).
             </p>
             <Button type="button" onClick={() => setEditorMode(true)}>
               Enable Editor Mode

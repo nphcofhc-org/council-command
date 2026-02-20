@@ -93,7 +93,7 @@ export function CouncilResourcesContentPage() {
         <div className="mb-6">
           <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black">
             <ArrowLeft className="h-4 w-4" />
-            Back to Council Admin
+            Back to Council Command Center
           </Link>
         </div>
 

@@ -16,7 +16,7 @@ function normalizeTitle(value) {
   return String(value || "").trim().toLowerCase();
 }
 
-const EXEC_TREASURY_ACCESS_TITLES = new Set(["president", "vice president", "treasurer"]);
+const EXEC_TREASURY_ACCESS_TITLES = new Set(["president", "treasurer", "financial secretary"]);
 
 async function readLeadershipFromDb(db) {
   if (!db) return null;
@@ -43,6 +43,7 @@ async function readLeadershipFromDb(db) {
 function buildLeadershipAccessMaps(leadership) {
   const leadershipEmails = new Set();
   const treasuryAccessEmails = new Set();
+  const presidentEmails = new Set();
 
   const add = (emailRaw) => {
     const email = normalizeEmail(emailRaw);
@@ -53,12 +54,15 @@ function buildLeadershipAccessMaps(leadership) {
   for (const member of leadership?.executiveBoard || []) {
     const email = add(member?.email);
     const title = normalizeTitle(member?.title);
+    if (email && title === "president") {
+      presidentEmails.add(email);
+    }
     if (email && EXEC_TREASURY_ACCESS_TITLES.has(title)) {
       treasuryAccessEmails.add(email);
     }
   }
 
-  return { leadershipEmails, treasuryAccessEmails };
+  return { leadershipEmails, treasuryAccessEmails, presidentEmails };
 }
 
 export function getAuthenticatedEmail(request) {
@@ -147,7 +151,8 @@ export async function getSessionState(request, env) {
   const isAuthenticated = email.length > 0;
   const isFallbackPresident = isAuthenticated && email === fallbackPresidentEmail;
   let isCouncilAdmin = isAuthenticated && (allowlist.includes(email) || isFallbackPresident);
-  let isTreasuryAdmin = false;
+  let isTreasuryAdmin = isFallbackPresident;
+  let isPresident = isFallbackPresident;
 
   // Prefer DB-backed leadership/role checks as the source of truth.
   // If no leadership data is configured yet, fall back to env allowlists to avoid lockouts.
@@ -157,12 +162,16 @@ export async function getSessionState(request, env) {
       const maps = buildLeadershipAccessMaps(leadership);
       const hasLeadershipEntries = maps.leadershipEmails.size > 0;
       const hasTreasuryEntries = maps.treasuryAccessEmails.size > 0;
+      const hasPresidentEntries = maps.presidentEmails.size > 0;
 
       if (hasLeadershipEntries) {
         isCouncilAdmin = maps.leadershipEmails.has(email) || isFallbackPresident;
       }
       if (hasTreasuryEntries) {
         isTreasuryAdmin = maps.treasuryAccessEmails.has(email) || isFallbackPresident;
+      }
+      if (hasPresidentEntries) {
+        isPresident = maps.presidentEmails.has(email) || isFallbackPresident;
       }
     }
   }
@@ -180,5 +189,6 @@ export async function getSessionState(request, env) {
     isCouncilAdmin,
     isTreasuryAdmin,
     isSiteEditor,
+    isPresident,
   };
 }
