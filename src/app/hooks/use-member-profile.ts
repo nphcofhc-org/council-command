@@ -14,6 +14,9 @@ const EMPTY_PROFILE: MemberProfile = {
   firstName: "",
   lastName: "",
   organization: "",
+  notifyConsent: false,
+  notifyConsentAt: null,
+  noticeVersion: "v1",
 };
 
 let cachedProfile: MemberProfile | null = null;

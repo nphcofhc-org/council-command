@@ -36,6 +36,17 @@ export type NotificationSettings = {
   >;
 };
 
+export type MemberAlerts = {
+  enabled: boolean;
+  style: "banner" | "alert";
+  severity: "info" | "important" | "urgent";
+  title: string;
+  message: string;
+  ctaLabel: string;
+  ctaUrl: string;
+  alertId: string;
+};
+
 async function parseError(response: Response): Promise<string> {
   try {
     const data = await response.json();
@@ -154,4 +165,12 @@ export function fetchNotificationSettings(): Promise<ContentResponse<Notificatio
 
 export function saveNotificationSettings(payload: NotificationSettings): Promise<ContentResponse<NotificationSettings>> {
   return putJson("/api/content/notification-settings", payload);
+}
+
+export function fetchMemberAlerts(): Promise<ContentResponse<MemberAlerts | null>> {
+  return getJson("/api/content/member-alerts");
+}
+
+export function saveMemberAlerts(payload: MemberAlerts): Promise<ContentResponse<MemberAlerts>> {
+  return putJson("/api/content/member-alerts", payload);
 }

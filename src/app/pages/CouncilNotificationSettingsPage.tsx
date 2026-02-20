@@ -7,7 +7,14 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Switch } from "../components/ui/switch";
-import { fetchNotificationSettings, saveNotificationSettings, type NotificationSettings } from "../data/content-api";
+import {
+  fetchMemberAlerts,
+  fetchNotificationSettings,
+  saveMemberAlerts,
+  saveNotificationSettings,
+  type MemberAlerts,
+  type NotificationSettings,
+} from "../data/content-api";
 
 function emptySettings(): NotificationSettings {
   return {
@@ -20,6 +27,19 @@ function emptySettings(): NotificationSettings {
       social_media_request: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: false },
       committee_report: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: false },
     },
+  };
+}
+
+function emptyMemberAlerts(): MemberAlerts {
+  return {
+    enabled: false,
+    style: "banner",
+    severity: "info",
+    title: "",
+    message: "",
+    ctaLabel: "",
+    ctaUrl: "",
+    alertId: "",
   };
 }
 
@@ -39,6 +59,7 @@ export function CouncilNotificationSettingsPage() {
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
 
   const [form, setForm] = useState<NotificationSettings>(emptySettings());
+  const [memberAlerts, setMemberAlerts] = useState<MemberAlerts>(emptyMemberAlerts());
 
   useEffect(() => {
     let cancelled = false;
@@ -57,6 +78,14 @@ export function CouncilNotificationSettingsPage() {
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
+    void fetchMemberAlerts()
+      .then((res) => {
+        if (cancelled) return;
+        if (res.data) setMemberAlerts({ ...emptyMemberAlerts(), ...res.data });
+      })
+      .catch(() => {
+        // keep defaults
+      });
     return () => {
       cancelled = true;
     };
@@ -67,8 +96,18 @@ export function CouncilNotificationSettingsPage() {
     setError(null);
     setMessage(null);
     try {
-      const res = await saveNotificationSettings(form);
+      const nextAlerts = {
+        ...memberAlerts,
+        alertId: memberAlerts.enabled
+          ? (memberAlerts.alertId || `alert-${Date.now()}`)
+          : memberAlerts.alertId,
+      };
+      const [res] = await Promise.all([
+        saveNotificationSettings(form),
+        saveMemberAlerts(nextAlerts),
+      ]);
       setForm(res.data);
+      setMemberAlerts(nextAlerts);
       setLastSavedAt(res.updatedAt);
       setMessage("Notification settings saved.");
     } catch (err) {
@@ -127,6 +166,89 @@ export function CouncilNotificationSettingsPage() {
                 In Cloudflare Pages, add env vars: <span className="font-mono">EMAIL_ENABLED=true</span> and <span className="font-mono">EMAIL_FROM</span>.
                 If you don’t configure email sending, submissions will still save, but no emails will be delivered.
               </p>
+            </div>
+
+            <div className="rounded-lg border border-black/10 bg-white/5 p-4 space-y-4">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">Member Push Alert (Portal Banner / Alert)</p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Publish a site-wide notification to all signed-in members who consented to portal notifications.
+                  </p>
+                </div>
+                <Switch
+                  checked={Boolean(memberAlerts.enabled)}
+                  onCheckedChange={(v) => setMemberAlerts((prev) => ({ ...prev, enabled: Boolean(v) }))}
+                />
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-1">
+                  <Label>Display Style</Label>
+                  <select
+                    value={memberAlerts.style}
+                    onChange={(e) => setMemberAlerts((prev) => ({ ...prev, style: e.target.value as MemberAlerts["style"] }))}
+                    className="w-full rounded-md border border-black/15 bg-white/60 px-3 py-2 text-sm text-slate-900"
+                  >
+                    <option value="banner">Banner</option>
+                    <option value="alert">Alert Modal</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <Label>Severity</Label>
+                  <select
+                    value={memberAlerts.severity}
+                    onChange={(e) => setMemberAlerts((prev) => ({ ...prev, severity: e.target.value as MemberAlerts["severity"] }))}
+                    className="w-full rounded-md border border-black/15 bg-white/60 px-3 py-2 text-sm text-slate-900"
+                  >
+                    <option value="info">Info</option>
+                    <option value="important">Important</option>
+                    <option value="urgent">Urgent</option>
+                  </select>
+                </div>
+                <div className="space-y-1 sm:col-span-2">
+                  <Label>Alert Title</Label>
+                  <Input
+                    value={memberAlerts.title}
+                    onChange={(e) => setMemberAlerts((prev) => ({ ...prev, title: e.target.value }))}
+                    placeholder="Council Update"
+                  />
+                </div>
+                <div className="space-y-1 sm:col-span-2">
+                  <Label>Alert Message</Label>
+                  <textarea
+                    value={memberAlerts.message}
+                    onChange={(e) => setMemberAlerts((prev) => ({ ...prev, message: e.target.value }))}
+                    rows={3}
+                    className="w-full rounded-md border border-black/15 bg-white/60 px-3 py-2 text-sm text-slate-900"
+                    placeholder="Write the member notice..."
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label>CTA Label (optional)</Label>
+                  <Input
+                    value={memberAlerts.ctaLabel}
+                    onChange={(e) => setMemberAlerts((prev) => ({ ...prev, ctaLabel: e.target.value }))}
+                    placeholder="View details"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label>CTA URL (optional)</Label>
+                  <Input
+                    value={memberAlerts.ctaUrl}
+                    onChange={(e) => setMemberAlerts((prev) => ({ ...prev, ctaUrl: e.target.value }))}
+                    placeholder="/meetings-delegates or https://..."
+                  />
+                </div>
+              </div>
+
+              <div className="rounded-md border border-black/10 bg-white/60 p-3 text-xs text-slate-600">
+                Member consent notice currently used at sign-in:{" "}
+                <span className="font-medium">
+                  “I authorize NPHC of Hudson County to send official portal notifications, including meeting alerts, council updates,
+                  deadlines, and governance notices through in-portal banners/alerts and related member communications.”
+                </span>
+              </div>
             </div>
 
             <div className="rounded-lg border border-black/10 bg-white/5 p-4 space-y-4">

@@ -1,6 +1,6 @@
-import { Outlet, NavLink, useLocation, useNavigate } from "react-router";
+import { Outlet, NavLink, useLocation, useNavigate, Link } from "react-router";
 import { useState, useEffect } from "react";
-import { Home, Users, Calendar, TrendingUp, FolderOpen, Shield, Menu, X, Target, ClipboardList, MessagesSquare } from "lucide-react";
+import { Home, Users, Calendar, TrendingUp, FolderOpen, Shield, Menu, X, Target, ClipboardList, MessagesSquare, Bell, AlertTriangle, Info } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useSiteConfig } from "../hooks/use-site-data";
 import { useCouncilSession } from "../hooks/use-council-session";
@@ -14,6 +14,7 @@ import { IntroSplash } from "./IntroSplash";
 import { GuidedTour } from "./GuidedTour";
 import { trackPortalActivity } from "../data/admin-api";
 import { MemberProfileRequiredModal } from "./MemberProfileRequiredModal";
+import { fetchMemberAlerts, type MemberAlerts } from "../data/content-api";
 
 const baseNavItems: Array<{ to: string; label: string; icon: any; danger?: boolean }> = [
   { to: "/", label: "Home", icon: Home },
@@ -31,9 +32,46 @@ const baseNavItems: Array<{ to: string; label: string; icon: any; danger?: boole
   },
 ];
 
+const DISMISSED_ALERTS_KEY = "nphc-dismissed-member-alerts";
+
+const EMPTY_ALERT: MemberAlerts = {
+  enabled: false,
+  style: "banner",
+  severity: "info",
+  title: "",
+  message: "",
+  ctaLabel: "",
+  ctaUrl: "",
+  alertId: "",
+};
+
+function readDismissedAlerts(): Record<string, true> {
+  try {
+    const raw = localStorage.getItem(DISMISSED_ALERTS_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function markAlertDismissed(alertId: string) {
+  if (!alertId) return;
+  try {
+    const current = readDismissedAlerts();
+    current[alertId] = true;
+    localStorage.setItem(DISMISSED_ALERTS_KEY, JSON.stringify(current));
+  } catch {
+    // ignore
+  }
+}
+
 export function MainLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [tourRequested, setTourRequested] = useState(false);
+  const [memberAlert, setMemberAlert] = useState<MemberAlerts>(EMPTY_ALERT);
+  const [showAlertModal, setShowAlertModal] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { data: config } = useSiteConfig();
@@ -75,6 +113,48 @@ export function MainLayout() {
     void trackPortalActivity(location.pathname || "/", "page_view");
   }, [location.pathname, session.authenticated]);
 
+  useEffect(() => {
+    if (!session.authenticated) {
+      setMemberAlert(EMPTY_ALERT);
+      setShowAlertModal(false);
+      return;
+    }
+
+    let cancelled = false;
+    void fetchMemberAlerts()
+      .then((payload) => {
+        if (cancelled) return;
+        const incoming = payload?.data || EMPTY_ALERT;
+        setMemberAlert({
+          ...EMPTY_ALERT,
+          ...incoming,
+        });
+      })
+      .catch(() => {
+        if (!cancelled) setMemberAlert(EMPTY_ALERT);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session.authenticated]);
+
+  useEffect(() => {
+    if (!session.authenticated) return;
+    if (!memberAlert.enabled || !memberAlert.alertId) {
+      setShowAlertModal(false);
+      return;
+    }
+    if (memberAlert.style !== "alert") {
+      setShowAlertModal(false);
+      return;
+    }
+
+    const dismissed = readDismissedAlerts();
+    const alreadyDismissed = dismissed[memberAlert.alertId] === true;
+    setShowAlertModal(!alreadyDismissed);
+  }, [session.authenticated, memberAlert.enabled, memberAlert.style, memberAlert.alertId]);
+
   // Prevent body scroll when mobile nav is open
   useEffect(() => {
     if (mobileOpen) {
@@ -96,6 +176,21 @@ export function MainLayout() {
   const role = sessionRoleLabel(session);
   const sidebarIdentity = session.authenticated ? `${identity.name} — ${role}` : "Sign in required";
   const profileRequired = session.authenticated && !profileLoading && !isProfileComplete(profile);
+  const canShowMemberAlert =
+    session.authenticated &&
+    !profileRequired &&
+    memberAlert.enabled &&
+    Boolean(memberAlert.alertId) &&
+    Boolean(memberAlert.title || memberAlert.message);
+  const showMemberBanner = canShowMemberAlert && memberAlert.style === "banner" && !readDismissedAlerts()[memberAlert.alertId];
+  const isUrgentAlert = memberAlert.severity === "urgent";
+  const isImportantAlert = memberAlert.severity === "important";
+  const alertBgClass = isUrgentAlert
+    ? "border-rose-300/50 bg-rose-500/10 text-rose-900"
+    : isImportantAlert
+      ? "border-amber-300/50 bg-amber-500/10 text-amber-900"
+      : "border-sky-300/50 bg-sky-500/10 text-sky-900";
+  const alertTitle = memberAlert.title || "Council Update";
 
   return (
     <div className="min-h-screen bg-background text-foreground lg:flex">
@@ -121,6 +216,52 @@ export function MainLayout() {
         onForceOpenHandled={() => setTourRequested(false)}
         onNavigate={(route) => navigate(route)}
       />
+      <AnimatePresence>
+        {canShowMemberAlert && showAlertModal ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[70] flex items-center justify-center bg-black/45 px-4"
+          >
+            <motion.div
+              initial={{ y: 14, opacity: 0, scale: 0.98 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 8, opacity: 0, scale: 0.98 }}
+              className={`w-full max-w-xl rounded-2xl border p-5 shadow-[0_30px_100px_rgba(0,0,0,0.45)] backdrop-blur-xl ${alertBgClass}`}
+            >
+              <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-[0.2em]">
+                <Bell className="size-4" />
+                Member Alert
+              </div>
+              <h3 className="text-lg font-semibold">{alertTitle}</h3>
+              {memberAlert.message ? <p className="mt-2 text-sm leading-relaxed">{memberAlert.message}</p> : null}
+              <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
+                {memberAlert.ctaLabel && memberAlert.ctaUrl ? (
+                  <a
+                    href={memberAlert.ctaUrl}
+                    target={memberAlert.ctaUrl.startsWith("/") ? undefined : "_blank"}
+                    rel={memberAlert.ctaUrl.startsWith("/") ? undefined : "noreferrer"}
+                    className="rounded-lg border border-black/20 bg-white/55 px-3 py-1.5 text-sm font-semibold hover:bg-white/75 transition-colors"
+                  >
+                    {memberAlert.ctaLabel}
+                  </a>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={() => {
+                    markAlertDismissed(memberAlert.alertId);
+                    setShowAlertModal(false);
+                  }}
+                  className="rounded-lg border border-black/20 bg-white/45 px-3 py-1.5 text-sm font-semibold hover:bg-white/70 transition-colors"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
       {/* Desktop Sidebar Navigation */}
       <aside
         className="hidden lg:flex lg:w-64 lg:flex-col lg:sticky lg:top-0 lg:h-screen border-r border-white/10 bg-black text-white nphc-holo-surface"
@@ -351,6 +492,50 @@ export function MainLayout() {
           </>
         )}
       </AnimatePresence>
+
+      {showMemberBanner ? (
+        <div className={`mx-3 mt-3 rounded-xl border px-4 py-3 shadow-sm lg:mx-6 ${alertBgClass}`}>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex items-start gap-2">
+              {isUrgentAlert ? <AlertTriangle className="mt-0.5 size-4 flex-shrink-0" /> : <Info className="mt-0.5 size-4 flex-shrink-0" />}
+              <div>
+                <p className="text-sm font-semibold">{alertTitle}</p>
+                {memberAlert.message ? <p className="text-sm leading-relaxed">{memberAlert.message}</p> : null}
+              </div>
+            </div>
+            <div className="flex items-center gap-2 self-end sm:self-auto">
+              {memberAlert.ctaLabel && memberAlert.ctaUrl ? (
+                memberAlert.ctaUrl.startsWith("/") ? (
+                  <Link
+                    to={memberAlert.ctaUrl}
+                    className="rounded-lg border border-black/20 bg-white/55 px-3 py-1 text-sm font-semibold hover:bg-white/75 transition-colors"
+                  >
+                    {memberAlert.ctaLabel}
+                  </Link>
+                ) : (
+                  <a
+                    href={memberAlert.ctaUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-lg border border-black/20 bg-white/55 px-3 py-1 text-sm font-semibold hover:bg-white/75 transition-colors"
+                  >
+                    {memberAlert.ctaLabel}
+                  </a>
+                )
+              ) : null}
+              <button
+                type="button"
+                onClick={() => {
+                  markAlertDismissed(memberAlert.alertId);
+                }}
+                className="rounded-lg border border-black/20 bg-white/40 px-3 py-1 text-sm font-semibold hover:bg-white/65 transition-colors"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {/* Page Content */}
       <main className="flex-1">

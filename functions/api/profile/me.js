@@ -40,10 +40,16 @@ export async function onRequest({ request, env }) {
     firstName: String(body?.firstName || "").trim(),
     lastName: String(body?.lastName || "").trim(),
     organization: normalizeOrg(body?.organization),
+    notifyConsent: body?.notifyConsent === true,
+    noticeVersion: String(body?.noticeVersion || "v1").trim() || "v1",
   };
 
   if (!payload.firstName || !payload.lastName || !payload.organization) {
     return json({ error: "First name, last name, and organization are required." }, { status: 400 });
+  }
+
+  if (!payload.notifyConsent) {
+    return json({ error: "Notification consent is required to access the portal." }, { status: 400 });
   }
 
   const saved = await upsertMemberProfile(env.DB, session.email, payload);

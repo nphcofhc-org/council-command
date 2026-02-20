@@ -2,6 +2,9 @@ export type MemberProfile = {
   firstName: string;
   lastName: string;
   organization: string;
+  notifyConsent: boolean;
+  notifyConsentAt?: string | null;
+  noticeVersion?: string | null;
 };
 
 export const DIVINE_NINE_ORGANIZATIONS = [
@@ -20,6 +23,9 @@ const DEFAULT_PROFILE: MemberProfile = {
   firstName: "",
   lastName: "",
   organization: "",
+  notifyConsent: false,
+  notifyConsentAt: null,
+  noticeVersion: "v1",
 };
 
 const PROFILE_ENDPOINT = "/api/profile/me";
@@ -39,6 +45,9 @@ function normalizeProfile(input: any): MemberProfile {
     firstName: String(input?.firstName || "").trim(),
     lastName: String(input?.lastName || "").trim(),
     organization: String(input?.organization || "").trim(),
+    notifyConsent: input?.notifyConsent === true,
+    notifyConsentAt: input?.notifyConsentAt ? String(input.notifyConsentAt) : null,
+    noticeVersion: input?.noticeVersion ? String(input.noticeVersion) : "v1",
   };
 }
 
@@ -85,5 +94,5 @@ export async function saveMyMemberProfile(profile: MemberProfile): Promise<{ dat
 
 export function isProfileComplete(profile: MemberProfile | null | undefined): boolean {
   if (!profile) return false;
-  return Boolean(profile.firstName && profile.lastName && profile.organization);
+  return Boolean(profile.firstName && profile.lastName && profile.organization && profile.notifyConsent);
 }

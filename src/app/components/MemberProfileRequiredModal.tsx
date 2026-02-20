@@ -17,6 +17,7 @@ export function MemberProfileRequiredModal({ open, email, initialValue, saving, 
   const [firstName, setFirstName] = useState(initialValue.firstName || "");
   const [lastName, setLastName] = useState(initialValue.lastName || "");
   const [organization, setOrganization] = useState(initialValue.organization || "");
+  const [notifyConsent, setNotifyConsent] = useState(Boolean(initialValue.notifyConsent));
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -24,12 +25,18 @@ export function MemberProfileRequiredModal({ open, email, initialValue, saving, 
     setFirstName(initialValue.firstName || "");
     setLastName(initialValue.lastName || "");
     setOrganization(initialValue.organization || "");
+    setNotifyConsent(Boolean(initialValue.notifyConsent));
     setSubmitError(null);
-  }, [open, initialValue.firstName, initialValue.lastName, initialValue.organization]);
+  }, [open, initialValue.firstName, initialValue.lastName, initialValue.organization, initialValue.notifyConsent]);
 
   if (!open) return null;
 
-  const canSubmit = firstName.trim().length > 0 && lastName.trim().length > 0 && organization.trim().length > 0 && !saving;
+  const canSubmit =
+    firstName.trim().length > 0 &&
+    lastName.trim().length > 0 &&
+    organization.trim().length > 0 &&
+    notifyConsent &&
+    !saving;
 
   return (
     <div className="fixed inset-0 z-[75] flex items-center justify-center bg-black/55 px-4 py-8 backdrop-blur-sm">
@@ -84,6 +91,25 @@ export function MemberProfileRequiredModal({ open, email, initialValue, saving, 
               ))}
             </select>
           </div>
+
+          <div className="rounded-lg border border-white/20 bg-white/5 p-3">
+            <p className="text-xs uppercase tracking-[0.18em] text-white/70">Member Notification Consent</p>
+            <p className="mt-2 text-sm text-white/80">
+              I authorize NPHC of Hudson County to send me official portal notifications, including meeting alerts,
+              council updates, deadlines, and governance notices through in-portal banners/alerts and related member communications.
+            </p>
+            <label className="mt-3 inline-flex items-start gap-2 text-sm text-white/90">
+              <input
+                type="checkbox"
+                className="mt-0.5 accent-primary"
+                checked={notifyConsent}
+                onChange={(e) => setNotifyConsent(e.target.checked)}
+              />
+              <span>
+                I consent to receive official member notifications and understand I can update this preference through Site Administration.
+              </span>
+            </label>
+          </div>
         </div>
 
         {error || submitError ? (
@@ -108,6 +134,8 @@ export function MemberProfileRequiredModal({ open, email, initialValue, saving, 
                   firstName: firstName.trim(),
                   lastName: lastName.trim(),
                   organization: organization.trim(),
+                  notifyConsent,
+                  noticeVersion: "v1",
                 });
               } catch (e) {
                 setSubmitError(e instanceof Error ? e.message : "Failed to save profile.");

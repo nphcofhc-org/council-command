@@ -15,10 +15,24 @@ export async function ensureMemberProfileTable(db) {
         first_name TEXT NOT NULL,
         last_name TEXT NOT NULL,
         organization TEXT NOT NULL,
+        notify_consent INTEGER NOT NULL DEFAULT 0,
+        notify_consent_at TEXT,
+        notice_version TEXT,
         updated_at TEXT NOT NULL
       )`,
     )
     .run();
+
+  // Backward-compatible column migration for existing tables.
+  try {
+    await db.prepare(`ALTER TABLE portal_member_profiles ADD COLUMN notify_consent INTEGER NOT NULL DEFAULT 0`).run();
+  } catch {}
+  try {
+    await db.prepare(`ALTER TABLE portal_member_profiles ADD COLUMN notify_consent_at TEXT`).run();
+  } catch {}
+  try {
+    await db.prepare(`ALTER TABLE portal_member_profiles ADD COLUMN notice_version TEXT`).run();
+  } catch {}
 }
 
 export async function readMemberProfile(db, emailRaw) {
@@ -30,7 +44,7 @@ export async function readMemberProfile(db, emailRaw) {
 
   const row = await db
     .prepare(
-      `SELECT first_name, last_name, organization, updated_at
+      `SELECT first_name, last_name, organization, notify_consent, notify_consent_at, notice_version, updated_at
        FROM portal_member_profiles
        WHERE email = ?1
        LIMIT 1`,
@@ -46,6 +60,9 @@ export async function readMemberProfile(db, emailRaw) {
       firstName: cleanText(row.first_name),
       lastName: cleanText(row.last_name),
       organization: cleanText(row.organization, 180),
+      notifyConsent: Number(row.notify_consent || 0) === 1,
+      notifyConsentAt: row.notify_consent_at ? String(row.notify_consent_at) : null,
+      noticeVersion: cleanText(row.notice_version || "v1", 20) || "v1",
     },
     updatedAt: row.updated_at ? String(row.updated_at) : null,
   };
@@ -59,22 +76,27 @@ export async function upsertMemberProfile(db, emailRaw, payload) {
   const firstName = cleanText(payload?.firstName);
   const lastName = cleanText(payload?.lastName);
   const organization = cleanText(payload?.organization, 180);
-  if (!firstName || !lastName || !organization) return { ok: false };
+  const notifyConsent = payload?.notifyConsent === true;
+  const noticeVersion = cleanText(payload?.noticeVersion || "v1", 20) || "v1";
+  if (!firstName || !lastName || !organization || !notifyConsent) return { ok: false };
 
   await ensureMemberProfileTable(db);
 
   const now = new Date().toISOString();
   await db
     .prepare(
-      `INSERT INTO portal_member_profiles (email, first_name, last_name, organization, updated_at)
-       VALUES (?1, ?2, ?3, ?4, ?5)
+      `INSERT INTO portal_member_profiles (email, first_name, last_name, organization, notify_consent, notify_consent_at, notice_version, updated_at)
+       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)
        ON CONFLICT(email) DO UPDATE SET
          first_name = excluded.first_name,
          last_name = excluded.last_name,
          organization = excluded.organization,
+         notify_consent = excluded.notify_consent,
+         notify_consent_at = excluded.notify_consent_at,
+         notice_version = excluded.notice_version,
          updated_at = excluded.updated_at`,
     )
-    .bind(email, firstName, lastName, organization, now)
+    .bind(email, firstName, lastName, organization, 1, now, noticeVersion, now)
     .run();
 
   return {
@@ -83,6 +105,9 @@ export async function upsertMemberProfile(db, emailRaw, payload) {
       firstName,
       lastName,
       organization,
+      notifyConsent: true,
+      notifyConsentAt: now,
+      noticeVersion,
     },
     updatedAt: now,
   };

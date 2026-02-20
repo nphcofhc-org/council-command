@@ -30,5 +30,8 @@ CREATE TABLE IF NOT EXISTS portal_member_profiles (
   first_name TEXT NOT NULL,
   last_name TEXT NOT NULL,
   organization TEXT NOT NULL,
+  notify_consent INTEGER NOT NULL DEFAULT 0,
+  notify_consent_at TEXT,
+  notice_version TEXT,
   updated_at TEXT NOT NULL
 );
