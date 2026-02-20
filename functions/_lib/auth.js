@@ -73,6 +73,41 @@ export function getAuthenticatedEmail(request) {
   return "";
 }
 
+function getCookieValue(cookieHeader, key) {
+  const raw = String(cookieHeader || "");
+  const parts = raw.split(";");
+  const target = String(key || "").trim().toLowerCase();
+  for (const part of parts) {
+    const [k, ...rest] = part.split("=");
+    if (String(k || "").trim().toLowerCase() !== target) continue;
+    return rest.join("=").trim();
+  }
+  return "";
+}
+
+function decodeJwtPayload(token) {
+  const t = String(token || "");
+  const parts = t.split(".");
+  if (parts.length < 2) return null;
+  try {
+    const payload = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const padded = payload.padEnd(Math.ceil(payload.length / 4) * 4, "=");
+    const json = atob(padded);
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
+function getEmailFromAccessCookie(request) {
+  const cookie = request.headers.get("cookie") || "";
+  // Primary Access session cookie name.
+  const token = getCookieValue(cookie, "CF_Authorization") || getCookieValue(cookie, "cf_authorization");
+  if (!token) return "";
+  const payload = decodeJwtPayload(token);
+  return normalizeEmail(payload?.email || payload?.sub || "");
+}
+
 function getAccessJwt(request) {
   for (const headerName of JWT_HEADER_CANDIDATES) {
     const value = request.headers.get(headerName);
@@ -135,6 +170,9 @@ export async function getSessionState(request, env) {
     } catch {
       // ignore
     }
+  }
+  if (!email) {
+    email = getEmailFromAccessCookie(request);
   }
   const allowlist = parseCouncilAdminEmails(env.COUNCIL_ADMIN_EMAILS || "");
   const siteEditorRaw =
