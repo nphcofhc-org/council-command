@@ -1,24 +1,39 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
-import { ArrowLeft, BarChart3, Database, Loader2, Save, Settings, Shield, SlidersHorizontal, UserCog, Users, Wrench } from "lucide-react";
+import { ArrowLeft, BarChart3, Database, Loader2, Save, Shield, Users, Wrench } from "lucide-react";
 import { PresidentGate } from "../components/PresidentGate";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { motion } from "motion/react";
 import type { AccessOverrideEntry } from "../data/admin-api";
-import { fetchSiteMaintenancePayload, saveSiteMaintenanceOverrides } from "../data/admin-api";
+import { fetchLeadershipContent, fetchSiteMaintenancePayload, saveSiteMaintenanceOverrides } from "../data/admin-api";
 
-type PermissionMode = "inherit" | "allow" | "deny";
+type AccessKey = "councilAdmin" | "treasuryAdmin" | "president";
+type AccessMatrix = Record<AccessKey, Record<string, boolean>>;
 
-type AccessRow = {
+type OfficerColumn = {
   email: string;
-  councilAdmin: PermissionMode;
-  treasuryAdmin: PermissionMode;
-  siteEditor: PermissionMode;
-  president: PermissionMode;
-  note: string;
+  name: string;
+  title: string;
 };
+
+const ACCESS_ITEMS: Array<{ key: AccessKey; label: string; description: string }> = [
+  {
+    key: "councilAdmin",
+    label: "Council Command Center",
+    description: "Access to council leadership workspace and meeting deck controls.",
+  },
+  {
+    key: "treasuryAdmin",
+    label: "Treasury Dashboard",
+    description: "Access to restricted financial data and treasury controls.",
+  },
+  {
+    key: "president",
+    label: "Site Maintenance",
+    description: "President-only controls for role policy, activity metrics, and maintenance.",
+  },
+];
 
 const EMPTY_METRICS = {
   pageViews24h: 0,
@@ -29,72 +44,130 @@ const EMPTY_METRICS = {
   recentActivity: [] as Array<{ email: string | null; eventType: string; path: string | null; createdAt: string | null }>,
 };
 
-function toMode(value: boolean | null | undefined): PermissionMode {
-  if (value === true) return "allow";
-  if (value === false) return "deny";
-  return "inherit";
-}
-
-function toOverrideFlag(mode: PermissionMode): boolean | null {
-  if (mode === "allow") return true;
-  if (mode === "deny") return false;
-  return null;
-}
-
-function toRow(input: AccessOverrideEntry | { email: string }): AccessRow {
+function createEmptyMatrix(): AccessMatrix {
   return {
-    email: String(input.email || "").trim().toLowerCase(),
-    councilAdmin: toMode((input as AccessOverrideEntry).isCouncilAdmin),
-    treasuryAdmin: toMode((input as AccessOverrideEntry).isTreasuryAdmin),
-    siteEditor: toMode((input as AccessOverrideEntry).isSiteEditor),
-    president: toMode((input as AccessOverrideEntry).isPresident),
-    note: String((input as AccessOverrideEntry).note || "").trim(),
+    councilAdmin: {},
+    treasuryAdmin: {},
+    president: {},
   };
 }
 
-function rowToEntry(row: AccessRow): AccessOverrideEntry | null {
-  const email = String(row.email || "").trim().toLowerCase();
-  if (!email) return null;
+function normalizeEmail(value: string | null | undefined): string {
+  return String(value || "").trim().toLowerCase();
+}
+
+function normalizeTitle(value: string | null | undefined): string {
+  return String(value || "").trim().toLowerCase();
+}
+
+function baseAccessForTitle(titleRaw: string): Record<AccessKey, boolean> {
+  const title = normalizeTitle(titleRaw);
+  const isPresident = title === "president";
+  const isTreasuryRole = isPresident || title === "treasurer" || title === "financial secretary";
   return {
-    email,
-    isCouncilAdmin: toOverrideFlag(row.councilAdmin),
-    isTreasuryAdmin: toOverrideFlag(row.treasuryAdmin),
-    isSiteEditor: toOverrideFlag(row.siteEditor),
-    isPresident: toOverrideFlag(row.president),
-    note: String(row.note || "").trim(),
+    councilAdmin: true,
+    treasuryAdmin: isTreasuryRole,
+    president: isPresident,
   };
+}
+
+function readOverrideFlag(entry: AccessOverrideEntry | undefined, key: AccessKey): boolean | null {
+  if (!entry) return null;
+  if (key === "councilAdmin") return entry.isCouncilAdmin;
+  if (key === "treasuryAdmin") return entry.isTreasuryAdmin;
+  return entry.isPresident;
+}
+
+function setOverrideFlag(entry: AccessOverrideEntry, key: AccessKey, value: boolean | null) {
+  if (key === "councilAdmin") entry.isCouncilAdmin = value;
+  if (key === "treasuryAdmin") entry.isTreasuryAdmin = value;
+  if (key === "president") entry.isPresident = value;
+}
+
+function hasAnyExplicitOverride(entry: AccessOverrideEntry): boolean {
+  return (
+    entry.isCouncilAdmin !== null ||
+    entry.isTreasuryAdmin !== null ||
+    entry.isPresident !== null ||
+    String(entry.note || "").trim().length > 0
+  );
 }
 
 export function CouncilSiteMaintenancePage() {
-  const [rows, setRows] = useState<AccessRow[]>([]);
+  const [officers, setOfficers] = useState<OfficerColumn[]>([]);
+  const [missingOfficerEmails, setMissingOfficerEmails] = useState<string[]>([]);
+  const [matrix, setMatrix] = useState<AccessMatrix>(createEmptyMatrix());
+  const [baseMatrix, setBaseMatrix] = useState<AccessMatrix>(createEmptyMatrix());
+  const [existingOverrides, setExistingOverrides] = useState<AccessOverrideEntry[]>([]);
   const [metrics, setMetrics] = useState(EMPTY_METRICS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [updatedBy, setUpdatedBy] = useState<string | null>(null);
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
-  const [newEmail, setNewEmail] = useState("");
 
   const load = async () => {
     setLoading(true);
     setError(null);
     try {
-      const payload = await fetchSiteMaintenancePayload();
-      const map = new Map<string, AccessRow>();
+      const [payload, leadership] = await Promise.all([
+        fetchSiteMaintenancePayload(),
+        fetchLeadershipContent().catch(() => null),
+      ]);
 
-      for (const email of payload.knownUsers || []) {
-        if (!email) continue;
-        map.set(email, toRow({ email }));
+      const leadershipRows = leadership?.found ? leadership.data.executiveBoard : [];
+      const cols: OfficerColumn[] = [];
+      const missing: string[] = [];
+
+      for (const row of leadershipRows || []) {
+        const email = normalizeEmail((row as any)?.email);
+        const name = String((row as any)?.name || "").trim();
+        const title = String((row as any)?.title || "").trim();
+        if (!email) {
+          if (name || title) missing.push(`${name || "Unnamed"}${title ? ` (${title})` : ""}`);
+          continue;
+        }
+        cols.push({ email, name: name || email, title: title || "Officer" });
       }
 
-      for (const entry of payload.overrides || []) {
-        if (!entry.email) continue;
-        map.set(entry.email, toRow(entry));
+      // Fallback if leadership records are unavailable: use known authenticated users.
+      if (cols.length === 0) {
+        for (const email of payload.knownUsers || []) {
+          const normalized = normalizeEmail(email);
+          if (!normalized) continue;
+          cols.push({ email: normalized, name: normalized, title: "Officer" });
+        }
       }
 
-      const sorted = Array.from(map.values()).sort((a, b) => a.email.localeCompare(b.email));
-      setRows(sorted);
+      const uniqueByEmail = new Map<string, OfficerColumn>();
+      for (const c of cols) {
+        if (!uniqueByEmail.has(c.email)) uniqueByEmail.set(c.email, c);
+      }
+      const officerColumns = Array.from(uniqueByEmail.values());
+      setOfficers(officerColumns);
+      setMissingOfficerEmails(missing);
+      setExistingOverrides(payload.overrides || []);
       setMetrics(payload.metrics || EMPTY_METRICS);
+
+      const overrideByEmail = new Map(
+        (payload.overrides || []).map((entry) => [normalizeEmail(entry.email), entry]),
+      );
+
+      const nextBase = createEmptyMatrix();
+      const nextMatrix = createEmptyMatrix();
+
+      for (const officer of officerColumns) {
+        const base = baseAccessForTitle(officer.title);
+        const override = overrideByEmail.get(officer.email);
+        for (const item of ACCESS_ITEMS) {
+          nextBase[item.key][officer.email] = base[item.key];
+          const overrideFlag = readOverrideFlag(override, item.key);
+          nextMatrix[item.key][officer.email] = overrideFlag === null ? base[item.key] : overrideFlag;
+        }
+      }
+
+      setBaseMatrix(nextBase);
+      setMatrix(nextMatrix);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load site maintenance data.");
     } finally {
@@ -107,55 +180,60 @@ export function CouncilSiteMaintenancePage() {
   }, []);
 
   const dirty = useMemo(
-    () => rows.some((row) =>
-      row.councilAdmin !== "inherit" ||
-      row.treasuryAdmin !== "inherit" ||
-      row.siteEditor !== "inherit" ||
-      row.president !== "inherit" ||
-      row.note.length > 0,
-    ),
-    [rows],
+    () => JSON.stringify(matrix) !== JSON.stringify(baseMatrix),
+    [matrix, baseMatrix],
   );
 
-  const setRow = (index: number, patch: Partial<AccessRow>) => {
-    setRows((prev) => prev.map((row, i) => (i === index ? { ...row, ...patch } : row)));
-  };
-
-  const addEmail = () => {
-    const email = newEmail.trim().toLowerCase();
-    if (!email || !email.includes("@")) return;
-    setRows((prev) => {
-      if (prev.some((r) => r.email === email)) return prev;
-      return [...prev, toRow({ email })].sort((a, b) => a.email.localeCompare(b.email));
-    });
-    setNewEmail("");
-  };
-
-  const removeRow = (index: number) => {
-    setRows((prev) => prev.filter((_, i) => i !== index));
+  const setAccess = (key: AccessKey, email: string, checked: boolean) => {
+    setMatrix((prev) => ({
+      ...prev,
+      [key]: {
+        ...prev[key],
+        [email]: checked,
+      },
+    }));
   };
 
   const save = async () => {
     setSaving(true);
     setError(null);
     try {
-      const payload = rows
-        .map(rowToEntry)
-        .filter(Boolean)
-        .filter((entry) =>
-          entry!.isCouncilAdmin !== null ||
-          entry!.isTreasuryAdmin !== null ||
-          entry!.isSiteEditor !== null ||
-          entry!.isPresident !== null ||
-          entry!.note.length > 0,
-        ) as AccessOverrideEntry[];
+      const officerEmails = new Set(officers.map((o) => normalizeEmail(o.email)).filter(Boolean));
 
-      const result = await saveSiteMaintenanceOverrides(payload);
+      const matrixOverrides: AccessOverrideEntry[] = [];
+      for (const officer of officers) {
+        const email = normalizeEmail(officer.email);
+        if (!email) continue;
+
+        const entry: AccessOverrideEntry = {
+          email,
+          isCouncilAdmin: null,
+          isTreasuryAdmin: null,
+          isSiteEditor: null,
+          isPresident: null,
+          note: "",
+        };
+
+        for (const item of ACCESS_ITEMS) {
+          const base = Boolean(baseMatrix[item.key][email]);
+          const current = Boolean(matrix[item.key][email]);
+          if (base === current) continue;
+          setOverrideFlag(entry, item.key, current);
+        }
+
+        if (hasAnyExplicitOverride(entry)) {
+          matrixOverrides.push(entry);
+        }
+      }
+
+      // Preserve overrides for non-officer users that are not part of this matrix.
+      const passthrough = existingOverrides.filter((entry) => !officerEmails.has(normalizeEmail(entry.email)));
+      const result = await saveSiteMaintenanceOverrides([...passthrough, ...matrixOverrides]);
       setUpdatedAt(result.updatedAt);
       setUpdatedBy(result.updatedBy);
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save access policy.");
+      setError(err instanceof Error ? err.message : "Failed to save access matrix.");
     } finally {
       setSaving(false);
     }
@@ -183,7 +261,7 @@ export function CouncilSiteMaintenancePage() {
                 Site Maintenance Dashboard
               </CardTitle>
               <CardDescription>
-                President-only controls for content operations, access policy, and authenticated site activity.
+                President-only controls for access policy, authenticated activity, and maintenance.
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-4">
@@ -218,109 +296,82 @@ export function CouncilSiteMaintenancePage() {
             <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <UserCog className="size-5 text-primary" />
-                  Role & Access Policy
+                  <Shield className="size-5 text-primary" />
+                  Officer Access Matrix
                 </CardTitle>
                 <CardDescription>
-                  Set per-user access to Council Command, Treasury, Site Editor, and President controls.
+                  Access items are listed by row, with officer columns and checkboxes to grant/revoke access.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex flex-col gap-2 sm:flex-row">
-                  <Input
-                    value={newEmail}
-                    onChange={(e) => setNewEmail(e.target.value)}
-                    placeholder="Add user email"
-                    className="border-black/15 bg-white/5"
-                  />
-                  <Button type="button" variant="outline" onClick={addEmail} className="border-black/15 bg-white/5">
-                    Add User
-                  </Button>
-                </div>
-
                 {loading ? (
                   <div className="flex items-center gap-2 text-sm text-slate-600">
                     <Loader2 className="size-4 animate-spin" />
-                    Loading access policy...
+                    Loading access matrix...
                   </div>
                 ) : null}
 
-                <div className="space-y-3 max-h-[460px] overflow-y-auto pr-1">
-                  {rows.map((row, idx) => (
-                    <div key={row.email} className="rounded-lg border border-black/10 bg-white/5 p-3">
-                      <div className="flex flex-col gap-3">
-                        <div className="flex items-center justify-between gap-2">
-                          <p className="text-sm font-semibold text-slate-900 break-all">{row.email}</p>
-                          <Button type="button" variant="outline" size="sm" className="border-black/15 bg-white/5" onClick={() => removeRow(idx)}>
-                            Remove
-                          </Button>
-                        </div>
+                {missingOfficerEmails.length > 0 ? (
+                  <div className="rounded-lg border border-amber-300/50 bg-amber-500/10 px-3 py-2 text-xs text-amber-800">
+                    Missing officer emails in Chapter Leadership: {missingOfficerEmails.join(", ")}.
+                  </div>
+                ) : null}
 
-                        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-                          <div>
-                            <p className="mb-1 text-xs uppercase tracking-widest text-slate-500">Council</p>
-                            <Select value={row.councilAdmin} onValueChange={(value) => setRow(idx, { councilAdmin: value as PermissionMode })}>
-                              <SelectTrigger className="border-black/15 bg-white/5"><SelectValue /></SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="inherit">Inherit</SelectItem>
-                                <SelectItem value="allow">Allow</SelectItem>
-                                <SelectItem value="deny">Deny</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div>
-                            <p className="mb-1 text-xs uppercase tracking-widest text-slate-500">Treasury</p>
-                            <Select value={row.treasuryAdmin} onValueChange={(value) => setRow(idx, { treasuryAdmin: value as PermissionMode })}>
-                              <SelectTrigger className="border-black/15 bg-white/5"><SelectValue /></SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="inherit">Inherit</SelectItem>
-                                <SelectItem value="allow">Allow</SelectItem>
-                                <SelectItem value="deny">Deny</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div>
-                            <p className="mb-1 text-xs uppercase tracking-widest text-slate-500">Site Editor</p>
-                            <Select value={row.siteEditor} onValueChange={(value) => setRow(idx, { siteEditor: value as PermissionMode })}>
-                              <SelectTrigger className="border-black/15 bg-white/5"><SelectValue /></SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="inherit">Inherit</SelectItem>
-                                <SelectItem value="allow">Allow</SelectItem>
-                                <SelectItem value="deny">Deny</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div>
-                            <p className="mb-1 text-xs uppercase tracking-widest text-slate-500">President</p>
-                            <Select value={row.president} onValueChange={(value) => setRow(idx, { president: value as PermissionMode })}>
-                              <SelectTrigger className="border-black/15 bg-white/5"><SelectValue /></SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="inherit">Inherit</SelectItem>
-                                <SelectItem value="allow">Allow</SelectItem>
-                                <SelectItem value="deny">Deny</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
+                {!loading && officers.length === 0 ? (
+                  <div className="rounded-lg border border-black/10 bg-white/5 px-3 py-4 text-sm text-slate-600">
+                    No officer emails found to build the matrix. Add officer emails in Chapter Leadership first.
+                  </div>
+                ) : null}
 
-                        <Input
-                          value={row.note}
-                          onChange={(e) => setRow(idx, { note: e.target.value })}
-                          placeholder="Optional note (reason/role)"
-                          className="border-black/15 bg-white/5"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                {!loading && officers.length > 0 ? (
+                  <div className="overflow-x-auto rounded-lg border border-black/10">
+                    <table className="w-full min-w-[980px] text-left">
+                      <thead>
+                        <tr className="border-b border-black/10 bg-white/30">
+                          <th className="px-3 py-2 text-xs uppercase tracking-widest text-slate-500">Access Item</th>
+                          {officers.map((officer) => (
+                            <th key={officer.email} className="px-3 py-2 text-center">
+                              <div className="text-xs font-semibold text-slate-900 leading-tight">{officer.name}</div>
+                              <div className="text-[10px] uppercase tracking-wide text-slate-500">{officer.title}</div>
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {ACCESS_ITEMS.map((item) => (
+                          <tr key={item.key} className="border-b border-black/5 bg-white/20">
+                            <td className="px-3 py-3 align-top">
+                              <p className="text-sm font-semibold text-slate-900">{item.label}</p>
+                              <p className="text-xs text-slate-500">{item.description}</p>
+                            </td>
+                            {officers.map((officer) => (
+                              <td key={`${item.key}:${officer.email}`} className="px-3 py-3 text-center align-middle">
+                                <input
+                                  type="checkbox"
+                                  className="size-4 accent-teal-600"
+                                  checked={Boolean(matrix[item.key][officer.email])}
+                                  onChange={(e) => setAccess(item.key, officer.email, e.target.checked)}
+                                  disabled={saving || loading}
+                                  aria-label={`${item.label} access for ${officer.name}`}
+                                />
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : null}
 
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-xs text-slate-500">
-                    {updatedAt ? `Last saved ${new Date(updatedAt).toLocaleString()}${updatedBy ? ` by ${updatedBy}` : ""}` : "No access changes saved yet."}
+                    {updatedAt
+                      ? `Last saved ${new Date(updatedAt).toLocaleString()}${updatedBy ? ` by ${updatedBy}` : ""}`
+                      : "No access matrix changes saved yet."}
                   </p>
-                  <Button onClick={save} disabled={saving || loading || !dirty} className="gap-2">
+                  <Button onClick={save} disabled={saving || loading || officers.length === 0 || !dirty} className="gap-2">
                     {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
-                    Save Access Policy
+                    Save Access Matrix
                   </Button>
                 </div>
 
@@ -355,22 +406,19 @@ export function CouncilSiteMaintenancePage() {
               <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-base">
-                    <Settings className="size-4 text-primary" />
+                    <Database className="size-4 text-primary" />
                     Maintenance Shortcuts
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
-                    <Link to="/council-admin/content"><SlidersHorizontal className="size-4" /> Content Manager</Link>
+                    <Link to="/council-admin"><Wrench className="size-4" /> Council Command Center</Link>
                   </Button>
                   <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
-                    <Link to="/council-admin/submissions"><Database className="size-4" /> Submission Review</Link>
+                    <Link to="/council-admin/exec-council-meeting?deck=2026-02-23"><Users className="size-4" /> Exec Meeting Deck (2/23)</Link>
                   </Button>
                   <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
-                    <Link to="/council-admin/notifications"><Shield className="size-4" /> Notification Settings</Link>
-                  </Button>
-                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
-                    <Link to="/council-admin/content/members"><Users className="size-4" /> Member Directory</Link>
+                    <Link to="/council-admin/treasury"><Shield className="size-4" /> Treasury Dashboard</Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -419,3 +467,4 @@ export function CouncilSiteMaintenancePage() {
     </PresidentGate>
   );
 }
+
