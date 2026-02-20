@@ -145,7 +145,8 @@ export async function getSessionState(request, env) {
     return [fallbackPresidentEmail];
   })();
   const isAuthenticated = email.length > 0;
-  let isCouncilAdmin = isAuthenticated && allowlist.includes(email);
+  const isFallbackPresident = isAuthenticated && email === fallbackPresidentEmail;
+  let isCouncilAdmin = isAuthenticated && (allowlist.includes(email) || isFallbackPresident);
   let isTreasuryAdmin = false;
 
   // Prefer DB-backed leadership/role checks as the source of truth.
@@ -158,10 +159,10 @@ export async function getSessionState(request, env) {
       const hasTreasuryEntries = maps.treasuryAccessEmails.size > 0;
 
       if (hasLeadershipEntries) {
-        isCouncilAdmin = maps.leadershipEmails.has(email);
+        isCouncilAdmin = maps.leadershipEmails.has(email) || isFallbackPresident;
       }
       if (hasTreasuryEntries) {
-        isTreasuryAdmin = maps.treasuryAccessEmails.has(email);
+        isTreasuryAdmin = maps.treasuryAccessEmails.has(email) || isFallbackPresident;
       }
     }
   }
