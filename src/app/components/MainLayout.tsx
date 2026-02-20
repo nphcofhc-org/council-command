@@ -52,7 +52,7 @@ export function MainLayout() {
     ...baseNavItems.slice(0, 5),
     ...(session.isTreasuryAdmin ? [{ to: "/treasury", label: "Treasury", icon: Wallet }] : []),
     ...baseNavItems.slice(5),
-    ...(session.isCouncilAdmin ? [{ to: "/council-admin", label: "Council Admin", icon: Shield }] : []),
+    ...(session.isCouncilAdmin || session.isSiteEditor ? [{ to: "/council-admin", label: "Council Admin", icon: Shield }] : []),
   ];
 
   // Close mobile nav on route change

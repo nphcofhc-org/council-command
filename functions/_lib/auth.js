@@ -169,6 +169,10 @@ export async function getSessionState(request, env) {
   // Site editors are a tighter allowlist used for content updates.
   // This is intentionally separate from COUNCIL_ADMIN_EMAILS.
   const isSiteEditor = isAuthenticated && siteEditors.includes(email);
+  // Site administrators should always retain council admin access.
+  if (isSiteEditor) {
+    isCouncilAdmin = true;
+  }
 
   return {
     email,
