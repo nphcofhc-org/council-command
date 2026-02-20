@@ -1,5 +1,6 @@
 import type { CouncilSession } from "../data/admin-api";
 import type { MemberDirectory } from "../data/member-directory";
+import type { MemberProfile } from "../data/member-profile-api";
 
 function titleCaseWord(w: string): string {
   const s = (w || "").trim();
@@ -33,6 +34,18 @@ export function sessionRoleLabel(session: CouncilSession): string {
 export function sessionDisplayName(session: CouncilSession, directory?: MemberDirectory | null): { name: string; designation?: string } {
   const entry = lookupDirectoryEntry(directory || null, session.email);
   const name = (entry?.displayName || "").trim() || nameFromEmail(session.email);
+  const designation = (entry?.designation || "").trim() || undefined;
+  return { name, designation };
+}
+
+export function sessionDisplayNameWithProfile(
+  session: CouncilSession,
+  directory?: MemberDirectory | null,
+  profile?: MemberProfile | null,
+): { name: string; designation?: string } {
+  const entry = lookupDirectoryEntry(directory || null, session.email);
+  const profileName = `${String(profile?.firstName || "").trim()} ${String(profile?.lastName || "").trim()}`.trim();
+  const name = profileName || (entry?.displayName || "").trim() || nameFromEmail(session.email);
   const designation = (entry?.designation || "").trim() || undefined;
   return { name, designation };
 }

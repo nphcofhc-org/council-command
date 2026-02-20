@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import type { CouncilSession } from "../data/admin-api";
 import type { MemberDirectory } from "../data/member-directory";
-import { sessionDisplayName, sessionRoleLabel } from "../utils/user-display";
+import type { MemberProfile } from "../data/member-profile-api";
+import { sessionDisplayNameWithProfile, sessionRoleLabel } from "../utils/user-display";
 
 const STORAGE_HIDE_KEY = "nphc-hide-intro";
 const SESSION_SHOWN_KEY = "nphc-intro-shown";
@@ -42,26 +43,31 @@ function markShownThisSession() {
 export function IntroSplash({
   session,
   directory,
+  profile,
   logoUrl,
   fallbackLogoUrl,
+  disabled,
 }: {
   session: CouncilSession;
   directory: MemberDirectory | null;
+  profile?: MemberProfile | null;
   logoUrl: string;
   fallbackLogoUrl?: string;
+  disabled?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [imgSrc, setImgSrc] = useState(logoUrl);
 
-  const display = useMemo(() => sessionDisplayName(session, directory), [session, directory]);
+  const display = useMemo(() => sessionDisplayNameWithProfile(session, directory, profile || null), [session, directory, profile]);
   const role = useMemo(() => sessionRoleLabel(session), [session]);
 
   useEffect(() => {
     if (!session.authenticated) return;
+    if (disabled) return;
     if (shouldHidePermanently()) return;
     if (wasShownThisSession()) return;
     setOpen(true);
-  }, [session.authenticated]);
+  }, [session.authenticated, disabled]);
 
   useEffect(() => {
     setImgSrc(logoUrl);

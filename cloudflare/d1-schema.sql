@@ -24,3 +24,11 @@ CREATE TABLE IF NOT EXISTS portal_activity_log (
 
 CREATE INDEX IF NOT EXISTS idx_portal_activity_created_at ON portal_activity_log(created_at);
 CREATE INDEX IF NOT EXISTS idx_portal_activity_email ON portal_activity_log(email);
+
+CREATE TABLE IF NOT EXISTS portal_member_profiles (
+  email TEXT PRIMARY KEY,
+  first_name TEXT NOT NULL,
+  last_name TEXT NOT NULL,
+  organization TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);

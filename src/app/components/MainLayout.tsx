@@ -7,10 +7,13 @@ import { useCouncilSession } from "../hooks/use-council-session";
 import { useEditorMode } from "../hooks/use-editor-mode";
 import { usePreviewDevice } from "./ui/use-mobile";
 import { useMemberDirectory } from "../hooks/use-member-directory";
-import { sessionDisplayName, sessionRoleLabel } from "../utils/user-display";
+import { useMemberProfile } from "../hooks/use-member-profile";
+import { isProfileComplete } from "../data/member-profile-api";
+import { sessionDisplayNameWithProfile, sessionRoleLabel } from "../utils/user-display";
 import { IntroSplash } from "./IntroSplash";
 import { GuidedTour } from "./GuidedTour";
 import { trackPortalActivity } from "../data/admin-api";
+import { MemberProfileRequiredModal } from "./MemberProfileRequiredModal";
 
 const baseNavItems: Array<{ to: string; label: string; icon: any; danger?: boolean }> = [
   { to: "/", label: "Home", icon: Home },
@@ -38,6 +41,13 @@ export function MainLayout() {
   const { editorMode, toggleEditorMode } = useEditorMode();
   const { device: previewDevice, setDevice: setPreviewDevice } = usePreviewDevice();
   const { directory } = useMemberDirectory();
+  const {
+    profile,
+    loading: profileLoading,
+    saving: profileSaving,
+    error: profileError,
+    save: saveProfile,
+  } = useMemberProfile(session.authenticated);
 
   const isFramed = (() => {
     try {
@@ -82,13 +92,29 @@ export function MainLayout() {
     config?.logoUrl ||
     "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/NPHC%20of%20HC%20LOGO%20Black.PNG";
   const faviconLogoUrl = "/favicon.png";
-  const identity = sessionDisplayName(session, directory);
+  const identity = sessionDisplayNameWithProfile(session, directory, profile);
   const role = sessionRoleLabel(session);
   const sidebarIdentity = session.authenticated ? `${identity.name} — ${role}` : "Sign in required";
+  const profileRequired = session.authenticated && !profileLoading && !isProfileComplete(profile);
 
   return (
     <div className="min-h-screen bg-background text-foreground lg:flex">
-      <IntroSplash session={session} directory={directory} logoUrl={faviconLogoUrl} fallbackLogoUrl={logoUrl} />
+      <MemberProfileRequiredModal
+        open={profileRequired}
+        email={session.email}
+        initialValue={profile}
+        saving={profileSaving}
+        error={profileError}
+        onSubmit={saveProfile}
+      />
+      <IntroSplash
+        session={session}
+        directory={directory}
+        profile={profile}
+        logoUrl={faviconLogoUrl}
+        fallbackLogoUrl={logoUrl}
+        disabled={profileRequired}
+      />
       <GuidedTour
         session={session}
         forceOpen={tourRequested}
