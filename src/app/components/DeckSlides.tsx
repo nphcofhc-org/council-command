@@ -3,6 +3,7 @@ import {
   FileText, Cpu, Sun, Package, Trophy, Heart, ChevronRight, Star, AlertCircle,
   ExternalLink, ClipboardList, DollarSign, Users, Camera
 } from 'lucide-react';
+import { useState } from 'react';
 import { VoteWidget, VoteSummary } from './VoteWidget';
 
 // ─── Tokens (WHITE background theme) ─────────────────────────────────────────
@@ -79,16 +80,23 @@ type AgendaTag = { text: string; solid?: boolean; color?: string };
 
 const agendaItems: { num: string; title: string; sub?: string; tags?: AgendaTag[] }[] = [
   { num: '01', title: 'Call to Order' },
-  { num: '02', title: 'Adoption of the Agenda', tags: [{ text: 'Vote', solid: true }] },
-  { num: '03', title: 'Presidential Address: The 2026 Vision', tags: [{ text: 'Address' }] },
-  { num: '04', title: 'Board Ratification & Appointments', tags: [{ text: 'Vote', solid: true }, { text: 'Action' }] },
-  { num: '05', title: 'Financials & Compliance', sub: 'D9 in Trenton & March 1st Report', tags: [{ text: 'Vote', solid: true }, { text: 'Sign-Up', color: '#059669' }] },
-  { num: '06', title: 'New Business', sub: 'Council Command & Summer Planning', tags: [{ text: 'Launch', color: '#2563EB' }, { text: 'Review' }] },
-  { num: '07', title: 'Success Recap', sub: 'Bowling Night & MLK Service', tags: [{ text: 'Action' }, { text: 'Budgets', color: '#059669' }] },
-  { num: '08', title: 'Adjournment' },
+  { num: '02', title: 'Call to Prayer (Chaplain)' },
+  { num: '03', title: 'Roll Call (Secretary)' },
+  { num: '04', title: 'Adoption of the Agenda', tags: [{ text: 'Vote', solid: true }] },
+  { num: '05', title: 'Adoption of the Minutes', tags: [{ text: 'Vote', solid: true }] },
+  { num: '06', title: "President's Address", tags: [{ text: 'Address' }] },
+  { num: '07', title: 'Meet the Board' },
+  { num: '08', title: "Treasury's Report", tags: [{ text: 'Report' }] },
+  { num: '09', title: '2026 Budget', tags: [{ text: 'Vote', solid: true }] },
+  { num: '10', title: 'Financials & Compliance', sub: 'D9 in Trenton & March 1st Report', tags: [{ text: 'Sign-Up', color: '#059669' }] },
+  { num: '11', title: 'New Business', sub: 'Council Command & Summer Planning', tags: [{ text: 'Launch', color: '#2563EB' }, { text: 'Review' }] },
+  { num: '12', title: 'Success Recap', sub: 'Bowling Night & MLK Service', tags: [{ text: 'Action' }, { text: 'Budgets', color: '#059669' }] },
+  { num: '13', title: 'Adjournment' },
 ];
 
 export function Slide2Agenda({ isMobile = false }: { isMobile?: boolean }) {
+  const [meetingStarted, setMeetingStarted] = useState(false);
+
   return (
     <div style={{ width: '100%', height: '100%', background: BG_ALT, display: 'flex', overflow: 'hidden' }}>
       {!isMobile && <div style={{ width: 3, background: 'linear-gradient(180deg,transparent,#808080,#404040,#808080,transparent)', flexShrink: 0 }} />}
@@ -106,6 +114,26 @@ export function Slide2Agenda({ isMobile = false }: { isMobile?: boolean }) {
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                   <span style={{ color: SILVER_L, fontSize: isMobile ? '1rem' : 'clamp(0.82rem,1.4vw,1.05rem)', fontWeight: 600, lineHeight: 1.3 }}>{item.title}</span>
+                  {item.num === '01' ? (
+                    <button
+                      type="button"
+                      onClick={() => setMeetingStarted((v) => !v)}
+                      style={{
+                        background: meetingStarted ? '#0F766E' : '#1F2937',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        borderRadius: 999,
+                        fontSize: '0.54rem',
+                        fontWeight: 800,
+                        padding: '3px 10px',
+                        letterSpacing: '0.08em',
+                        textTransform: 'uppercase',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {meetingStarted ? 'Meeting In Session' : 'Start Meeting'}
+                    </button>
+                  ) : null}
                   {item.tags?.map(tag => (
                     <span key={tag.text} style={{
                       background: tag.solid ? '#C62828' : tag.color ? `${tag.color}14` : BG_EL,

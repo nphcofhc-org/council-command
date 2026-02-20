@@ -191,6 +191,13 @@ export function MeetingsPage() {
                     )}
 
                     <div className="mt-4 flex flex-col sm:flex-row gap-2">
+                      <Button asChild variant="outline" className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10">
+                        <Link to="/meeting-deck">
+                          <FileText className="size-4" />
+                          Member Deck (View Only)
+                        </Link>
+                      </Button>
+
                       {normalizeJoinUrl(nextGeneralISO ? joinByDate.get(nextGeneralISO)?.joinUrl : "") ? (
                         <Button asChild className="gap-2">
                           <a

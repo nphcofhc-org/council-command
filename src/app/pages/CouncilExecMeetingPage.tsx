@@ -51,7 +51,7 @@ export function CouncilExecMeetingPage() {
             transition={{ delay: 0.1, duration: 0.35 }}
             className="overflow-hidden rounded-xl border border-black/10 shadow-[0_20px_60px_rgba(0,0,0,0.28)]"
           >
-            <MeetingDeck voterEmail={session.email} defaultMemberName={defaultMemberName} />
+            <MeetingDeck voterEmail={session.email} defaultMemberName={defaultMemberName} canControl />
           </motion.div>
         </div>
       </div>

@@ -50,14 +50,14 @@ const variants = {
 
 // ─── Inner deck (needs context) ───────────────────────────────────────────────
 
-function DeckInner() {
+function DeckInner({ canControl = true }: { canControl?: boolean }) {
   const isMobile = useIsMobile();
   const { myHandId, raiseHand, lowerMyHand, memberName } = useMeeting();
 
   const [current,       setCurrent]       = useState(0);
   const [direction,     setDirection]     = useState(1);
   const [gridOpen,      setGridOpen]      = useState(false);
-  const [sidebarOpen,   setSidebarOpen]   = useState(!isMobile);
+  const [sidebarOpen,   setSidebarOpen]   = useState(!isMobile && canControl);
   const [fullscreen,    setFullscreen]    = useState(false);
   const [mobileSheet,   setMobileSheet]   = useState(false);
   const [mobileTab,     setMobileTab]     = useState<'hand' | 'motion' | 'vote'>('hand');
@@ -67,6 +67,13 @@ function DeckInner() {
   useEffect(() => {
     if (!isMobile) setMobileSheet(false);
   }, [isMobile]);
+
+  useEffect(() => {
+    if (!canControl) {
+      setSidebarOpen(false);
+      setMobileSheet(false);
+    }
+  }, [canControl]);
 
   const goTo = useCallback((idx: number) => {
     if (idx === current) { setGridOpen(false); return; }
@@ -150,9 +157,11 @@ function DeckInner() {
             <button onClick={() => setGridOpen(o => !o)} style={{ background: gridOpen ? 'rgba(0,0,0,0.06)' : 'transparent', border: `1px solid ${gridOpen ? '#CCC' : 'transparent'}`, borderRadius: 7, padding: '6px 9px', cursor: 'pointer', color: gridOpen ? '#222' : '#888', display: 'flex', alignItems: 'center', gap: 4 }}>
               {gridOpen ? <X size={14} /> : <LayoutGrid size={14} />}
             </button>
-            <button onClick={() => openSheet('vote')} style={{ background: 'transparent', border: 'none', borderRadius: 7, padding: '6px', cursor: 'pointer', color: '#888', display: 'flex', alignItems: 'center' }}>
-              <Users size={17} />
-            </button>
+            {canControl ? (
+              <button onClick={() => openSheet('vote')} style={{ background: 'transparent', border: 'none', borderRadius: 7, padding: '6px', cursor: 'pointer', color: '#888', display: 'flex', alignItems: 'center' }}>
+                <Users size={17} />
+              </button>
+            ) : null}
           </div>
         </div>
 
@@ -198,6 +207,7 @@ function DeckInner() {
         </div>
 
         {/* Mobile action bar — dark (black modal) */}
+        {canControl ? (
         <div style={{ height: 60, background: '#0A0A0A', borderTop: '1px solid #1C1C1C', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
           {([
             { icon: Hand,           label: myHandId ? 'Lower' : 'Hand',  tab: 'hand' as const,   active: !!myHandId },
@@ -227,6 +237,7 @@ function DeckInner() {
             </button>
           ))}
         </div>
+        ) : null}
 
         {/* Mobile bottom sheet — dark (black modal) */}
         <AnimatePresence>
@@ -287,10 +298,14 @@ function DeckInner() {
                 {gridOpen ? <X size={12} /> : <LayoutGrid size={12} />}
                 <span style={{ fontSize: '0.68rem', fontWeight: 600 }}>Slides</span>
               </button>
-              <button onClick={() => setSidebarOpen(o => !o)} style={{ background: sidebarOpen ? (isCoverSlide ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)') : 'transparent', border: `1px solid ${sidebarOpen ? (isCoverSlide ? '#3A3A3A' : '#C0C0C0') : 'transparent'}`, cursor: 'pointer', padding: '4px 9px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 5, color: sidebarOpen ? (isCoverSlide ? '#E0E0E0' : '#333') : (isCoverSlide ? '#555' : '#999'), transition: 'all 0.18s' }}>
-                <Users size={12} />
-                <span style={{ fontSize: '0.68rem', fontWeight: 600 }}>Room</span>
-              </button>
+              {canControl ? (
+                <button onClick={() => setSidebarOpen(o => !o)} style={{ background: sidebarOpen ? (isCoverSlide ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)') : 'transparent', border: `1px solid ${sidebarOpen ? (isCoverSlide ? '#3A3A3A' : '#C0C0C0') : 'transparent'}`, cursor: 'pointer', padding: '4px 9px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 5, color: sidebarOpen ? (isCoverSlide ? '#E0E0E0' : '#333') : (isCoverSlide ? '#555' : '#999'), transition: 'all 0.18s' }}>
+                  <Users size={12} />
+                  <span style={{ fontSize: '0.68rem', fontWeight: 600 }}>Room</span>
+                </button>
+              ) : (
+                <span style={{ color: isCoverSlide ? '#555' : '#8A8A8A', fontSize: '0.66rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>View Only</span>
+              )}
               <button onClick={toggleFullscreen} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px 6px', borderRadius: 6, color: isCoverSlide ? '#555' : '#BBB', display: 'flex', alignItems: 'center' }}>
                 {fullscreen ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
               </button>
@@ -360,7 +375,7 @@ function DeckInner() {
 
       {/* Sidebar — stays dark (black modal) */}
       <AnimatePresence>
-        {sidebarOpen && (
+        {canControl && sidebarOpen && (
           <motion.div key="sidebar" initial={{ width: 0, opacity: 0 }} animate={{ width: 280, opacity: 1 }} exit={{ width: 0, opacity: 0 }} transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }} style={{ flexShrink: 0, borderLeft: `1px solid #1E1E1E`, overflow: 'hidden' }}>
             <div style={{ width: 280, height: '100%' }}>
               <MeetingSidebar currentSlide={current} />
@@ -377,12 +392,13 @@ function DeckInner() {
 type MeetingDeckProps = {
   voterEmail?: string | null;
   defaultMemberName?: string;
+  canControl?: boolean;
 };
 
-export function MeetingDeck({ voterEmail, defaultMemberName }: MeetingDeckProps) {
+export function MeetingDeck({ voterEmail, defaultMemberName, canControl = true }: MeetingDeckProps) {
   return (
-    <MeetingProvider voterEmail={voterEmail} defaultMemberName={defaultMemberName}>
-      <DeckInner />
+    <MeetingProvider voterEmail={voterEmail} defaultMemberName={defaultMemberName} canControl={canControl}>
+      <DeckInner canControl={canControl} />
     </MeetingProvider>
   );
 }

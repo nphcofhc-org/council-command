@@ -27,6 +27,7 @@ export const SLIDE_VOTES: Record<number, string[]> = {
 // ─── Context type ────────────────────────────────────────────────────────────
 
 interface Ctx {
+  canControl: boolean;
   voterId: string;
   memberName:  string;
   setMemberName: (n: string) => void;
@@ -66,6 +67,7 @@ interface Ctx {
 }
 
 const MeetingContext = createContext<Ctx>({
+  canControl: true,
   voterId: '',
   memberName: '', setMemberName: () => {},
   workerUrl: '', setWorkerUrl: () => {}, disconnectWorker: () => {},
@@ -123,9 +125,10 @@ type MeetingProviderProps = {
   children: React.ReactNode;
   voterEmail?: string | null;
   defaultMemberName?: string;
+  canControl?: boolean;
 };
 
-export function MeetingProvider({ children, voterEmail, defaultMemberName }: MeetingProviderProps) {
+export function MeetingProvider({ children, voterEmail, defaultMemberName, canControl = true }: MeetingProviderProps) {
   const voterId = useMemo(() => normalizeVoterId(voterEmail) || resolveLocalVoterId(), [voterEmail]);
   const derivedDefaultName = defaultMemberName?.trim() || fallbackNameFromEmail(voterEmail);
 
@@ -243,6 +246,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName }: Mee
   // ── Votes ──────────────────────────────────────────────────────────────
 
   const castVote = (key: string, opt: VoteChoice) => {
+    if (!canControl) return;
     const voterLabel = (memberName.trim() || derivedDefaultName || voterId).slice(0, 120);
     setVoteSelections((prev) => {
       const bucket = { ...(prev[key] || {}) };
@@ -261,6 +265,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName }: Mee
   };
 
   const resetVote = (key: string) => {
+    if (!canControl) return;
     setVotes(p => ({ ...p, [key]: { yay: 0, nay: 0 } }));
     setVoteSelections((prev) => {
       const next = { ...prev };
@@ -278,6 +283,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName }: Mee
   // ── Hands ──────────────────────────────────────────────────────────────
 
   const raiseHand = (name: string) => {
+    if (!canControl) return;
     if (myHandIdRef.current) return;
     const id = Date.now().toString();
     const time = ts();
@@ -287,6 +293,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName }: Mee
   };
 
   const lowerMyHand = () => {
+    if (!canControl) return;
     const id = myHandIdRef.current;
     if (!id) return;
     setHands(p => p.filter(h => h.id !== id));
@@ -295,6 +302,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName }: Mee
   };
 
   const lowerAllHands = () => {
+    if (!canControl) return;
     setHands([]);
     setMyHandId(null);
     withCF(() => CF.lowerAllHands(workerUrl));
@@ -303,6 +311,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName }: Mee
   // ── Motions ────────────────────────────────────────────────────────────
 
   const submitMotion = (author: string, text: string) => {
+    if (!canControl) return;
     if (!text.trim()) return;
     const id = Date.now().toString();
     const time = ts();
@@ -312,6 +321,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName }: Mee
   };
 
   const secondMotion = (id: string) => {
+    if (!canControl) return;
     setMotions(p => p.map(m => m.id === id ? { ...m, seconded: true } : m));
     withCF(() => CF.secondMotion(workerUrl, id));
   };
@@ -319,6 +329,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName }: Mee
   // ── Floor votes ────────────────────────────────────────────────────────
 
   const createFloorVote = (question: string) => {
+    if (!canControl) return;
     if (!question.trim()) return;
     const id = Date.now().toString();
     const createdAt = ts();
@@ -329,6 +340,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName }: Mee
   };
 
   const castFloorVote = (id: string, opt: VoteChoice) => {
+    if (!canControl) return;
     const voterLabel = (memberName.trim() || derivedDefaultName || voterId).slice(0, 120);
     setFloorVoteSelections((prev) => {
       const bucket = { ...(prev[id] || {}) };
@@ -347,6 +359,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName }: Mee
   };
 
   const closeFloorVote = (id: string) => {
+    if (!canControl) return;
     setFloorVotes(p => p.map(v => v.id === id ? { ...v, closed: true } : v));
     withCF(() => CF.closeFloorVote(workerUrl, id));
   };
@@ -354,6 +367,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName }: Mee
   // ── Reset all ──────────────────────────────────────────────────────────
 
   const resetMeeting = () => {
+    if (!canControl) return;
     setVotes({});
     setVoteSelections({});
     setMyVotes({});
@@ -368,6 +382,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName }: Mee
 
   return (
     <MeetingContext.Provider value={{
+      canControl,
       voterId,
       memberName, setMemberName,
       workerUrl, setWorkerUrl, disconnectWorker, connected, syncing, syncError, lastSynced,

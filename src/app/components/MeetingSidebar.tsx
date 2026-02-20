@@ -41,11 +41,12 @@ function downloadText(filename: string, content: string, mime = 'text/plain;char
 
 // ─── Mini vote card ───────────────────────────────────────────────────────────
 
-function SideVoteCard({ label, yay, nay, onYay, onNay, myVote, onReset, onClose }: {
+function SideVoteCard({ label, yay, nay, onYay, onNay, myVote, onReset, onClose, readOnly }: {
   label: string; yay: number; nay: number;
   onYay: () => void; onNay: () => void;
   myVote?: 'yay' | 'nay' | null;
   onReset?: () => void; onClose?: () => void;
+  readOnly?: boolean;
 }) {
   const total  = yay + nay;
   const yayPct = total > 0 ? Math.round((yay / total) * 100) : 0;
@@ -55,8 +56,8 @@ function SideVoteCard({ label, yay, nay, onYay, onNay, myVote, onReset, onClose 
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8, gap: 6 }}>
         <span style={{ color: '#D0D0D0', fontSize: '0.78rem', fontWeight: 600, lineHeight: 1.3, flex: 1 }}>{label}</span>
         <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-          {onReset && <button onClick={onReset} title="Reset" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#363636', padding: 2 }}><RotateCcw size={11} /></button>}
-          {onClose && <button onClick={onClose} title="Close" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#363636', padding: 2 }}><X size={11} /></button>}
+          {onReset && !readOnly && <button onClick={onReset} title="Reset" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#363636', padding: 2 }}><RotateCcw size={11} /></button>}
+          {onClose && !readOnly && <button onClick={onClose} title="Close" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#363636', padding: 2 }}><X size={11} /></button>}
         </div>
       </div>
       {myVote ? (
@@ -64,6 +65,7 @@ function SideVoteCard({ label, yay, nay, onYay, onNay, myVote, onReset, onClose 
           Your vote: <span style={{ color: '#C8C8C8' }}>{myVote.toUpperCase()}</span>
         </div>
       ) : null}
+      {!readOnly ? (
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: total > 0 ? 8 : 0 }}>
         <button onClick={onYay} style={{ padding: '10px 6px', background: myVote === 'yay' ? '#E5F0FF' : '#fff', border: myVote === 'yay' ? '1px solid #93C5FD' : 'none', borderRadius: 7, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, fontFamily: 'inherit' }}>
           <Check size={12} color="#0A0A0A" strokeWidth={3} />
@@ -76,6 +78,7 @@ function SideVoteCard({ label, yay, nay, onYay, onNay, myVote, onReset, onClose 
           <span style={{ color: '#606060', fontWeight: 700, fontSize: '0.85rem' }}>{nay}</span>
         </button>
       </div>
+      ) : null}
       {total > 0 && (
         <div>
           <div style={{ height: 5, borderRadius: 99, background: '#1E1E1E', overflow: 'hidden', display: 'flex', marginBottom: 5 }}>
@@ -210,6 +213,7 @@ type Section = 'hand' | 'motion' | 'vote';
 
 export function MeetingSidebar({ currentSlide, externalTab }: { currentSlide: number; externalTab?: 'hand' | 'motion' | 'vote' }) {
   const {
+    canControl,
     memberName, setMemberName,
     workerUrl, connected, syncing, lastSynced, resetMeeting,
     votes, voteSelections, myVotes, myFloorVotes, castVote, resetVote,
@@ -442,6 +446,12 @@ export function MeetingSidebar({ currentSlide, externalTab }: { currentSlide: nu
         })}
       </div>
 
+      {!canControl && (
+        <div style={{ padding: '8px 14px', borderBottom: '1px solid #1A1A1A', color: '#6A6A6A', fontSize: '0.64rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          View-only mode
+        </div>
+      )}
+
       {/* ── Tab content ── */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '14px 14px 0' }}>
 
@@ -450,7 +460,8 @@ export function MeetingSidebar({ currentSlide, externalTab }: { currentSlide: nu
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <button
               onClick={() => myHandId ? lowerMyHand() : raiseHand(memberName || 'Anonymous')}
-              style={{ width: '100%', padding: '16px 14px', background: myHandId ? '#fff' : 'linear-gradient(145deg,#181818,#131313)', border: `1px solid ${myHandId ? '#fff' : '#333'}`, borderRadius: 10, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9, color: myHandId ? '#0A0A0A' : '#C8C8C8', fontFamily: 'inherit', fontWeight: 800, fontSize: '0.92rem', letterSpacing: '0.04em', transition: 'all 0.2s', boxShadow: myHandId ? '0 4px 20px rgba(255,255,255,0.12)' : 'none' }}
+              disabled={!canControl}
+              style={{ width: '100%', padding: '16px 14px', background: myHandId ? '#fff' : 'linear-gradient(145deg,#181818,#131313)', border: `1px solid ${myHandId ? '#fff' : '#333'}`, borderRadius: 10, cursor: canControl ? 'pointer' : 'not-allowed', opacity: canControl ? 1 : 0.45, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9, color: myHandId ? '#0A0A0A' : '#C8C8C8', fontFamily: 'inherit', fontWeight: 800, fontSize: '0.92rem', letterSpacing: '0.04em', transition: 'all 0.2s', boxShadow: myHandId ? '0 4px 20px rgba(255,255,255,0.12)' : 'none' }}
             >
               <Hand size={18} />
               {myHandId ? '✓ Hand Raised' : 'Raise Hand'}
@@ -463,7 +474,7 @@ export function MeetingSidebar({ currentSlide, externalTab }: { currentSlide: nu
                   {handCount === 0 ? 'No hands raised' : `${handCount} hand${handCount !== 1 ? 's' : ''} raised`}
                 </span>
               </div>
-              {handCount > 0 && (
+              {handCount > 0 && canControl && (
                 <button onClick={lowerAllHands} style={{ background: 'none', border: '1px solid #282828', borderRadius: 5, padding: '3px 9px', cursor: 'pointer', color: '#404040', fontSize: '0.64rem', fontFamily: 'inherit', fontWeight: 600 }}>
                   Lower All
                 </button>
@@ -503,14 +514,15 @@ export function MeetingSidebar({ currentSlide, externalTab }: { currentSlide: nu
                 onChange={e => setMotionText(e.target.value)}
                 placeholder="I move that…"
                 rows={3}
+                disabled={!canControl}
                 style={{ width: '100%', background: '#0E0E0E', border: '1px solid #252525', borderRadius: 7, padding: '9px 12px', color: '#E0E0E0', fontSize: '0.78rem', outline: 'none', resize: 'none', fontFamily: 'inherit', lineHeight: 1.55, boxSizing: 'border-box' }}
                 onFocus={e => (e.target.style.borderColor = '#484848')}
                 onBlur={e => (e.target.style.borderColor = '#252525')}
               />
               <button
                 onClick={() => { if (!motionText.trim()) return; submitMotion(memberName || 'Anonymous', motionText); setMotionText(''); }}
-                disabled={!motionText.trim()}
-                style={{ width: '100%', padding: '10px', background: motionText.trim() ? '#fff' : '#181818', border: `1px solid ${motionText.trim() ? '#fff' : '#282828'}`, borderRadius: 7, cursor: motionText.trim() ? 'pointer' : 'not-allowed', color: motionText.trim() ? '#0A0A0A' : '#333', fontFamily: 'inherit', fontWeight: 800, fontSize: '0.82rem', letterSpacing: '0.04em', transition: 'all 0.18s' }}
+                disabled={!motionText.trim() || !canControl}
+                style={{ width: '100%', padding: '10px', background: motionText.trim() && canControl ? '#fff' : '#181818', border: `1px solid ${motionText.trim() && canControl ? '#fff' : '#282828'}`, borderRadius: 7, cursor: motionText.trim() && canControl ? 'pointer' : 'not-allowed', color: motionText.trim() && canControl ? '#0A0A0A' : '#333', fontFamily: 'inherit', fontWeight: 800, fontSize: '0.82rem', letterSpacing: '0.04em', transition: 'all 0.18s' }}
               >
                 Submit Motion
               </button>
@@ -532,11 +544,11 @@ export function MeetingSidebar({ currentSlide, externalTab }: { currentSlide: nu
                           <span style={{ color: '#2C2C2C', fontSize: '0.6rem' }}>{m.time}</span>
                           {m.seconded ? (
                             <span style={{ background: '#1A1A1A', color: '#707070', border: '1px solid #2E2E2E', fontSize: '0.56rem', padding: '2px 7px', borderRadius: 99, fontWeight: 700 }}>Seconded</span>
-                          ) : (
+                          ) : canControl ? (
                             <button onClick={() => secondMotion(m.id)} style={{ background: 'none', border: '1px solid #2A2A2A', borderRadius: 99, padding: '2px 8px', cursor: 'pointer', color: '#565656', fontSize: '0.56rem', fontFamily: 'inherit', fontWeight: 700 }}>
                               Second it
                             </button>
-                          )}
+                          ) : null}
                         </div>
                       </div>
                       <p style={{ color: '#C8C8C8', fontSize: '0.76rem', lineHeight: 1.5, margin: 0 }}>{m.text}</p>
@@ -560,7 +572,7 @@ export function MeetingSidebar({ currentSlide, externalTab }: { currentSlide: nu
                 {slideVoteKeys.map(key => {
                   const v = votes[key] ?? { yay: 0, nay: 0 };
                   const info = VOTE_LABELS[key] ?? { label: key };
-                  return <SideVoteCard key={key} label={info.label} yay={v.yay} nay={v.nay} myVote={myVotes[key]} onYay={() => castVote(key, 'yay')} onNay={() => castVote(key, 'nay')} onReset={() => resetVote(key)} />;
+                  return <SideVoteCard key={key} label={info.label} yay={v.yay} nay={v.nay} myVote={myVotes[key]} onYay={() => castVote(key, 'yay')} onNay={() => castVote(key, 'nay')} onReset={() => resetVote(key)} readOnly={!canControl} />;
                 })}
               </div>
             )}
@@ -576,7 +588,7 @@ export function MeetingSidebar({ currentSlide, externalTab }: { currentSlide: nu
                   Floor Votes
                 </div>
                 {activeFloor.map(fv => (
-                  <SideVoteCard key={fv.id} label={fv.question} yay={fv.yay} nay={fv.nay} myVote={myFloorVotes[fv.id]} onYay={() => castFloorVote(fv.id, 'yay')} onNay={() => castFloorVote(fv.id, 'nay')} onClose={() => closeFloorVote(fv.id)} />
+                  <SideVoteCard key={fv.id} label={fv.question} yay={fv.yay} nay={fv.nay} myVote={myFloorVotes[fv.id]} onYay={() => castFloorVote(fv.id, 'yay')} onNay={() => castFloorVote(fv.id, 'nay')} onClose={() => closeFloorVote(fv.id)} readOnly={!canControl} />
                 ))}
               </div>
             )}
@@ -587,7 +599,7 @@ export function MeetingSidebar({ currentSlide, externalTab }: { currentSlide: nu
               </div>
             )}
 
-            {showNewFloorVote ? (
+            {showNewFloorVote && canControl ? (
               <div style={{ background: '#121212', border: '1px solid #242424', borderRadius: 10, padding: '13px 14px', display: 'flex', flexDirection: 'column', gap: 9 }}>
                 <div style={{ color: '#606060', fontSize: '0.68rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em' }}>New Floor Vote</div>
                 <input
@@ -606,11 +618,11 @@ export function MeetingSidebar({ currentSlide, externalTab }: { currentSlide: nu
                   </button>
                 </div>
               </div>
-            ) : (
+            ) : canControl ? (
               <button onClick={() => setShowNewFloorVote(true)} style={{ width: '100%', padding: '10px', background: 'transparent', border: '1px dashed #282828', borderRadius: 8, cursor: 'pointer', color: '#424242', fontFamily: 'inherit', fontSize: '0.74rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'all 0.2s' }}>
                 <Plus size={12} /> New Floor Vote
               </button>
-            )}
+            ) : null}
 
             <div style={{ background: '#111111', border: '1px solid #252525', borderRadius: 10, padding: '11px 12px', marginBottom: 10 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 8 }}>
@@ -697,7 +709,7 @@ export function MeetingSidebar({ currentSlide, externalTab }: { currentSlide: nu
               <span style={{ color: '#383838', fontSize: '0.64rem', fontWeight: 600, flex: 1 }}>Local only</span>
             </>
           )}
-          <button onClick={() => setShowCFPanel(true)} title="Cloudflare Setup" style={{ background: 'none', border: 'none', cursor: 'pointer', color: connected ? '#3A6A3A' : '#363636', padding: 2, display: 'flex', alignItems: 'center' }}>
+          <button onClick={() => setShowCFPanel(true)} disabled={!canControl} title="Cloudflare Setup" style={{ background: 'none', border: 'none', cursor: canControl ? 'pointer' : 'not-allowed', opacity: canControl ? 1 : 0.4, color: connected ? '#3A6A3A' : '#363636', padding: 2, display: 'flex', alignItems: 'center' }}>
             <Settings size={12} />
           </button>
         </div>
@@ -725,17 +737,17 @@ export function MeetingSidebar({ currentSlide, externalTab }: { currentSlide: nu
               CSV
             </button>
           </div>
-          {showResetConfirm ? (
+          {showResetConfirm && canControl ? (
             <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
               <span style={{ color: '#505050', fontSize: '0.62rem' }}>Reset all?</span>
               <button onClick={() => { resetMeeting(); setShowResetConfirm(false); }} style={{ background: 'none', border: '1px solid #4A2020', borderRadius: 4, padding: '2px 7px', cursor: 'pointer', color: '#7A3A3A', fontSize: '0.62rem', fontFamily: 'inherit', fontWeight: 700 }}>Yes</button>
               <button onClick={() => setShowResetConfirm(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#404040', padding: '2px 5px', fontFamily: 'inherit', fontSize: '0.62rem' }}>No</button>
             </div>
-          ) : (
+          ) : canControl ? (
             <button onClick={() => setShowResetConfirm(true)} title="Reset all meeting data" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#2C2C2C', padding: 2, display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.62rem', fontFamily: 'inherit' }}>
               <Trash2 size={11} /> Reset
             </button>
-          )}
+          ) : null}
         </div>
       </div>
 
