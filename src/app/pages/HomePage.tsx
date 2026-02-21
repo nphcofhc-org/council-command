@@ -849,6 +849,7 @@ export function HomePage() {
                 {updatesWithUpcomingEvents.map((update: any, index: number) => {
                   const flyerUrl = String(update?.flyerUrl || "").trim();
                   const entryLinkUrl = String(update?.linkUrl || flyerUrl || "").trim();
+                  const body = String(update?.body || "").trim();
                   const flyerIsImage = /\.(png|jpe?g|webp|gif|svg|heic|heif)(?:\?|$)/i.test(flyerUrl);
 
                   return (
@@ -886,6 +887,7 @@ export function HomePage() {
                             {update.type}
                           </span>
                         </div>
+                        {body ? <p className="mt-2 text-sm text-slate-600 whitespace-pre-wrap">{body}</p> : null}
                         {flyerUrl ? (
                           <div className="mt-3 space-y-2">
                             <a
