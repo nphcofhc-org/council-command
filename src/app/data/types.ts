@@ -70,6 +70,7 @@ export interface Update {
   date: string;
   title: string;
   type: string;                     // "Meeting Notice", "Action Required", etc.
+  flyerUrl?: string;                // Optional flyer/image/PDF link for Internal News
 }
 
 // ── ChapterInfoPage ─────────────────────────────────────────────────────────

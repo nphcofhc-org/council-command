@@ -19,6 +19,7 @@ import {
   saveUpdatesOverride,
 } from "../data/content-api";
 import { fetchHomePageData } from "../data/api";
+import { uploadSocialAssets } from "../data/forms-api";
 
 function emptyConfig(): SiteConfig {
   return {
@@ -53,6 +54,7 @@ export function CouncilHomeContentPage() {
   const [config, setConfig] = useState<SiteConfig>(emptyConfig());
   const [quickLinks, setQuickLinks] = useState<QuickLink[]>([]);
   const [updates, setUpdates] = useState<Update[]>([]);
+  const [uploadingUpdateIndex, setUploadingUpdateIndex] = useState<number | null>(null);
 
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
 
@@ -177,6 +179,26 @@ export function CouncilHomeContentPage() {
 
   const removeUpdate = (index: number) => {
     setUpdates((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const uploadUpdateFlyer = async (index: number, files: File[]) => {
+    const file = files[0];
+    if (!file) return;
+
+    setError(null);
+    setMessage(null);
+    setUploadingUpdateIndex(index);
+    try {
+      const uploaded = await uploadSocialAssets([file]);
+      const flyerUrl = String(uploaded?.[0]?.viewUrl || "").trim();
+      if (!flyerUrl) throw new Error("Flyer upload failed.");
+      updateUpdate(index, "flyerUrl", flyerUrl);
+      setMessage(`Flyer uploaded for update ${index + 1}. Click Save Changes to publish.`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Flyer upload failed.");
+    } finally {
+      setUploadingUpdateIndex(null);
+    }
   };
 
   const saveAll = async () => {
@@ -461,6 +483,44 @@ export function CouncilHomeContentPage() {
                       <div className="space-y-1 md:col-span-2">
                         <Label>Title</Label>
                         <Input value={u.title} onChange={(e) => updateUpdate(idx, "title", e.target.value)} />
+                      </div>
+                      <div className="space-y-1 md:col-span-2">
+                        <Label>Flyer URL (optional)</Label>
+                        <Input
+                          value={u.flyerUrl || ""}
+                          onChange={(e) => updateUpdate(idx, "flyerUrl", e.target.value)}
+                          placeholder="/api/uploads/social/..."
+                        />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label>Upload Flyer (optional)</Label>
+                        <Input
+                          type="file"
+                          accept="image/*,application/pdf"
+                          disabled={uploadingUpdateIndex === idx}
+                          onChange={(e) => {
+                            const files = Array.from(e.currentTarget.files || []);
+                            e.currentTarget.value = "";
+                            void uploadUpdateFlyer(idx, files);
+                          }}
+                        />
+                        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                          {uploadingUpdateIndex === idx ? <span>Uploading flyer...</span> : null}
+                          {u.flyerUrl ? (
+                            <>
+                              <a href={u.flyerUrl} target="_blank" rel="noreferrer" className="underline">
+                                View current flyer
+                              </a>
+                              <button
+                                type="button"
+                                className="underline"
+                                onClick={() => updateUpdate(idx, "flyerUrl", "")}
+                              >
+                                Remove flyer
+                              </button>
+                            </>
+                          ) : null}
+                        </div>
                       </div>
                     </div>
                   </div>

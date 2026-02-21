@@ -829,44 +829,73 @@ export function HomePage() {
                   </div>
                 </div>
 
-                {updatesWithUpcomingEvents.map((update: any, index: number) => (
-                  <motion.div
-                    key={update.id}
-                    initial={{ x: -15, opacity: 0 }}
-                    whileInView={{ x: 0, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.08, duration: 0.4 }}
-                    className={`flex items-start gap-4 p-5 sm:p-6 transition-colors hover:bg-white/5 ${
-                      index < updatesWithUpcomingEvents.length - 1 ? "border-b border-black/10" : ""
-                    }`}
-                  >
-                    <div className="rounded-xl border border-primary/25 bg-primary/15 text-primary p-2.5 flex-shrink-0">
-                      <Clock className="size-4" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-slate-900 mb-1.5 text-sm sm:text-base">
-                        {update.linkUrl ? (
-                          <a
-                            href={update.linkUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="hover:text-primary transition-colors"
-                          >
-                            {update.title}
-                          </a>
-                        ) : (
-                          update.title
-                        )}
-                      </h3>
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                        <p className="text-xs sm:text-sm text-slate-500">{update.date}</p>
-                        <span className="px-2.5 py-0.5 rounded-full w-fit border border-primary/25 bg-primary/15 text-primary text-xs">
-                          {update.type}
-                        </span>
+                {updatesWithUpcomingEvents.map((update: any, index: number) => {
+                  const flyerUrl = String(update?.flyerUrl || "").trim();
+                  const entryLinkUrl = String(update?.linkUrl || flyerUrl || "").trim();
+                  const flyerIsImage = /\.(png|jpe?g|webp|gif|svg|heic|heif)(?:\?|$)/i.test(flyerUrl);
+
+                  return (
+                    <motion.div
+                      key={update.id}
+                      initial={{ x: -15, opacity: 0 }}
+                      whileInView={{ x: 0, opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.08, duration: 0.4 }}
+                      className={`flex items-start gap-4 p-5 sm:p-6 transition-colors hover:bg-white/5 ${
+                        index < updatesWithUpcomingEvents.length - 1 ? "border-b border-black/10" : ""
+                      }`}
+                    >
+                      <div className="rounded-xl border border-primary/25 bg-primary/15 text-primary p-2.5 flex-shrink-0">
+                        <Clock className="size-4" />
                       </div>
-                    </div>
-                  </motion.div>
-                ))}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-slate-900 mb-1.5 text-sm sm:text-base">
+                          {entryLinkUrl ? (
+                            <a
+                              href={entryLinkUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="hover:text-primary transition-colors"
+                            >
+                              {update.title}
+                            </a>
+                          ) : (
+                            update.title
+                          )}
+                        </h3>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                          <p className="text-xs sm:text-sm text-slate-500">{update.date}</p>
+                          <span className="px-2.5 py-0.5 rounded-full w-fit border border-primary/25 bg-primary/15 text-primary text-xs">
+                            {update.type}
+                          </span>
+                        </div>
+                        {flyerUrl ? (
+                          <div className="mt-3 space-y-2">
+                            <a
+                              href={flyerUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
+                            >
+                              View Flyer
+                              <ExternalLink className="size-3.5" />
+                            </a>
+                            {flyerIsImage ? (
+                              <a href={flyerUrl} target="_blank" rel="noreferrer" className="block max-w-[220px]">
+                                <img
+                                  src={flyerUrl}
+                                  alt={`${update.title} flyer`}
+                                  loading="lazy"
+                                  className="w-full rounded-lg border border-black/10 object-cover"
+                                />
+                              </a>
+                            ) : null}
+                          </div>
+                        ) : null}
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </CardContent>
             </Card>
           </motion.div>
