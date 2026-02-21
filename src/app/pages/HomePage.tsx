@@ -25,6 +25,12 @@ const DEFAULT_HOME_BANNER_MEDIA_URL =
 
 const ORIGINAL_INTERNAL_NEWS_IMAGE_URL = "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/original.jpeg";
 const EVENTS_ENDPOINT = "/api/events/upcoming";
+const MEETING_JOIN_FALLBACKS: Record<string, { joinUrl: string; joinLabel: string }> = {
+  "2026-02-23": {
+    joinUrl: "https://meet.google.com/ktp-drvx-rjx",
+    joinLabel: "Join Google Meet",
+  },
+};
 
 const FORMS_PANE_LINKS = [
   { label: "Forms Hub", href: "#/forms", meta: "All submission forms" },
@@ -412,10 +418,16 @@ export function HomePage() {
   };
 
   const joinByDate = new Map<string, { joinUrl?: string; joinLabel?: string }>();
+  for (const [dateISO, value] of Object.entries(MEETING_JOIN_FALLBACKS)) {
+    joinByDate.set(dateISO, { joinUrl: value.joinUrl, joinLabel: value.joinLabel });
+  }
   for (const m of meetingsData?.upcomingMeetings || []) {
     const ymd = toYmd(m.date);
     if (!ymd) continue;
-    joinByDate.set(ymd, { joinUrl: m.joinUrl, joinLabel: m.joinLabel });
+    const current = joinByDate.get(ymd);
+    const joinUrl = String(m.joinUrl || "").trim() || String(current?.joinUrl || "").trim();
+    const joinLabel = String(m.joinLabel || "").trim() || String(current?.joinLabel || "Join Google Meet").trim();
+    joinByDate.set(ymd, { joinUrl, joinLabel });
   }
 
   const nowISO = toYmd(new Date().toISOString()) || "";

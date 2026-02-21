@@ -13,6 +13,12 @@ import { useCouncilCalendarSchedule } from "../hooks/use-council-calendar";
 import { useEffect, useMemo, useRef } from "react";
 
 const ART_GEO = "https://images.unsplash.com/photo-1665680779817-11a0d63ee51e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHdoaXRlJTIwZ2VvbWV0cmljJTIwbWluaW1hbCUyMGFydHxlbnwxfHx8fDE3NzA1MTMyMjN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
+const MEETING_JOIN_FALLBACKS: Record<string, { joinUrl: string; joinLabel: string }> = {
+  "2026-02-23": {
+    joinUrl: "https://meet.google.com/ktp-drvx-rjx",
+    joinLabel: "Join Google Meet",
+  },
+};
 
 function normalizeDocUrl(input: string | null | undefined): string | null {
   const raw = String(input || "").trim();
@@ -63,10 +69,16 @@ export function MeetingsPage() {
   };
 
   const joinByDate = new Map<string, { joinUrl?: string; joinLabel?: string }>();
+  for (const [dateISO, value] of Object.entries(MEETING_JOIN_FALLBACKS)) {
+    joinByDate.set(dateISO, { joinUrl: value.joinUrl, joinLabel: value.joinLabel });
+  }
   for (const m of upcomingMeetings) {
     const ymd = toYmd(m.date);
     if (!ymd) continue;
-    joinByDate.set(ymd, { joinUrl: m.joinUrl, joinLabel: m.joinLabel });
+    const current = joinByDate.get(ymd);
+    const joinUrl = String(m.joinUrl || "").trim() || String(current?.joinUrl || "").trim();
+    const joinLabel = String(m.joinLabel || "").trim() || String(current?.joinLabel || "Join Google Meet").trim();
+    joinByDate.set(ymd, { joinUrl, joinLabel });
   }
 
   const nowISO = toYmd(new Date().toISOString()) || "";
