@@ -8,7 +8,7 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
 import { Switch } from "../components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "../components/ui/select";
 import type { QuickLink, SiteConfig, Update } from "../data/types";
 import {
   fetchQuickLinksOverride,
@@ -45,6 +45,28 @@ function emptyConfig(): SiteConfig {
     alertLinkUrl: "",
   };
 }
+
+const CORE_UPDATE_TYPES = [
+  "NPHC Executive Council",
+  "General Chapter Business",
+  "Committee Update",
+  "Programs and Events",
+  "Member Org Chapters",
+] as const;
+
+const MEMBER_CHAPTER_UPDATE_TYPES = [
+  "Member Org Chapter - Alpha Phi Alpha Fraternity, Inc.",
+  "Member Org Chapter - Alpha Kappa Alpha Sorority, Inc.",
+  "Member Org Chapter - Kappa Alpha Psi Fraternity, Inc.",
+  "Member Org Chapter - Omega Psi Phi Fraternity, Inc.",
+  "Member Org Chapter - Delta Sigma Theta Sorority, Inc.",
+  "Member Org Chapter - Phi Beta Sigma Fraternity, Inc.",
+  "Member Org Chapter - Zeta Phi Beta Sorority, Inc.",
+  "Member Org Chapter - Sigma Gamma Rho Sorority, Inc.",
+  "Member Org Chapter - Iota Phi Theta Fraternity, Inc.",
+] as const;
+
+const ALL_UPDATE_TYPES = [...CORE_UPDATE_TYPES, ...MEMBER_CHAPTER_UPDATE_TYPES] as const;
 
 export function CouncilHomeContentPage() {
   const [loading, setLoading] = useState(true);
@@ -163,7 +185,7 @@ export function CouncilHomeContentPage() {
         id: `update-${prev.length + 1}`,
         date: "",
         title: "",
-        type: "",
+        type: "NPHC Executive Council",
       },
     ]);
   };
@@ -479,7 +501,43 @@ export function CouncilHomeContentPage() {
                       </div>
                       <div className="space-y-1">
                         <Label>Type</Label>
-                        <Input value={u.type} onChange={(e) => updateUpdate(idx, "type", e.target.value)} />
+                        <Select
+                          value={u.type || "__unset__"}
+                          onValueChange={(value) => updateUpdate(idx, "type", value === "__unset__" ? "" : value)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select update type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="__unset__">Select update type</SelectItem>
+                            <SelectGroup>
+                              <SelectLabel>Core</SelectLabel>
+                              {CORE_UPDATE_TYPES.map((type) => (
+                                <SelectItem key={type} value={type}>
+                                  {type}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                            <SelectSeparator />
+                            <SelectGroup>
+                              <SelectLabel>Member Org Chapters (Founding Order)</SelectLabel>
+                              {MEMBER_CHAPTER_UPDATE_TYPES.map((type) => (
+                                <SelectItem key={type} value={type}>
+                                  {type}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                            {u.type && !ALL_UPDATE_TYPES.includes(u.type as (typeof ALL_UPDATE_TYPES)[number]) ? (
+                              <>
+                                <SelectSeparator />
+                                <SelectGroup>
+                                  <SelectLabel>Current Custom Value</SelectLabel>
+                                  <SelectItem value={u.type}>{u.type}</SelectItem>
+                                </SelectGroup>
+                              </>
+                            ) : null}
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div className="space-y-1 md:col-span-2">
                         <Label>Title</Label>
