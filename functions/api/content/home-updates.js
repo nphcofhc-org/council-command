@@ -22,7 +22,7 @@ function sanitizeUpdates(input) {
       id: t(raw?.id || `update-${idx + 1}`, 64) || `update-${idx + 1}`,
       date: t(raw?.date, 40),
       title: t(raw?.title, 140),
-      type: t(raw?.type, 60),
+      type: t(raw?.type, 120),
       flyerUrl: t(raw?.flyerUrl, 600),
     }))
     .filter((u) => u.date && u.title && u.type);
