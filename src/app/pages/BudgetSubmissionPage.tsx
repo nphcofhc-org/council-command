@@ -104,7 +104,7 @@ export function BudgetSubmissionPage() {
                 </div>
                 <div className="space-y-1">
                   <Label>Needed By (date)</Label>
-                  <Input value={neededBy} onChange={(e) => setNeededBy(e.target.value)} placeholder="2026-06-01" />
+                  <Input type="date" value={neededBy} onChange={(e) => setNeededBy(e.target.value)} />
                 </div>
               </div>
 

@@ -9,6 +9,7 @@ import { Label } from "../components/ui/label";
 import type { MeetingsPageData } from "../data/types";
 import { fetchMeetingsData } from "../data/api";
 import { saveMeetingsOverride } from "../data/content-api";
+import { toDateInputValue } from "../utils/date-input";
 
 export function CouncilMeetingsContentPage() {
   const [loading, setLoading] = useState(true);
@@ -148,7 +149,7 @@ export function CouncilMeetingsContentPage() {
                       </div>
                       <div className="space-y-1">
                         <Label>Date</Label>
-                        <Input value={m.date} onChange={(e) => setForm((p) => {
+                        <Input type="date" value={toDateInputValue(m.date)} onChange={(e) => setForm((p) => {
                           const next = [...p.upcomingMeetings];
                           next[idx] = { ...next[idx], date: e.target.value };
                           return { ...p, upcomingMeetings: next };
@@ -210,7 +211,7 @@ export function CouncilMeetingsContentPage() {
                     <div className="grid gap-3 md:grid-cols-2">
                       <div className="space-y-1">
                         <Label>Date</Label>
-                        <Input value={r.date} onChange={(e) => setForm((p) => {
+                        <Input type="date" value={toDateInputValue(r.date)} onChange={(e) => setForm((p) => {
                           const next = [...p.meetingRecords];
                           next[idx] = { ...next[idx], date: e.target.value };
                           return { ...p, meetingRecords: next };
@@ -296,7 +297,7 @@ export function CouncilMeetingsContentPage() {
                       </div>
                       <div className="space-y-1 md:col-span-2">
                         <Label>Date Submitted</Label>
-                        <Input value={d.dateSubmitted} onChange={(e) => setForm((p) => {
+                        <Input type="date" value={toDateInputValue(d.dateSubmitted)} onChange={(e) => setForm((p) => {
                           const next = [...p.delegateReports];
                           next[idx] = { ...next[idx], dateSubmitted: e.target.value };
                           return { ...p, delegateReports: next };
