@@ -37,7 +37,7 @@ function emptyConfig(): SiteConfig {
     instagramHandle: "",
     instagramPostUrls: [],
     alertEnabled: false,
-    alertVariant: "info",
+    alertVariant: "warning",
     alertTitle: "",
     alertMessage: "",
     alertLinkLabel: "",
@@ -366,14 +366,14 @@ export function CouncilHomeContentPage() {
                   <div className="space-y-1">
                     <Label>Style</Label>
                     <Select
-                      value={config.alertVariant || "info"}
+                      value={config.alertVariant || "warning"}
                       onValueChange={(v) => onConfigField("alertVariant", v)}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Choose a style" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="info">Info</SelectItem>
+                        <SelectItem value="meeting">Meeting</SelectItem>
                         <SelectItem value="warning">Warning</SelectItem>
                         <SelectItem value="urgent">Urgent</SelectItem>
                       </SelectContent>

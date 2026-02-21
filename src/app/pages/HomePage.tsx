@@ -101,9 +101,9 @@ function FormsQuickPane() {
       </div>
 
       {/* Mobile: tap-to-open */}
-      <div className="lg:hidden fixed right-3 bottom-3 z-40" data-tour="forms-rail">
+      <div className="lg:hidden fixed right-3 bottom-3 z-30" data-tour="forms-rail">
         {openMobile ? (
-          <div className="nphc-holo-surface w-[92vw] max-w-sm rounded-2xl border border-black/10 bg-white/80 backdrop-blur-xl shadow-[0_24px_80px_rgba(0,0,0,0.18)]">
+          <div className="nphc-holo-surface w-[92vw] max-w-sm max-h-[42vh] rounded-2xl border border-black/10 bg-white/80 backdrop-blur-xl shadow-[0_24px_80px_rgba(0,0,0,0.18)] overflow-hidden">
             <div className="flex items-center justify-between px-4 pt-4">
               <div className="flex items-center gap-2">
                 <ClipboardList className="size-5 text-primary" />
@@ -118,7 +118,7 @@ function FormsQuickPane() {
                 Close
               </button>
             </div>
-            <div className="px-4 pb-4 pt-3 space-y-2">
+            <div className="px-4 pb-4 pt-3 space-y-2 overflow-y-auto">
               {FORMS_PANE_LINKS.map((l) => (
                 <a
                   key={l.href}
@@ -364,14 +364,31 @@ export function HomePage() {
   const isExternalUrl = (url: string) => /^https?:\/\//i.test(url.trim());
 
   const alertEnabled = !!config?.alertEnabled;
-  const alertVariant = (config?.alertVariant || "info") as "info" | "warning" | "urgent";
+  const alertVariant = (config?.alertVariant || "warning") as "meeting" | "warning" | "urgent" | "info";
+  const normalizedAlertVariant = alertVariant === "info" ? "warning" : alertVariant;
   const alertTitle = (config?.alertTitle || "").trim();
   const alertMessage = (config?.alertMessage || "").trim();
   const alertLinkLabel = (config?.alertLinkLabel || "").trim();
   const alertLinkUrl = (config?.alertLinkUrl || "").trim();
   const showAlert = alertEnabled && (alertTitle.length > 0 || alertMessage.length > 0);
-  const alertAccent =
-    alertVariant === "urgent" ? "border-l-red-500" : alertVariant === "warning" ? "border-l-amber-400" : "border-l-primary";
+  const alertStyle =
+    normalizedAlertVariant === "meeting"
+      ? {
+        accent: "border-l-primary",
+        icon: "border-primary/25 bg-primary/15 text-primary",
+        cta: "bg-primary text-primary-foreground hover:brightness-110",
+      }
+      : normalizedAlertVariant === "urgent"
+        ? {
+          accent: "border-l-red-600",
+          icon: "border-red-300 bg-red-500/20 text-red-800",
+          cta: "bg-red-700 text-white hover:bg-red-600",
+        }
+        : {
+          accent: "border-l-red-500",
+          icon: "border-red-300/80 bg-red-500/15 text-red-700",
+          cta: "bg-red-600 text-white hover:bg-red-500",
+        };
 
   const normalizeJoinUrl = (input: string | null | undefined): string | null => {
     const raw = String(input || "").trim();
@@ -531,11 +548,11 @@ export function HomePage() {
               initial={{ y: -10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.35 }}
-              className={`rounded-2xl border border-black/15 bg-white/60 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl p-4 sm:p-5 border-l-4 ${alertAccent}`}
+              className={`rounded-2xl border border-black/15 bg-white/60 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl p-4 sm:p-5 border-l-4 ${alertStyle.accent}`}
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="flex items-start gap-3">
-                  <div className="mt-0.5 rounded-xl border border-primary/25 bg-primary/15 text-primary p-2.5 flex-shrink-0">
+                  <div className={`mt-0.5 rounded-xl border p-2.5 flex-shrink-0 ${alertStyle.icon}`}>
                     <Bell className="size-4" />
                   </div>
                   <div className="min-w-0">
@@ -547,7 +564,7 @@ export function HomePage() {
                 {alertLinkUrl && alertLinkLabel ? (
                   <a
                     href={toHref(alertLinkUrl)}
-                    className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-semibold hover:brightness-110 active:scale-[0.99] transition self-start"
+                    className={`inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold active:scale-[0.99] transition self-start ${alertStyle.cta}`}
                   >
                     {alertLinkLabel}
                   </a>

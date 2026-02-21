@@ -49,7 +49,7 @@ export interface SiteConfig {
   instagramPostUrls: string[];      // Optional: specific post URLs to embed as a feed
   // Optional sitewide notification banner (primarily used on Home).
   alertEnabled: boolean;
-  alertVariant: "info" | "warning" | "urgent";
+  alertVariant: "meeting" | "warning" | "urgent" | "info"; // "info" kept for backward compatibility
   alertTitle: string;
   alertMessage: string;
   alertLinkLabel: string;
