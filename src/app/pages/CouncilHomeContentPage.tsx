@@ -20,6 +20,7 @@ import {
 } from "../data/content-api";
 import { fetchHomePageData } from "../data/api";
 import { uploadSocialAssets } from "../data/forms-api";
+import { toDateInputValue } from "../utils/date-input";
 
 function emptyConfig(): SiteConfig {
   return {
@@ -474,7 +475,7 @@ export function CouncilHomeContentPage() {
                     <div className="grid gap-3 md:grid-cols-2">
                       <div className="space-y-1">
                         <Label>Date</Label>
-                        <Input value={u.date} onChange={(e) => updateUpdate(idx, "date", e.target.value)} />
+                        <Input type="date" value={toDateInputValue(u.date)} onChange={(e) => updateUpdate(idx, "date", e.target.value)} />
                       </div>
                       <div className="space-y-1">
                         <Label>Type</Label>

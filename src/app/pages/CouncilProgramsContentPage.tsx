@@ -10,6 +10,7 @@ import { Textarea } from "../components/ui/textarea";
 import type { ProgramsPageData } from "../data/types";
 import { fetchProgramsData } from "../data/api";
 import { saveProgramsOverride } from "../data/content-api";
+import { toDateInputValue } from "../utils/date-input";
 
 export function CouncilProgramsContentPage() {
   const [loading, setLoading] = useState(true);
@@ -107,7 +108,7 @@ export function CouncilProgramsContentPage() {
                       </div>
                       <div className="space-y-1">
                         <Label>Date</Label>
-                        <Input value={e.date} onChange={(ev) => setForm((p) => {
+                        <Input type="date" value={toDateInputValue(e.date)} onChange={(ev) => setForm((p) => {
                           const next = [...p.upcomingEvents];
                           next[idx] = { ...next[idx], date: ev.target.value };
                           return { ...p, upcomingEvents: next };
@@ -169,7 +170,7 @@ export function CouncilProgramsContentPage() {
                       </div>
                       <div className="space-y-1">
                         <Label>Date</Label>
-                        <Input value={e.date} onChange={(ev) => setForm((p) => {
+                        <Input type="date" value={toDateInputValue(e.date)} onChange={(ev) => setForm((p) => {
                           const next = [...p.archivedEvents];
                           next[idx] = { ...next[idx], date: ev.target.value };
                           return { ...p, archivedEvents: next };
@@ -215,7 +216,7 @@ export function CouncilProgramsContentPage() {
                       </div>
                       <div className="space-y-1">
                         <Label>Date</Label>
-                        <Input value={f.date} onChange={(ev) => setForm((p) => {
+                        <Input type="date" value={toDateInputValue(f.date)} onChange={(ev) => setForm((p) => {
                           const next = [...p.eventFlyers];
                           next[idx] = { ...next[idx], date: ev.target.value };
                           return { ...p, eventFlyers: next };
@@ -261,7 +262,7 @@ export function CouncilProgramsContentPage() {
                       </div>
                       <div className="space-y-1">
                         <Label>Deadline</Label>
-                        <Input value={f.deadline} onChange={(ev) => setForm((p) => {
+                        <Input type="date" value={toDateInputValue(f.deadline)} onChange={(ev) => setForm((p) => {
                           const next = [...p.signupForms];
                           next[idx] = { ...next[idx], deadline: ev.target.value };
                           return { ...p, signupForms: next };
