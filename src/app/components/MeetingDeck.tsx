@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ChevronLeft, ChevronRight, LayoutGrid, X,
-  Maximize2, Minimize2, Users, Hand, MessageSquare, Gavel, Settings
+  Maximize2, Minimize2, Users, Hand, MessageSquare, Gavel, Pause, Play, RotateCcw
 } from 'lucide-react';
 import { MeetingProvider, useMeeting, SLIDE_VOTES } from './MeetingContext';
 import { MeetingSidebar } from './MeetingSidebar';
@@ -60,6 +60,8 @@ function DeckInner({
   const [mobileSheet,   setMobileSheet]   = useState(false);
   const [mobileTab,     setMobileTab]     = useState<'hand' | 'motion' | 'vote'>('hand');
   const [joinToast, setJoinToast] = useState<{ memberName: string; committeeId: string } | null>(null);
+  const [timerSeconds, setTimerSeconds] = useState(0);
+  const [timerRunning, setTimerRunning] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const touchX = useRef(0);
   const slides = useMemo<DeckSlide[]>(
@@ -101,6 +103,14 @@ function DeckInner({
       setMobileSheet(false);
     }
   }, [canControl]);
+
+  useEffect(() => {
+    if (!timerRunning) return;
+    const id = window.setInterval(() => {
+      setTimerSeconds((prev) => prev + 1);
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [timerRunning]);
 
   const goTo = useCallback((idx: number) => {
     if (idx === current) { setGridOpen(false); return; }
@@ -146,6 +156,9 @@ function DeckInner({
   const progress    = ((current + 1) / slides.length) * 100;
   const isVoteSlide = VOTE_SLIDES.has(current + 1);
   const isCoverSlide = current === 0;
+  const timerMinutes = Math.floor(timerSeconds / 60);
+  const timerRemainderSeconds = timerSeconds % 60;
+  const timerLabel = `${String(timerMinutes).padStart(2, '0')}:${String(timerRemainderSeconds).padStart(2, '0')}`;
 
   // ── Mobile layout ────────────────────────────────────────────────────────
 
@@ -181,6 +194,29 @@ function DeckInner({
             )}
           </div>
           <div style={{ display: 'flex', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, border: '1px solid #D6D6D6', borderRadius: 7, padding: '2px 6px', background: '#FFFFFF' }}>
+              <span style={{ color: '#333', fontSize: '0.7rem', fontWeight: 800, letterSpacing: '0.06em' }}>
+                {timerLabel}
+              </span>
+              {canControl ? (
+                <>
+                  <button
+                    onClick={() => setTimerRunning((prev) => !prev)}
+                    title={timerRunning ? 'Pause timer' : 'Start timer'}
+                    style={{ background: 'transparent', border: 'none', padding: 2, cursor: 'pointer', color: '#444', display: 'flex', alignItems: 'center' }}
+                  >
+                    {timerRunning ? <Pause size={12} /> : <Play size={12} />}
+                  </button>
+                  <button
+                    onClick={() => { setTimerRunning(false); setTimerSeconds(0); }}
+                    title="Reset timer"
+                    style={{ background: 'transparent', border: 'none', padding: 2, cursor: 'pointer', color: '#666', display: 'flex', alignItems: 'center' }}
+                  >
+                    <RotateCcw size={12} />
+                  </button>
+                </>
+              ) : null}
+            </div>
             <button onClick={() => setGridOpen(o => !o)} style={{ background: gridOpen ? 'rgba(0,0,0,0.06)' : 'transparent', border: `1px solid ${gridOpen ? '#CCC' : 'transparent'}`, borderRadius: 7, padding: '6px 9px', cursor: 'pointer', color: gridOpen ? '#222' : '#888', display: 'flex', alignItems: 'center', gap: 4 }}>
               {gridOpen ? <X size={14} /> : <LayoutGrid size={14} />}
             </button>
@@ -334,6 +370,29 @@ function DeckInner({
               {isVoteSlide && <span style={{ background: isCoverSlide ? '#C62828' : '#C62828', color: '#fff', fontSize: '0.54rem', fontWeight: 800, padding: '2px 8px', borderRadius: 99, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Vote</span>}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: isCoverSlide ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)', border: `1px solid ${isCoverSlide ? '#303030' : '#D8D8D8'}`, borderRadius: 6, padding: '2px 6px' }}>
+                <span style={{ color: isCoverSlide ? '#D0D0D0' : '#333', fontSize: '0.66rem', fontWeight: 800, letterSpacing: '0.06em' }}>
+                  {timerLabel}
+                </span>
+                {canControl ? (
+                  <>
+                    <button
+                      onClick={() => setTimerRunning((prev) => !prev)}
+                      title={timerRunning ? 'Pause timer' : 'Start timer'}
+                      style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: isCoverSlide ? '#B8B8B8' : '#444', padding: 1, display: 'flex', alignItems: 'center' }}
+                    >
+                      {timerRunning ? <Pause size={11} /> : <Play size={11} />}
+                    </button>
+                    <button
+                      onClick={() => { setTimerRunning(false); setTimerSeconds(0); }}
+                      title="Reset timer"
+                      style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: isCoverSlide ? '#8A8A8A' : '#666', padding: 1, display: 'flex', alignItems: 'center' }}
+                    >
+                      <RotateCcw size={11} />
+                    </button>
+                  </>
+                ) : null}
+              </div>
               <button onClick={() => setGridOpen(o => !o)} style={{ background: gridOpen ? (isCoverSlide ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)') : 'transparent', border: `1px solid ${gridOpen ? (isCoverSlide ? '#3A3A3A' : '#C0C0C0') : 'transparent'}`, cursor: 'pointer', padding: '4px 9px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 5, color: gridOpen ? (isCoverSlide ? '#E0E0E0' : '#333') : (isCoverSlide ? '#555' : '#999'), transition: 'all 0.18s' }}>
                 {gridOpen ? <X size={12} /> : <LayoutGrid size={12} />}
                 <span style={{ fontSize: '0.68rem', fontWeight: 600 }}>Slides</span>
