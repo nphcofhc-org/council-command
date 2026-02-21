@@ -59,7 +59,7 @@ export const siteConfig: SiteConfig = {
   instagramHandle: "nphcofhudsoncounty",
   instagramPostUrls: [],
   alertEnabled: false,
-  alertVariant: "info",
+  alertVariant: "warning",
   alertTitle: "",
   alertMessage: "",
   alertLinkLabel: "",

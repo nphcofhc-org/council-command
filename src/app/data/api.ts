@@ -352,9 +352,9 @@ function transformSiteConfig(rows: Record<string, string>[]): SiteConfig {
     presidentClosing: kv.presidentClosing || "",
     bannerImageUrl: kv.bannerImageUrl || "",
     alertEnabled: (kv.alertEnabled || "").toLowerCase() === "true",
-    alertVariant: (["info", "warning", "urgent"] as const).includes((kv.alertVariant || "").toLowerCase() as any)
-      ? ((kv.alertVariant || "").toLowerCase() as "info" | "warning" | "urgent")
-      : "info",
+    alertVariant: (["meeting", "warning", "urgent", "info"] as const).includes((kv.alertVariant || "").toLowerCase() as any)
+      ? ((kv.alertVariant || "").toLowerCase() as "meeting" | "warning" | "urgent" | "info")
+      : "warning",
     alertTitle: kv.alertTitle || "",
     alertMessage: kv.alertMessage || "",
     alertLinkLabel: kv.alertLinkLabel || "",

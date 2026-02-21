@@ -27,7 +27,7 @@ function sanitizeConfig(input) {
     : [];
 
   const variantRaw = t(input?.alertVariant, 32).toLowerCase();
-  const alertVariant = ["info", "warning", "urgent"].includes(variantRaw) ? variantRaw : "info";
+  const alertVariant = ["meeting", "warning", "urgent", "info"].includes(variantRaw) ? variantRaw : "warning";
   const alertEnabled = input?.alertEnabled === true || t(input?.alertEnabled, 16).toLowerCase() === "true";
 
   return {
