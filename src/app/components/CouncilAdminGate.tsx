@@ -84,5 +84,5 @@ export function CouncilAdminGate({ children }: CouncilAdminGateProps) {
     );
   }
 
-  return <>{children}</>;
+  return <div className="nphc-editor-mode-active">{children}</div>;
 }
