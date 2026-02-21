@@ -23,6 +23,7 @@ function sanitizeUpdates(input) {
       date: t(raw?.date, 40),
       title: t(raw?.title, 140),
       type: t(raw?.type, 120),
+      body: t(raw?.body, 2400),
       flyerUrl: t(raw?.flyerUrl, 600),
     }))
     .filter((u) => u.date && u.title && u.type);

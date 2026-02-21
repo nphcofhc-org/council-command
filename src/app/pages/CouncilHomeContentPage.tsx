@@ -186,6 +186,7 @@ export function CouncilHomeContentPage() {
         date: "",
         title: "",
         type: "NPHC Executive Council",
+        body: "",
       },
     ]);
   };
@@ -542,6 +543,15 @@ export function CouncilHomeContentPage() {
                       <div className="space-y-1 md:col-span-2">
                         <Label>Title</Label>
                         <Input value={u.title} onChange={(e) => updateUpdate(idx, "title", e.target.value)} />
+                      </div>
+                      <div className="space-y-1 md:col-span-2">
+                        <Label>Body (optional)</Label>
+                        <Textarea
+                          value={u.body || ""}
+                          onChange={(e) => updateUpdate(idx, "body", e.target.value)}
+                          rows={4}
+                          placeholder="Add the full update details shown below the title on Home."
+                        />
                       </div>
                       <div className="space-y-1 md:col-span-2">
                         <Label>Flyer URL (optional)</Label>
