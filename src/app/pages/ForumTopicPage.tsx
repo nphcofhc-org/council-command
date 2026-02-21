@@ -6,6 +6,9 @@ import { Button } from "../components/ui/button";
 import { Textarea } from "../components/ui/textarea";
 import { useCouncilSession } from "../hooks/use-council-session";
 import { createForumPost, fetchForumTopic, type ForumPost, type ForumTopicDetail } from "../data/forum-api";
+import { useMemberDirectory } from "../hooks/use-member-directory";
+import { useMemberProfile } from "../hooks/use-member-profile";
+import { lookupDirectoryEntry, nameFromEmail } from "../utils/user-display";
 
 function fmtDateTime(value: string): string {
   const d = new Date(value);
@@ -13,17 +16,25 @@ function fmtDateTime(value: string): string {
   return d.toLocaleString(undefined, { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
 }
 
-function displayEmail(email: string | null): string {
-  if (!email) return "Member";
-  const [user, domain] = email.split("@");
-  if (!user || !domain) return email;
-  return `${user.slice(0, 2)}***@${domain}`;
+function isImage(url: string): boolean {
+  return /\.(png|jpg|jpeg|gif|webp|svg)(\?|$)/i.test(url);
+}
+
+function isVideo(url: string): boolean {
+  return /\.(mp4|webm|mov)(\?|$)/i.test(url);
+}
+
+function extractLinks(text: string): string[] {
+  const matches = String(text || "").match(/https?:\/\/[^\s)]+/gi) || [];
+  return Array.from(new Set(matches.map((m) => m.trim())));
 }
 
 export function ForumTopicPage() {
   const { id } = useParams();
   const topicId = String(id || "").trim();
   const { session } = useCouncilSession();
+  const { directory } = useMemberDirectory();
+  const { profile } = useMemberProfile(session.authenticated);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -63,6 +74,16 @@ export function ForumTopicPage() {
   const posts: ForumPost[] = useMemo(() => detail?.posts || [], [detail]);
   const topic = detail?.topic || null;
   const locked = Boolean(topic?.locked);
+  const displayNameFor = (email: string | null): string => {
+    const normalized = String(email || "").trim().toLowerCase();
+    if (!normalized) return "Member";
+    if (normalized === String(session.email || "").trim().toLowerCase()) {
+      const profileName = `${profile.firstName || ""} ${profile.lastName || ""}`.trim();
+      if (profileName) return profileName;
+    }
+    const entry = lookupDirectoryEntry(directory, normalized);
+    return (entry?.displayName || "").trim() || nameFromEmail(normalized);
+  };
 
   const submitReply = async () => {
     const body = reply.trim();
@@ -133,7 +154,7 @@ export function ForumTopicPage() {
               >
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-xs text-slate-500">
-                    {displayEmail(p.createdBy)} • {fmtDateTime(p.createdAt)}
+                    {displayNameFor(p.createdBy)} • {fmtDateTime(p.createdAt)}
                   </p>
                   {idx === 0 ? (
                     <span className="rounded-full border border-primary/25 bg-primary/10 px-2.5 py-0.5 text-[11px] text-primary">
@@ -142,6 +163,23 @@ export function ForumTopicPage() {
                   ) : null}
                 </div>
                 <p className="mt-2 text-sm text-slate-800 whitespace-pre-wrap leading-relaxed">{p.body}</p>
+                {extractLinks(p.body).length > 0 ? (
+                  <div className="mt-3 space-y-2">
+                    {extractLinks(p.body).map((url) => (
+                      <div key={url}>
+                        {isImage(url) ? (
+                          <img src={url} alt="Forum attachment" className="max-h-72 rounded-lg border border-black/10" />
+                        ) : isVideo(url) ? (
+                          <video controls className="max-h-72 w-full rounded-lg border border-black/10" src={url} />
+                        ) : (
+                          <a href={url} target="_blank" rel="noreferrer" className="text-sm text-primary underline">
+                            {url}
+                          </a>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
               </div>
             ))}
           </div>
@@ -152,7 +190,7 @@ export function ForumTopicPage() {
               value={reply}
               onChange={(e) => setReply(e.target.value)}
               rows={5}
-              placeholder={locked ? "This topic is locked." : "Write your reply…"}
+              placeholder={locked ? "This topic is locked." : "Write your reply… You can paste image/video/GIF links."}
               disabled={!canUse || locked || saving}
             />
             <div className="mt-3 flex items-center gap-2">

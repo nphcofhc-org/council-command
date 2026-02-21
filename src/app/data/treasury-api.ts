@@ -1,4 +1,4 @@
-export type TreasuryAccount = "LendingClub" | "Cash App";
+export type TreasuryAccount = "LendingClub" | "Cash App" | "PayPal";
 export type TreasuryTxnType = "credit" | "debit";
 
 export type TreasuryTransaction = {
@@ -17,11 +17,19 @@ export type TreasuryPayload = {
     payUrl: string;
     qrImageUrl: string;
   };
+  paypal?: {
+    handle: string;
+    payUrl: string;
+    qrImageUrl?: string;
+  };
   balances: {
     lendingClub: number;
     cashApp: number;
+    paypal?: number;
   };
   asOfLabel: string;
+  liveMode?: boolean;
+  liveSource?: string | null;
 };
 
 const TREASURY_ENDPOINT = "/api/treasury/data";
@@ -49,4 +57,3 @@ export async function fetchTreasuryData(): Promise<{ treasury: TreasuryPayload; 
     transactions: Array.isArray(data?.transactions) ? (data.transactions as TreasuryTransaction[]) : [],
   };
 }
-

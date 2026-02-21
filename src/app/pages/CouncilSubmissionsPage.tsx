@@ -23,6 +23,8 @@ function downloadJson(filename: string, payload: unknown) {
 const FORM_TABS: { key: FormKey; label: string }[] = [
   { key: "budget_submission", label: "Budgets" },
   { key: "reimbursement_request", label: "Reimbursements" },
+  { key: "event_proposal_budget_request", label: "Event Proposals" },
+  { key: "event_post_report_financial_reconciliation", label: "Event Post-Reports" },
   { key: "social_media_request", label: "Social Requests" },
   { key: "committee_report", label: "Committee Reports" },
   { key: "event_submission", label: "Event Submissions" },

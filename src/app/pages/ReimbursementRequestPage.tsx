@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "motion/react";
 import { ArrowLeft, Save, Upload, X } from "lucide-react";
@@ -9,6 +9,8 @@ import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
 import { submitForm, uploadReceipts, type UploadedReceipt } from "../data/forms-api";
 import { useCouncilSession } from "../hooks/use-council-session";
+import { useMemberProfile } from "../hooks/use-member-profile";
+import { DIVINE_NINE_ORGANIZATIONS } from "../data/member-profile-api";
 
 function toMoneyNumber(value: string): number {
   const n = Number(String(value || "").trim());
@@ -18,6 +20,7 @@ function toMoneyNumber(value: string): number {
 
 export function ReimbursementRequestPage() {
   const { session } = useCouncilSession();
+  const { profile } = useMemberProfile(session.authenticated);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -65,6 +68,18 @@ export function ReimbursementRequestPage() {
   const [receiptFiles, setReceiptFiles] = useState<File[]>([]);
   const [receiptLinks, setReceiptLinks] = useState("");
   const [uploadedReceipts, setUploadedReceipts] = useState<UploadedReceipt[]>([]);
+
+  useEffect(() => {
+    if (session.email) {
+      setEmail(session.email);
+      setEmailAddress(session.email);
+    }
+  }, [session.email]);
+
+  useEffect(() => {
+    if (!profile.organization) return;
+    if (!memberOrganization) setMemberOrganization(profile.organization);
+  }, [memberOrganization, profile.organization]);
 
   const removeFile = (index: number) => {
     setReceiptFiles((prev) => prev.filter((_, i) => i !== index));
@@ -208,7 +223,16 @@ export function ReimbursementRequestPage() {
                 </div>
                 <div className="space-y-1">
                   <Label>Member Organization *</Label>
-                  <Input value={memberOrganization} onChange={(e) => setMemberOrganization(e.target.value)} placeholder="Organization" />
+                  <select
+                    value={memberOrganization}
+                    onChange={(e) => setMemberOrganization(e.target.value)}
+                    className="w-full rounded-md border border-black/15 bg-white/60 px-3 py-2 text-sm text-slate-900"
+                  >
+                    <option value="">Select organization</option>
+                    {DIVINE_NINE_ORGANIZATIONS.map((org) => (
+                      <option key={org} value={org}>{org}</option>
+                    ))}
+                  </select>
                 </div>
                 <div className="space-y-1 sm:col-span-2">
                   <Label>Event/Activity Name *</Label>

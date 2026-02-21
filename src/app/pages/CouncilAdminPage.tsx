@@ -12,6 +12,7 @@ import { CouncilLeaderGate } from "../components/CouncilLeaderGate";
 import { useCouncilSession } from "../hooks/use-council-session";
 import { useEditorMode } from "../hooks/use-editor-mode";
 import { fetchTreasuryData, type TreasuryPayload } from "../data/treasury-api";
+import { fetchSubmissionsAsAdmin } from "../data/forms-api";
 
 const ART_MARBLE = "https://images.unsplash.com/photo-1678756466078-1ff0d7b09431?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25vY2hyb21lJTIwYWJzdHJhY3QlMjBtYXJibGUlMjB0ZXh0dXJlfGVufDF8fHx8MTc3MDUxMzIyM3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 
@@ -20,6 +21,7 @@ export function CouncilAdminPage() {
   const { session } = useCouncilSession();
   const { editorMode, setEditorMode } = useEditorMode();
   const [treasury, setTreasury] = useState<TreasuryPayload | null>(null);
+  const [pendingSubmissions, setPendingSubmissions] = useState(0);
 
   const internalDocuments = data?.internalDocuments || [];
   const tasks = data?.tasks || [];
@@ -40,6 +42,21 @@ export function CouncilAdminPage() {
       cancelled = true;
     };
   }, [session.isTreasuryAdmin]);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!session.isCouncilAdmin) return;
+    void fetchSubmissionsAsAdmin({ status: "Submitted", limit: 200 })
+      .then((rows) => {
+        if (!cancelled) setPendingSubmissions(rows.length);
+      })
+      .catch(() => {
+        if (!cancelled) setPendingSubmissions(0);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [session.isCouncilAdmin]);
 
   return (
     <CouncilLeaderGate>
@@ -81,11 +98,11 @@ export function CouncilAdminPage() {
                 </CardTitle>
                 <CardDescription>Confidential balances for executive oversight.</CardDescription>
               </CardHeader>
-              <CardContent className="grid gap-4 sm:grid-cols-3">
+              <CardContent className="grid gap-4 sm:grid-cols-4">
                 <div className="rounded-lg border border-black/10 bg-white/5 p-4">
                   <p className="text-xs uppercase tracking-widest text-slate-500">Total</p>
                   <p className="text-2xl font-extrabold text-slate-900 mt-1">
-                    {((treasury?.balances?.lendingClub || 0) + (treasury?.balances?.cashApp || 0)).toLocaleString("en-US", { style: "currency", currency: "USD" })}
+                    {((treasury?.balances?.lendingClub || 0) + (treasury?.balances?.cashApp || 0) + (treasury?.balances?.paypal || 0)).toLocaleString("en-US", { style: "currency", currency: "USD" })}
                   </p>
                 </div>
                 <div className="rounded-lg border border-black/10 bg-white/5 p-4">
@@ -100,7 +117,16 @@ export function CouncilAdminPage() {
                     {(treasury?.balances?.cashApp || 0).toLocaleString("en-US", { style: "currency", currency: "USD" })}
                   </p>
                 </div>
-                <p className="text-xs text-slate-500 sm:col-span-3">{treasury?.asOfLabel || "Loading treasury snapshot..."}</p>
+                <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <p className="text-xs uppercase tracking-widest text-slate-500">PayPal</p>
+                  <p className="text-xl font-bold text-slate-900 mt-1">
+                    {(treasury?.balances?.paypal || 0).toLocaleString("en-US", { style: "currency", currency: "USD" })}
+                  </p>
+                </div>
+                <p className="text-xs text-slate-500 sm:col-span-4">
+                  {treasury?.asOfLabel || "Loading treasury snapshot..."}
+                  {treasury?.liveMode ? ` • Live sync (${treasury?.liveSource || "ingest"})` : ""}
+                </p>
               </CardContent>
             </Card>
           </motion.div>
@@ -170,6 +196,17 @@ export function CouncilAdminPage() {
           </motion.div>
         ) : (
         <>
+        <Card className="mb-6 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+          <CardContent className="p-5">
+            <div className="flex flex-col gap-3">
+              <h3 className="text-base text-slate-900 sm:text-lg">Page Editing Order</h3>
+              <p className="text-sm text-slate-600">
+                Recommended flow: 1) Home, 2) Meetings, 3) Programs, 4) Resources, 5) Decision Portal, 6) Member Directory.
+                You can also use the floating “Edit” button directly on each page when Editor Mode is enabled.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -472,6 +509,11 @@ export function CouncilAdminPage() {
                 <p className="text-sm text-slate-600">
                   Review budget submissions, reimbursement requests, and social media intake forms.
                 </p>
+                {pendingSubmissions > 0 ? (
+                  <p className="mt-1 text-xs font-semibold text-amber-700">
+                    {pendingSubmissions} pending submission{pendingSubmissions === 1 ? "" : "s"} awaiting review
+                  </p>
+                ) : null}
               </div>
               <Button asChild variant="outline" className="w-full sm:w-auto border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10">
                 <Link to="/council-admin/submissions">

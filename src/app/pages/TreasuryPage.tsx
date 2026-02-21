@@ -78,7 +78,8 @@ export function TreasuryPage() {
 
   const lendingClubBalance = treasury?.balances?.lendingClub || 0;
   const cashAppBalance = treasury?.balances?.cashApp || 0;
-  const totalBalance = lendingClubBalance + cashAppBalance;
+  const paypalBalance = treasury?.balances?.paypal || 0;
+  const totalBalance = lendingClubBalance + cashAppBalance + paypalBalance;
 
   const yearTxns = useMemo(() => {
     const needle = search.trim().toLowerCase();
@@ -196,9 +197,9 @@ export function TreasuryPage() {
                   <Wallet className="size-5" />
                   Current Balances
                 </CardTitle>
-                <CardDescription>Total cash on hand (LendingClub + Cash App).</CardDescription>
+                <CardDescription>Total cash on hand (LendingClub + Cash App + PayPal).</CardDescription>
               </CardHeader>
-              <CardContent className="grid gap-4 sm:grid-cols-3">
+              <CardContent className="grid gap-4 sm:grid-cols-4">
                 <div className="rounded-lg border border-black/10 bg-white/5 p-4">
                   <p className="text-xs uppercase tracking-widest text-slate-500">Total</p>
                   <p className="text-2xl font-extrabold text-slate-900 mt-1">{money(totalBalance)}</p>
@@ -211,7 +212,14 @@ export function TreasuryPage() {
                   <p className="text-xs uppercase tracking-widest text-slate-500">Cash App</p>
                   <p className="text-xl font-bold text-slate-900 mt-1">{money(cashAppBalance)}</p>
                 </div>
-                <p className="text-xs text-slate-400 sm:col-span-3">{treasury?.asOfLabel || ""}</p>
+                <div className="rounded-lg border border-black/10 bg-white/5 p-4">
+                  <p className="text-xs uppercase tracking-widest text-slate-500">PayPal</p>
+                  <p className="text-xl font-bold text-slate-900 mt-1">{money(paypalBalance)}</p>
+                </div>
+                <p className="text-xs text-slate-400 sm:col-span-4">
+                  {treasury?.asOfLabel || ""}
+                  {treasury?.liveMode ? ` • Live sync (${treasury?.liveSource || "ingest"})` : ""}
+                </p>
               </CardContent>
             </Card>
 
@@ -219,9 +227,9 @@ export function TreasuryPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <DollarSign className="size-5" />
-                  Cash App
+                  Digital Payments
                 </CardTitle>
-                <CardDescription>Use for quick payments and collection.</CardDescription>
+                <CardDescription>Cash App and PayPal quick links for collection.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between gap-3">
@@ -238,13 +246,24 @@ export function TreasuryPage() {
                     loading="lazy"
                   />
                 </div>
+                <div className="rounded-lg border border-black/10 bg-white/5 p-3">
+                  <p className="text-xs uppercase tracking-widest text-slate-500">PayPal</p>
+                  <a
+                    href={treasury?.paypal?.payUrl || "#"}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-1 inline-block text-sm font-bold text-primary hover:underline"
+                  >
+                    {treasury?.paypal?.handle || "Open PayPal"}
+                  </a>
+                </div>
                 <Button
                   asChild
                   variant="outline"
                   className="w-full border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
                 >
-                  <a href={treasury?.cashApp?.payUrl || "#"} target="_blank" rel="noreferrer">
-                    Open Cash App Link
+                  <a href={treasury?.cashApp?.payUrl || treasury?.paypal?.payUrl || "#"} target="_blank" rel="noreferrer">
+                    Open Payment Link
                   </a>
                 </Button>
               </CardContent>
@@ -420,6 +439,7 @@ export function TreasuryPage() {
                           <option value="all">All Accounts</option>
                           <option value="LendingClub">LendingClub</option>
                           <option value="Cash App">Cash App</option>
+                          <option value="PayPal">PayPal</option>
                         </select>
                       </div>
                       <div className="space-y-1 md:col-span-1">

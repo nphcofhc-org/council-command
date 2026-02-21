@@ -7,6 +7,8 @@ export const FORM_KEYS = [
   "social_media_request",
   "committee_report",
   "event_submission",
+  "event_proposal_budget_request",
+  "event_post_report_financial_reconciliation",
 ];
 
 export function requireDb(env) {

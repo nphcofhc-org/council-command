@@ -1,17 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "motion/react";
-import { ArrowLeft, CalendarDays, MapPin, Save, Upload, X, ExternalLink } from "lucide-react";
+import { ArrowLeft, CalendarDays, MapPin, Save, Upload, X, ExternalLink, Sparkles } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
-import { submitForm, uploadSocialAssets, type UploadedSocialAsset } from "../data/forms-api";
+import { autofillFromFlyer, submitForm, uploadSocialAssets, type UploadedSocialAsset } from "../data/forms-api";
 import { useCouncilSession } from "../hooks/use-council-session";
+import { useMemberProfile } from "../hooks/use-member-profile";
+import { DIVINE_NINE_ORGANIZATIONS } from "../data/member-profile-api";
 
 export function EventSubmissionPage() {
   const { session } = useCouncilSession();
+  const { profile } = useMemberProfile(session.authenticated);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -22,13 +25,25 @@ export function EventSubmissionPage() {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [location, setLocation] = useState("");
-  const [hostingOrgChapter, setHostingOrgChapter] = useState("");
+  const [organization, setOrganization] = useState("");
+  const [chapterName, setChapterName] = useState("");
   const [description, setDescription] = useState("");
   const [eventLinkUrl, setEventLinkUrl] = useState("");
+  const [alsoSubmitSocial, setAlsoSubmitSocial] = useState(false);
 
   const [flyerFiles, setFlyerFiles] = useState<File[]>([]);
   const [flyerLinksFallback, setFlyerLinksFallback] = useState("");
   const [uploadedFlyers, setUploadedFlyers] = useState<UploadedSocialAsset[]>([]);
+  const [autofillBusy, setAutofillBusy] = useState(false);
+
+  useEffect(() => {
+    if (session.email) setEmail(session.email);
+  }, [session.email]);
+
+  useEffect(() => {
+    if (!profile.organization) return;
+    if (!organization) setOrganization(profile.organization);
+  }, [organization, profile.organization]);
 
   const removeFile = (index: number) => {
     setFlyerFiles((prev) => prev.filter((_, i) => i !== index));
@@ -40,7 +55,8 @@ export function EventSubmissionPage() {
       ["Event Name", eventName],
       ["Event Date", eventDate],
       ["Location", location],
-      ["Hosting Organization/Chapter", hostingOrgChapter],
+      ["Organization", organization],
+      ["Chapter Name", chapterName],
       ["Description", description],
     ] as const;
     for (const [label, v] of required) {
@@ -85,21 +101,120 @@ export function EventSubmissionPage() {
         startTime,
         endTime,
         location,
-        hostingOrgChapter,
+        hostingOrgChapter: `${organization}${chapterName ? ` — ${chapterName}` : ""}`.trim(),
         description,
         eventLinkUrl,
         flyerFiles: uploaded,
         flyerLinks: flyerLinksFallback,
+        submitToSocialMediaAlso: alsoSubmitSocial,
         note:
           "Event submissions are reviewed by Site Administration. Approved submissions will appear in the Programs & Events calendar and (if within 2 weeks) the Home page Internal News section.",
       };
 
       const res = await submitForm("event_submission", payload);
-      setMessage(`Submitted for review. Tracking ID: ${res.id}`);
+      let socialId = "";
+      if (alsoSubmitSocial) {
+        const uploadLinks = uploaded.map((f) => f.viewUrl).filter(Boolean).join("\n");
+        const mediaLinks = [flyerLinksFallback, uploadLinks].filter(Boolean).join("\n").trim();
+        const social = await submitForm("social_media_request", {
+          email,
+          eventName,
+          caption: description,
+          eventDate,
+          orgAndChapterName: `${organization}${chapterName ? ` — ${chapterName}` : ""}`.trim(),
+          chapterHandle: "",
+          hashtags: "N/A",
+          additionalInfo: `Auto-submitted from Event Submission (${res.id}).`,
+          mediaFiles: [],
+          mediaLinks,
+          linkedEventSubmissionId: res.id,
+        });
+        socialId = social.id;
+      }
+
+      setMessage(
+        socialId
+          ? `Submitted for review. Event ID: ${res.id} · Social Request ID: ${socialId}`
+          : `Submitted for review. Tracking ID: ${res.id}`,
+      );
     } catch (e) {
       setError(e instanceof Error ? e.message : "Submission failed.");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const parseLinks = (raw: string) =>
+    String(raw || "")
+      .split(/[\s,\n]+/)
+      .map((part) => part.trim())
+      .filter(Boolean);
+
+  const runAutofill = async () => {
+    setAutofillBusy(true);
+    setError(null);
+    setMessage(null);
+    try {
+      let uploaded = uploadedFlyers;
+      if (flyerFiles.length > 0 && uploaded.length === 0) {
+        uploaded = await uploadSocialAssets(flyerFiles);
+        setUploadedFlyers(uploaded);
+      }
+
+      const candidates = [
+        ...uploaded.map((f) => f.viewUrl).filter(Boolean),
+        ...parseLinks(flyerLinksFallback),
+      ];
+      const flyerUrl = candidates[0];
+      if (!flyerUrl) throw new Error("Upload a flyer image or paste a flyer link before running autofill.");
+
+      const fields = await autofillFromFlyer({
+        flyerUrl,
+        formType: "event_submission",
+      });
+
+      let applied = 0;
+      if (!eventName && fields.eventName) {
+        setEventName(fields.eventName);
+        applied += 1;
+      }
+      if (!eventDate && fields.eventDate) {
+        setEventDate(fields.eventDate);
+        applied += 1;
+      }
+      if (!startTime && fields.startTime) {
+        setStartTime(fields.startTime);
+        applied += 1;
+      }
+      if (!endTime && fields.endTime) {
+        setEndTime(fields.endTime);
+        applied += 1;
+      }
+      if (!location && fields.location) {
+        setLocation(fields.location);
+        applied += 1;
+      }
+      if (!description && (fields.description || fields.caption)) {
+        setDescription(fields.description || fields.caption);
+        applied += 1;
+      }
+      if (!eventLinkUrl && fields.eventLinkUrl) {
+        setEventLinkUrl(fields.eventLinkUrl);
+        applied += 1;
+      }
+      if (!organization && fields.organization && DIVINE_NINE_ORGANIZATIONS.includes(fields.organization)) {
+        setOrganization(fields.organization);
+        applied += 1;
+      }
+      if (!chapterName && fields.chapterName) {
+        setChapterName(fields.chapterName);
+        applied += 1;
+      }
+      setMessage(applied > 0 ? `Flyer autofill applied ${applied} field${applied === 1 ? "" : "s"}.` : "No blank fields were updated.");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Flyer autofill failed.");
+    } finally {
+      setAutofillBusy(false);
     }
   };
 
@@ -175,8 +290,22 @@ export function EventSubmissionPage() {
                 </div>
 
                 <div className="space-y-1 sm:col-span-2">
-                  <Label>Hosting Organization and Chapter *</Label>
-                  <Input value={hostingOrgChapter} onChange={(e) => setHostingOrgChapter(e.target.value)} placeholder="e.g., Alpha Phi Alpha Fraternity, Inc., Sigma Chi Lambda Chapter" />
+                  <Label>Organization *</Label>
+                  <select
+                    value={organization}
+                    onChange={(e) => setOrganization(e.target.value)}
+                    className="w-full rounded-md border border-black/15 bg-white/60 px-3 py-2 text-sm text-slate-900"
+                  >
+                    <option value="">Select organization</option>
+                    {DIVINE_NINE_ORGANIZATIONS.map((org) => (
+                      <option key={org} value={org}>{org}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1 sm:col-span-2">
+                  <Label>Chapter Name *</Label>
+                  <Input value={chapterName} onChange={(e) => setChapterName(e.target.value)} placeholder="e.g., Sigma Chi Lambda Chapter" />
                 </div>
 
                 <div className="space-y-1 sm:col-span-2">
@@ -199,20 +328,26 @@ export function EventSubmissionPage() {
                     <p className="text-sm font-semibold text-slate-900">Upload Flyer *</p>
                     <p className="text-xs text-slate-500 mt-0.5">Upload up to 5 files (PDF, JPG, PNG, HEIC). Or paste a Drive link below.</p>
                   </div>
-                  <label className="inline-flex items-center gap-2 text-sm font-semibold rounded-md border border-black/15 bg-white/55 px-3 py-2 cursor-pointer hover:bg-white/5 hover:border-primary/40 transition">
-                    <Upload className="size-4" />
-                    Choose Files
-                    <input
-                      type="file"
-                      multiple
-                      accept=".pdf,image/*,.heic,.heif"
-                      className="hidden"
-                      onChange={(e) => {
-                        const list = Array.from(e.target.files || []);
-                        setFlyerFiles((prev) => [...prev, ...list].slice(0, 5));
-                      }}
-                    />
-                  </label>
+                  <div className="flex items-center gap-2">
+                    <label className="inline-flex items-center gap-2 text-sm font-semibold rounded-md border border-black/15 bg-white/55 px-3 py-2 cursor-pointer hover:bg-white/5 hover:border-primary/40 transition">
+                      <Upload className="size-4" />
+                      Choose Files
+                      <input
+                        type="file"
+                        multiple
+                        accept=".pdf,image/*,.heic,.heif"
+                        className="hidden"
+                        onChange={(e) => {
+                          const list = Array.from(e.target.files || []);
+                          setFlyerFiles((prev) => [...prev, ...list].slice(0, 5));
+                        }}
+                      />
+                    </label>
+                    <Button type="button" variant="outline" onClick={runAutofill} disabled={autofillBusy || !session.authenticated}>
+                      <Sparkles className="mr-2 size-4" />
+                      {autofillBusy ? "Autofilling…" : "Autofill from Flyer"}
+                    </Button>
+                  </div>
                 </div>
 
                 {flyerFiles.length > 0 ? (
@@ -237,6 +372,18 @@ export function EventSubmissionPage() {
                 </div>
               </div>
 
+              <label className="flex items-start gap-2 rounded-lg border border-black/10 bg-white/5 p-3 text-sm text-slate-700">
+                <input
+                  type="checkbox"
+                  className="mt-0.5 accent-primary"
+                  checked={alsoSubmitSocial}
+                  onChange={(e) => setAlsoSubmitSocial(e.target.checked)}
+                />
+                <span>
+                  Also create a Social Media Request from this same submission (no duplicate form entry required).
+                </span>
+              </label>
+
               <Button onClick={submit} disabled={saving || !session.authenticated} className="w-full sm:w-auto">
                 <Save className="mr-2 size-4" />
                 {saving ? "Submitting…" : "Submit for Review"}
@@ -248,4 +395,3 @@ export function EventSubmissionPage() {
     </div>
   );
 }
-

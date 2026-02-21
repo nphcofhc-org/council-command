@@ -26,6 +26,9 @@ function emptySettings(): NotificationSettings {
       reimbursement_request: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: true },
       social_media_request: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: false },
       committee_report: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: false },
+      event_submission: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: false },
+      event_proposal_budget_request: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: true },
+      event_post_report_financial_reconciliation: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: true },
     },
   };
 }
@@ -48,6 +51,9 @@ function ruleLabel(formKey: string): string {
   if (formKey === "reimbursement_request") return "Reimbursement Request";
   if (formKey === "social_media_request") return "Social Media Intake";
   if (formKey === "committee_report") return "Committee Report";
+  if (formKey === "event_submission") return "Event Submission";
+  if (formKey === "event_proposal_budget_request") return "Event Proposal & Budget Request";
+  if (formKey === "event_post_report_financial_reconciliation") return "Event Post-Report & Financial Reconciliation";
   return formKey;
 }
 

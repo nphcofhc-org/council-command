@@ -43,6 +43,9 @@ function sanitizeContent(input) {
       reimbursement_request: sanitizeRule(rulesIn?.reimbursement_request),
       social_media_request: sanitizeRule(rulesIn?.social_media_request),
       committee_report: sanitizeRule(rulesIn?.committee_report),
+      event_submission: sanitizeRule(rulesIn?.event_submission),
+      event_proposal_budget_request: sanitizeRule(rulesIn?.event_proposal_budget_request),
+      event_post_report_financial_reconciliation: sanitizeRule(rulesIn?.event_post_report_financial_reconciliation),
     },
   };
 }
