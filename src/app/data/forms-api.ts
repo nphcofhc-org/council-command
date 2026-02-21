@@ -3,7 +3,9 @@ export type FormKey =
   | "reimbursement_request"
   | "social_media_request"
   | "committee_report"
-  | "event_submission";
+  | "event_submission"
+  | "event_proposal_budget_request"
+  | "event_post_report_financial_reconciliation";
 
 export type FormSubmissionRow = {
   id: string;
@@ -21,6 +23,7 @@ const SUBMIT_ENDPOINT = "/api/forms/submit";
 const MY_ENDPOINT = "/api/forms/my";
 const ADMIN_LIST_ENDPOINT = "/api/forms/admin/list";
 const ADMIN_UPDATE_ENDPOINT = "/api/forms/admin/update";
+const FLYER_AUTOFILL_ENDPOINT = "/api/forms/flyer-autofill";
 const RECEIPTS_UPLOAD_ENDPOINT = "/api/uploads/receipts";
 const SOCIAL_UPLOAD_ENDPOINT = "/api/uploads/social";
 const COMMITTEE_REPORTS_UPLOAD_ENDPOINT = "/api/uploads/committee-reports";
@@ -35,6 +38,22 @@ export type UploadedReceipt = {
 
 export type UploadedSocialAsset = UploadedReceipt;
 export type UploadedCommitteeReportAsset = UploadedReceipt;
+export type FlyerAutofillFields = {
+  eventName: string;
+  eventDate: string;
+  startTime: string;
+  endTime: string;
+  location: string;
+  organization: string;
+  chapterName: string;
+  caption: string;
+  hashtags: string;
+  chapterHandle: string;
+  description: string;
+  eventLinkUrl: string;
+  confidence: number | null;
+  notes: string;
+};
 
 async function parseError(response: Response): Promise<string> {
   try {
@@ -138,4 +157,22 @@ export async function uploadCommitteeReportFiles(files: File[]): Promise<Uploade
   if (!res.ok) throw new Error(await parseError(res));
   const data = await res.json();
   return Array.isArray(data?.files) ? (data.files as UploadedCommitteeReportAsset[]) : [];
+}
+
+export async function autofillFromFlyer(input: {
+  flyerUrl: string;
+  formType: "event_submission" | "social_media_request";
+}): Promise<FlyerAutofillFields> {
+  const res = await fetch(FLYER_AUTOFILL_ENDPOINT, {
+    method: "POST",
+    credentials: "same-origin",
+    headers: { "content-type": "application/json", accept: "application/json" },
+    body: JSON.stringify({
+      flyerUrl: input.flyerUrl,
+      formType: input.formType,
+    }),
+  });
+  if (!res.ok) throw new Error(await parseError(res));
+  const data = await res.json();
+  return (data?.fields || {}) as FlyerAutofillFields;
 }

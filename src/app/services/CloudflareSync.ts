@@ -37,6 +37,7 @@ export interface CFVoteSelection { option: 'yay' | 'nay'; voterId: string; voter
 export interface CFHand      { id: string; name: string; time: string; }
 export interface CFMotion    { id: string; author: string; text: string; time: string; seconded: boolean; }
 export interface CFFloorVote { id: string; question: string; yay: number; nay: number; closed: boolean; createdAt: string; }
+export interface CFCommitteeSignup { id: string; committeeId: string; memberId: string; memberName: string; joinedAt: string; }
 
 export interface CFState {
   votes:      Record<string, CFVoteData>;
@@ -45,6 +46,7 @@ export interface CFState {
   motions:    CFMotion[];
   floorVotes: CFFloorVote[];
   floorVoteSelections: Record<string, Record<string, CFVoteSelection>>;
+  committeeSignups: Record<string, CFCommitteeSignup[]>;
 }
 
 // ─── API calls ───────────────────────────────────────────────────────────────
@@ -61,6 +63,7 @@ export const CF = {
   createFloorVote: (u: string, id: string, question: string, createdAt: string) => call(u, '/api/floor-vote', 'POST', { id, question, createdAt }),
   castFloorVote:   (u: string, id: string, opt: string, voterId: string, voterLabel: string)  => call(u, '/api/floor-vote/cast', 'POST', { id, option: opt, voterId, voterLabel }),
   closeFloorVote:  (u: string, id: string)               => call(u, '/api/floor-vote/close', 'POST', { id }),
+  joinCommittee:   (u: string, committeeId: string, memberId: string, memberName: string) => call(u, '/api/committee/join', 'POST', { committeeId, memberId, memberName }),
   resetAll:        (u: string)                           => call(u, '/api/reset', 'POST'),
 };
 
@@ -84,7 +87,7 @@ const CORS = {
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-const empty = () => ({ votes: {}, voteSelections: {}, hands: [], motions: [], floorVotes: [], floorVoteSelections: {} });
+const empty = () => ({ votes: {}, voteSelections: {}, hands: [], motions: [], floorVotes: [], floorVoteSelections: {}, committeeSignups: {} });
 
 const ok  = (d, s = 200) => new Response(JSON.stringify(d), { status: s, headers: { ...CORS, 'Content-Type': 'application/json' } });
 const err = (m, s = 400) => ok({ error: m }, s);
@@ -190,6 +193,28 @@ export default {
         return ok({ ok: true });
       }
       if (p === '/api/floor-vote/close' && req.method === 'POST') { s.floorVotes = s.floorVotes.map(v => v.id === b.id ? { ...v, closed: true } : v); await save(); return ok({ ok: true }); }
+      if (p === '/api/committee/join'   && req.method === 'POST') {
+        const committeeId = String(b.committeeId || '').trim();
+        const memberId = String(b.memberId || '').trim();
+        const memberName = String(b.memberName || 'Member').trim().slice(0, 120);
+        if (!committeeId || !memberId) return err('Invalid committee join payload', 400);
+        if (!s.committeeSignups) s.committeeSignups = {};
+
+        for (const key of Object.keys(s.committeeSignups)) {
+          s.committeeSignups[key] = (s.committeeSignups[key] || []).filter((entry) => entry.memberId !== memberId);
+        }
+
+        const next = {
+          id: String(Date.now()),
+          committeeId,
+          memberId,
+          memberName,
+          joinedAt: new Date().toISOString(),
+        };
+        s.committeeSignups[committeeId] = [...(s.committeeSignups[committeeId] || []), next];
+        await save();
+        return ok({ ok: true });
+      }
       if (p === '/api/reset'            && req.method === 'POST') { await env.MEETING_KV.put('state', JSON.stringify(empty())); return ok({ ok: true }); }
 
       return err('Not found', 404);

@@ -249,9 +249,7 @@ export function VoteWidget({
 
 export const VOTE_ITEMS: { key: string; short: string }[] = [
   { key: 'agenda-adoption',     short: 'Agenda Adoption' },
-  { key: 'treasurer',           short: 'Treasurer' },
-  { key: 'financial-secretary', short: 'Financial Secretary' },
-  { key: 'parliamentarian',     short: 'Parliamentarian' },
+  { key: 'committee-slate',     short: 'Committee Participation' },
   { key: 'd9-sponsorship',      short: 'D9 Sponsorship' },
 ];
 

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Button } from "../components/ui/button";
 // Note: tabs used to render spreadsheet previews. We intentionally removed XLSX preview due to upstream security advisories.
 
-type ViewerKind = "pdf" | "image" | "docx" | "unknown";
+type ViewerKind = "pdf" | "image" | "docx" | "html" | "unknown";
 
 function getExt(path: string): string {
   const clean = path.split("#")[0]?.split("?")[0] || path;
@@ -52,6 +52,7 @@ export function DocumentViewerPage() {
     if (ext === "pdf") return "pdf";
     if (["png", "jpg", "jpeg", "webp", "gif", "svg"].includes(ext)) return "image";
     if (ext === "docx") return "docx";
+    if (ext === "html" || ext === "htm") return "html";
     return "unknown";
   }, [ext]);
 
@@ -181,6 +182,14 @@ export function DocumentViewerPage() {
               {loading ? <p className="text-sm text-slate-500">Loading preview…</p> : null}
 
               {kind === "pdf" ? (
+                <iframe
+                  title={name}
+                  src={abs.url}
+                  className="w-full h-[75vh] rounded-lg border border-black/10 bg-white/55"
+                />
+              ) : null}
+
+              {kind === "html" ? (
                 <iframe
                   title={name}
                   src={abs.url}

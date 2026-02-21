@@ -184,17 +184,23 @@ export function ChapterInfoPage() {
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.05 + index * 0.08, duration: 0.4 }}
                       >
-                        <Card className="h-full transition-all duration-300 group hover:-translate-y-1 hover:border-primary/40 hover:bg-white/10">
+                        <Card
+                          className="h-full cursor-pointer transition-all duration-300 group hover:-translate-y-1 hover:border-primary/40 hover:bg-white/10"
+                          onClick={() => setSelectedMember(officer)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              setSelectedMember(officer);
+                            }
+                          }}
+                          role="button"
+                          tabIndex={0}
+                        >
                           <CardContent className="p-5">
                             <div className="flex flex-col items-center text-center">
-                              <button
-                                type="button"
-                                className="nphc-holo-btn cursor-zoom-in rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                                onClick={() => setSelectedMember(officer)}
-                                aria-label={`View profile for ${officer.name}`}
-                              >
+                              <div className="nphc-holo-btn cursor-zoom-in rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
                                 <MemberPhoto member={officer} />
-                              </button>
+                              </div>
                               <h3 className="text-slate-900 text-base font-semibold leading-tight">{officer.name}</h3>
                               <Badge variant="secondary" className="mt-2 mb-2 border border-primary/25 bg-primary/15 text-primary">
                                 {officer.title}
@@ -206,7 +212,12 @@ export function ChapterInfoPage() {
                                 size="sm"
                                 className="w-full gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10 transition-all duration-200"
                               >
-                                <a href={toContactHref(officer)}>
+                                <a
+                                  href={toContactHref(officer)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                  }}
+                                >
                                   <Mail className="size-4" />
                                   Contact
                                 </a>
@@ -229,17 +240,23 @@ export function ChapterInfoPage() {
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.45 + index * 0.08, duration: 0.4 }}
                       >
-                        <Card className="h-full transition-all duration-300 group hover:-translate-y-1 hover:border-primary/40 hover:bg-white/10">
+                        <Card
+                          className="h-full cursor-pointer transition-all duration-300 group hover:-translate-y-1 hover:border-primary/40 hover:bg-white/10"
+                          onClick={() => setSelectedMember(chair)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              setSelectedMember(chair);
+                            }
+                          }}
+                          role="button"
+                          tabIndex={0}
+                        >
                           <CardContent className="p-5">
                             <div className="flex flex-col items-center text-center">
-                              <button
-                                type="button"
-                                className="nphc-holo-btn cursor-zoom-in rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                                onClick={() => setSelectedMember(chair)}
-                                aria-label={`View profile for ${chair.name}`}
-                              >
+                              <div className="nphc-holo-btn cursor-zoom-in rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
                                 <MemberPhoto member={chair} />
-                              </button>
+                              </div>
                               <h3 className="text-slate-900 text-base font-semibold leading-tight">{chair.name}</h3>
                               <Badge variant="secondary" className="mt-2 mb-2 border border-primary/25 bg-primary/15 text-primary">
                                 {chair.title}
@@ -251,7 +268,12 @@ export function ChapterInfoPage() {
                                 size="sm"
                                 className="w-full gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10 transition-all duration-200"
                               >
-                                <a href={toContactHref(chair)}>
+                                <a
+                                  href={toContactHref(chair)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                  }}
+                                >
                                   <Mail className="size-4" />
                                   Contact
                                 </a>

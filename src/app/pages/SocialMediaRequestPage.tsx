@@ -1,17 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "motion/react";
-import { ArrowLeft, Save, Upload, X } from "lucide-react";
+import { ArrowLeft, Save, Upload, X, Sparkles } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
-import { submitForm, uploadSocialAssets, type UploadedSocialAsset } from "../data/forms-api";
+import { autofillFromFlyer, submitForm, uploadSocialAssets, type UploadedSocialAsset } from "../data/forms-api";
 import { useCouncilSession } from "../hooks/use-council-session";
+import { useMemberProfile } from "../hooks/use-member-profile";
+import { DIVINE_NINE_ORGANIZATIONS } from "../data/member-profile-api";
 
 export function SocialMediaRequestPage() {
   const { session } = useCouncilSession();
+  const { profile } = useMemberProfile(session.authenticated);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -21,14 +24,26 @@ export function SocialMediaRequestPage() {
   const [eventName, setEventName] = useState("");
   const [caption, setCaption] = useState("");
   const [eventDate, setEventDate] = useState("");
-  const [orgAndChapterName, setOrgAndChapterName] = useState("");
+  const [organization, setOrganization] = useState("");
+  const [chapterName, setChapterName] = useState("");
   const [chapterHandle, setChapterHandle] = useState("");
   const [hashtags, setHashtags] = useState("N/A");
   const [additionalInfo, setAdditionalInfo] = useState("");
+  const [alsoSubmitEvent, setAlsoSubmitEvent] = useState(false);
 
   const [assetFiles, setAssetFiles] = useState<File[]>([]);
   const [assetLinksFallback, setAssetLinksFallback] = useState("");
   const [uploadedAssets, setUploadedAssets] = useState<UploadedSocialAsset[]>([]);
+  const [autofillBusy, setAutofillBusy] = useState(false);
+
+  useEffect(() => {
+    if (session.email) setEmail(session.email);
+  }, [session.email]);
+
+  useEffect(() => {
+    if (!profile.organization) return;
+    if (!organization) setOrganization(profile.organization);
+  }, [organization, profile.organization]);
 
   const removeFile = (index: number) => {
     setAssetFiles((prev) => prev.filter((_, i) => i !== index));
@@ -40,7 +55,8 @@ export function SocialMediaRequestPage() {
       ["Event Name", eventName],
       ["Caption", caption],
       ["Date of Event", eventDate],
-      ["Organization and Chapter Name", orgAndChapterName],
+      ["Organization", organization],
+      ["Chapter Name", chapterName],
       ["Chapter Social Media Handle", chapterHandle],
       ["Any Specific Hashtags", hashtags],
     ] as const;
@@ -88,22 +104,114 @@ export function SocialMediaRequestPage() {
         eventName,
         caption,
         eventDate,
-        orgAndChapterName,
+        orgAndChapterName: `${organization}${chapterName ? ` — ${chapterName}` : ""}`.trim(),
         chapterHandle,
         hashtags,
         additionalInfo,
         mediaFiles: uploaded,
         mediaLinks: assetLinksFallback,
+        submitAsEventAlso: alsoSubmitEvent,
         instructions:
           "Please submit your request 48–72 hours in advance of your desired posting date.",
       };
 
       const res = await submitForm("social_media_request", payload);
-      setMessage(`Submitted. Tracking ID: ${res.id}`);
+      let eventId = "";
+      if (alsoSubmitEvent) {
+        const uploadLinks = uploaded.map((f) => f.viewUrl).filter(Boolean).join("\n");
+        const flyerLinks = [assetLinksFallback, uploadLinks].filter(Boolean).join("\n").trim();
+        const eventSubmission = await submitForm("event_submission", {
+          email,
+          eventName,
+          eventDate,
+          startTime: "",
+          endTime: "",
+          location: "",
+          hostingOrgChapter: `${organization}${chapterName ? ` — ${chapterName}` : ""}`.trim(),
+          description: caption,
+          eventLinkUrl: "",
+          flyerFiles: [],
+          flyerLinks,
+          linkedSocialMediaRequestId: res.id,
+        });
+        eventId = eventSubmission.id;
+      }
+
+      setMessage(
+        eventId
+          ? `Submitted. Social Request ID: ${res.id} · Event Submission ID: ${eventId}`
+          : `Submitted. Tracking ID: ${res.id}`,
+      );
     } catch (e) {
       setError(e instanceof Error ? e.message : "Submission failed.");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const parseLinks = (raw: string) =>
+    String(raw || "")
+      .split(/[\s,\n]+/)
+      .map((part) => part.trim())
+      .filter(Boolean);
+
+  const runAutofill = async () => {
+    setAutofillBusy(true);
+    setError(null);
+    setMessage(null);
+    try {
+      let uploaded = uploadedAssets;
+      if (assetFiles.length > 0 && uploaded.length === 0) {
+        uploaded = await uploadSocialAssets(assetFiles);
+        setUploadedAssets(uploaded);
+      }
+
+      const candidates = [
+        ...uploaded.map((f) => f.viewUrl).filter(Boolean),
+        ...parseLinks(assetLinksFallback),
+      ];
+      const flyerUrl = candidates[0];
+      if (!flyerUrl) throw new Error("Upload flyer/image files or paste a flyer link before running autofill.");
+
+      const fields = await autofillFromFlyer({
+        flyerUrl,
+        formType: "social_media_request",
+      });
+
+      let applied = 0;
+      if (!eventName && fields.eventName) {
+        setEventName(fields.eventName);
+        applied += 1;
+      }
+      if (!eventDate && fields.eventDate) {
+        setEventDate(fields.eventDate);
+        applied += 1;
+      }
+      if (!caption && (fields.caption || fields.description)) {
+        setCaption(fields.caption || fields.description);
+        applied += 1;
+      }
+      if (!organization && fields.organization && DIVINE_NINE_ORGANIZATIONS.includes(fields.organization)) {
+        setOrganization(fields.organization);
+        applied += 1;
+      }
+      if (!chapterName && fields.chapterName) {
+        setChapterName(fields.chapterName);
+        applied += 1;
+      }
+      if (!chapterHandle && fields.chapterHandle) {
+        setChapterHandle(fields.chapterHandle);
+        applied += 1;
+      }
+      if ((!hashtags || hashtags === "N/A") && fields.hashtags) {
+        setHashtags(fields.hashtags);
+        applied += 1;
+      }
+      setMessage(applied > 0 ? `Flyer autofill applied ${applied} field${applied === 1 ? "" : "s"}.` : "No blank fields were updated.");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Flyer autofill failed.");
+    } finally {
+      setAutofillBusy(false);
     }
   };
 
@@ -173,11 +281,25 @@ export function SocialMediaRequestPage() {
                 </div>
 
                 <div className="space-y-1 sm:col-span-2">
-                  <Label>Organization and Chapter Name *</Label>
+                  <Label>Organization *</Label>
+                  <select
+                    value={organization}
+                    onChange={(e) => setOrganization(e.target.value)}
+                    className="w-full rounded-md border border-black/15 bg-white/60 px-3 py-2 text-sm text-slate-900"
+                  >
+                    <option value="">Select organization</option>
+                    {DIVINE_NINE_ORGANIZATIONS.map((org) => (
+                      <option key={org} value={org}>{org}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1 sm:col-span-2">
+                  <Label>Chapter Name *</Label>
                   <Input
-                    value={orgAndChapterName}
-                    onChange={(e) => setOrgAndChapterName(e.target.value)}
-                    placeholder="e.g., Alpha Phi Alpha Fraternity, Inc., Sigma Chi Lambda Chapter"
+                    value={chapterName}
+                    onChange={(e) => setChapterName(e.target.value)}
+                    placeholder="e.g., Sigma Chi Lambda Chapter"
                   />
                 </div>
 
@@ -195,20 +317,26 @@ export function SocialMediaRequestPage() {
                       Upload up to 5 files. Max 100MB each. (PDF, JPG, PNG, HEIC accepted)
                     </p>
                   </div>
-                  <label className="inline-flex items-center gap-2 text-sm font-semibold rounded-md border border-black/15 bg-white/55 px-3 py-2 cursor-pointer hover:bg-white/5 hover:border-primary/40 transition">
-                    <Upload className="size-4" />
-                    Choose Files
-                    <input
-                      type="file"
-                      multiple
-                      accept=".pdf,image/*,.heic,.heif"
-                      className="hidden"
-                      onChange={(e) => {
-                        const list = Array.from(e.target.files || []);
-                        setAssetFiles((prev) => [...prev, ...list].slice(0, 5));
-                      }}
-                    />
-                  </label>
+                  <div className="flex items-center gap-2">
+                    <label className="inline-flex items-center gap-2 text-sm font-semibold rounded-md border border-black/15 bg-white/55 px-3 py-2 cursor-pointer hover:bg-white/5 hover:border-primary/40 transition">
+                      <Upload className="size-4" />
+                      Choose Files
+                      <input
+                        type="file"
+                        multiple
+                        accept=".pdf,image/*,.heic,.heif"
+                        className="hidden"
+                        onChange={(e) => {
+                          const list = Array.from(e.target.files || []);
+                          setAssetFiles((prev) => [...prev, ...list].slice(0, 5));
+                        }}
+                      />
+                    </label>
+                    <Button type="button" variant="outline" onClick={runAutofill} disabled={autofillBusy || !session.authenticated}>
+                      <Sparkles className="mr-2 size-4" />
+                      {autofillBusy ? "Autofilling…" : "Autofill from Flyer"}
+                    </Button>
+                  </div>
                 </div>
 
                 {assetFiles.length > 0 ? (
@@ -254,6 +382,18 @@ export function SocialMediaRequestPage() {
                   placeholder="For customized posting: specific title to use, names of people in photos, extra context, etc."
                 />
               </div>
+
+              <label className="flex items-start gap-2 rounded-lg border border-black/10 bg-white/5 p-3 text-sm text-slate-700">
+                <input
+                  type="checkbox"
+                  className="mt-0.5 accent-primary"
+                  checked={alsoSubmitEvent}
+                  onChange={(e) => setAlsoSubmitEvent(e.target.checked)}
+                />
+                <span>
+                  Also submit this as an Event Submission so it can be reviewed for the Programs &amp; Events calendar.
+                </span>
+              </label>
 
               <Button onClick={submit} disabled={saving || !session.authenticated} className="w-full sm:w-auto">
                 <Save className="mr-2 size-4" />

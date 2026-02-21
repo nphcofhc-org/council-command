@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useLocation, useNavigate, Link } from "react-router";
 import { useState, useEffect } from "react";
-import { Home, Users, Calendar, TrendingUp, FolderOpen, Shield, Menu, X, Target, ClipboardList, MessagesSquare, Bell, AlertTriangle, Info } from "lucide-react";
+import { Home, Users, Calendar, TrendingUp, FolderOpen, Shield, Menu, X, Target, ClipboardList, MessagesSquare, Bell, AlertTriangle, Info, MessageCircle } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useSiteConfig } from "../hooks/use-site-data";
 import { useCouncilSession } from "../hooks/use-council-session";
@@ -15,6 +15,7 @@ import { GuidedTour } from "./GuidedTour";
 import { trackPortalActivity } from "../data/admin-api";
 import { MemberProfileRequiredModal } from "./MemberProfileRequiredModal";
 import { fetchMemberAlerts, type MemberAlerts } from "../data/content-api";
+import { PageEditShortcut } from "./PageEditShortcut";
 
 const baseNavItems: Array<{ to: string; label: string; icon: any; danger?: boolean }> = [
   { to: "/", label: "Home", icon: Home },
@@ -24,6 +25,7 @@ const baseNavItems: Array<{ to: string; label: string; icon: any; danger?: boole
   { to: "/resources", label: "Resources", icon: FolderOpen },
   { to: "/forms", label: "Forms", icon: ClipboardList },
   { to: "/forum", label: "Forum", icon: MessagesSquare },
+  { to: "/chat", label: "Chat", icon: MessageCircle },
   {
     to: "/reports/signature-event-comparison",
     label: "For Your Consideration: Signature Event Comparison",
@@ -565,6 +567,14 @@ export function MainLayout() {
           <Outlet />
         )}
       </main>
+
+      {!isFramed ? (
+        <PageEditShortcut
+          session={session}
+          editorMode={editorMode}
+          onToggleEditorMode={toggleEditorMode}
+        />
+      ) : null}
 
       {/* Footer */}
       <footer className="mt-auto border-t border-black/10 bg-white/55 py-8 text-slate-500 lg:hidden">

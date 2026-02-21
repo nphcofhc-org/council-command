@@ -37,7 +37,7 @@ export function MeetingDeckPage() {
                 Meeting Deck (Member View)
               </CardTitle>
               <CardDescription>
-                View-only access for members. Voting and meeting controls are available to council leadership only.
+                Members can follow along in real time, participate in votes, raise hands, and join committees from their own devices.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -52,8 +52,9 @@ export function MeetingDeckPage() {
           <MeetingDeck
             voterEmail={session.email}
             defaultMemberName={defaultMemberName}
-            canControl={false}
+            canControl={session.authenticated}
             meetingDateLabel="February 23, 2026"
+            showJoinCelebration={session.isCouncilAdmin || session.isPresident}
           />
         </motion.div>
       </div>

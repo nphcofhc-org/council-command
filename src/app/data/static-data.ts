@@ -125,8 +125,22 @@ export const delegates: Delegate[] = [
 // ═════════════════════════════════════════════════════════════════════════════
 
 export const governingDocuments: GoverningDocument[] = [
-  { id: "gov-1", title: "NPHC National Constitution (2020)",             type: "National Governance",   lastUpdated: "2020",            status: "Active" },
-  { id: "gov-2", title: "NPHC Hudson County Local Bylaws (2023)",        type: "Local Governance",      lastUpdated: "2023",            status: "Active" },
+  {
+    id: "gov-1",
+    title: "NPHC National Constitution (2020)",
+    type: "National Governance",
+    lastUpdated: "2020",
+    status: "Active",
+    fileUrl: "/docs/nphc-of-hudson-county-comprehensive-data-brief-for-intranet-integration.docx",
+  },
+  {
+    id: "gov-2",
+    title: "NPHC Hudson County Local Bylaws (2023)",
+    type: "Local Governance",
+    lastUpdated: "2023",
+    status: "Active",
+    fileUrl: "/docs/nphc-of-hudson-county-centralized-intranet-portal-data-brief.xlsx",
+  },
   { id: "gov-3", title: "Council Accountability and Compliance Standards", type: "Compliance",         lastUpdated: "February 2026",   status: "Reference", fileUrl: "/docs/nphc-council-accountability-and-compliance-standards.docx" },
 ];
 
@@ -159,10 +173,10 @@ export const upcomingMeetings: UpcomingMeeting[] = [
     id: "mtg-3",
     title: "February 2026 General Body Meeting",
     date: "February 23, 2026",
-    time: "",
+    time: "8:00 PM – 9:00 PM ET",
     location: "Virtual Meeting",
     type: "General Body",
-    joinUrl: "", // Set in Council Command Center → Content → Meetings
+    joinUrl: "https://meet.google.com/ktp-drvx-rjx",
     joinLabel: "Join Google Meet",
   },
   {
@@ -377,9 +391,9 @@ export const sharedForms: SharedFormCategory[] = [
   {
     category: "Event Planning",
     forms: [
-      { id: "form-1",  name: "Event Proposal & Budget Request Form",             description: "Submit proposals for new council-sponsored events",   link: "#" },
-      { id: "form-2",  name: "Event Post-Report & Financial Reconciliation",     description: "Document event outcomes and final expenses",          link: "#" },
-      { id: "form-3",  name: "Facility & Venue Request Form",                    description: "Reserve venues for NPHC council activities",          link: "#" },
+      { id: "form-1",  name: "Event Proposal & Budget Request Form",             description: "Submit proposals for new council-sponsored events",   link: "#/forms/event-proposal-budget" },
+      { id: "form-2",  name: "Event Post-Report & Financial Reconciliation",     description: "Document event outcomes and final expenses",          link: "#/forms/event-post-report-reconciliation" },
+      { id: "form-3",  name: "Event Submission Form",                            description: "Submit an event for calendar approval and visibility", link: "#/forms/events" },
     ],
   },
   {
@@ -452,6 +466,14 @@ export const trainingResources: TrainingResource[] = [
     type: "Reference",
     updated: "February 2026",
     fileUrl: "/docs/notebooklm-mind-map.png",
+  },
+  {
+    id: "trn-5",
+    title: "Member Quick Start (Top 5 Need-to-Know)",
+    description: "Shareable onboarding guide covering access, verification, home screen setup, meeting materials, and event sharing.",
+    type: "Onboarding",
+    updated: "February 2026",
+    fileUrl: "/docs/member-quick-start.html",
   },
 ];
 

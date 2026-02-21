@@ -16,6 +16,8 @@ function formLabel(formKey) {
   if (formKey === "social_media_request") return "Social Media Intake";
   if (formKey === "committee_report") return "Committee Report";
   if (formKey === "event_submission") return "Event Submission";
+  if (formKey === "event_proposal_budget_request") return "Event Proposal & Budget Request";
+  if (formKey === "event_post_report_financial_reconciliation") return "Event Post-Report & Financial Reconciliation";
   return formKey;
 }
 
@@ -72,6 +74,22 @@ function summarizeLines(formKey, payload) {
       `Event Date: ${String(p.eventDate || "").trim()}`,
       `Location: ${String(p.location || "").trim()}`,
       `Host: ${String(p.hostingOrgChapter || "").trim()}`,
+    ].filter(Boolean);
+  }
+  if (formKey === "event_proposal_budget_request") {
+    return [
+      `Event Name: ${String(p.eventName || "").trim()}`,
+      `Proposed Date: ${String(p.proposedDate || "").trim()}`,
+      `Requested Budget: ${String(p.requestedBudget || "").trim()}`,
+      `Requestor: ${String(p.requestorName || "").trim()}`,
+    ].filter(Boolean);
+  }
+  if (formKey === "event_post_report_financial_reconciliation") {
+    return [
+      `Event Name: ${String(p.eventName || "").trim()}`,
+      `Event Date: ${String(p.eventDate || "").trim()}`,
+      `Actual Spend: ${String(p.actualSpend || "").trim()}`,
+      `Requestor: ${String(p.requestorName || "").trim()}`,
     ].filter(Boolean);
   }
   return [];

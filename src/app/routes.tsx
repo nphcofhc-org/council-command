@@ -30,11 +30,14 @@ import { ForumPage } from "./pages/ForumPage";
 import { ForumTopicPage } from "./pages/ForumTopicPage";
 import { CouncilMemberDirectoryPage } from "./pages/CouncilMemberDirectoryPage";
 import { EventSubmissionPage } from "./pages/EventSubmissionPage";
+import { EventProposalBudgetRequestPage } from "./pages/EventProposalBudgetRequestPage";
+import { EventPostReportFinancialReconciliationPage } from "./pages/EventPostReportFinancialReconciliationPage";
 import { CouncilDataBriefPage } from "./pages/CouncilDataBriefPage";
 import { CouncilExecMeetingPage } from "./pages/CouncilExecMeetingPage";
 import { CouncilSiteMaintenancePage } from "./pages/CouncilSiteMaintenancePage";
 import { MeetingDeckPage } from "./pages/MeetingDeckPage";
 import { CouncilAttendancePage } from "./pages/CouncilAttendancePage";
+import { ChatPage } from "./pages/ChatPage";
 
 // Hash routing is the most reliable option for static hosting + Google Sites embedding
 // (no server-side rewrite rules needed to handle deep links).
@@ -51,6 +54,7 @@ export const router = createHashRouter([
       { path: "decision-portal", Component: DecisionPortalPage },
       { path: "forum", Component: ForumPage },
       { path: "forum/:id", Component: ForumTopicPage },
+      { path: "chat", Component: ChatPage },
       { path: "reports/signature-event-comparison", Component: SignatureEventComparisonReportPage },
       { path: "meeting-deck", Component: MeetingDeckPage },
       { path: "viewer", Component: DocumentViewerPage },
@@ -60,6 +64,8 @@ export const router = createHashRouter([
       { path: "forms/social-media", Component: SocialMediaRequestPage },
       { path: "forms/committee-report", Component: CommitteeReportPage },
       { path: "forms/events", Component: EventSubmissionPage },
+      { path: "forms/event-proposal-budget", Component: EventProposalBudgetRequestPage },
+      { path: "forms/event-post-report-reconciliation", Component: EventPostReportFinancialReconciliationPage },
       { path: "forms/my", Component: MySubmissionsPage },
       { path: "figma-staging", Component: FigmaStagingPage },
       { path: "council-admin", Component: CouncilAdminPage },

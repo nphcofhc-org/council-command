@@ -9,19 +9,17 @@ export type VoteChoice = 'yay' | 'nay';
 export interface HandRaise  { id: string; name: string; time: string; }
 export interface Motion     { id: string; author: string; text: string; time: string; seconded: boolean; }
 export interface FloorVote  { id: string; question: string; yay: number; nay: number; closed: boolean; createdAt: string; }
+export interface CommitteeSignup { id: string; committeeId: string; memberId: string; memberName: string; joinedAt: string; }
 
 export const VOTE_LABELS: Record<string, { label: string; desc: string }> = {
   'agenda-adoption':      { label: 'Adoption of the Agenda',  desc: 'Motion to approve the order of business' },
-  'treasurer':            { label: 'Treasurer',                desc: 'Ratify the Treasurer appointment' },
-  'financial-secretary':  { label: 'Financial Secretary',      desc: 'Ratify the Financial Secretary appointment' },
-  'parliamentarian':      { label: 'Parliamentarian',          desc: 'Ratify the Parliamentarian appointment' },
+  'committee-slate':      { label: 'Committee Participation',   desc: 'Acknowledge committee sign-up slate' },
   'd9-sponsorship':       { label: '$500 D9 Sponsorship',      desc: 'Approve funding for Trenton delegation' },
 };
 
 export const SLIDE_VOTES: Record<number, string[]> = {
   1: ['agenda-adoption'],
-  3: ['treasurer', 'financial-secretary', 'parliamentarian'],
-  4: ['d9-sponsorship'],
+  4: ['committee-slate', 'd9-sponsorship'],
 };
 
 // ─── Context type ────────────────────────────────────────────────────────────
@@ -62,6 +60,10 @@ interface Ctx {
   createFloorVote: (question: string) => void;
   castFloorVote:   (id: string, opt: VoteChoice) => void;
   closeFloorVote:  (id: string) => void;
+  committeeSignups: Record<string, CommitteeSignup[]>;
+  myCommitteeId: string | null;
+  joinCommittee: (committeeId: string, memberName?: string) => void;
+  lastCommitteeJoin: CommitteeSignup | null;
   // Reset all
   resetMeeting: () => void;
 }
@@ -76,6 +78,7 @@ const MeetingContext = createContext<Ctx>({
   hands: [], myHandId: null, raiseHand: () => {}, lowerMyHand: () => {}, lowerAllHands: () => {},
   motions: [], submitMotion: () => {}, secondMotion: () => {},
   floorVotes: [], floorVoteSelections: {}, myFloorVotes: {}, createFloorVote: () => {}, castFloorVote: () => {}, closeFloorVote: () => {},
+  committeeSignups: {}, myCommitteeId: null, joinCommittee: () => {}, lastCommitteeJoin: null,
   resetMeeting: () => {},
 });
 
@@ -148,6 +151,9 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
   const [floorVotes, setFloorVotes] = useState<FloorVote[]>([]);
   const [floorVoteSelections, setFloorVoteSelections] = useState<Record<string, Record<string, CFVoteSelection>>>({});
   const [myFloorVotes, setMyFloorVotes] = useState<Record<string, VoteChoice>>({});
+  const [committeeSignups, setCommitteeSignups] = useState<Record<string, CommitteeSignup[]>>({});
+  const [myCommitteeId, setMyCommitteeId] = useState<string | null>(null);
+  const [lastCommitteeJoin, setLastCommitteeJoin] = useState<CommitteeSignup | null>(null);
 
   const myHandIdRef = useRef(myHandId);
   myHandIdRef.current = myHandId;
@@ -168,6 +174,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
       ? Object.fromEntries(Object.entries(incomingVoteSelections).map(([key, bucket]) => [key, tallySelections(bucket)]))
       : (s.votes ?? {});
     const incomingFloorSelections = s.floorVoteSelections ?? {};
+    const incomingCommitteeSignups = s.committeeSignups ?? {};
 
     setVotes(incomingVotes);
     setVoteSelections(incomingVoteSelections);
@@ -189,6 +196,28 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
           .filter((entry): entry is [string, VoteChoice] => entry[1] === 'yay' || entry[1] === 'nay'),
       ),
     );
+    setCommitteeSignups(
+      Object.fromEntries(
+        Object.entries(incomingCommitteeSignups).map(([key, value]) => [
+          key,
+          Array.isArray(value) ? value.map((row) => ({
+            id: String(row?.id || ""),
+            committeeId: String(row?.committeeId || key),
+            memberId: String(row?.memberId || ""),
+            memberName: String(row?.memberName || "Member"),
+            joinedAt: String(row?.joinedAt || ""),
+          })) : [],
+        ]),
+      ),
+    );
+    setMyCommitteeId(() => {
+      for (const [committeeId, entries] of Object.entries(incomingCommitteeSignups)) {
+        if (Array.isArray(entries) && entries.some((entry) => String(entry?.memberId || "") === voterId)) {
+          return committeeId;
+        }
+      }
+      return null;
+    });
     // Reconcile myHandId — keep it only if it's still in the hands list
     setMyHandId(prev => (s.hands ?? []).some(h => h.id === prev) ? prev : null);
   }, [voterId]);
@@ -364,6 +393,53 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
     withCF(() => CF.closeFloorVote(workerUrl, id));
   };
 
+  // ── Committee signups ──────────────────────────────────────────────────
+
+  const joinCommittee = (committeeId: string, preferredName?: string) => {
+    if (!canControl) return;
+    const normalizedCommittee = String(committeeId || "").trim();
+    if (!normalizedCommittee) return;
+    const memberId = voterId;
+    const resolvedName = (String(preferredName || "").trim() || memberName || derivedDefaultName || voterId).slice(0, 120);
+    const nextJoin: CommitteeSignup = {
+      id: `${Date.now()}`,
+      committeeId: normalizedCommittee,
+      memberId,
+      memberName: resolvedName,
+      joinedAt: new Date().toISOString(),
+    };
+
+    setCommitteeSignups((prev) => {
+      const next: Record<string, CommitteeSignup[]> = {};
+      for (const [key, entries] of Object.entries(prev)) {
+        next[key] = (entries || []).filter((entry) => entry.memberId !== memberId);
+      }
+      next[normalizedCommittee] = [...(next[normalizedCommittee] || []), nextJoin];
+      return next;
+    });
+    setMyCommitteeId(normalizedCommittee);
+    setLastCommitteeJoin(nextJoin);
+    withCF(() => CF.joinCommittee(workerUrl, normalizedCommittee, memberId, resolvedName));
+  };
+
+  useEffect(() => {
+    let latest: CommitteeSignup | null = null;
+    for (const entries of Object.values(committeeSignups)) {
+      for (const row of entries || []) {
+        if (!latest) {
+          latest = row;
+          continue;
+        }
+        if (String(row.joinedAt || "") > String(latest.joinedAt || "")) latest = row;
+      }
+    }
+    if (!latest) return;
+    setLastCommitteeJoin((prev) => {
+      if (prev && prev.id === latest?.id) return prev;
+      return latest;
+    });
+  }, [committeeSignups]);
+
   // ── Reset all ──────────────────────────────────────────────────────────
 
   const resetMeeting = () => {
@@ -377,6 +453,9 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
     setFloorVotes([]);
     setFloorVoteSelections({});
     setMyFloorVotes({});
+    setCommitteeSignups({});
+    setMyCommitteeId(null);
+    setLastCommitteeJoin(null);
     withCF(() => CF.resetAll(workerUrl));
   };
 
@@ -390,6 +469,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
       hands, myHandId, raiseHand, lowerMyHand, lowerAllHands,
       motions, submitMotion, secondMotion,
       floorVotes, floorVoteSelections, myFloorVotes, createFloorVote, castFloorVote, closeFloorVote,
+      committeeSignups, myCommitteeId, joinCommittee, lastCommitteeJoin,
       resetMeeting,
     }}>
       {children}

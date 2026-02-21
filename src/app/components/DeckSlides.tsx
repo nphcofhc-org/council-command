@@ -1,10 +1,11 @@
 import {
-  Lightbulb, Eye, Settings, Link2, CheckCircle2, Clock,
+  Lightbulb, Eye, Settings, Link2,
   FileText, Cpu, Sun, Package, Trophy, Heart, ChevronRight, Star, AlertCircle,
-  ExternalLink, ClipboardList, DollarSign, Users, Camera
+  ExternalLink, DollarSign
 } from 'lucide-react';
 import { useState } from 'react';
 import { VoteWidget, VoteSummary } from './VoteWidget';
+import { useMeeting } from './MeetingContext';
 
 // ─── Tokens (WHITE background theme) ─────────────────────────────────────────
 const BG      = '#FFFFFF';
@@ -23,6 +24,8 @@ const CANDIDATE_1    = 'https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/NPHC
 const CANDIDATE_2    = 'https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/NPHC%20Executive%20Council%20(2).png';
 const CANDIDATE_3    = 'https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/NPHC%20Executive%20Council%20(3).png';
 const D9_TRENTON_URL = 'https://d9intrenton.my.canva.site/home/';
+const THANK_YOU_LETTER_IMAGE_URL = 'https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/2.png';
+const FUNDRAISING_TOTAL_IMAGE_URL = 'https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/3.png';
 
 // ─── Primitives ──────────────────────────────────────────────────────────────
 
@@ -209,177 +212,179 @@ export function Slide3Vision({ isMobile = false }: { isMobile?: boolean }) {
   );
 }
 
-// ─── Slide 4: Board Ratification ──────────────────────────────────────────────
+// ─── Slide 4: Meet the E-Board ────────────────────────────────────────────────
 
-const candidates = [
-  { img: CANDIDATE_1, name: 'Treasurer Candidate', role: 'Treasurer',          voteKey: 'treasurer' },
-  { img: CANDIDATE_3, name: 'Chris Gadsden',        role: 'Financial Secretary', voteKey: 'financial-secretary' },
-  { img: CANDIDATE_2, name: 'Ayesha Noel-Smith',   role: 'Parliamentarian',     voteKey: 'parliamentarian' },
+const eboardMembers = [
+  { id: 'eb-president', name: 'Christopher DeMarkus', role: 'President', chapter: 'Alpha Phi Alpha Fraternity, Inc.', img: CANDIDATE_1 },
+  { id: 'eb-vp', name: 'Kimberly Conway', role: 'Vice President', chapter: 'Alpha Kappa Alpha Sorority, Inc.', img: CANDIDATE_2 },
+  { id: 'eb-secretary', name: 'April Stitt', role: 'Secretary', chapter: 'Sigma Gamma Rho Sorority, Inc.', img: CANDIDATE_3 },
+  { id: 'eb-treasurer', name: 'Gibrill Kamara', role: 'Treasurer', chapter: 'Alpha Phi Alpha Fraternity, Inc.', img: CANDIDATE_1 },
+  { id: 'eb-finsec', name: 'Chris Gadsden', role: 'Financial Secretary', chapter: 'Phi Beta Sigma Fraternity, Inc.', img: CANDIDATE_3 },
+  { id: 'eb-parliamentarian', name: 'Ayesha Noel-Smith', role: 'Parliamentarian', chapter: 'Zeta Phi Beta Sorority, Inc.', img: CANDIDATE_2 },
+  { id: 'eb-chaplain', name: 'Dr. Viva White', role: 'Chaplain', chapter: 'Zeta Phi Beta Sorority, Inc.', img: CANDIDATE_2 },
 ];
 
-const confirmedRoles = [
-  { role: 'Service Chair',     desc: 'Community service coordination' },
-  { role: 'Scholarship Chair', desc: 'Academic award administration' },
-  { role: 'Fundraising Chair', desc: 'Revenue generation & events' },
+const committeeChairs = [
+  { id: 'program-committee', title: 'Program Committee', chair: 'Kimberly Conway', chapter: 'Alpha Kappa Alpha Sorority, Inc.', focus: 'Event design, calendars, and chapter coordination.' },
+  { id: 'service-committee', title: 'Service Committee', chair: 'Tina Jones', chapter: 'Delta Sigma Theta Sorority, Inc.', focus: 'Community service initiatives and impact tracking.' },
+  { id: 'fundraising-committee', title: 'Fundraising Committee', chair: 'Dr. Azaria Cunningham', chapter: 'NPHC Council', focus: 'Donor strategy, campaigns, and event revenue plans.' },
+  { id: 'scholarship-committee', title: 'Scholarship Committee', chair: 'Dr. Aaliyah Davis', chapter: 'NPHC Council', focus: 'Scholarship review process and award administration.' },
 ];
 
 export function Slide4Ratification({ isMobile = false }: { isMobile?: boolean }) {
   return (
     <div style={{ width: '100%', height: '100%', background: BG_ALT, display: 'flex', flexDirection: 'column', padding: isMobile ? '16px' : 'clamp(12px,2.6%,32px)', boxSizing: 'border-box', overflow: 'hidden' }}>
       <div style={{ marginBottom: isMobile ? 10 : 8, flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Label>Action Item</Label>
-          <Badge solid>Vote Required</Badge>
-        </div>
-        <h1 style={{ color: BLACK, margin: '5px 0 0', fontSize: isMobile ? '1.45rem' : 'clamp(1.2rem,2.6vw,1.85rem)', fontWeight: 700 }}>Board Ratification & Appointments</h1>
+        <Label>Leadership Roster</Label>
+        <h1 style={{ color: BLACK, margin: '5px 0 0', fontSize: isMobile ? '1.45rem' : 'clamp(1.2rem,2.6vw,1.85rem)', fontWeight: 700 }}>Meet the E-Board</h1>
         <SilverLine />
       </div>
 
-      {/* Candidates label */}
-      <div style={{ color: SILVER, fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: isMobile ? 8 : 6, flexShrink: 0 }}>
-        Candidates — Vote to Ratify
-      </div>
-
-      {/* Candidate cards — vertical layout with vote underneath each */}
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: isMobile ? 10 : 12, flex: 1, minHeight: 0, overflow: isMobile ? 'auto' : 'visible' }}>
-        {candidates.map(({ img, name, role, voteKey }) => (
-          <div key={voteKey} style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '14px' : 'clamp(12px,2%,18px)', display: 'flex', flexDirection: 'column', gap: isMobile ? 10 : 10, position: 'relative', overflow: 'visible' }}>
-            {/* Top accent line */}
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#808080,transparent)', borderRadius: '12px 12px 0 0' }} />
-
-            {/* Photo + Info */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 14 : 12, paddingTop: 4 }}>
-              <div style={{ width: isMobile ? 56 : 'clamp(48px,7vw,64px)', height: isMobile ? 56 : 'clamp(48px,7vw,64px)', borderRadius: 10, overflow: 'hidden', flexShrink: 0, border: `1px solid ${BORDER2}`, background: BG_EL }}>
-                <img src={img} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />
-              </div>
-              <div style={{ minWidth: 0 }}>
-                <div style={{ color: BLACK, fontSize: isMobile ? '1.05rem' : 'clamp(0.84rem,1.5vw,1.05rem)', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</div>
-                <div style={{ color: SILVER, fontSize: isMobile ? '0.82rem' : 'clamp(0.68rem,1.15vw,0.82rem)', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: 3 }}>{role}</div>
-              </div>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, minmax(0, 1fr))', gap: isMobile ? 10 : 10, flex: 1, minHeight: 0, overflow: 'auto', alignContent: 'start' }}>
+        {eboardMembers.map(({ id, img, name, role, chapter }) => (
+          <div key={id} style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 10, padding: isMobile ? '10px 12px' : '8px 10px', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: isMobile ? 48 : 42, height: isMobile ? 48 : 42, borderRadius: 8, overflow: 'hidden', flexShrink: 0, border: `1px solid ${BORDER2}`, background: BG_EL }}>
+              <img src={img} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />
             </div>
-
-            {/* Vote widget underneath */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-              <VoteWidget voteKey={voteKey} label={role} compact />
+            <div style={{ minWidth: 0 }}>
+              <div style={{ color: BLACK, fontSize: isMobile ? '0.92rem' : '0.82rem', fontWeight: 700, lineHeight: 1.2 }}>{name}</div>
+              <div style={{ color: SILVER, fontSize: isMobile ? '0.74rem' : '0.64rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 2 }}>{role}</div>
+              <div style={{ color: '#666', fontSize: isMobile ? '0.75rem' : '0.62rem', marginTop: 2, lineHeight: 1.35 }}>{chapter}</div>
             </div>
           </div>
         ))}
       </div>
-
-      {/* Confirmed & Pending strip — desktop only */}
-      {!isMobile && (
-        <div style={{ display: 'flex', gap: 10, marginTop: 10, flexShrink: 0 }}>
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10, background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 8, padding: '7px 14px' }}>
-            <CheckCircle2 size={12} color={SILVER_M} style={{ flexShrink: 0 }} />
-            <span style={{ color: SILVER, fontSize: '0.66rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', flexShrink: 0 }}>Confirmed</span>
-            <div style={{ width: 1, height: 16, background: BORDER, flexShrink: 0 }} />
-            {confirmedRoles.map(({ role }) => (
-              <span key={role} style={{ color: SILVER_L, fontSize: 'clamp(0.64rem,1.1vw,0.8rem)', fontWeight: 600, whiteSpace: 'nowrap' }}>{role}</span>
-            ))}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 8, padding: '7px 14px' }}>
-            <Clock size={12} color={SILVER} style={{ flexShrink: 0 }} />
-            <span style={{ color: SILVER, fontSize: '0.66rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', flexShrink: 0 }}>Pending</span>
-            <div style={{ width: 1, height: 16, background: BORDER, flexShrink: 0 }} />
-            <span style={{ color: SILVER_L, fontSize: 'clamp(0.64rem,1.1vw,0.8rem)', fontWeight: 600 }}>Historian</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
 
-// ─── Slide 5: Financials ──────────────────────────────────────────────────────
-
-const march1Items = [
-  { icon: Users,         label: 'Roster Verification',     note: 'Confirm all member names, active/inactive statuses, and contact information are current in the system. Each chapter president should verify their chapter roster.' },
-  { icon: ClipboardList, label: 'Officer Profiles',         note: 'Submit updated officer bios, headshots, and contact details for the annual directory. Ensure all newly elected or appointed officers are reflected.' },
-  { icon: DollarSign,    label: 'Financial Accountability', note: 'Reconcile all income, expenses, dues collected, and outstanding balances for the fiscal year. Treasurers must provide a full ledger summary.' },
-  { icon: Heart,         label: 'Service Logs',             note: 'Compile volunteer hours, event attendance, and community impact data. MLK Day of Service totals are required — reach out to your org if you haven\'t already.' },
-  { icon: Camera,        label: 'Event Documentation',      note: 'Upload photos, flyers, and media from all council events for the annual report archive and D9 submission package.' },
-];
+// ─── Slide 5: Committee Chairs & Sign-Up ─────────────────────────────────────
 
 export function Slide5Financials({ isMobile = false }: { isMobile?: boolean }) {
+  const { committeeSignups, myCommitteeId, joinCommittee, memberName } = useMeeting();
+  const totalMembers = Object.values(committeeSignups).reduce((sum, rows) => sum + rows.length, 0);
+
   return (
     <div style={{ width: '100%', height: '100%', background: BG, display: 'flex', flexDirection: 'column', padding: isMobile ? '16px' : 'clamp(14px,3%,36px)', boxSizing: 'border-box', overflow: 'hidden' }}>
       <div style={{ marginBottom: isMobile ? 12 : 10, flexShrink: 0 }}>
-        <Label>Finance & Compliance</Label>
-        <h1 style={{ color: BLACK, margin: '5px 0 0', fontSize: isMobile ? '1.5rem' : 'clamp(1.35rem,2.8vw,2rem)', fontWeight: 700 }}>Financials & Compliance</h1>
+        <Label>Participation</Label>
+        <h1 style={{ color: BLACK, margin: '5px 0 0', fontSize: isMobile ? '1.5rem' : 'clamp(1.35rem,2.8vw,2rem)', fontWeight: 700 }}>Committee Chairs & Sign-Up</h1>
         <SilverLine my={8} />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 10 : 14, flex: 1, minHeight: 0, overflow: isMobile ? 'auto' : 'hidden' }}>
-        {/* D9 */}
-        <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '14px' : 'clamp(14px,2.4%,24px)', display: 'flex', flexDirection: 'column', gap: isMobile ? 10 : 10, flexShrink: 0, position: 'relative' }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#808080,transparent)', borderRadius: '12px 12px 0 0' }} />
-          <div>
-            <Label>D9 in Trenton</Label>
-            <h3 style={{ color: BLACK, margin: '6px 0 4px', fontSize: isMobile ? '1.2rem' : 'clamp(0.95rem,1.7vw,1.25rem)', fontWeight: 700 }}>April 9–11, 2026</h3>
-            <p style={{ color: '#555', margin: 0, fontSize: isMobile ? '0.95rem' : 'clamp(0.68rem,1.15vw,0.88rem)', lineHeight: 1.5 }}>
-              Statewide Advocacy & Civic Engagement Summit. Engage directly with NJ legislators.
-            </p>
-          </div>
-          <VoteWidget voteKey="d9-sponsorship" label="$500 D9 Sponsorship Fee" description={isMobile ? undefined : 'Approve funding for NPHC delegation to the Trenton summit'} />
-          <a
-            href={D9_TRENTON_URL}
-            target="_blank"
-            rel="noreferrer"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              alignSelf: 'flex-start',
-              background: '#FFFFFF',
-              color: SILVER_L,
-              border: `1px solid ${BORDER2}`,
-              borderRadius: 8,
-              padding: isMobile ? '6px 10px' : '5px 10px',
-              fontSize: isMobile ? '0.82rem' : 'clamp(0.62rem,1.05vw,0.78rem)',
-              fontWeight: 700,
-              letterSpacing: '0.04em',
-              textDecoration: 'none',
-            }}
-          >
-            Open D9 in Trenton Link
-            <ExternalLink size={12} />
-          </a>
-          {!isMobile && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-              {['Civic advocacy at the state level', 'NPHC delegation representation', 'Legislative networking'].map(item => (
-                <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 7, color: '#555', fontSize: 'clamp(0.64rem,1.1vw,0.82rem)' }}>
-                  <ChevronRight size={10} color={SILVER} style={{ flexShrink: 0 }} /> {item}
+        <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '14px' : 'clamp(12px,2%,18px)', display: 'flex', flexDirection: 'column', gap: isMobile ? 8 : 7, flexShrink: 0, overflow: 'auto' }}>
+          {committeeChairs.map((committee) => {
+            const rows = committeeSignups[committee.id] || [];
+            const isMine = myCommitteeId === committee.id;
+            return (
+              <div key={committee.id} style={{ background: BG_EL, border: `1px solid ${BORDER}`, borderRadius: 10, padding: isMobile ? '10px 12px' : '8px 10px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+                  <div>
+                    <div style={{ color: SILVER_L, fontSize: isMobile ? '0.95rem' : '0.8rem', fontWeight: 700 }}>{committee.title}</div>
+                    <div style={{ color: '#666', fontSize: isMobile ? '0.76rem' : '0.64rem', marginTop: 2 }}>Chair: {committee.chair}</div>
+                    <div style={{ color: '#7A7A7A', fontSize: isMobile ? '0.74rem' : '0.62rem', marginTop: 1 }}>{committee.chapter}</div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => joinCommittee(committee.id, memberName)}
+                    style={{
+                      background: isMine ? '#0F766E' : '#1F2937',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      borderRadius: 999,
+                      fontSize: '0.62rem',
+                      fontWeight: 700,
+                      padding: isMobile ? '5px 10px' : '4px 9px',
+                      letterSpacing: '0.04em',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {isMine ? 'Joined' : 'Join'}
+                  </button>
                 </div>
-              ))}
-            </div>
-          )}
+                <p style={{ color: '#555', fontSize: isMobile ? '0.8rem' : '0.66rem', margin: '6px 0 0', lineHeight: 1.4 }}>
+                  {committee.focus}
+                </p>
+                <div style={{ marginTop: 7, color: '#6A6A6A', fontSize: isMobile ? '0.74rem' : '0.62rem' }}>
+                  {rows.length === 0 ? 'No members joined yet.' : `${rows.length} joined: ${rows.slice(-3).map((entry) => entry.memberName).join(', ')}`}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
-        {/* March 1 — Annual Report Sign-Up */}
-        <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '14px' : 'clamp(12px,2%,18px)', display: 'flex', flexDirection: 'column', gap: isMobile ? 8 : 7, flexShrink: 0, overflow: 'auto' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-              <Label>Annual Report</Label>
-              <Badge solid>Sign Up</Badge>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 8 : 8, minHeight: 0 }}>
+          <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '12px' : '12px 14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+              <Label>Live Participation</Label>
+              <Badge solid>{totalMembers} Joined</Badge>
             </div>
-            <h3 style={{ color: BLACK, margin: '5px 0 3px', fontSize: isMobile ? '1.2rem' : 'clamp(0.95rem,1.7vw,1.25rem)', fontWeight: 700 }}>
-              March 1st — <span style={{ color: '#C62828', fontWeight: 800 }}>10 Days</span>
+            <h3 style={{ color: BLACK, margin: '6px 0 4px', fontSize: isMobile ? '1.05rem' : '0.9rem', fontWeight: 700 }}>
+              Committee Participation Slate
             </h3>
-            <p style={{ color: '#555', margin: 0, fontSize: isMobile ? '0.88rem' : 'clamp(0.64rem,1.1vw,0.8rem)', lineHeight: 1.4 }}>
-              Each board member must claim and complete a section. Sign up now — no section should go unassigned.
+            <p style={{ color: '#555', margin: 0, fontSize: isMobile ? '0.8rem' : '0.66rem', lineHeight: 1.45 }}>
+              Members can raise hands, cast votes, and join committees live from their phones.
             </p>
+            <div style={{ marginTop: 8 }}>
+              <VoteWidget voteKey="committee-slate" label="Acknowledge Committee Sign-Up Slate" compact />
+            </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 6 : 5 }}>
-            {march1Items.map(({ icon: Icon, label, note }) => (
-              <div key={label} style={{ background: BG_EL, border: `1px solid ${BORDER}`, borderRadius: 8, padding: isMobile ? '10px 12px' : '7px 11px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
-                  <div style={{ width: 24, height: 24, borderRadius: 5, background: '#D4D4D4', border: `1px solid ${BORDER2}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Icon size={11} color={SILVER_M} />
-                  </div>
-                  <div style={{ color: SILVER_L, fontSize: isMobile ? '0.92rem' : 'clamp(0.72rem,1.2vw,0.88rem)', fontWeight: 700 }}>{label}</div>
-                </div>
-                <div style={{ color: '#555', fontSize: isMobile ? '0.82rem' : 'clamp(0.58rem,0.95vw,0.72rem)', lineHeight: 1.45, paddingLeft: 32 }}>{note}</div>
-              </div>
-            ))}
+
+          <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '12px' : '12px 14px' }}>
+            <div>
+              <Label>D9 in Trenton</Label>
+              <h3 style={{ color: BLACK, margin: '6px 0 4px', fontSize: isMobile ? '1.02rem' : '0.88rem', fontWeight: 700 }}>April 9–11, 2026</h3>
+              <p style={{ color: '#555', margin: 0, fontSize: isMobile ? '0.8rem' : '0.66rem', lineHeight: 1.45 }}>
+                Statewide Advocacy & Civic Engagement Summit. Approve the $500 sponsorship fee and finalize delegates.
+              </p>
+            </div>
+            <div style={{ marginTop: 8 }}>
+              <VoteWidget voteKey="d9-sponsorship" label="$500 D9 Sponsorship Fee" compact />
+            </div>
+            <a
+              href={D9_TRENTON_URL}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                marginTop: 8,
+                color: SILVER_L,
+                fontSize: isMobile ? '0.78rem' : '0.65rem',
+                fontWeight: 700,
+                textDecoration: 'none',
+              }}
+            >
+              Open D9 in Trenton Details
+              <ExternalLink size={11} />
+            </a>
+          </div>
+
+          <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '12px' : '12px 14px' }}>
+            <Label>Monday Meeting Link</Label>
+            <h3 style={{ color: BLACK, margin: '6px 0 2px', fontSize: isMobile ? '0.98rem' : '0.84rem', fontWeight: 700 }}>February Chapter Meeting</h3>
+            <p style={{ color: '#666', margin: 0, fontSize: isMobile ? '0.78rem' : '0.64rem' }}>Monday, February 23 · 8:00–9:00 PM (America/New_York)</p>
+            <a
+              href="https://meet.google.com/ktp-drvx-rjx"
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                marginTop: 8,
+                color: '#0F172A',
+                fontSize: isMobile ? '0.8rem' : '0.66rem',
+                fontWeight: 700,
+                textDecoration: 'none',
+              }}
+            >
+              Join Google Meet
+              <ExternalLink size={11} />
+            </a>
           </div>
         </div>
       </div>
@@ -471,6 +476,14 @@ export function Slide7SuccessRecap({ isMobile = false }: { isMobile?: boolean })
             <p style={{ color: '#555', margin: 0, fontSize: isMobile ? '0.95rem' : 'clamp(0.68rem,1.15vw,0.88rem)', lineHeight: 1.55 }}>
               A landmark moment setting a new benchmark for future fundraising in 2026.
             </p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <a href={THANK_YOU_LETTER_IMAGE_URL} target="_blank" rel="noreferrer" style={{ display: 'block', borderRadius: 8, overflow: 'hidden', border: `1px solid ${BORDER}` }}>
+              <img src={THANK_YOU_LETTER_IMAGE_URL} alt="Thank you letter and chapter image" style={{ width: '100%', height: isMobile ? 98 : 92, objectFit: 'cover' }} />
+            </a>
+            <a href={FUNDRAISING_TOTAL_IMAGE_URL} target="_blank" rel="noreferrer" style={{ display: 'block', borderRadius: 8, overflow: 'hidden', border: `1px solid ${BORDER}` }}>
+              <img src={FUNDRAISING_TOTAL_IMAGE_URL} alt="Fundraising event total screenshot" style={{ width: '100%', height: isMobile ? 98 : 92, objectFit: 'cover' }} />
+            </a>
           </div>
         </div>
 

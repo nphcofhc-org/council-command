@@ -43,12 +43,14 @@ const variants = {
 function DeckInner({
   canControl = true,
   meetingDateLabel = 'February 2026',
+  showJoinCelebration = true,
 }: {
   canControl?: boolean;
   meetingDateLabel?: string;
+  showJoinCelebration?: boolean;
 }) {
   const isMobile = useIsMobile();
-  const { myHandId, raiseHand, lowerMyHand, memberName } = useMeeting();
+  const { myHandId, raiseHand, lowerMyHand, memberName, lastCommitteeJoin } = useMeeting();
 
   const [current,       setCurrent]       = useState(0);
   const [direction,     setDirection]     = useState(1);
@@ -57,6 +59,7 @@ function DeckInner({
   const [fullscreen,    setFullscreen]    = useState(false);
   const [mobileSheet,   setMobileSheet]   = useState(false);
   const [mobileTab,     setMobileTab]     = useState<'hand' | 'motion' | 'vote'>('hand');
+  const [joinToast, setJoinToast] = useState<{ memberName: string; committeeId: string } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const touchX = useRef(0);
   const slides = useMemo<DeckSlide[]>(
@@ -72,14 +75,21 @@ function DeckInner({
         component: (props) => <Slide2Agenda {...props} meetingDateLabel={meetingDateLabel} />,
       },
       { id: 3, label: '2026 Vision: Four Pillars', component: Slide3Vision },
-      { id: 4, label: 'Board Ratification', component: Slide4Ratification },
-      { id: 5, label: 'Financials & Compliance', component: Slide5Financials },
+      { id: 4, label: 'Meet the E-Board', component: Slide4Ratification },
+      { id: 5, label: 'Committee Chairs & Sign-Up', component: Slide5Financials },
       { id: 6, label: 'Innovation & Programming', component: Slide6NewBusiness },
       { id: 7, label: 'Success Recap', component: Slide7SuccessRecap },
       { id: 8, label: 'Closing & Adjournment', component: Slide8Adjournment },
     ],
     [meetingDateLabel],
   );
+
+  useEffect(() => {
+    if (!canControl || !showJoinCelebration || !lastCommitteeJoin?.memberName) return;
+    setJoinToast({ memberName: lastCommitteeJoin.memberName, committeeId: lastCommitteeJoin.committeeId });
+    const t = window.setTimeout(() => setJoinToast(null), 3000);
+    return () => window.clearTimeout(t);
+  }, [canControl, showJoinCelebration, lastCommitteeJoin]);
 
   useEffect(() => {
     if (!isMobile) setMobileSheet(false);
@@ -280,6 +290,19 @@ function DeckInner({
             </>
           )}
         </AnimatePresence>
+
+        <AnimatePresence>
+          {showJoinCelebration && joinToast ? (
+            <motion.div
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 12 }}
+              className="pointer-events-none fixed left-1/2 top-16 z-[80] -translate-x-1/2 rounded-xl border border-white/20 bg-black/85 px-4 py-2 text-sm text-white shadow-2xl"
+            >
+              🎉 {joinToast.memberName} joined {joinToast.committeeId.replace(/-/g, " ")}
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
       </div>
     );
   }
@@ -380,10 +403,10 @@ function DeckInner({
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span style={{ color: isCoverSlide ? '#282828' : '#CCC', fontSize: '0.64rem' }}>&larr; &rarr; navigate</span>
               <button onClick={prev} disabled={current === 0} style={{ background: 'transparent', border: `1px solid ${current === 0 ? (isCoverSlide ? '#1A1A1A' : '#EEE') : (isCoverSlide ? '#333' : BORDER_LIGHT)}`, borderRadius: 6, padding: '4px 10px', display: 'flex', alignItems: 'center', gap: 4, color: current === 0 ? (isCoverSlide ? '#2A2A2A' : '#DDD') : (isCoverSlide ? '#808080' : '#666'), cursor: current === 0 ? 'not-allowed' : 'pointer', fontSize: '0.72rem', fontWeight: 600, fontFamily: 'inherit' }}>
-                <ChevronLeft size={11} /> Prev
+                <ChevronLeft size={11} /> Prev{current > 0 ? `: ${slides[current - 1].label}` : ""}
               </button>
               <button onClick={next} disabled={current === slides.length - 1} style={{ background: current === slides.length - 1 ? 'transparent' : (isCoverSlide ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'), border: `1px solid ${current === slides.length - 1 ? (isCoverSlide ? '#1A1A1A' : '#EEE') : (isCoverSlide ? '#3C3C3C' : '#C0C0C0')}`, borderRadius: 6, padding: '4px 10px', display: 'flex', alignItems: 'center', gap: 4, color: current === slides.length - 1 ? (isCoverSlide ? '#2A2A2A' : '#DDD') : (isCoverSlide ? '#D0D0D0' : '#333'), cursor: current === slides.length - 1 ? 'not-allowed' : 'pointer', fontSize: '0.72rem', fontWeight: 700, fontFamily: 'inherit' }}>
-                Next <ChevronRight size={11} />
+                Next{current < slides.length - 1 ? `: ${slides[current + 1].label}` : ""} <ChevronRight size={11} />
               </button>
             </div>
           </div>
@@ -400,6 +423,19 @@ function DeckInner({
           </motion.div>
         )}
       </AnimatePresence>
+
+      <AnimatePresence>
+        {showJoinCelebration && joinToast ? (
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 12 }}
+            className="pointer-events-none fixed left-1/2 top-6 z-[80] -translate-x-1/2 rounded-xl border border-white/20 bg-black/85 px-4 py-2 text-sm text-white shadow-2xl"
+          >
+            🎉 {joinToast.memberName} joined {joinToast.committeeId.replace(/-/g, " ")}
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </div>
   );
 }
@@ -411,12 +447,13 @@ type MeetingDeckProps = {
   defaultMemberName?: string;
   canControl?: boolean;
   meetingDateLabel?: string;
+  showJoinCelebration?: boolean;
 };
 
-export function MeetingDeck({ voterEmail, defaultMemberName, canControl = true, meetingDateLabel }: MeetingDeckProps) {
+export function MeetingDeck({ voterEmail, defaultMemberName, canControl = true, meetingDateLabel, showJoinCelebration = true }: MeetingDeckProps) {
   return (
     <MeetingProvider voterEmail={voterEmail} defaultMemberName={defaultMemberName} canControl={canControl}>
-      <DeckInner canControl={canControl} meetingDateLabel={meetingDateLabel} />
+      <DeckInner canControl={canControl} meetingDateLabel={meetingDateLabel} showJoinCelebration={showJoinCelebration} />
     </MeetingProvider>
   );
 }

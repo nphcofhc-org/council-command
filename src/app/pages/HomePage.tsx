@@ -15,7 +15,7 @@ declare global {
 }
 
 const bannerQuickLinkClass =
-  "nphc-holo-btn relative overflow-hidden inline-flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-[12px] sm:text-[13px] " +
+  "nphc-holo-btn relative overflow-hidden inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] sm:rounded-xl sm:px-3.5 sm:py-2.5 sm:text-[13px] " +
   "border border-white/25 bg-white/10 text-white backdrop-blur-xl " +
   "shadow-[0_12px_34px_rgba(0,0,0,0.38),0_0_20px_rgba(24,224,208,0.22)] " +
   "transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/65 hover:bg-primary/20 hover:text-white";
@@ -286,11 +286,11 @@ export function HomePage() {
         row: 2 as const,
       },
       {
-        id: "ql-core-groupme",
-        icon: "ExternalLink",
-        label: "GroupMe (Chapter Chat)",
-        shortLabel: "GroupMe",
-        url: "https://groupme.com/join_group/70420685/kdLSkGLw",
+        id: "ql-core-chat",
+        icon: "MessageCircle",
+        label: "Council Chat",
+        shortLabel: "Chat",
+        url: "/chat",
         row: 2 as const,
       },
     ];
@@ -301,7 +301,7 @@ export function HomePage() {
     const hasSocial = rawQuickLinks.some((l) => (l?.shortLabel || "").toLowerCase() === "social" || (l?.label || "").toLowerCase().includes("social"));
     const hasHq = rawQuickLinks.some((l) => (l?.url || "").trim() === "https://www.nphchq.com/" || (l?.label || "").toLowerCase().includes("nphc hq"));
     const hasGateway = rawQuickLinks.some((l) => (l?.url || "").includes("gateway.nphchq.com") || (l?.label || "").toLowerCase().includes("gateway"));
-    const hasGroupMe = rawQuickLinks.some((l) => (l?.url || "").includes("groupme.com/join_group/70420685") || (l?.label || "").toLowerCase().includes("groupme"));
+    const hasChat = rawQuickLinks.some((l) => (l?.url || "").trim() === "/chat" || (l?.label || "").toLowerCase().includes("chat"));
 
     const missing = required.filter((r) => {
       if (r.id === "ql-core-minutes") return !hasMinutes;
@@ -310,7 +310,7 @@ export function HomePage() {
       if (r.id === "ql-core-social-post") return !hasSocial;
       if (r.id === "ql-core-nphc-hq") return !hasHq;
       if (r.id === "ql-core-gateway") return !hasGateway;
-      if (r.id === "ql-core-groupme") return !hasGroupMe;
+      if (r.id === "ql-core-chat") return !hasChat;
       return true;
     });
 
@@ -352,6 +352,7 @@ export function HomePage() {
       pathOnly === "/figma-staging" ||
       pathOnly === "/forms" ||
       pathOnly.startsWith("/forms/") ||
+      pathOnly === "/chat" ||
       pathOnly.startsWith("/reports/") ||
       pathOnly === "/council-admin" ||
       pathOnly.startsWith("/council-admin/")
@@ -498,7 +499,7 @@ export function HomePage() {
               initial={{ y: 12, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.15, duration: 0.45 }}
-              className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-2 sm:gap-2.5"
+              className="mx-auto flex max-w-6xl flex-nowrap items-center justify-start gap-1.5 overflow-x-auto pb-1 sm:flex-wrap sm:justify-center sm:gap-2.5 sm:overflow-visible"
             >
               {[...row1Links, ...row2Links].map((link, i) => (
                 <motion.a
@@ -512,7 +513,7 @@ export function HomePage() {
                   target={isExternalUrl(link.url) ? "_blank" : undefined}
                   rel={isExternalUrl(link.url) ? "noreferrer" : undefined}
                 >
-                  <DynamicIcon name={link.icon} className="size-4 relative z-10 flex-shrink-0" />
+                  <DynamicIcon name={link.icon} className="size-3.5 sm:size-4 relative z-10 flex-shrink-0" />
                   <span className="hidden sm:inline relative z-10">{link.label}</span>
                   <span className="sm:hidden relative z-10">{link.shortLabel}</span>
                 </motion.a>

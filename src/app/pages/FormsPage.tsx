@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { motion } from "motion/react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { DollarSign, Receipt, Megaphone, ListChecks, FileText, CalendarDays } from "lucide-react";
+import { DollarSign, Receipt, Megaphone, ListChecks, FileText, CalendarDays, FileCheck2, ClipboardCheck } from "lucide-react";
 
 export function FormsPage() {
   return (
@@ -20,7 +20,7 @@ export function FormsPage() {
           </div>
           <h1 className="text-2xl sm:text-3xl text-slate-900 mb-1">Forms & Requests</h1>
           <p className="text-sm sm:text-base text-slate-600">
-            Submit budgets, reimbursements, social media requests, and committee reports for review.
+            Submit budgets, event proposals, reimbursements, social media requests, committee reports, and post-event reconciliations.
           </p>
         </motion.div>
 
@@ -83,6 +83,23 @@ export function FormsPage() {
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
+                <FileCheck2 className="size-5" />
+                Event Proposal &amp; Budget Request
+              </CardTitle>
+              <CardDescription>
+                Submit a new event concept and its budget request in one workflow.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild className="w-full">
+                <Link to="/forms/event-proposal-budget">Open Form</Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
                 <Receipt className="size-5" />
                 Reimbursement Request
               </CardTitle>
@@ -127,6 +144,23 @@ export function FormsPage() {
             <CardContent>
               <Button asChild className="w-full">
                 <Link to="/forms/committee-report">Open Form</Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <ClipboardCheck className="size-5" />
+                Event Post-Report &amp; Financial Reconciliation
+              </CardTitle>
+              <CardDescription>
+                Close out completed events with outcomes and final financial reconciliation.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild className="w-full">
+                <Link to="/forms/event-post-report-reconciliation">Open Form</Link>
               </Button>
             </CardContent>
           </Card>

@@ -45,6 +45,8 @@ export function defaultNotificationSettings() {
       social_media_request: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: false },
       committee_report: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: false },
       event_submission: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: false },
+      event_proposal_budget_request: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: true },
+      event_post_report_financial_reconciliation: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: true },
     },
   };
 }
@@ -69,6 +71,8 @@ export async function getNotificationSettings(db) {
       social_media_request: normalizeRule(rulesIn?.social_media_request),
       committee_report: normalizeRule(rulesIn?.committee_report),
       event_submission: normalizeRule(rulesIn?.event_submission),
+      event_proposal_budget_request: normalizeRule(rulesIn?.event_proposal_budget_request),
+      event_post_report_financial_reconciliation: normalizeRule(rulesIn?.event_post_report_financial_reconciliation),
     },
   };
 }
