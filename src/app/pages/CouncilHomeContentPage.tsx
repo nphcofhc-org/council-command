@@ -440,7 +440,7 @@ export function CouncilHomeContentPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {quickLinks.map((link, idx) => (
-                  <div key={link.id || idx} className="rounded-lg border p-4">
+                  <div key={link.id || idx} className="nphc-editor-block rounded-lg border p-4">
                     <div className="mb-3 flex items-center justify-between gap-3">
                       <p className="text-sm font-medium text-slate-800">Link {idx + 1}</p>
                       <Button type="button" variant="outline" size="sm" onClick={() => removeQuickLink(idx)}>
@@ -487,7 +487,7 @@ export function CouncilHomeContentPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {updates.map((u, idx) => (
-                  <div key={u.id || idx} className="rounded-lg border p-4">
+                  <div key={u.id || idx} className="nphc-editor-block rounded-lg border p-4">
                     <div className="mb-3 flex items-center justify-between gap-3">
                       <p className="text-sm font-medium text-slate-800">Update {idx + 1}</p>
                       <Button type="button" variant="outline" size="sm" onClick={() => removeUpdate(idx)}>

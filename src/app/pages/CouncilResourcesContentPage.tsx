@@ -160,7 +160,7 @@ export function CouncilResourcesContentPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {form.nationalOrgs.map((o, idx) => (
-                  <div key={o.id} className="rounded-lg border p-4">
+                  <div key={o.id} className="nphc-editor-block rounded-lg border p-4">
                     <div className="grid gap-3 md:grid-cols-2">
                       <div className="space-y-1 md:col-span-2">
                         <Label>Name</Label>
@@ -198,7 +198,7 @@ export function CouncilResourcesContentPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {form.trainingResources.map((r, idx) => (
-                  <div key={r.id} className="rounded-lg border p-4">
+                  <div key={r.id} className="nphc-editor-block rounded-lg border p-4">
                     <div className="grid gap-3 md:grid-cols-2">
                       <div className="space-y-1 md:col-span-2">
                         <Label>Title</Label>

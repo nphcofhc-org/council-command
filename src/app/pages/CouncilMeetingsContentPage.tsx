@@ -134,7 +134,7 @@ export function CouncilMeetingsContentPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {form.upcomingMeetings.map((m, idx) => (
-                  <div key={m.id} className="rounded-lg border p-4">
+                  <div key={m.id} className="nphc-editor-block rounded-lg border p-4">
                     <div className="grid gap-3 md:grid-cols-2">
                       <div className="space-y-1 md:col-span-2">
                         <Label>Title</Label>
@@ -207,7 +207,7 @@ export function CouncilMeetingsContentPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {form.meetingRecords.map((r, idx) => (
-                  <div key={r.id} className="rounded-lg border p-4">
+                  <div key={r.id} className="nphc-editor-block rounded-lg border p-4">
                     <div className="grid gap-3 md:grid-cols-2">
                       <div className="space-y-1">
                         <Label>Date</Label>
@@ -261,7 +261,7 @@ export function CouncilMeetingsContentPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {form.delegateReports.map((d, idx) => (
-                  <div key={d.id} className="rounded-lg border p-4">
+                  <div key={d.id} className="nphc-editor-block rounded-lg border p-4">
                     <div className="grid gap-3 md:grid-cols-2">
                       <div className="space-y-1">
                         <Label>Meeting Cycle</Label>

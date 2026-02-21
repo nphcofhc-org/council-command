@@ -394,3 +394,51 @@
     0 18px 44px rgba(0, 0, 0, 0.22),
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
+
+/* Editor mode visibility helpers for Council content pages */
+.nphc-editor-mode-active [data-slot="card"] {
+  border-color: rgba(11, 189, 176, 0.30);
+}
+
+.nphc-editor-mode-active [data-slot="card-header"] {
+  border-left: 5px solid rgba(11, 189, 176, 0.9);
+  padding-left: 1rem;
+  background: linear-gradient(90deg, rgba(11, 189, 176, 0.12), rgba(255, 255, 255, 0) 46%);
+  border-top-left-radius: 0.75rem;
+  border-bottom-left-radius: 0.75rem;
+}
+
+.nphc-editor-mode-active [data-slot="card-title"] {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.nphc-editor-mode-active label {
+  font-weight: 700;
+  color: #0f766e;
+  letter-spacing: 0.02em;
+}
+
+.nphc-editor-mode-active input,
+.nphc-editor-mode-active textarea,
+.nphc-editor-mode-active [data-slot="select-trigger"] {
+  border-color: rgba(11, 189, 176, 0.46) !important;
+  box-shadow: inset 0 0 0 1px rgba(11, 189, 176, 0.10);
+}
+
+.nphc-editor-mode-active .nphc-editor-block {
+  position: relative;
+  border-color: rgba(2, 6, 23, 0.22) !important;
+  background: linear-gradient(90deg, rgba(11, 189, 176, 0.12), rgba(255, 255, 255, 0.75) 32%);
+  overflow: hidden;
+}
+
+.nphc-editor-mode-active .nphc-editor-block::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: linear-gradient(180deg, #0bbdb0, #0f766e);
+}

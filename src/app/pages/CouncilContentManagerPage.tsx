@@ -155,7 +155,7 @@ export function CouncilContentManagerPage() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {form[section].map((member, index) => (
-                      <div key={member.id || `${section}-${index}`} className="rounded-lg border p-4">
+                      <div key={member.id || `${section}-${index}`} className="nphc-editor-block rounded-lg border p-4">
                         <div className="mb-3 flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <p className="text-sm font-medium text-gray-700">Record {index + 1}</p>

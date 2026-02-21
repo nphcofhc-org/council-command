@@ -96,7 +96,7 @@ export function CouncilProgramsContentPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {form.upcomingEvents.map((e, idx) => (
-                  <div key={e.id} className="rounded-lg border p-4">
+                  <div key={e.id} className="nphc-editor-block rounded-lg border p-4">
                     <div className="grid gap-3 md:grid-cols-2">
                       <div className="space-y-1 md:col-span-2">
                         <Label>Title</Label>
@@ -158,7 +158,7 @@ export function CouncilProgramsContentPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {form.archivedEvents.map((e, idx) => (
-                  <div key={e.id} className="rounded-lg border p-4">
+                  <div key={e.id} className="nphc-editor-block rounded-lg border p-4">
                     <div className="grid gap-3 md:grid-cols-2">
                       <div className="space-y-1 md:col-span-2">
                         <Label>Title</Label>
@@ -204,7 +204,7 @@ export function CouncilProgramsContentPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {form.eventFlyers.map((f, idx) => (
-                  <div key={f.id} className="rounded-lg border p-4">
+                  <div key={f.id} className="nphc-editor-block rounded-lg border p-4">
                     <div className="grid gap-3 md:grid-cols-2">
                       <div className="space-y-1 md:col-span-2">
                         <Label>Title</Label>
@@ -250,7 +250,7 @@ export function CouncilProgramsContentPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {form.signupForms.map((f, idx) => (
-                  <div key={f.id} className="rounded-lg border p-4">
+                  <div key={f.id} className="nphc-editor-block rounded-lg border p-4">
                     <div className="grid gap-3 md:grid-cols-2">
                       <div className="space-y-1 md:col-span-2">
                         <Label>Title</Label>

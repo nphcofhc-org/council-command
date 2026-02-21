@@ -237,7 +237,7 @@ export function CouncilDecisionPortalContentPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {links.map((lnk, idx) => (
-                  <div key={lnk.id || idx} className="rounded-lg border p-4">
+                  <div key={lnk.id || idx} className="nphc-editor-block rounded-lg border p-4">
                     <div className="mb-3 flex items-center justify-between gap-3">
                       <p className="text-sm font-medium text-gray-700">Link {idx + 1}</p>
                       <Button type="button" variant="outline" size="sm" onClick={() => removeLink(idx)}>
