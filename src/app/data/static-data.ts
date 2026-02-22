@@ -84,6 +84,9 @@ export const siteConfig: SiteConfig = {
   showCouncilCommandInternalDocuments: true,
   showCouncilCommandTaskTracker: true,
   meetingDeckLive: false,
+  showIntroSplashModal: true,
+  showGuidedTourModal: true,
+  showMemberAlertPopupModal: true,
 };
 
 // ═════════════════════════════════════════════════════════════════════════════

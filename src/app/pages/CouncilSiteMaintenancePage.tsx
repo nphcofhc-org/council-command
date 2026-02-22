@@ -171,6 +171,9 @@ export function CouncilSiteMaintenancePage() {
     showCouncilCommandInternalDocuments: cfg.showCouncilCommandInternalDocuments ?? true,
     showCouncilCommandTaskTracker: cfg.showCouncilCommandTaskTracker ?? true,
     meetingDeckLive: cfg.meetingDeckLive ?? false,
+    showIntroSplashModal: cfg.showIntroSplashModal ?? true,
+    showGuidedTourModal: cfg.showGuidedTourModal ?? true,
+    showMemberAlertPopupModal: cfg.showMemberAlertPopupModal ?? true,
   });
 
   const load = async () => {
@@ -786,6 +789,61 @@ export function CouncilSiteMaintenancePage() {
             </Card>
 
             <div className="space-y-4">
+              <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Eye className="size-4 text-primary" />
+                    Council View Modal Controls
+                  </CardTitle>
+                  <CardDescription>
+                    Turn member-facing modals and overlays on/off for the council portal view.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {commandVisibilityLoading ? (
+                    <div className="flex items-center gap-2 text-sm text-slate-600">
+                      <Loader2 className="size-4 animate-spin" />
+                      Loading council view controls...
+                    </div>
+                  ) : null}
+                  {commandVisibilityConfig ? (
+                    <div className="space-y-2">
+                      {[
+                        { key: "showIntroSplashModal", label: "Intro splash welcome modal" },
+                        { key: "showGuidedTourModal", label: "Guided tour modal (and Tour button)" },
+                        { key: "showMemberAlertPopupModal", label: "Member alert pop-up modal (banner can still be used)" },
+                      ].map((item) => (
+                        <div key={item.key} className="flex items-center justify-between gap-3 rounded-lg border border-black/10 bg-white/5 px-3 py-2">
+                          <span className="text-xs leading-tight text-slate-700">{item.label}</span>
+                          <Switch
+                            checked={Boolean(commandVisibilityConfig[item.key as keyof SiteConfig] ?? true)}
+                            onCheckedChange={(checked) => setCommandVisibility(item.key as keyof SiteConfig, Boolean(checked))}
+                            aria-label={item.label}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  {commandVisibilityError ? (
+                    <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{commandVisibilityError}</p>
+                  ) : null}
+                  {commandVisibilityMessage ? (
+                    <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">{commandVisibilityMessage}</p>
+                  ) : null}
+
+                  <Button
+                    type="button"
+                    onClick={saveCommandVisibility}
+                    disabled={commandVisibilityLoading || commandVisibilitySaving || !commandVisibilityConfig}
+                    className="w-full gap-2"
+                  >
+                    {commandVisibilitySaving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+                    {commandVisibilitySaving ? "Saving..." : "Save Council View Controls"}
+                  </Button>
+                </CardContent>
+              </Card>
+
               <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-base">

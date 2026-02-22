@@ -78,6 +78,9 @@ function sanitizeConfig(input) {
     showCouncilCommandInternalDocuments: bool(input?.showCouncilCommandInternalDocuments, true),
     showCouncilCommandTaskTracker: bool(input?.showCouncilCommandTaskTracker, true),
     meetingDeckLive: bool(input?.meetingDeckLive, false),
+    showIntroSplashModal: bool(input?.showIntroSplashModal, true),
+    showGuidedTourModal: bool(input?.showGuidedTourModal, true),
+    showMemberAlertPopupModal: bool(input?.showMemberAlertPopupModal, true),
   };
 }
 

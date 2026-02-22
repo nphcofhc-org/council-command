@@ -75,6 +75,10 @@ export interface SiteConfig {
   showCouncilCommandTaskTracker: boolean;
   // Meeting deck member mode controls (president-controlled)
   meetingDeckLive: boolean;
+  // Member-facing modal / overlay controls (president-controlled)
+  showIntroSplashModal: boolean;
+  showGuidedTourModal: boolean;
+  showMemberAlertPopupModal: boolean;
 }
 
 export interface QuickLink {

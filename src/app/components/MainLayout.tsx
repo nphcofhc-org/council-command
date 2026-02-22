@@ -177,6 +177,9 @@ export function MainLayout() {
   const identity = sessionDisplayNameWithProfile(session, directory, profile);
   const role = sessionRoleLabel(session);
   const profileRequired = session.authenticated && !profileLoading && !isProfileComplete(profile);
+  const introSplashEnabled = config?.showIntroSplashModal ?? true;
+  const guidedTourEnabled = config?.showGuidedTourModal ?? true;
+  const memberAlertPopupEnabled = config?.showMemberAlertPopupModal ?? true;
   const canShowMemberAlert =
     session.authenticated &&
     !profileRequired &&
@@ -203,22 +206,26 @@ export function MainLayout() {
         error={profileError}
         onSubmit={saveProfile}
       />
-      <IntroSplash
-        session={session}
-        directory={directory}
-        profile={profile}
-        logoUrl={faviconLogoUrl}
-        fallbackLogoUrl={logoUrl}
-        disabled={profileRequired}
-      />
-      <GuidedTour
-        session={session}
-        forceOpen={tourRequested}
-        onForceOpenHandled={() => setTourRequested(false)}
-        onNavigate={(route) => navigate(route)}
-      />
+      {introSplashEnabled ? (
+        <IntroSplash
+          session={session}
+          directory={directory}
+          profile={profile}
+          logoUrl={faviconLogoUrl}
+          fallbackLogoUrl={logoUrl}
+          disabled={profileRequired}
+        />
+      ) : null}
+      {guidedTourEnabled ? (
+        <GuidedTour
+          session={session}
+          forceOpen={tourRequested}
+          onForceOpenHandled={() => setTourRequested(false)}
+          onNavigate={(route) => navigate(route)}
+        />
+      ) : null}
       <AnimatePresence>
-        {canShowMemberAlert && showAlertModal ? (
+        {canShowMemberAlert && memberAlertPopupEnabled && showAlertModal ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -293,7 +300,7 @@ export function MainLayout() {
               Portal
             </span>
             <div className="flex items-center gap-2">
-              {session.authenticated ? (
+              {session.authenticated && guidedTourEnabled ? (
                 <button
                   type="button"
                   onClick={() => setTourRequested(true)}
@@ -344,6 +351,7 @@ export function MainLayout() {
               key={item.to}
               to={item.to}
               end={item.to === "/"}
+              data-tour={item.to === "/forum" ? "nav-forum" : undefined}
               className={({ isActive }) =>
                 `nphc-holo-btn flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all duration-200 drop-shadow-[0_0_12px_rgba(24,224,208,0.10)] ${
                   item.danger
@@ -388,6 +396,7 @@ export function MainLayout() {
                 onClick={() => setMobileOpen(!mobileOpen)}
                 className="nphc-holo-btn p-2 -ml-2 hover:bg-white/10 rounded-lg transition-colors"
                 aria-label="Toggle navigation"
+                data-tour="nav-toggle"
               >
                 {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
               </button>
@@ -432,6 +441,7 @@ export function MainLayout() {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              data-tour="nav"
               className="fixed bottom-0 left-0 top-14 z-40 w-72 overflow-y-auto border-r border-black/10 bg-white/70 backdrop-blur-xl lg:hidden"
             >
               <div className="py-4">

@@ -387,6 +387,9 @@ function transformSiteConfig(rows: Record<string, string>[]): SiteConfig {
     showCouncilCommandInternalDocuments: (kv.showCouncilCommandInternalDocuments || "true").toLowerCase() !== "false",
     showCouncilCommandTaskTracker: (kv.showCouncilCommandTaskTracker || "true").toLowerCase() !== "false",
     meetingDeckLive: (kv.meetingDeckLive || "false").toLowerCase() === "true",
+    showIntroSplashModal: (kv.showIntroSplashModal || "true").toLowerCase() !== "false",
+    showGuidedTourModal: (kv.showGuidedTourModal || "true").toLowerCase() !== "false",
+    showMemberAlertPopupModal: (kv.showMemberAlertPopupModal || "true").toLowerCase() !== "false",
   };
 }
 
