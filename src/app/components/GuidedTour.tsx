@@ -269,15 +269,54 @@ export function GuidedTour({
               aria-hidden="true"
             >
               <div
+                className="absolute left-0 right-0 top-0"
+                style={{
+                  height: spotlight.top,
+                  background: "rgba(0,0,0,0.62)",
+                  backdropFilter: "blur(2px)",
+                  WebkitBackdropFilter: "blur(2px)",
+                }}
+              />
+              <div
+                className="absolute left-0"
+                style={{
+                  top: spotlight.top,
+                  width: spotlight.left,
+                  height: spotlight.height,
+                  background: "rgba(0,0,0,0.62)",
+                  backdropFilter: "blur(2px)",
+                  WebkitBackdropFilter: "blur(2px)",
+                }}
+              />
+              <div
+                className="absolute right-0"
+                style={{
+                  top: spotlight.top,
+                  left: spotlight.left + spotlight.width,
+                  height: spotlight.height,
+                  background: "rgba(0,0,0,0.62)",
+                  backdropFilter: "blur(2px)",
+                  WebkitBackdropFilter: "blur(2px)",
+                }}
+              />
+              <div
+                className="absolute left-0 right-0 bottom-0"
+                style={{
+                  top: spotlight.top + spotlight.height,
+                  background: "rgba(0,0,0,0.62)",
+                  backdropFilter: "blur(2px)",
+                  WebkitBackdropFilter: "blur(2px)",
+                }}
+              />
+              <div
                 className="absolute rounded-2xl"
                 style={{
                   top: spotlight.top,
                   left: spotlight.left,
                   width: spotlight.width,
                   height: spotlight.height,
-                  boxShadow: "0 0 0 9999px rgba(0,0,0,0.62)",
+                  boxShadow: "0 0 0 1px rgba(255,255,255,0.08) inset, 0 0 0 9999px rgba(0,0,0,0)",
                   border: "1px solid rgba(255,255,255,0.28)",
-                  backdropFilter: "blur(1px)",
                   pointerEvents: "none",
                 }}
               />
