@@ -8,6 +8,15 @@ import { useResourcesData } from "../hooks/use-site-data";
 import { Link } from "react-router";
 
 const ART_INK = "https://images.unsplash.com/photo-1769181417562-be594f91fcc9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHdoaXRlJTIwYWJzdHJhY3QlMjBpbmslMjBicnVzaCUyMHN0cm9rZXN8ZW58MXx8fHwxNzcwNTEzMjIyfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
+const INACTIVE_SHARED_FORM_NAMES = new Set([
+  "Facility & Venue Request Form",
+  "Event Proposal & Budget Request Form",
+  "Event Post-Report & Financial Reconciliation",
+]);
+const INACTIVE_SHARED_FORM_LINKS = new Set([
+  "#/forms/event-proposal-budget",
+  "#/forms/event-post-report-reconciliation",
+]);
 
 export function ResourcesPage() {
   const { data } = useResourcesData();
@@ -18,6 +27,14 @@ export function ResourcesPage() {
 
   const toViewer = (url: string) => `/viewer?src=${encodeURIComponent(url)}`;
   const isInternalFile = (url: string) => url.trim().startsWith("/");
+  const isSharedFormInactive = (form: { name: string; link: string }) => {
+    const name = String(form?.name || "").trim();
+    const link = String(form?.link || "").trim();
+    if (INACTIVE_SHARED_FORM_NAMES.has(name)) return true;
+    if (!link || link === "#") return true;
+    if (INACTIVE_SHARED_FORM_LINKS.has(link)) return true;
+    return false;
+  };
 
   return (
     <div className="relative min-h-screen">
@@ -68,34 +85,60 @@ export function ResourcesPage() {
                   <CardContent>
                     <div className="space-y-2">
                       {category.forms.map((form, index) => (
+                        (() => {
+                          const inactive = isSharedFormInactive(form);
+                          return (
                         <motion.div
                           key={form.id}
                           initial={{ x: -15, opacity: 0 }}
                           animate={{ x: 0, opacity: 1 }}
                           transition={{ delay: index * 0.05, duration: 0.3 }}
-                          className="flex flex-col sm:flex-row sm:items-start sm:justify-between p-4 rounded-lg border border-black/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-all duration-200 gap-3 group"
+                          className={`flex flex-col sm:flex-row sm:items-start sm:justify-between p-4 rounded-lg border gap-3 group transition-all duration-200 ${
+                            inactive
+                              ? "border-black/10 bg-white/5 opacity-65"
+                              : "border-black/10 bg-white/5 hover:bg-white/10 hover:border-primary/30"
+                          }`}
                         >
                           <div className="flex items-start gap-3 flex-1 min-w-0">
-                            <div className="p-2 rounded-lg border border-black/10 bg-white/5 flex-shrink-0 group-hover:border-primary/30 group-hover:bg-white/10 transition-colors">
+                            <div className={`p-2 rounded-lg border border-black/10 bg-white/5 flex-shrink-0 transition-colors ${
+                              inactive ? "" : "group-hover:border-primary/30 group-hover:bg-white/10"
+                            }`}>
                               <FileText className="size-4 sm:size-5 text-slate-900" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <h3 className="text-slate-900 mb-1 text-sm sm:text-base">{form.name}</h3>
                               <p className="text-sm text-slate-600">{form.description}</p>
+                              {inactive ? (
+                                <p className="mt-1 text-xs font-semibold text-slate-500">Inactive for now</p>
+                              ) : null}
                             </div>
                           </div>
-                          <Button
-                            asChild
-                            variant="outline"
-                            size="sm"
-                            className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10 w-full sm:w-auto transition-all duration-200"
-                          >
-                            <a href={form.link} target="_blank" rel="noreferrer">
+                          {inactive ? (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled
+                              className="gap-2 border-black/15 bg-white/5 text-slate-900/40 w-full sm:w-auto"
+                            >
                               <ExternalLink className="size-3.5" />
-                              Open
-                            </a>
-                          </Button>
+                              Inactive
+                            </Button>
+                          ) : (
+                            <Button
+                              asChild
+                              variant="outline"
+                              size="sm"
+                              className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10 w-full sm:w-auto transition-all duration-200"
+                            >
+                              <a href={form.link} target="_blank" rel="noreferrer">
+                                <ExternalLink className="size-3.5" />
+                                Open
+                              </a>
+                            </Button>
+                          )}
                         </motion.div>
+                          );
+                        })()
                       ))}
                     </div>
                   </CardContent>
