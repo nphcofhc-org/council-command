@@ -456,7 +456,7 @@ export function ChapterInfoPage() {
       </div>
 
       <Dialog open={!!selectedMember} onOpenChange={(open) => setSelectedMember(open ? selectedMember : null)}>
-        <DialogContent className="nphc-glass bg-white/70 border border-black/10 shadow-[0_36px_120px_rgba(0,0,0,0.22)] max-w-2xl">
+        <DialogContent className="nphc-glass max-h-[calc(100svh-1rem)] !overflow-y-auto !overflow-x-hidden bg-white/70 border border-black/10 shadow-[0_36px_120px_rgba(0,0,0,0.22)] max-w-2xl">
           {selectedMember ? (
             <>
               <DialogHeader>
