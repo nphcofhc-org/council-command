@@ -26,6 +26,8 @@ export function ProgramsPage() {
   const eventFlyers = data?.eventFlyers || [];
   const signupForms = data?.signupForms || [];
   const autoplayVideoHighlight = eventHighlights.find((h) => h.mediaType === "video") || null;
+  const imageHighlights = eventHighlights.filter((h) => h.mediaType === "image");
+  const nonImageHighlights = eventHighlights.filter((h) => h.mediaType !== "image");
 
   useEffect(() => {
     let cancelled = false;
@@ -197,20 +199,60 @@ export function ProgramsPage() {
               <CardTitle className="text-lg sm:text-xl">Event Highlights</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {eventHighlights.map((highlight, index) => (
-                  <motion.button
-                    key={highlight.id}
-                    type="button"
-                    initial={{ y: 12, opacity: 0 }}
-                    whileInView={{ y: 0, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.05, duration: 0.35 }}
-                    onClick={() => setActiveHighlight(highlight)}
-                    className="group overflow-hidden rounded-xl border border-black/10 bg-white/5 text-left hover:border-primary/35 hover:bg-white/10 transition-all"
-                  >
-                    <div className="aspect-[4/3] bg-black/5 overflow-hidden">
-                      {highlight.mediaType === "video" ? (
+              {imageHighlights.length > 0 ? (
+                <div className="space-y-4 mb-4">
+                  {imageHighlights.map((highlight, index) => (
+                    <motion.div
+                      key={highlight.id}
+                      initial={{ y: 12, opacity: 0 }}
+                      whileInView={{ y: 0, opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.05, duration: 0.35 }}
+                      className="overflow-hidden rounded-xl border border-black/10 bg-white/5"
+                    >
+                      <div className="bg-black/5 p-2 sm:p-3">
+                        <img
+                          src={highlight.mediaUrl}
+                          alt={highlight.title}
+                          className="w-full h-auto max-h-[70vh] object-contain rounded-lg border border-black/10 bg-black/5"
+                          loading="lazy"
+                        />
+                      </div>
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3">
+                        <div className="min-w-0">
+                          <p className="text-xs uppercase tracking-widest text-slate-500">Image</p>
+                          <p className="mt-1 text-sm font-semibold text-slate-900">{highlight.title}</p>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
+                          onClick={() => setActiveHighlight(highlight)}
+                        >
+                          <ExternalLink className="size-3.5" />
+                          Expand
+                        </Button>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              ) : null}
+
+              {nonImageHighlights.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {nonImageHighlights.map((highlight, index) => (
+                    <motion.button
+                      key={highlight.id}
+                      type="button"
+                      initial={{ y: 12, opacity: 0 }}
+                      whileInView={{ y: 0, opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: (imageHighlights.length * 0.05) + index * 0.05, duration: 0.35 }}
+                      onClick={() => setActiveHighlight(highlight)}
+                      className="group overflow-hidden rounded-xl border border-black/10 bg-white/5 text-left hover:border-primary/35 hover:bg-white/10 transition-all"
+                    >
+                      <div className="aspect-[4/3] bg-black/5 overflow-hidden">
                         <video
                           src={highlight.mediaUrl}
                           poster={highlight.thumbnailUrl}
@@ -219,24 +261,15 @@ export function ProgramsPage() {
                           preload="metadata"
                           className="h-full w-full object-cover"
                         />
-                      ) : (
-                        <img
-                          src={highlight.mediaUrl}
-                          alt={highlight.title}
-                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                          loading="lazy"
-                        />
-                      )}
-                    </div>
-                    <div className="p-3">
-                      <p className="text-xs uppercase tracking-widest text-slate-500">
-                        {highlight.mediaType === "video" ? "Video" : "Image"}
-                      </p>
-                      <p className="mt-1 text-sm font-semibold text-slate-900 line-clamp-2">{highlight.title}</p>
-                    </div>
-                  </motion.button>
-                ))}
-              </div>
+                      </div>
+                      <div className="p-3">
+                        <p className="text-xs uppercase tracking-widest text-slate-500">Video</p>
+                        <p className="mt-1 text-sm font-semibold text-slate-900 line-clamp-2">{highlight.title}</p>
+                      </div>
+                    </motion.button>
+                  ))}
+                </div>
+              ) : null}
             </CardContent>
           </Card>
         ) : null}
