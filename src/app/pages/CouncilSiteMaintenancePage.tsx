@@ -18,8 +18,6 @@ import {
   Shield,
   SlidersHorizontal,
   Target,
-  ToggleLeft,
-  ToggleRight,
   TrendingUp,
   Users,
   Wallet,
@@ -36,7 +34,6 @@ import { fetchSiteConfig } from "../data/api";
 import { saveSiteConfigOverride } from "../data/content-api";
 import type { SiteConfig } from "../data/types";
 import { useCouncilSession } from "../hooks/use-council-session";
-import { useEditorMode } from "../hooks/use-editor-mode";
 import { fetchSubmissionsAsAdmin } from "../data/forms-api";
 import { fetchTreasuryData, type TreasuryPayload } from "../data/treasury-api";
 
@@ -127,7 +124,6 @@ function hasAnyExplicitOverride(entry: AccessOverrideEntry): boolean {
 
 export function CouncilSiteMaintenancePage() {
   const { session } = useCouncilSession();
-  const { editorMode, setEditorMode } = useEditorMode();
   const [officers, setOfficers] = useState<OfficerColumn[]>([]);
   const [missingOfficerEmails, setMissingOfficerEmails] = useState<string[]>([]);
   const [matrix, setMatrix] = useState<AccessMatrix>(createEmptyMatrix());
@@ -498,28 +494,16 @@ export function CouncilSiteMaintenancePage() {
                 </div>
 
                 <div className="rounded-xl border border-black/10 bg-white/5 p-4 space-y-3">
-                  <p className="text-xs uppercase tracking-widest text-slate-500">Live Controls</p>
-                  {session.isSiteEditor ? (
-                    <>
-                      <Button
-                        type="button"
-                        variant={editorMode ? "default" : "outline"}
-                        className={editorMode ? "w-full justify-start gap-2" : "w-full justify-start gap-2 border-black/15 bg-white/5 text-slate-900"}
-                        onClick={() => setEditorMode(!editorMode)}
-                      >
-                        {editorMode ? <ToggleRight className="size-4" /> : <ToggleLeft className="size-4" />}
-                        {editorMode ? "Editor Mode On" : "Editor Mode Off"}
-                      </Button>
-                      <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
-                        <Link to="/">
-                          <ExternalLink className="size-4" />
-                          Open Council View
-                        </Link>
-                      </Button>
-                    </>
-                  ) : (
-                    <p className="text-xs text-slate-500">Site editor controls are unavailable for this account.</p>
-                  )}
+                  <p className="text-xs uppercase tracking-widest text-slate-500">Portal View</p>
+                  <p className="text-xs text-slate-600">
+                    Use the bottom-left editor toggle inside the portal pages to switch editing on/off.
+                  </p>
+                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                    <Link to="/">
+                      <ExternalLink className="size-4" />
+                      Open Council View
+                    </Link>
+                  </Button>
                   <div className="rounded-lg border border-black/10 bg-white/40 px-3 py-2 text-xs text-slate-700">
                     <p className="font-semibold text-slate-900">Pending submissions</p>
                     <p>{pendingSubmissions}</p>

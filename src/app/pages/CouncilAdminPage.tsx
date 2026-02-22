@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Shield, FileText, Lock, ClipboardCheck, SlidersHorizontal, Home, Calendar, TrendingUp, FolderOpen, Target, Inbox, Mail, Users, Wallet, Wrench, ToggleLeft, ToggleRight, ExternalLink } from "lucide-react";
+import { Shield, FileText, Lock, ClipboardCheck, SlidersHorizontal, Home, Calendar, TrendingUp, FolderOpen, Target, Inbox, Mail, Users, Wallet, Wrench, ExternalLink } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { motion } from "motion/react";
 import { useCouncilAdminData, useSiteConfig } from "../hooks/use-site-data";
@@ -236,31 +236,18 @@ export function CouncilAdminPage() {
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5">
               <div>
-                <h3 className="text-base text-slate-900 sm:text-lg">Council View Editor Mode</h3>
+                <h3 className="text-base text-slate-900 sm:text-lg">Open Council View</h3>
                 <p className="text-sm text-slate-600">
-                  Toggle edit mode for the member-facing portal view. When enabled, use the floating edit controls on each page to update what council members see.
+                  Use the bottom-left editor toggle inside the portal pages to switch editing on/off. This shortcut only opens the council-facing view.
                 </p>
               </div>
               {session.isSiteEditor ? (
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                  <Button
-                    type="button"
-                    variant={editorMode ? "default" : "outline"}
-                    className={editorMode ? "w-full sm:w-auto" : "w-full sm:w-auto border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"}
-                    onClick={() => setEditorMode(!editorMode)}
-                  >
-                    {editorMode ? <ToggleRight className="mr-2 size-4" /> : <ToggleLeft className="mr-2 size-4" />}
-                    {editorMode ? "Editor Mode On" : "Editor Mode Off"}
-                  </Button>
-                  <div className="flex w-full gap-2 sm:w-auto">
-                    <Button asChild variant="outline" className="flex-1 sm:flex-none border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10">
-                      <Link to="/">
-                        <ExternalLink className="mr-2 size-4" />
-                        Open Council View
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
+                <Button asChild variant="outline" className="w-full sm:w-auto border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10">
+                  <Link to="/">
+                    <ExternalLink className="mr-2 size-4" />
+                    Open Council View
+                  </Link>
+                </Button>
               ) : (
                 <Button type="button" variant="outline" className="w-full sm:w-auto border-black/15 bg-white/5 text-slate-400" disabled>
                   <Lock className="mr-2 size-4" />
