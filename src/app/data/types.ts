@@ -73,6 +73,8 @@ export interface SiteConfig {
   showCouncilCommandNotifications: boolean;
   showCouncilCommandInternalDocuments: boolean;
   showCouncilCommandTaskTracker: boolean;
+  // Meeting deck member mode controls (president-controlled)
+  meetingDeckLive: boolean;
 }
 
 export interface QuickLink {

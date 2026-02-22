@@ -1,13 +1,17 @@
 import { Link } from "react-router";
-import { ArrowLeft, Presentation } from "lucide-react";
+import { ArrowLeft, Lock, Presentation, Radio } from "lucide-react";
 import { motion } from "motion/react";
 import { Card, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { MeetingDeck } from "../components/MeetingDeck";
 import { useCouncilSession } from "../hooks/use-council-session";
+import { useSiteConfig } from "../hooks/use-site-data";
 
 export function MeetingDeckPage() {
   const { session } = useCouncilSession();
+  const { data: siteConfig } = useSiteConfig();
+  const meetingDeckLive = Boolean(siteConfig?.meetingDeckLive);
+  const memberDeckCanControl = session.authenticated && meetingDeckLive;
   const defaultMemberName = (session.email || "")
     .split("@")[0]
     .split(/[._-]+/)
@@ -37,8 +41,20 @@ export function MeetingDeckPage() {
                 Meeting Deck (Member View)
               </CardTitle>
               <CardDescription>
-                Members can follow along in real time, participate in votes, raise hands, and join committees from their own devices.
+                Members can preview the deck anytime. Live participation unlocks only when the President marks the deck live.
               </CardDescription>
+              <div className="pt-2">
+                <div
+                  className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold ${
+                    meetingDeckLive
+                      ? "border-emerald-300/60 bg-emerald-500/10 text-emerald-800"
+                      : "border-amber-300/60 bg-amber-500/10 text-amber-800"
+                  }`}
+                >
+                  {meetingDeckLive ? <Radio className="size-3.5" /> : <Lock className="size-3.5" />}
+                  {meetingDeckLive ? "Live Mode: Participation Enabled" : "Preview Mode: Participation Locked"}
+                </div>
+              </div>
             </CardHeader>
           </Card>
         </motion.div>
@@ -52,7 +68,7 @@ export function MeetingDeckPage() {
           <MeetingDeck
             voterEmail={session.email}
             defaultMemberName={defaultMemberName}
-            canControl={session.authenticated}
+            canControl={memberDeckCanControl}
             meetingDateLabel="February 23, 2026"
             showJoinCelebration={session.isCouncilAdmin || session.isPresident}
           />

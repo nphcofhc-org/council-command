@@ -14,6 +14,7 @@ import {
   Inbox,
   Loader2,
   Mail,
+  Presentation,
   Save,
   Shield,
   SlidersHorizontal,
@@ -155,6 +156,7 @@ export function CouncilSiteMaintenancePage() {
     showCouncilCommandNotifications: cfg.showCouncilCommandNotifications ?? true,
     showCouncilCommandInternalDocuments: cfg.showCouncilCommandInternalDocuments ?? true,
     showCouncilCommandTaskTracker: cfg.showCouncilCommandTaskTracker ?? true,
+    meetingDeckLive: cfg.meetingDeckLive ?? false,
   });
 
   const load = async () => {
@@ -617,6 +619,77 @@ export function CouncilSiteMaintenancePage() {
               <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-base">
+                    <Presentation className="size-4 text-primary" />
+                    Meeting Deck Live Control
+                  </CardTitle>
+                  <CardDescription>
+                    Members can always preview the deck. Turn this on to unlock live participation (votes, hands, motions, committees) in the member deck.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {commandVisibilityLoading ? (
+                    <div className="flex items-center gap-2 text-sm text-slate-600">
+                      <Loader2 className="size-4 animate-spin" />
+                      Loading meeting deck status...
+                    </div>
+                  ) : null}
+                  {commandVisibilityConfig ? (
+                    <div className="rounded-lg border border-black/10 bg-white/5 px-3 py-2">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-semibold text-slate-900">Member Live Mode</p>
+                          <p className="text-xs text-slate-600">
+                            {commandVisibilityConfig.meetingDeckLive
+                              ? "Live mode is ON. Authenticated members can participate."
+                              : "Preview-only mode is ON. Members can view slides, but participation is locked."}
+                          </p>
+                        </div>
+                        <Switch
+                          checked={Boolean(commandVisibilityConfig.meetingDeckLive)}
+                          onCheckedChange={(checked) => setCommandVisibility("meetingDeckLive", Boolean(checked))}
+                          aria-label="Meeting deck live mode"
+                        />
+                      </div>
+                    </div>
+                  ) : null}
+
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                      <Link to="/meeting-deck">
+                        <Presentation className="size-4" />
+                        Open Member Deck
+                      </Link>
+                    </Button>
+                    <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                      <Link to="/council-admin/exec-council-meeting?deck=2026-02-23">
+                        <Calendar className="size-4" />
+                        Open Presenter Deck
+                      </Link>
+                    </Button>
+                  </div>
+
+                  {commandVisibilityError ? (
+                    <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{commandVisibilityError}</p>
+                  ) : null}
+                  {commandVisibilityMessage ? (
+                    <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">{commandVisibilityMessage}</p>
+                  ) : null}
+
+                  <Button
+                    type="button"
+                    onClick={saveCommandVisibility}
+                    disabled={commandVisibilityLoading || commandVisibilitySaving || !commandVisibilityConfig}
+                    className="w-full gap-2"
+                  >
+                    {commandVisibilitySaving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+                    {commandVisibilitySaving ? "Saving..." : "Save Deck Status"}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
                     <Eye className="size-4 text-primary" />
                     Council Command Topic Visibility
                   </CardTitle>
@@ -655,13 +728,6 @@ export function CouncilSiteMaintenancePage() {
                         </div>
                       ))}
                     </div>
-                  ) : null}
-
-                  {commandVisibilityError ? (
-                    <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{commandVisibilityError}</p>
-                  ) : null}
-                  {commandVisibilityMessage ? (
-                    <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">{commandVisibilityMessage}</p>
                   ) : null}
 
                   <Button

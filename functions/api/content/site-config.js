@@ -14,6 +14,15 @@ function t(value, max = 2000) {
   return String(value || "").trim().slice(0, max);
 }
 
+function bool(value, fallback = false) {
+  if (typeof value === "boolean") return value;
+  const normalized = t(value, 16).toLowerCase();
+  if (!normalized) return fallback;
+  if (normalized === "true") return true;
+  if (normalized === "false") return false;
+  return fallback;
+}
+
 function sanitizeConfig(input) {
   const presidentMessage = Array.isArray(input?.presidentMessage)
     ? input.presidentMessage.map((p) => t(p, 1200)).filter(Boolean).slice(0, 10)
@@ -28,7 +37,7 @@ function sanitizeConfig(input) {
 
   const variantRaw = t(input?.alertVariant, 32).toLowerCase();
   const alertVariant = ["meeting", "warning", "urgent", "info"].includes(variantRaw) ? variantRaw : "warning";
-  const alertEnabled = input?.alertEnabled === true || t(input?.alertEnabled, 16).toLowerCase() === "true";
+  const alertEnabled = bool(input?.alertEnabled, false);
 
   return {
     councilName: t(input?.councilName, 200),
@@ -50,6 +59,25 @@ function sanitizeConfig(input) {
     alertMessage: t(input?.alertMessage, 1200),
     alertLinkLabel: t(input?.alertLinkLabel, 60),
     alertLinkUrl: t(input?.alertLinkUrl, 2048),
+    showChapterInfo: bool(input?.showChapterInfo, true),
+    showMeetingsDelegates: bool(input?.showMeetingsDelegates, true),
+    showProgramsEvents: bool(input?.showProgramsEvents, true),
+    showResources: bool(input?.showResources, true),
+    showForms: bool(input?.showForms, true),
+    showForum: bool(input?.showForum, true),
+    showChat: bool(input?.showChat, true),
+    showSignatureEventComparison: bool(input?.showSignatureEventComparison, true),
+    showCouncilCommandOperations: bool(input?.showCouncilCommandOperations, true),
+    showCouncilCommandTreasury: bool(input?.showCouncilCommandTreasury, true),
+    showCouncilCommandPresidentsDesk: bool(input?.showCouncilCommandPresidentsDesk, true),
+    showCouncilCommandContentManager: bool(input?.showCouncilCommandContentManager, true),
+    showCouncilCommandEditors: bool(input?.showCouncilCommandEditors, true),
+    showCouncilCommandMemberDirectory: bool(input?.showCouncilCommandMemberDirectory, true),
+    showCouncilCommandSubmissions: bool(input?.showCouncilCommandSubmissions, true),
+    showCouncilCommandNotifications: bool(input?.showCouncilCommandNotifications, true),
+    showCouncilCommandInternalDocuments: bool(input?.showCouncilCommandInternalDocuments, true),
+    showCouncilCommandTaskTracker: bool(input?.showCouncilCommandTaskTracker, true),
+    meetingDeckLive: bool(input?.meetingDeckLive, false),
   };
 }
 

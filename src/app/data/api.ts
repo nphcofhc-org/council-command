@@ -377,6 +377,7 @@ function transformSiteConfig(rows: Record<string, string>[]): SiteConfig {
     showCouncilCommandNotifications: (kv.showCouncilCommandNotifications || "true").toLowerCase() !== "false",
     showCouncilCommandInternalDocuments: (kv.showCouncilCommandInternalDocuments || "true").toLowerCase() !== "false",
     showCouncilCommandTaskTracker: (kv.showCouncilCommandTaskTracker || "true").toLowerCase() !== "false",
+    meetingDeckLive: (kv.meetingDeckLive || "false").toLowerCase() === "true",
   };
 }
 
