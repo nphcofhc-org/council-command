@@ -55,12 +55,40 @@ export type LeadershipContentResponse = {
   updatedBy: string | null;
 };
 
+export type ChapterDuesEntry = {
+  id: string;
+  chapter: string;
+  paidDate: string;
+};
+
+export type ChapterDuesTrackerResponse = {
+  found: boolean;
+  data: {
+    entries: ChapterDuesEntry[];
+  };
+  updatedAt: string | null;
+  updatedBy: string | null;
+};
+
 const SESSION_ENDPOINT = "/api/admin/session";
 const COMPLIANCE_ENDPOINT = "/api/admin/compliance";
 const LEADERSHIP_ENDPOINT = "/api/content/chapter-leadership";
 const MEMBER_DIRECTORY_ENDPOINT = "/api/content/member-directory";
+const CHAPTER_DUES_ENDPOINT = "/api/content/chapter-dues";
 const SITE_MAINTENANCE_ENDPOINT = "/api/admin/site-maintenance";
 const ANALYTICS_TRACK_ENDPOINT = "/api/analytics/track";
+
+const DEFAULT_DUES_CHAPTERS = [
+  "Alpha Phi Alpha Fraternity, Inc.",
+  "Alpha Kappa Alpha Sorority, Inc.",
+  "Kappa Alpha Psi Fraternity, Inc.",
+  "Omega Psi Phi Fraternity, Inc.",
+  "Delta Sigma Theta Sorority, Inc.",
+  "Phi Beta Sigma Fraternity, Inc.",
+  "Zeta Phi Beta Sorority, Inc.",
+  "Sigma Gamma Rho Sorority, Inc.",
+  "Iota Phi Theta Fraternity, Inc.",
+];
 
 async function parseError(response: Response): Promise<string> {
   try {
@@ -251,6 +279,96 @@ export async function saveMemberDirectory(directory: MemberDirectory): Promise<M
     found: Boolean(data?.found),
     data: {
       entries: Array.isArray(data?.data?.entries) ? data.data.entries : [],
+    },
+    updatedAt: data?.updatedAt ? String(data.updatedAt) : null,
+    updatedBy: data?.updatedBy ? String(data.updatedBy) : null,
+  };
+}
+
+function normalizeDuesEntry(raw: any, fallbackIndex = 0): ChapterDuesEntry | null {
+  const chapter = String(raw?.chapter || "").trim();
+  if (!chapter) return null;
+  return {
+    id: String(raw?.id || `dues-${fallbackIndex + 1}`).trim() || `dues-${fallbackIndex + 1}`,
+    chapter,
+    paidDate: String(raw?.paidDate || "").trim(),
+  };
+}
+
+function defaultChapterDuesEntries(): ChapterDuesEntry[] {
+  return DEFAULT_DUES_CHAPTERS.map((chapter, index) => ({
+    id: `dues-${index + 1}`,
+    chapter,
+    paidDate: "",
+  }));
+}
+
+function mergeChapterDuesEntries(rows: ChapterDuesEntry[]): ChapterDuesEntry[] {
+  const defaults = defaultChapterDuesEntries();
+  const byChapter = new Map(rows.map((row) => [row.chapter.trim().toLowerCase(), row]));
+  const merged = defaults.map((row) => {
+    const hit = byChapter.get(row.chapter.trim().toLowerCase());
+    return hit ? { ...row, ...hit, chapter: row.chapter } : row;
+  });
+  const defaultNames = new Set(defaults.map((row) => row.chapter.trim().toLowerCase()));
+  const extras = rows.filter((row) => !defaultNames.has(row.chapter.trim().toLowerCase()));
+  return [...merged, ...extras];
+}
+
+export async function fetchChapterDuesTracker(): Promise<ChapterDuesTrackerResponse> {
+  const response = await fetch(CHAPTER_DUES_ENDPOINT, {
+    method: "GET",
+    credentials: "same-origin",
+    headers: {
+      accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response));
+  }
+
+  const data = await response.json();
+  const rawEntries = Array.isArray(data?.data?.entries) ? data.data.entries : [];
+  const entries = mergeChapterDuesEntries(
+    rawEntries.map((row: any, index: number) => normalizeDuesEntry(row, index)).filter(Boolean) as ChapterDuesEntry[],
+  );
+
+  return {
+    found: Boolean(data?.found),
+    data: { entries },
+    updatedAt: data?.updatedAt ? String(data.updatedAt) : null,
+    updatedBy: data?.updatedBy ? String(data.updatedBy) : null,
+  };
+}
+
+export async function saveChapterDuesTracker(entries: ChapterDuesEntry[]): Promise<ChapterDuesTrackerResponse> {
+  const response = await fetch(CHAPTER_DUES_ENDPOINT, {
+    method: "PUT",
+    credentials: "same-origin",
+    headers: {
+      "content-type": "application/json",
+      accept: "application/json",
+    },
+    body: JSON.stringify({
+      entries: mergeChapterDuesEntries(
+        entries.map((row, index) => normalizeDuesEntry(row, index)).filter(Boolean) as ChapterDuesEntry[],
+      ),
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response));
+  }
+
+  const data = await response.json();
+  const rawEntries = Array.isArray(data?.data?.entries) ? data.data.entries : [];
+  return {
+    found: Boolean(data?.found),
+    data: {
+      entries: mergeChapterDuesEntries(
+        rawEntries.map((row: any, index: number) => normalizeDuesEntry(row, index)).filter(Boolean) as ChapterDuesEntry[],
+      ),
     },
     updatedAt: data?.updatedAt ? String(data.updatedAt) : null,
     updatedBy: data?.updatedBy ? String(data.updatedBy) : null,
