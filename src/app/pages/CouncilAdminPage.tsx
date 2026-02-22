@@ -213,19 +213,6 @@ export function CouncilAdminPage() {
           </motion.div>
         ) : (
         <>
-        {showEditorCards ? (
-        <Card className="mb-6 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
-          <CardContent className="p-5">
-            <div className="flex flex-col gap-3">
-              <h3 className="text-base text-slate-900 sm:text-lg">Page Editing Order</h3>
-              <p className="text-sm text-slate-600">
-                Recommended flow: 1) Home, 2) Meetings, 3) Programs, 4) Resources, 5) Decision Portal, 6) Member Directory.
-                You can also use the floating “Edit” button directly on each page when Editor Mode is enabled.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-        ) : null}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
