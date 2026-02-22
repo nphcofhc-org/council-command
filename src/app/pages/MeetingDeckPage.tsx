@@ -41,7 +41,7 @@ export function MeetingDeckPage() {
                 Meeting Deck (Member View)
               </CardTitle>
               <CardDescription>
-                Members can preview the deck anytime. Live participation unlocks only when the President marks the deck live.
+                Members can preview only the Cover and Agenda until the President marks the deck live. Live participation unlocks when the deck is marked live.
               </CardDescription>
               <div className="pt-2">
                 <div
@@ -52,7 +52,7 @@ export function MeetingDeckPage() {
                   }`}
                 >
                   {meetingDeckLive ? <Radio className="size-3.5" /> : <Lock className="size-3.5" />}
-                  {meetingDeckLive ? "Live Mode: Participation Enabled" : "Preview Mode: Participation Locked"}
+                  {meetingDeckLive ? "Live Mode: Full Deck + Participation Enabled" : "Preview Mode: Cover + Agenda Only"}
                 </div>
               </div>
             </CardHeader>
@@ -71,6 +71,7 @@ export function MeetingDeckPage() {
             canControl={memberDeckCanControl}
             meetingDateLabel="February 23, 2026"
             showJoinCelebration={session.isCouncilAdmin || session.isPresident}
+            maxVisibleSlides={meetingDeckLive ? undefined : 2}
           />
         </motion.div>
       </div>
