@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { ArrowLeft, Plus, Save, Trash2 } from "lucide-react";
 import { CouncilAdminGate } from "../components/CouncilAdminGate";
+import { PresidentGate } from "../components/PresidentGate";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -115,29 +116,30 @@ export function CouncilContentManagerPage() {
 
   return (
     <CouncilAdminGate>
-      <div className="mx-auto max-w-6xl p-4 sm:p-8">
-        <div className="mb-6">
-          <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Council Command Center
-          </Link>
-        </div>
+      <PresidentGate>
+        <div className="mx-auto max-w-6xl p-4 sm:p-8">
+          <div className="mb-6">
+            <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Council Command Center
+            </Link>
+          </div>
 
-        <Card className="border-0 shadow-lg ring-1 ring-black/5">
-          <CardHeader>
-            <CardTitle>Content Manager — Leadership</CardTitle>
-            <CardDescription>
-              Manage Executive Board and Standing Committee Chairs displayed on Chapter Information.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-sm text-gray-500">{totalCount} total leadership records</p>
-              <Button onClick={save} disabled={saving || loading} className="bg-primary text-primary-foreground hover:brightness-110">
-                <Save className="mr-2 h-4 w-4" />
-                {saving ? "Saving..." : "Save Changes"}
-              </Button>
-            </div>
+          <Card className="border-0 shadow-lg ring-1 ring-black/5">
+            <CardHeader>
+              <CardTitle>Content Manager — Leadership</CardTitle>
+              <CardDescription>
+                Manage Executive Board and Standing Committee Chairs displayed on Chapter Information.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-sm text-gray-500">{totalCount} total leadership records</p>
+                <Button onClick={save} disabled={saving || loading} className="bg-primary text-primary-foreground hover:brightness-110">
+                  <Save className="mr-2 h-4 w-4" />
+                  {saving ? "Saving..." : "Save Changes"}
+                </Button>
+              </div>
 
             {lastSyncedAt ? (
               <p className="text-xs text-gray-500">Last synced: {new Date(lastSyncedAt).toLocaleString()}</p>
@@ -223,9 +225,10 @@ export function CouncilContentManagerPage() {
                 </Card>
               ))
             )}
-          </CardContent>
-        </Card>
-      </div>
+            </CardContent>
+          </Card>
+        </div>
+      </PresidentGate>
     </CouncilAdminGate>
   );
 }
