@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Badge } from "../components/ui/badge";
 import { Mail, FileText, Calendar, User, Award, Briefcase, Sparkles } from "lucide-react";
@@ -25,6 +24,17 @@ const ROLE_EMAIL_FALLBACKS: Record<string, string> = {
   secretary: "nphcofhudsoncountysecretary@gmail.com",
   treasurer: "treasurer.nphcofhc@gmail.com",
 };
+
+function getFileExt(path: string): string {
+  const clean = String(path || "").split("#")[0]?.split("?")[0] || "";
+  const parts = clean.split(".");
+  return (parts.length > 1 ? parts[parts.length - 1] : "").toLowerCase();
+}
+
+function shouldUseInAppViewer(path: string): boolean {
+  const ext = getFileExt(path);
+  return ["pdf", "png", "jpg", "jpeg", "webp", "gif", "svg", "docx", "html", "htm"].includes(ext);
+}
 
 function normalizeDriveImageUrl(raw: string | null | undefined): string {
   const input = String(raw || "").trim();
@@ -107,7 +117,6 @@ export function ChapterInfoPage() {
     };
   }, []);
 
-  const delegates = data?.delegates || [];
   const documents = data?.governingDocuments || [];
   const resolveContactEmail = (member: LeadershipMember) => {
     const direct = String(member.email || "").trim();
@@ -300,72 +309,15 @@ export function ChapterInfoPage() {
                 <CardHeader>
                   <CardTitle className="text-lg sm:text-xl">Chapter Representatives & Delegates</CardTitle>
                   <CardDescription className="text-sm">
-                    Voting members and alternate delegates for each member organization
+                    Delegate roster is temporarily hidden while the council list is being corrected.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {/* Desktop Table */}
-                  <div className="hidden md:block overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Chapter Organization</TableHead>
-                          <TableHead>Representative</TableHead>
-                          <TableHead>Delegate</TableHead>
-                          <TableHead>Term</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {delegates.map((d, index) => (
-                          <motion.tr
-                            key={d.id}
-                            initial={{ x: -15, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            transition={{ delay: index * 0.04, duration: 0.3 }}
-                            className="border-b border-black/10 transition-colors hover:bg-white/5"
-                          >
-                            <TableCell className="font-medium">{d.chapter}</TableCell>
-                            <TableCell>{d.representative}</TableCell>
-                            <TableCell>{d.delegate}</TableCell>
-                            <TableCell>
-                              <Badge variant="outline">{d.term}</Badge>
-                            </TableCell>
-                          </motion.tr>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-
-                  {/* Mobile Cards */}
-                  <div className="md:hidden space-y-3">
-                    {delegates.map((d, index) => (
-                      <motion.div
-                        key={d.id}
-                        initial={{ x: -15, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        transition={{ delay: index * 0.04, duration: 0.3 }}
-                      >
-                        <Card className="shadow-sm">
-                          <CardContent className="p-4">
-                            <h3 className="text-slate-900 text-sm mb-3">{d.chapter}</h3>
-                            <div className="space-y-2 text-sm">
-                              <div className="flex justify-between gap-2">
-                                <span className="text-slate-500 flex-shrink-0">Representative:</span>
-                                <span className="text-right">{d.representative}</span>
-                              </div>
-                              <div className="flex justify-between gap-2">
-                                <span className="text-slate-500 flex-shrink-0">Delegate:</span>
-                                <span className="text-right">{d.delegate}</span>
-                              </div>
-                              <div className="flex justify-between items-center gap-2">
-                                <span className="text-slate-500 flex-shrink-0">Term:</span>
-                                <Badge variant="outline">{d.term}</Badge>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </motion.div>
-                    ))}
+                  <div className="rounded-xl border border-amber-300/60 bg-amber-500/10 p-4 sm:p-5">
+                    <p className="text-sm font-semibold text-amber-900">Roster update in progress</p>
+                    <p className="mt-1 text-sm text-amber-800/90">
+                      The previous delegate names were inaccurate, so they have been removed from view. This tab will remain available and can be repopulated once the correct chapter representative and delegate roster is entered.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -421,14 +373,16 @@ export function ChapterInfoPage() {
                       if (doc.fileUrl) {
                         const raw = String(doc.fileUrl || "").trim();
                         const isInternalFile = raw.startsWith("/");
-                        const viewerHref = isInternalFile ? `#/viewer?src=${encodeURIComponent(raw)}` : raw;
+                        const href = isInternalFile && shouldUseInAppViewer(raw)
+                          ? `#/viewer?src=${encodeURIComponent(raw)}`
+                          : raw;
 
                         return (
                           <motion.a
                             key={doc.id}
-                            href={viewerHref}
-                            target={isInternalFile ? undefined : "_blank"}
-                            rel={isInternalFile ? undefined : "noreferrer"}
+                            href={href}
+                            target={isInternalFile && shouldUseInAppViewer(raw) ? undefined : "_blank"}
+                            rel={isInternalFile && shouldUseInAppViewer(raw) ? undefined : "noreferrer"}
                             {...motionProps}
                             className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-lg border border-black/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-all duration-200 group"
                           >

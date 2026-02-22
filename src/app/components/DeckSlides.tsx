@@ -26,6 +26,7 @@ const CANDIDATE_3    = 'https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/NPHC
 const D9_TRENTON_URL = 'https://d9intrenton.my.canva.site/home/';
 const THANK_YOU_LETTER_IMAGE_URL = 'https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/2.png';
 const FUNDRAISING_TOTAL_IMAGE_URL = 'https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/3.png';
+const EXEC_EBOARD_IMAGE_URL = 'https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/NPHC%20Executive%20Council%20(2).png';
 
 // ─── Primitives ──────────────────────────────────────────────────────────────
 
@@ -93,8 +94,8 @@ const agendaItems: { num: string; title: string; sub?: string; tags?: AgendaTag[
   { num: '08', title: "Treasury's Report", tags: [{ text: 'Report' }] },
   { num: '09', title: '2026 Budget', tags: [{ text: 'Vote', solid: true }] },
   { num: '10', title: 'Financials & Compliance', sub: 'D9 in Trenton & March 1st Report', tags: [{ text: 'Sign-Up', color: '#059669' }] },
-  { num: '11', title: 'New Business', sub: 'Council Command & Summer Planning', tags: [{ text: 'Launch', color: '#2563EB' }, { text: 'Review' }] },
-  { num: '12', title: 'Success Recap', sub: 'Bowling Night & MLK Service', tags: [{ text: 'Action' }, { text: 'Budgets', color: '#059669' }] },
+  { num: '11', title: 'Signature Event', sub: 'BBQ vs Block Party (high-level discussion)', tags: [{ text: 'Review' }, { text: 'Discuss', color: '#2563EB' }] },
+  { num: '12', title: 'Success Recap', sub: 'MLK Day (Tina) & Bowling Night (Azaria)', tags: [{ text: 'Action' }, { text: 'Budgets', color: '#059669' }] },
   { num: '13', title: 'Adjournment' },
 ];
 
@@ -240,19 +241,39 @@ export function Slide4Ratification({ isMobile = false }: { isMobile?: boolean })
         <SilverLine />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, minmax(0, 1fr))', gap: isMobile ? 10 : 10, flex: 1, minHeight: 0, overflow: 'auto', alignContent: 'start' }}>
-        {eboardMembers.map(({ id, img, name, role, chapter }) => (
-          <div key={id} style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 10, padding: isMobile ? '10px 12px' : '8px 10px', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: isMobile ? 48 : 42, height: isMobile ? 48 : 42, borderRadius: 8, overflow: 'hidden', flexShrink: 0, border: `1px solid ${BORDER2}`, background: BG_EL }}>
-              <img src={img} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />
-            </div>
-            <div style={{ minWidth: 0 }}>
-              <div style={{ color: BLACK, fontSize: isMobile ? '0.92rem' : '0.82rem', fontWeight: 700, lineHeight: 1.2 }}>{name}</div>
-              <div style={{ color: SILVER, fontSize: isMobile ? '0.74rem' : '0.64rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 2 }}>{role}</div>
-              <div style={{ color: '#666', fontSize: isMobile ? '0.75rem' : '0.62rem', marginTop: 2, lineHeight: 1.35 }}>{chapter}</div>
-            </div>
-          </div>
-        ))}
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', gap: isMobile ? 8 : 10 }}>
+        <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '10px' : '12px', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+          <img
+            src={EXEC_EBOARD_IMAGE_URL}
+            alt="NPHC Executive Council"
+            style={{
+              width: '100%',
+              height: '100%',
+              minHeight: isMobile ? 220 : 320,
+              objectFit: 'contain',
+              borderRadius: 10,
+              background: BLACK,
+              border: `1px solid ${BORDER2}`,
+            }}
+          />
+        </div>
+        <a
+          href={EXEC_EBOARD_IMAGE_URL}
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            color: SILVER_L,
+            fontSize: isMobile ? '0.8rem' : '0.68rem',
+            fontWeight: 700,
+            textDecoration: 'none',
+          }}
+        >
+          Open Executive Council Image
+          <ExternalLink size={12} />
+        </a>
       </div>
     </div>
   );
@@ -363,29 +384,6 @@ export function Slide5Financials({ isMobile = false }: { isMobile?: boolean }) {
             </a>
           </div>
 
-          <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '12px' : '12px 14px' }}>
-            <Label>Monday Meeting Link</Label>
-            <h3 style={{ color: BLACK, margin: '6px 0 2px', fontSize: isMobile ? '0.98rem' : '0.84rem', fontWeight: 700 }}>February Chapter Meeting</h3>
-            <p style={{ color: '#666', margin: 0, fontSize: isMobile ? '0.78rem' : '0.64rem' }}>Monday, February 23 · 8:00–9:00 PM (America/New_York)</p>
-            <a
-              href="https://meet.google.com/ktp-drvx-rjx"
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                marginTop: 8,
-                color: '#0F172A',
-                fontSize: isMobile ? '0.8rem' : '0.66rem',
-                fontWeight: 700,
-                textDecoration: 'none',
-              }}
-            >
-              Join Google Meet
-              <ExternalLink size={11} />
-            </a>
-          </div>
         </div>
       </div>
     </div>
@@ -394,23 +392,43 @@ export function Slide5Financials({ isMobile = false }: { isMobile?: boolean }) {
 
 // ─── Slide 6: New Business ────────────────────────────────────────────────────
 
-const bizItems = [
-  { icon: Cpu,     label: 'Council Command',    badge: 'Launch',      solid: true,  desc: 'An AI-powered digital platform to automate administrative tasks — the backbone of our Innovation pillar.', items: ['AI-assisted workflows', 'Member access rollout', 'Community-facing features'] },
-  { icon: Sun,     label: 'Summer Programming', badge: 'Review',     solid: false, desc: 'Block Party vs. Chapter BBQ — a full comparative analysis is available on the Council Command site. Review the data and come prepared to discuss.', siteNote: 'Vote on Council Command — review the analysis before the next meeting.' },
-  { icon: Package, label: 'Spring Cereal Drive', badge: 'Late May/June', solid: false, desc: 'Digital-first cereal drive powered by Council Command with full tracking.', items: ['Digital donation tracking', 'Council Command integration', 'Community impact metrics'] },
+const signatureEventOptions = [
+  {
+    icon: Sun,
+    label: 'Community Block Party',
+    badge: 'Larger Scale',
+    solid: false,
+    desc: 'Higher visibility event with stronger community reach, more logistics, and broader chapter coordination requirements.',
+    items: ['Higher attendance potential', 'More permits/logistics planning', 'Larger volunteer footprint'],
+  },
+  {
+    icon: Package,
+    label: 'Chapter BBQ',
+    badge: 'Lower Lift',
+    solid: false,
+    desc: 'More contained event format with simpler operations and lower cost/risk while still driving fellowship and engagement.',
+    items: ['Faster planning timeline', 'Lower upfront cost', 'Smaller operations team needed'],
+  },
+];
+
+const signatureEventDiscussionPoints = [
+  'Which option best fits current chapter capacity and volunteer availability?',
+  'Which option gives the strongest community impact and council visibility?',
+  'What budget range can we realistically support this cycle?',
+  'What timeline is achievable for planning, permitting, and promotion?',
 ];
 
 export function Slide6NewBusiness({ isMobile = false }: { isMobile?: boolean }) {
   return (
     <div style={{ width: '100%', height: '100%', background: BG_ALT, display: 'flex', flexDirection: 'column', padding: isMobile ? '16px' : 'clamp(14px,3%,36px)', boxSizing: 'border-box', overflow: 'hidden' }}>
       <div style={{ marginBottom: isMobile ? 12 : 12, flexShrink: 0 }}>
-        <Label>New Business</Label>
-        <h1 style={{ color: BLACK, margin: '5px 0 0', fontSize: isMobile ? '1.5rem' : 'clamp(1.35rem,2.8vw,2rem)', fontWeight: 700 }}>Innovation & Programming</h1>
+        <Label>Summer Programming</Label>
+        <h1 style={{ color: BLACK, margin: '5px 0 0', fontSize: isMobile ? '1.5rem' : 'clamp(1.35rem,2.8vw,2rem)', fontWeight: 700 }}>Signature Event</h1>
         <SilverLine />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: isMobile ? 8 : 12, flex: 1, minHeight: 0, overflow: isMobile ? 'auto' : 'hidden' }}>
-        {bizItems.map(({ icon: Icon, label, badge, solid, desc, items, siteNote }) => (
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.2fr 1.2fr 1fr', gap: isMobile ? 8 : 12, flex: 1, minHeight: 0, overflow: isMobile ? 'auto' : 'hidden' }}>
+        {signatureEventOptions.map(({ icon: Icon, label, badge, solid, desc, items }) => (
           <div key={label} style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '14px' : 'clamp(12px,2%,20px)', display: 'flex', flexDirection: 'column', gap: isMobile ? 8 : 9, position: 'relative', flexShrink: 0 }}>
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,#B0B0B0,#606060,#B0B0B0)', borderRadius: '12px 12px 0 0' }} />
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingTop: 4 }}>
@@ -423,12 +441,6 @@ export function Slide6NewBusiness({ isMobile = false }: { isMobile?: boolean }) 
               </div>
             </div>
             <p style={{ color: '#555', fontSize: isMobile ? '0.9rem' : 'clamp(0.68rem,1.15vw,0.88rem)', margin: 0, lineHeight: 1.5 }}>{desc}</p>
-            {siteNote && (
-              <div style={{ background: BG_EL, border: `1px solid ${BORDER}`, borderRadius: 7, padding: '8px 12px', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                <ExternalLink size={12} color="#2563EB" style={{ flexShrink: 0, marginTop: 2 }} />
-                <div style={{ color: SILVER_L, fontSize: isMobile ? '0.85rem' : 'clamp(0.64rem,1.1vw,0.8rem)', lineHeight: 1.4 }}>{siteNote}</div>
-              </div>
-            )}
             {items && items.map(item => (
               <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#444', fontSize: isMobile ? '0.88rem' : 'clamp(0.64rem,1.1vw,0.8rem)' }}>
                 <ChevronRight size={10} color={SILVER} style={{ flexShrink: 0 }} /> {item}
@@ -436,59 +448,54 @@ export function Slide6NewBusiness({ isMobile = false }: { isMobile?: boolean }) 
             ))}
           </div>
         ))}
+
+        <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '14px' : 'clamp(12px,2%,20px)', display: 'flex', flexDirection: 'column', gap: isMobile ? 8 : 9, position: 'relative', flexShrink: 0 }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,#B0B0B0,#606060,#B0B0B0)', borderRadius: '12px 12px 0 0' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingTop: 4 }}>
+            <div style={{ width: isMobile ? 38 : 36, height: isMobile ? 38 : 36, borderRadius: 9, background: BG_EL, border: `1px solid ${BORDER2}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Cpu size={isMobile ? 17 : 16} color={SILVER_M} />
+            </div>
+            <div>
+              <div style={{ color: BLACK, fontSize: isMobile ? '1.05rem' : 'clamp(0.84rem,1.5vw,1.05rem)', fontWeight: 700 }}>Discussion Frame</div>
+              <Badge>High-Level</Badge>
+            </div>
+          </div>
+          <p style={{ color: '#555', fontSize: isMobile ? '0.9rem' : 'clamp(0.68rem,1.15vw,0.88rem)', margin: 0, lineHeight: 1.5 }}>
+            This section is for initial alignment on direction. Final budget, timeline, and operational details can be finalized after the preferred option is selected.
+          </p>
+          <div style={{ background: BG_EL, border: `1px solid ${BORDER}`, borderRadius: 7, padding: '8px 12px', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+            <ExternalLink size={12} color="#2563EB" style={{ flexShrink: 0, marginTop: 2 }} />
+            <div style={{ color: SILVER_L, fontSize: isMobile ? '0.85rem' : 'clamp(0.64rem,1.1vw,0.8rem)', lineHeight: 1.4 }}>
+              Use the Signature Event Comparison report in Council Command for the detailed analysis before a final decision.
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {signatureEventDiscussionPoints.map((point) => (
+              <div key={point} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, color: '#444', fontSize: isMobile ? '0.88rem' : 'clamp(0.64rem,1.1vw,0.8rem)', lineHeight: 1.4 }}>
+                <ChevronRight size={10} color={SILVER} style={{ flexShrink: 0, marginTop: 2 }} /> {point}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-// ─── Slide 7: Success Recap ───────────────────────────────────────────────────
+// ─── Slide 7: MLK Day of Service ──────────────────────────────────────────────
 
 export function Slide7SuccessRecap({ isMobile = false }: { isMobile?: boolean }) {
   return (
     <div style={{ width: '100%', height: '100%', background: BG, display: 'flex', flexDirection: 'column', padding: isMobile ? '16px' : 'clamp(14px,3%,36px)', boxSizing: 'border-box', overflow: 'hidden' }}>
       <div style={{ marginBottom: isMobile ? 12 : 12, flexShrink: 0 }}>
-        <Label>Wins & Momentum</Label>
-        <h1 style={{ color: BLACK, margin: '5px 0 0', fontSize: isMobile ? '1.5rem' : 'clamp(1.35rem,2.8vw,2rem)', fontWeight: 700 }}>Success Recap & Metrics</h1>
+        <Label>Success Recap</Label>
+        <h1 style={{ color: BLACK, margin: '5px 0 0', fontSize: isMobile ? '1.5rem' : 'clamp(1.35rem,2.8vw,2rem)', fontWeight: 700 }}>MLK Day of Service</h1>
+        <div style={{ color: '#666', marginTop: 4, fontSize: isMobile ? '0.85rem' : '0.75rem', fontWeight: 600 }}>Presenter: Tina Jones</div>
         <SilverLine />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 10 : 14, flex: 1, minHeight: 0, overflow: isMobile ? 'auto' : 'hidden' }}>
-        {/* Bowling Night */}
-        <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '14px' : 'clamp(14px,2.4%,24px)', display: 'flex', flexDirection: 'column', gap: isMobile ? 10 : 10, flexShrink: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: isMobile ? 44 : 42, height: isMobile ? 44 : 42, borderRadius: 10, background: BG_EL, border: `1px solid ${BORDER2}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <Trophy size={isMobile ? 20 : 19} color={SILVER_M} />
-            </div>
-            <div>
-              <h3 style={{ color: BLACK, margin: 0, fontSize: isMobile ? '1.15rem' : 'clamp(0.92rem,1.6vw,1.15rem)', fontWeight: 700 }}>January Bowling Night</h3>
-              <Label>January 2026</Label>
-            </div>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            {[{ label: 'Attendance', value: 'Record High' }, { label: 'Revenue', value: 'Record High' }].map(({ label, value }) => (
-              <div key={label} style={{ background: BG_EL, border: `1px solid ${BORDER2}`, borderRadius: 8, padding: isMobile ? '11px' : '10px 12px', textAlign: 'center' }}>
-                <div style={{ color: '#888', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{label}</div>
-                <div style={{ color: BLACK, fontSize: isMobile ? '1rem' : 'clamp(0.84rem,1.5vw,1.05rem)', fontWeight: 700 }}>{value}</div>
-              </div>
-            ))}
-          </div>
-          <div style={{ background: BG_EL, border: `1px solid ${BORDER}`, borderRadius: 8, padding: isMobile ? '11px 14px' : '10px 14px' }}>
-            <p style={{ color: '#555', margin: 0, fontSize: isMobile ? '0.95rem' : 'clamp(0.68rem,1.15vw,0.88rem)', lineHeight: 1.55 }}>
-              A landmark moment setting a new benchmark for future fundraising in 2026.
-            </p>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            <a href={THANK_YOU_LETTER_IMAGE_URL} target="_blank" rel="noreferrer" style={{ display: 'block', borderRadius: 8, overflow: 'hidden', border: `1px solid ${BORDER}` }}>
-              <img src={THANK_YOU_LETTER_IMAGE_URL} alt="Thank you letter and chapter image" style={{ width: '100%', height: isMobile ? 98 : 92, objectFit: 'cover' }} />
-            </a>
-            <a href={FUNDRAISING_TOTAL_IMAGE_URL} target="_blank" rel="noreferrer" style={{ display: 'block', borderRadius: 8, overflow: 'hidden', border: `1px solid ${BORDER}` }}>
-              <img src={FUNDRAISING_TOTAL_IMAGE_URL} alt="Fundraising event total screenshot" style={{ width: '100%', height: isMobile ? 98 : 92, objectFit: 'cover' }} />
-            </a>
-          </div>
-        </div>
-
-        {/* MLK Day */}
-        <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '14px' : 'clamp(14px,2.4%,24px)', display: 'flex', flexDirection: 'column', gap: isMobile ? 10 : 10, flexShrink: 0 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.1fr 0.9fr', gap: isMobile ? 10 : 14, flex: 1, minHeight: 0, overflow: isMobile ? 'auto' : 'hidden' }}>
+        <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '14px' : 'clamp(14px,2.4%,24px)', display: 'flex', flexDirection: 'column', gap: isMobile ? 10 : 10, minHeight: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: isMobile ? 44 : 42, height: isMobile ? 44 : 42, borderRadius: 10, background: BG_EL, border: `1px solid ${BORDER2}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <Heart size={isMobile ? 20 : 19} color={SILVER_M} />
@@ -524,12 +531,124 @@ export function Slide7SuccessRecap({ isMobile = false }: { isMobile?: boolean })
             </p>
           </div>
         </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 10 : 10, minHeight: 0 }}>
+          <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '12px' : '12px 14px' }}>
+            <Label>Reporting Action</Label>
+            <h3 style={{ color: BLACK, margin: '6px 0 4px', fontSize: isMobile ? '1.02rem' : '0.88rem', fontWeight: 700 }}>
+              Service Hours & Volunteer Totals Needed
+            </h3>
+            <p style={{ color: '#555', margin: 0, fontSize: isMobile ? '0.82rem' : '0.68rem', lineHeight: 1.45 }}>
+              Delegates should submit chapter volunteer counts and service hours to support the consolidated NPHC reporting totals.
+            </p>
+          </div>
+
+          <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '12px' : '12px 14px' }}>
+            <Label>Discussion Focus</Label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginTop: 8 }}>
+              {[
+                'Confirm each chapter submitted MLK volunteer counts',
+                'Confirm service-hour totals and any missing entries',
+                'Finalize combined total for March 1 report',
+                'Assign follow-up for outstanding chapter responses',
+              ].map((item) => (
+                <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, color: '#444', fontSize: isMobile ? '0.84rem' : '0.68rem', lineHeight: 1.4 }}>
+                  <ChevronRight size={10} color={SILVER} style={{ flexShrink: 0, marginTop: 2 }} /> {item}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-// ─── Slide 8: Adjournment ─────────────────────────────────────────────────────
+// ─── Slide 8: Bowling Night Fundraiser ───────────────────────────────────────
+
+export function Slide8BowlingRecap({ isMobile = false }: { isMobile?: boolean }) {
+  return (
+    <div style={{ width: '100%', height: '100%', background: BG, display: 'flex', flexDirection: 'column', padding: isMobile ? '16px' : 'clamp(14px,3%,36px)', boxSizing: 'border-box', overflow: 'hidden' }}>
+      <div style={{ marginBottom: isMobile ? 12 : 12, flexShrink: 0 }}>
+        <Label>Success Recap</Label>
+        <h1 style={{ color: BLACK, margin: '5px 0 0', fontSize: isMobile ? '1.5rem' : 'clamp(1.35rem,2.8vw,2rem)', fontWeight: 700 }}>January Bowling Night</h1>
+        <div style={{ color: '#666', marginTop: 4, fontSize: isMobile ? '0.85rem' : '0.75rem', fontWeight: 600 }}>Presenter: Azaria Cunningham</div>
+        <SilverLine />
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1.1fr', gap: isMobile ? 10 : 14, flex: 1, minHeight: 0, overflow: isMobile ? 'auto' : 'hidden' }}>
+        <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '14px' : 'clamp(14px,2.4%,24px)', display: 'flex', flexDirection: 'column', gap: isMobile ? 10 : 10, minHeight: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: isMobile ? 44 : 42, height: isMobile ? 44 : 42, borderRadius: 10, background: BG_EL, border: `1px solid ${BORDER2}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Trophy size={isMobile ? 20 : 19} color={SILVER_M} />
+            </div>
+            <div>
+              <h3 style={{ color: BLACK, margin: 0, fontSize: isMobile ? '1.1rem' : 'clamp(0.9rem,1.6vw,1.12rem)', fontWeight: 700 }}>Fundraising Event Recap</h3>
+              <Label>January 2026</Label>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            {[{ label: 'Attendance', value: 'Record High' }, { label: 'Revenue', value: 'Record High' }].map(({ label, value }) => (
+              <div key={label} style={{ background: BG_EL, border: `1px solid ${BORDER2}`, borderRadius: 8, padding: isMobile ? '11px' : '10px 12px', textAlign: 'center' }}>
+                <div style={{ color: '#888', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{label}</div>
+                <div style={{ color: BLACK, fontSize: isMobile ? '1rem' : 'clamp(0.84rem,1.5vw,1.05rem)', fontWeight: 700 }}>{value}</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ background: BG_EL, border: `1px solid ${BORDER}`, borderRadius: 8, padding: isMobile ? '11px 14px' : '10px 14px' }}>
+            <p style={{ color: '#555', margin: 0, fontSize: isMobile ? '0.9rem' : 'clamp(0.68rem,1.15vw,0.88rem)', lineHeight: 1.55 }}>
+              A landmark moment setting a new benchmark for future fundraising in 2026. This recap highlights the impact and visuals for reporting and member communications.
+            </p>
+          </div>
+
+          <div style={{ background: BG_EL, border: `1px solid ${BORDER}`, borderRadius: 8, padding: isMobile ? '11px 14px' : '10px 14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 5 }}>
+              <DollarSign size={13} color="#059669" style={{ flexShrink: 0 }} />
+              <span style={{ color: SILVER_L, fontSize: isMobile ? '0.9rem' : '0.76rem', fontWeight: 700 }}>Presenter Talking Points</span>
+            </div>
+            <p style={{ color: '#3A3A3A', fontSize: isMobile ? '0.84rem' : '0.68rem', margin: 0, lineHeight: 1.45 }}>
+              Review event turnout, fundraising performance, lessons learned, and recommendations to apply to the upcoming Signature Event planning discussion.
+            </p>
+          </div>
+        </div>
+
+        <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '10px' : '12px', display: 'flex', flexDirection: 'column', gap: 10, minHeight: 0 }}>
+          <Label>Event Images (Full View)</Label>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr', gap: 10, flex: 1, minHeight: 0, overflow: 'auto' }}>
+            <a
+              href={THANK_YOU_LETTER_IMAGE_URL}
+              target="_blank"
+              rel="noreferrer"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 10, overflow: 'hidden', border: `1px solid ${BORDER}`, background: '#FFFFFF', padding: 8, minHeight: isMobile ? 180 : 200 }}
+            >
+              <img
+                src={THANK_YOU_LETTER_IMAGE_URL}
+                alt="Thank you letter and chapter image"
+                style={{ width: '100%', height: isMobile ? 180 : 200, objectFit: 'contain', background: '#FFFFFF' }}
+              />
+            </a>
+            <a
+              href={FUNDRAISING_TOTAL_IMAGE_URL}
+              target="_blank"
+              rel="noreferrer"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 10, overflow: 'hidden', border: `1px solid ${BORDER}`, background: '#FFFFFF', padding: 8, minHeight: isMobile ? 180 : 200 }}
+            >
+              <img
+                src={FUNDRAISING_TOTAL_IMAGE_URL}
+                alt="Fundraising event total screenshot"
+                style={{ width: '100%', height: isMobile ? 180 : 200, objectFit: 'contain', background: '#FFFFFF' }}
+              />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Slide 9: Adjournment ─────────────────────────────────────────────────────
 
 const nextSteps = [
   { icon: FileText, label: 'Finalize Annual Report Assignments', note: 'Due March 1st — 10 days' },
@@ -537,7 +656,7 @@ const nextSteps = [
   { icon: Star,     label: 'D9 in Trenton Delegation Planning',  note: 'April 9–11 — pending vote' },
 ];
 
-export function Slide8Adjournment({ isMobile = false }: { isMobile?: boolean }) {
+export function Slide9Adjournment({ isMobile = false }: { isMobile?: boolean }) {
   return (
     <div style={{ width: '100%', height: '100%', background: BG_ALT, display: 'flex', flexDirection: 'column', padding: isMobile ? '16px' : 'clamp(14px,3%,36px)', boxSizing: 'border-box', overflow: 'hidden', position: 'relative' }}>
       <div style={{ position: 'absolute', bottom: -100, right: -100, width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle,rgba(100,100,100,0.06) 0%,transparent 70%)', pointerEvents: 'none' }} />
