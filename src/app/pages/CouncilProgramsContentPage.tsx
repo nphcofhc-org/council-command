@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Plus, Save, Trash2 } from "lucide-react";
 import { CouncilAdminGate } from "../components/CouncilAdminGate";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
@@ -21,6 +21,7 @@ export function CouncilProgramsContentPage() {
   const [form, setForm] = useState<ProgramsPageData>({
     upcomingEvents: [],
     archivedEvents: [],
+    eventHighlights: [],
     eventFlyers: [],
     signupForms: [],
   });
@@ -71,12 +72,12 @@ export function CouncilProgramsContentPage() {
         </div>
 
         <Card className="border-0 shadow-lg ring-1 ring-black/5">
-          <CardHeader>
-            <CardTitle>Content Manager — Programs</CardTitle>
-            <CardDescription>
-              Edit events, archive items, flyers, and signup forms. (Full add/remove UI is next; for now this is edit-in-place.)
-            </CardDescription>
-          </CardHeader>
+            <CardHeader>
+              <CardTitle>Content Manager — Programs</CardTitle>
+              <CardDescription>
+                Edit event highlights, events, archive items, flyers, and signup forms.
+              </CardDescription>
+            </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm text-gray-600">Tip: keep descriptions short for mobile.</p>
@@ -89,6 +90,114 @@ export function CouncilProgramsContentPage() {
             {message ? <p className="text-sm text-green-700">{message}</p> : null}
             {error ? <p className="text-sm text-red-700">{error}</p> : null}
             {loading ? <p className="text-sm text-gray-500">Loading...</p> : null}
+
+            <Card>
+              <CardHeader>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <CardTitle className="text-base">Event Highlights (Top of Programs Page)</CardTitle>
+                    <CardDescription>
+                      Add/remove image or video highlights shown at the top of the Programs page.
+                    </CardDescription>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="gap-2"
+                    onClick={() => setForm((p) => ({
+                      ...p,
+                      eventHighlights: [
+                        ...(p.eventHighlights || []),
+                        {
+                          id: `highlight-${Date.now()}`,
+                          title: "New Event Highlight",
+                          mediaType: "image",
+                          mediaUrl: "",
+                          thumbnailUrl: "",
+                        },
+                      ],
+                    }))}
+                  >
+                    <Plus className="size-4" />
+                    Add Highlight
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {(form.eventHighlights || []).length === 0 ? (
+                  <p className="text-sm text-gray-500">No highlights yet.</p>
+                ) : null}
+                {(form.eventHighlights || []).map((h, idx) => (
+                  <div key={h.id} className="nphc-editor-block rounded-lg border p-4">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <p className="text-sm font-semibold text-slate-900">Highlight {idx + 1}</p>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="gap-2 text-rose-700 border-rose-200 hover:bg-rose-50"
+                        onClick={() => setForm((p) => ({
+                          ...p,
+                          eventHighlights: (p.eventHighlights || []).filter((_, i) => i !== idx),
+                        }))}
+                      >
+                        <Trash2 className="size-3.5" />
+                        Remove
+                      </Button>
+                    </div>
+                    <div className="grid gap-3 md:grid-cols-2">
+                      <div className="space-y-1 md:col-span-2">
+                        <Label>Title</Label>
+                        <Input value={h.title} onChange={(ev) => setForm((p) => {
+                          const next = [...(p.eventHighlights || [])];
+                          next[idx] = { ...next[idx], title: ev.target.value };
+                          return { ...p, eventHighlights: next };
+                        })} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label>Media Type</Label>
+                        <select
+                          value={h.mediaType}
+                          onChange={(ev) => setForm((p) => {
+                            const next = [...(p.eventHighlights || [])];
+                            next[idx] = { ...next[idx], mediaType: ev.target.value === "video" ? "video" : "image" };
+                            return { ...p, eventHighlights: next };
+                          })}
+                          className="w-full rounded-md border border-black/15 bg-white/60 px-3 py-2 text-sm text-slate-900"
+                        >
+                          <option value="image">Image</option>
+                          <option value="video">Video</option>
+                        </select>
+                      </div>
+                      <div className="space-y-1">
+                        <Label>ID</Label>
+                        <Input value={h.id} onChange={(ev) => setForm((p) => {
+                          const next = [...(p.eventHighlights || [])];
+                          next[idx] = { ...next[idx], id: ev.target.value };
+                          return { ...p, eventHighlights: next };
+                        })} />
+                      </div>
+                      <div className="space-y-1 md:col-span-2">
+                        <Label>Media URL</Label>
+                        <Input value={h.mediaUrl} onChange={(ev) => setForm((p) => {
+                          const next = [...(p.eventHighlights || [])];
+                          next[idx] = { ...next[idx], mediaUrl: ev.target.value };
+                          return { ...p, eventHighlights: next };
+                        })} />
+                      </div>
+                      <div className="space-y-1 md:col-span-2">
+                        <Label>Thumbnail URL (optional, for videos)</Label>
+                        <Input value={h.thumbnailUrl || ""} onChange={(ev) => setForm((p) => {
+                          const next = [...(p.eventHighlights || [])];
+                          next[idx] = { ...next[idx], thumbnailUrl: ev.target.value };
+                          return { ...p, eventHighlights: next };
+                        })} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
 
             <Card>
               <CardHeader>

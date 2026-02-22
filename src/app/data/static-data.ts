@@ -27,6 +27,7 @@ import type {
   DelegateReport,
   CouncilEvent,
   ArchivedEvent,
+  ProgramEventHighlight,
   EventFlyer,
   SignupForm,
   SharedFormCategory,
@@ -380,6 +381,31 @@ export const archivedEvents: ArchivedEvent[] = [
   { id: "arch-1", title: "MLK Day of Service 2026",    date: "January 20, 2026",   attendees: "85 participants",   status: "Completed" },
   { id: "arch-2", title: "Black History Month Kickoff", date: "February 1, 2026",   attendees: "120 participants",  status: "Completed" },
   { id: "arch-3", title: "Holiday Food Drive 2025",     date: "December 15, 2025",  attendees: "67 participants",   status: "Completed" },
+];
+
+// ═════════════════════════════════════════════════════════════════════════════
+// EVENT HIGHLIGHTS  →  Programs page top media highlights
+// ═════════════════════════════════════════════════════════════════════════════
+
+export const eventHighlights: ProgramEventHighlight[] = [
+  {
+    id: "highlight-video-1",
+    title: "Bowling Night Highlight Video",
+    mediaType: "video",
+    mediaUrl: "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/1.mp4",
+  },
+  {
+    id: "highlight-image-1",
+    title: "Thank You Letter & Chapter Photo",
+    mediaType: "image",
+    mediaUrl: "https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/2.png",
+  },
+  {
+    id: "highlight-image-2",
+    title: "Event Total",
+    mediaType: "image",
+    mediaUrl: "https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/3.png",
+  },
 ];
 
 // ═════════════════════════════════════════════════════════════════════════════

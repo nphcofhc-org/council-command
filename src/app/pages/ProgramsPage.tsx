@@ -8,21 +8,24 @@ import { Link } from "react-router";
 import { motion } from "motion/react";
 import { useProgramsData } from "../hooks/use-site-data";
 import { StatusBadge } from "../components/status-badge";
+import type { ProgramEventHighlight } from "../data/types";
 
 const ART_MARBLE = "https://images.unsplash.com/photo-1678756466078-1ff0d7b09431?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25vY2hyb21lJTIwYWJzdHJhY3QlMjBtYXJibGUlMjB0ZXh0dXJlfGVufDF8fHx8MTc3MDUxMzIyM3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
-const BOWLING_HIGHLIGHT_URL = "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/1.mp4";
 const EVENTS_ENDPOINT = "/api/events/upcoming";
 
 export function ProgramsPage() {
   const { data } = useProgramsData();
-  const [showHighlight, setShowHighlight] = useState(false);
+  const [activeHighlight, setActiveHighlight] = useState<ProgramEventHighlight | null>(null);
+  const [dismissAutoplayHighlight, setDismissAutoplayHighlight] = useState(false);
   const [memberEvents, setMemberEvents] = useState<any[]>([]);
   const [eventsError, setEventsError] = useState<string | null>(null);
 
   const upcomingEvents = data?.upcomingEvents || [];
   const archivedEvents = data?.archivedEvents || [];
+  const eventHighlights = data?.eventHighlights || [];
   const eventFlyers = data?.eventFlyers || [];
   const signupForms = data?.signupForms || [];
+  const autoplayVideoHighlight = eventHighlights.find((h) => h.mediaType === "video") || null;
 
   useEffect(() => {
     let cancelled = false;
@@ -80,25 +83,42 @@ export function ProgramsPage() {
 
       <div className="p-4 sm:p-8 max-w-7xl mx-auto relative z-10">
         {/* Highlight Modal */}
-        {showHighlight ? (
+        {activeHighlight ? (
           <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
             <div className="w-full max-w-3xl rounded-2xl border border-white/15 bg-black/50 shadow-[0_30px_90px_rgba(0,0,0,0.6)] overflow-hidden">
               <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-white/10">
                 <div className="min-w-0">
-                  <p className="text-xs tracking-[0.22em] uppercase text-white/60">Highlight</p>
-                  <p className="text-sm font-semibold text-white truncate">Bowling Night (Most Recent)</p>
+                  <p className="text-xs tracking-[0.22em] uppercase text-white/60">
+                    {activeHighlight.mediaType === "video" ? "Video Highlight" : "Event Highlight"}
+                  </p>
+                  <p className="text-sm font-semibold text-white truncate">{activeHighlight.title}</p>
                 </div>
                 <button
                   type="button"
-                  onClick={() => setShowHighlight(false)}
+                  onClick={() => setActiveHighlight(null)}
                   className="nphc-holo-btn rounded-xl border border-white/15 bg-white/5 p-2 text-white/80 hover:text-white hover:border-primary/60 transition-colors"
-                  aria-label="Close highlight video"
+                  aria-label="Close highlight"
                 >
                   <X className="size-4" />
                 </button>
               </div>
               <div className="bg-black">
-                <video src={BOWLING_HIGHLIGHT_URL} controls autoPlay playsInline className="w-full h-auto" />
+                {activeHighlight.mediaType === "video" ? (
+                  <video
+                    src={activeHighlight.mediaUrl}
+                    poster={activeHighlight.thumbnailUrl}
+                    controls
+                    autoPlay
+                    playsInline
+                    className="w-full h-auto"
+                  />
+                ) : (
+                  <img
+                    src={activeHighlight.mediaUrl}
+                    alt={activeHighlight.title}
+                    className="w-full h-auto object-contain"
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -123,22 +143,103 @@ export function ProgramsPage() {
           </p>
         </motion.div>
 
-        {/* Bowling Highlight */}
-        <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl mb-6">
-          <CardContent className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="min-w-0">
-              <p className="text-xs uppercase tracking-widest text-slate-500 mb-1">Video</p>
-              <p className="text-slate-900 font-semibold truncate">Bowling Night Highlight</p>
-              <p className="text-sm text-slate-600 mt-1">
-                Click to play the most recent bowling night recap video.
-              </p>
-            </div>
-            <Button className="gap-2 w-full sm:w-auto" onClick={() => setShowHighlight(true)}>
-              <PlayCircle className="size-4" />
-              Play Video
-            </Button>
-          </CardContent>
-        </Card>
+        {/* Autoplay video highlight with skip */}
+        {autoplayVideoHighlight && !dismissAutoplayHighlight ? (
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl mb-6 overflow-hidden">
+            <CardContent className="p-0">
+              <div className="flex items-center justify-between gap-3 border-b border-black/10 bg-white/50 px-4 py-3">
+                <div className="min-w-0">
+                  <p className="text-xs uppercase tracking-widest text-slate-500">Autoplay Highlight</p>
+                  <p className="text-sm font-semibold text-slate-900 truncate">{autoplayVideoHighlight.title}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
+                    onClick={() => setActiveHighlight(autoplayVideoHighlight)}
+                  >
+                    <PlayCircle className="size-3.5" />
+                    Expand
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-rose-300 hover:text-rose-700 hover:bg-rose-50"
+                    onClick={() => setDismissAutoplayHighlight(true)}
+                  >
+                    <X className="size-3.5" />
+                    Skip
+                  </Button>
+                </div>
+              </div>
+              <div className="bg-black">
+                <video
+                  src={autoplayVideoHighlight.mediaUrl}
+                  poster={autoplayVideoHighlight.thumbnailUrl}
+                  autoPlay
+                  muted
+                  playsInline
+                  controls
+                  className="w-full h-auto max-h-[60vh] object-contain"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        ) : null}
+
+        {/* Event Highlights */}
+        {eventHighlights.length > 0 ? (
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl mb-6">
+            <CardHeader>
+              <CardTitle className="text-lg sm:text-xl">Event Highlights</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {eventHighlights.map((highlight, index) => (
+                  <motion.button
+                    key={highlight.id}
+                    type="button"
+                    initial={{ y: 12, opacity: 0 }}
+                    whileInView={{ y: 0, opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.05, duration: 0.35 }}
+                    onClick={() => setActiveHighlight(highlight)}
+                    className="group overflow-hidden rounded-xl border border-black/10 bg-white/5 text-left hover:border-primary/35 hover:bg-white/10 transition-all"
+                  >
+                    <div className="aspect-[4/3] bg-black/5 overflow-hidden">
+                      {highlight.mediaType === "video" ? (
+                        <video
+                          src={highlight.mediaUrl}
+                          poster={highlight.thumbnailUrl}
+                          muted
+                          playsInline
+                          preload="metadata"
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <img
+                          src={highlight.mediaUrl}
+                          alt={highlight.title}
+                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                          loading="lazy"
+                        />
+                      )}
+                    </div>
+                    <div className="p-3">
+                      <p className="text-xs uppercase tracking-widest text-slate-500">
+                        {highlight.mediaType === "video" ? "Video" : "Image"}
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-slate-900 line-clamp-2">{highlight.title}</p>
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        ) : null}
 
         <Tabs defaultValue="calendar" className="space-y-6">
           <TabsList className="w-full sm:w-auto flex-wrap justify-start border border-black/10 bg-white/5 backdrop-blur-xl">

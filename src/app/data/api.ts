@@ -214,13 +214,21 @@ export async function fetchProgramsData(): Promise<ProgramsPageData> {
     const base: ProgramsPageData = {
       upcomingEvents: staticData.upcomingEvents,
       archivedEvents: staticData.archivedEvents,
+      eventHighlights: staticData.eventHighlights,
       eventFlyers: staticData.eventFlyers,
       signupForms: staticData.signupForms,
     };
 
     try {
       const override = await fetchProgramsOverride();
-      if (override.found && override.data) return override.data as ProgramsPageData;
+      if (override.found && override.data) {
+        const payload = override.data as Partial<ProgramsPageData>;
+        return {
+          ...base,
+          ...payload,
+          eventHighlights: Array.isArray(payload.eventHighlights) ? payload.eventHighlights : base.eventHighlights,
+        } as ProgramsPageData;
+      }
     } catch {
       // ignore
     }
@@ -237,6 +245,7 @@ export async function fetchProgramsData(): Promise<ProgramsPageData> {
   return {
     upcomingEvents: upcomingEvents as ProgramsPageData["upcomingEvents"],
     archivedEvents: archivedEvents as ProgramsPageData["archivedEvents"],
+    eventHighlights: [],
     eventFlyers: eventFlyers as ProgramsPageData["eventFlyers"],
     signupForms: signupForms as ProgramsPageData["signupForms"],
   };

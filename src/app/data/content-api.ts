@@ -4,6 +4,7 @@ import type {
   DelegateReport,
   DecisionPortalContent,
   EventFlyer,
+  ProgramEventHighlight,
   MeetingRecord,
   NationalOrg,
   QuickLink,
@@ -126,6 +127,7 @@ export function saveMeetingsOverride(payload: MeetingsOverridePayload): Promise<
 export type ProgramsOverridePayload = {
   upcomingEvents: CouncilEvent[];
   archivedEvents: ArchivedEvent[];
+  eventHighlights?: ProgramEventHighlight[];
   eventFlyers: EventFlyer[];
   signupForms: SignupForm[];
 };

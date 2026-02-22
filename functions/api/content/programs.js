@@ -14,6 +14,10 @@ function t(value, max = 200) {
   return String(value || "").trim().slice(0, max);
 }
 
+function mediaType(value) {
+  return String(value || "").trim().toLowerCase() === "video" ? "video" : "image";
+}
+
 function sanitizeList(input, limit, mapFn) {
   if (!Array.isArray(input)) return [];
   return input.slice(0, limit).map(mapFn).filter(Boolean);
@@ -37,6 +41,13 @@ function sanitizePayload(input) {
       attendees: t(raw?.attendees, 60),
       status: t(raw?.status, 60),
     })).filter((e) => e.title && e.date),
+    eventHighlights: sanitizeList(input?.eventHighlights, 24, (raw, idx) => ({
+      id: t(raw?.id || `highlight-${idx + 1}`, 64) || `highlight-${idx + 1}`,
+      title: t(raw?.title, 160),
+      mediaType: mediaType(raw?.mediaType),
+      mediaUrl: t(raw?.mediaUrl, 2048),
+      thumbnailUrl: t(raw?.thumbnailUrl, 2048) || undefined,
+    })).filter((h) => h.title && h.mediaUrl),
     eventFlyers: sanitizeList(input?.eventFlyers, 200, (raw, idx) => ({
       id: t(raw?.id || `flyer-${idx + 1}`, 64) || `flyer-${idx + 1}`,
       title: t(raw?.title, 160),

@@ -183,6 +183,14 @@ export interface EventFlyer {
   fileUrl?: string;
 }
 
+export interface ProgramEventHighlight {
+  id: string;
+  title: string;
+  mediaType: "image" | "video";
+  mediaUrl: string;
+  thumbnailUrl?: string;
+}
+
 export interface SignupForm {
   id: string;
   title: string;
@@ -295,6 +303,7 @@ export interface MeetingsPageData {
 export interface ProgramsPageData {
   upcomingEvents: CouncilEvent[];
   archivedEvents: ArchivedEvent[];
+  eventHighlights: ProgramEventHighlight[];
   eventFlyers: EventFlyer[];
   signupForms: SignupForm[];
 }
