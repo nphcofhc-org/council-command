@@ -1,12 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
-import { ArrowLeft, BarChart3, Database, Loader2, Save, Shield, Users, Wrench } from "lucide-react";
+import { ArrowLeft, BarChart3, Database, Loader2, Save, Shield, Users, Wrench, SlidersHorizontal, Mail, Eye } from "lucide-react";
 import { PresidentGate } from "../components/PresidentGate";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
+import { Switch } from "../components/ui/switch";
 import { motion } from "motion/react";
 import type { AccessOverrideEntry } from "../data/admin-api";
 import { fetchLeadershipContent, fetchSiteMaintenancePayload, saveSiteMaintenanceOverrides } from "../data/admin-api";
+import { fetchSiteConfig } from "../data/api";
+import { saveSiteConfigOverride } from "../data/content-api";
+import type { SiteConfig } from "../data/types";
 
 type AccessKey = "councilAdmin" | "treasuryAdmin" | "president";
 type AccessMatrix = Record<AccessKey, Record<string, boolean>>;
@@ -30,8 +34,8 @@ const ACCESS_ITEMS: Array<{ key: AccessKey; label: string; description: string }
   },
   {
     key: "president",
-    label: "Site Maintenance",
-    description: "President-only controls for role policy, activity metrics, and maintenance.",
+    label: "The President's Desk",
+    description: "President-only controls for role policy, activity metrics, and site administration.",
   },
 ];
 
@@ -105,6 +109,25 @@ export function CouncilSiteMaintenancePage() {
   const [error, setError] = useState<string | null>(null);
   const [updatedBy, setUpdatedBy] = useState<string | null>(null);
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
+  const [commandVisibilityConfig, setCommandVisibilityConfig] = useState<SiteConfig | null>(null);
+  const [commandVisibilityLoading, setCommandVisibilityLoading] = useState(true);
+  const [commandVisibilitySaving, setCommandVisibilitySaving] = useState(false);
+  const [commandVisibilityError, setCommandVisibilityError] = useState<string | null>(null);
+  const [commandVisibilityMessage, setCommandVisibilityMessage] = useState<string | null>(null);
+
+  const normalizeCommandVisibility = (cfg: SiteConfig): SiteConfig => ({
+    ...cfg,
+    showCouncilCommandOperations: cfg.showCouncilCommandOperations ?? true,
+    showCouncilCommandTreasury: cfg.showCouncilCommandTreasury ?? true,
+    showCouncilCommandPresidentsDesk: cfg.showCouncilCommandPresidentsDesk ?? true,
+    showCouncilCommandContentManager: cfg.showCouncilCommandContentManager ?? true,
+    showCouncilCommandEditors: cfg.showCouncilCommandEditors ?? true,
+    showCouncilCommandMemberDirectory: cfg.showCouncilCommandMemberDirectory ?? true,
+    showCouncilCommandSubmissions: cfg.showCouncilCommandSubmissions ?? true,
+    showCouncilCommandNotifications: cfg.showCouncilCommandNotifications ?? true,
+    showCouncilCommandInternalDocuments: cfg.showCouncilCommandInternalDocuments ?? true,
+    showCouncilCommandTaskTracker: cfg.showCouncilCommandTaskTracker ?? true,
+  });
 
   const load = async () => {
     setLoading(true);
@@ -179,6 +202,27 @@ export function CouncilSiteMaintenancePage() {
     void load();
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    setCommandVisibilityLoading(true);
+    setCommandVisibilityError(null);
+    void fetchSiteConfig()
+      .then((cfg) => {
+        if (cancelled) return;
+        setCommandVisibilityConfig(normalizeCommandVisibility(cfg));
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setCommandVisibilityError(err instanceof Error ? err.message : "Failed to load Council Command topic visibility.");
+      })
+      .finally(() => {
+        if (!cancelled) setCommandVisibilityLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const dirty = useMemo(
     () => JSON.stringify(matrix) !== JSON.stringify(baseMatrix),
     [matrix, baseMatrix],
@@ -239,6 +283,28 @@ export function CouncilSiteMaintenancePage() {
     }
   };
 
+  const setCommandVisibility = (key: keyof SiteConfig, checked: boolean) => {
+    setCommandVisibilityConfig((prev) => (prev ? { ...prev, [key]: checked } : prev));
+    setCommandVisibilityMessage(null);
+    setCommandVisibilityError(null);
+  };
+
+  const saveCommandVisibility = async () => {
+    if (!commandVisibilityConfig) return;
+    setCommandVisibilitySaving(true);
+    setCommandVisibilityError(null);
+    setCommandVisibilityMessage(null);
+    try {
+      const result = await saveSiteConfigOverride(commandVisibilityConfig);
+      setCommandVisibilityConfig(normalizeCommandVisibility(result.data));
+      setCommandVisibilityMessage("Council Command topic visibility saved.");
+    } catch (err) {
+      setCommandVisibilityError(err instanceof Error ? err.message : "Failed to save Council Command topic visibility.");
+    } finally {
+      setCommandVisibilitySaving(false);
+    }
+  };
+
   return (
     <PresidentGate>
       <div className="relative min-h-screen p-4 sm:p-8">
@@ -258,10 +324,10 @@ export function CouncilSiteMaintenancePage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl">
                 <Wrench className="size-6 text-primary" />
-                Site Maintenance Dashboard
+                The President&apos;s Desk
               </CardTitle>
               <CardDescription>
-                President-only controls for access policy, authenticated activity, and maintenance.
+                President-only dashboard for site access, Council Command visibility, authenticated activity, and maintenance.
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-4">
@@ -385,6 +451,68 @@ export function CouncilSiteMaintenancePage() {
               <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-base">
+                    <Eye className="size-4 text-primary" />
+                    Council Command Topic Visibility
+                  </CardTitle>
+                  <CardDescription>
+                    Control which topics/cards are visible in the Council Command Center dashboard.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {commandVisibilityLoading ? (
+                    <div className="flex items-center gap-2 text-sm text-slate-600">
+                      <Loader2 className="size-4 animate-spin" />
+                      Loading topic visibility...
+                    </div>
+                  ) : null}
+                  {commandVisibilityConfig ? (
+                    <div className="space-y-2">
+                      {[
+                        { key: "showCouncilCommandOperations", label: "Operations cards (compliance, deck, attendance)" },
+                        { key: "showCouncilCommandTreasury", label: "Treasury cards/snapshot" },
+                        { key: "showCouncilCommandPresidentsDesk", label: "The President's Desk card" },
+                        { key: "showCouncilCommandContentManager", label: "Content Manager card" },
+                        { key: "showCouncilCommandEditors", label: "Editor tools/cards" },
+                        { key: "showCouncilCommandMemberDirectory", label: "Member Directory card" },
+                        { key: "showCouncilCommandSubmissions", label: "Submission Review card" },
+                        { key: "showCouncilCommandNotifications", label: "Notifications card" },
+                        { key: "showCouncilCommandInternalDocuments", label: "Internal Documents tab" },
+                        { key: "showCouncilCommandTaskTracker", label: "Task Tracker tab" },
+                      ].map((item) => (
+                        <div key={item.key} className="flex items-center justify-between gap-3 rounded-lg border border-black/10 bg-white/5 px-3 py-2">
+                          <span className="text-xs leading-tight text-slate-700">{item.label}</span>
+                          <Switch
+                            checked={Boolean(commandVisibilityConfig[item.key as keyof SiteConfig] ?? true)}
+                            onCheckedChange={(checked) => setCommandVisibility(item.key as keyof SiteConfig, Boolean(checked))}
+                            aria-label={item.label}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  {commandVisibilityError ? (
+                    <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{commandVisibilityError}</p>
+                  ) : null}
+                  {commandVisibilityMessage ? (
+                    <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">{commandVisibilityMessage}</p>
+                  ) : null}
+
+                  <Button
+                    type="button"
+                    onClick={saveCommandVisibility}
+                    disabled={commandVisibilityLoading || commandVisibilitySaving || !commandVisibilityConfig}
+                    className="w-full gap-2"
+                  >
+                    {commandVisibilitySaving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+                    {commandVisibilitySaving ? "Saving..." : "Save Topic Visibility"}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
                     <BarChart3 className="size-4 text-primary" />
                     Top Pages (7d)
                   </CardTitle>
@@ -407,12 +535,21 @@ export function CouncilSiteMaintenancePage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-base">
                     <Database className="size-4 text-primary" />
-                    Maintenance Shortcuts
+                    President&apos;s Desk Controls
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
                     <Link to="/council-admin"><Wrench className="size-4" /> Council Command Center</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                    <Link to="/council-admin/content"><SlidersHorizontal className="size-4" /> Content Manager (Leadership)</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                    <Link to="/council-admin/content/members"><Users className="size-4" /> Member Directory</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                    <Link to="/council-admin/notifications"><Mail className="size-4" /> Notification Settings</Link>
                   </Button>
                   <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
                     <Link to="/council-admin/exec-council-meeting?deck=2026-02-23"><Users className="size-4" /> Exec Meeting Deck (2/23)</Link>
@@ -467,4 +604,3 @@ export function CouncilSiteMaintenancePage() {
     </PresidentGate>
   );
 }
-

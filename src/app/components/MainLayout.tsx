@@ -34,29 +34,6 @@ const baseNavItems: Array<{ to: string; label: string; icon: any; danger?: boole
   },
 ];
 
-function isMemberSectionVisible(path: string, config: ReturnType<typeof useSiteConfig>["data"]) {
-  switch (path) {
-    case "/chapter-information":
-      return config?.showChapterInfo ?? true;
-    case "/meetings-delegates":
-      return config?.showMeetingsDelegates ?? true;
-    case "/programs-events":
-      return config?.showProgramsEvents ?? true;
-    case "/resources":
-      return config?.showResources ?? true;
-    case "/forms":
-      return config?.showForms ?? true;
-    case "/forum":
-      return config?.showForum ?? true;
-    case "/chat":
-      return config?.showChat ?? true;
-    case "/reports/signature-event-comparison":
-      return config?.showSignatureEventComparison ?? true;
-    default:
-      return true;
-  }
-}
-
 const DISMISSED_ALERTS_KEY = "nphc-dismissed-member-alerts";
 
 const EMPTY_ALERT: MemberAlerts = {
@@ -122,10 +99,8 @@ export function MainLayout() {
   const mobilePreviewActive = session.isSiteEditor && editorMode && previewDevice === "mobile" && !isFramed;
   const iframeSrc = `/#${location.pathname}${location.search || ""}`;
 
-  const visibleBaseNavItems = baseNavItems.filter((item) => isMemberSectionVisible(item.to, config));
-
   const navItems = [
-    ...visibleBaseNavItems,
+    ...baseNavItems,
     ...(session.isCouncilAdmin || session.isSiteEditor ? [{ to: "/council-admin", label: "Council Command Center", icon: Shield }] : []),
   ];
 

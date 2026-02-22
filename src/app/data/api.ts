@@ -367,6 +367,16 @@ function transformSiteConfig(rows: Record<string, string>[]): SiteConfig {
     showForum: (kv.showForum || "true").toLowerCase() !== "false",
     showChat: (kv.showChat || "true").toLowerCase() !== "false",
     showSignatureEventComparison: (kv.showSignatureEventComparison || "true").toLowerCase() !== "false",
+    showCouncilCommandOperations: (kv.showCouncilCommandOperations || "true").toLowerCase() !== "false",
+    showCouncilCommandTreasury: (kv.showCouncilCommandTreasury || "true").toLowerCase() !== "false",
+    showCouncilCommandPresidentsDesk: (kv.showCouncilCommandPresidentsDesk || "true").toLowerCase() !== "false",
+    showCouncilCommandContentManager: (kv.showCouncilCommandContentManager || "true").toLowerCase() !== "false",
+    showCouncilCommandEditors: (kv.showCouncilCommandEditors || "true").toLowerCase() !== "false",
+    showCouncilCommandMemberDirectory: (kv.showCouncilCommandMemberDirectory || "true").toLowerCase() !== "false",
+    showCouncilCommandSubmissions: (kv.showCouncilCommandSubmissions || "true").toLowerCase() !== "false",
+    showCouncilCommandNotifications: (kv.showCouncilCommandNotifications || "true").toLowerCase() !== "false",
+    showCouncilCommandInternalDocuments: (kv.showCouncilCommandInternalDocuments || "true").toLowerCase() !== "false",
+    showCouncilCommandTaskTracker: (kv.showCouncilCommandTaskTracker || "true").toLowerCase() !== "false",
   };
 }
 

@@ -62,6 +62,17 @@ export interface SiteConfig {
   showForum: boolean;
   showChat: boolean;
   showSignatureEventComparison: boolean;
+  // Council Command Center topic visibility (president-controlled)
+  showCouncilCommandOperations: boolean;
+  showCouncilCommandTreasury: boolean;
+  showCouncilCommandPresidentsDesk: boolean;
+  showCouncilCommandContentManager: boolean;
+  showCouncilCommandEditors: boolean;
+  showCouncilCommandMemberDirectory: boolean;
+  showCouncilCommandSubmissions: boolean;
+  showCouncilCommandNotifications: boolean;
+  showCouncilCommandInternalDocuments: boolean;
+  showCouncilCommandTaskTracker: boolean;
 }
 
 export interface QuickLink {

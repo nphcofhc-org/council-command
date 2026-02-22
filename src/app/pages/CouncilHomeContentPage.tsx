@@ -51,6 +51,16 @@ function emptyConfig(): SiteConfig {
     showForum: true,
     showChat: true,
     showSignatureEventComparison: true,
+    showCouncilCommandOperations: true,
+    showCouncilCommandTreasury: true,
+    showCouncilCommandPresidentsDesk: true,
+    showCouncilCommandContentManager: true,
+    showCouncilCommandEditors: true,
+    showCouncilCommandMemberDirectory: true,
+    showCouncilCommandSubmissions: true,
+    showCouncilCommandNotifications: true,
+    showCouncilCommandInternalDocuments: true,
+    showCouncilCommandTaskTracker: true,
   };
 }
 

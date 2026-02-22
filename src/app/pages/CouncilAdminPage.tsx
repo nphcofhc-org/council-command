@@ -3,9 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../co
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Shield, FileText, Lock, ClipboardCheck, SlidersHorizontal, Home, Calendar, TrendingUp, FolderOpen, Target, Inbox, Mail, Users, Wallet, Wrench, ToggleLeft, ToggleRight, ExternalLink } from "lucide-react";
 import { Button } from "../components/ui/button";
-import { Switch } from "../components/ui/switch";
 import { motion } from "motion/react";
-import { useCouncilAdminData } from "../hooks/use-site-data";
+import { useCouncilAdminData, useSiteConfig } from "../hooks/use-site-data";
 import { StatusBadge } from "../components/status-badge";
 import { DynamicIcon } from "../components/icon-resolver";
 import { Link } from "react-router";
@@ -14,39 +13,33 @@ import { useCouncilSession } from "../hooks/use-council-session";
 import { useEditorMode } from "../hooks/use-editor-mode";
 import { fetchTreasuryData, type TreasuryPayload } from "../data/treasury-api";
 import { fetchSubmissionsAsAdmin } from "../data/forms-api";
-import { fetchSiteConfig } from "../data/api";
-import { saveSiteConfigOverride } from "../data/content-api";
-import type { SiteConfig } from "../data/types";
 
 const ART_MARBLE = "https://images.unsplash.com/photo-1678756466078-1ff0d7b09431?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25vY2hyb21lJTIwYWJzdHJhY3QlMjBtYXJibGUlMjB0ZXh0dXJlfGVufDF8fHx8MTc3MDUxMzIyM3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 
 export function CouncilAdminPage() {
   const { data } = useCouncilAdminData();
+  const { data: siteConfig } = useSiteConfig();
   const { session } = useCouncilSession();
   const { editorMode, setEditorMode } = useEditorMode();
   const [treasury, setTreasury] = useState<TreasuryPayload | null>(null);
   const [pendingSubmissions, setPendingSubmissions] = useState(0);
-  const [memberVisibilityConfig, setMemberVisibilityConfig] = useState<SiteConfig | null>(null);
-  const [memberVisibilityLoading, setMemberVisibilityLoading] = useState(true);
-  const [memberVisibilitySaving, setMemberVisibilitySaving] = useState(false);
-  const [memberVisibilityError, setMemberVisibilityError] = useState<string | null>(null);
-  const [memberVisibilityMessage, setMemberVisibilityMessage] = useState<string | null>(null);
 
   const internalDocuments = data?.internalDocuments || [];
   const tasks = data?.tasks || [];
   const toViewer = (url: string) => `/viewer?src=${encodeURIComponent(url)}`;
   const isInternalFile = (url: string) => url.trim().startsWith("/");
-  const normalizeSectionVisibility = (cfg: SiteConfig): SiteConfig => ({
-    ...cfg,
-    showChapterInfo: cfg.showChapterInfo ?? true,
-    showMeetingsDelegates: cfg.showMeetingsDelegates ?? true,
-    showProgramsEvents: cfg.showProgramsEvents ?? true,
-    showResources: cfg.showResources ?? true,
-    showForms: cfg.showForms ?? true,
-    showForum: cfg.showForum ?? true,
-    showChat: cfg.showChat ?? true,
-    showSignatureEventComparison: cfg.showSignatureEventComparison ?? true,
-  });
+  const showOpsCards = siteConfig?.showCouncilCommandOperations ?? true;
+  const showTreasuryCards = siteConfig?.showCouncilCommandTreasury ?? true;
+  const showPresidentsDeskCard = siteConfig?.showCouncilCommandPresidentsDesk ?? true;
+  const showContentManagerCard = siteConfig?.showCouncilCommandContentManager ?? true;
+  const showEditorCards = siteConfig?.showCouncilCommandEditors ?? true;
+  const showMemberDirectoryCard = siteConfig?.showCouncilCommandMemberDirectory ?? true;
+  const showSubmissionsCard = siteConfig?.showCouncilCommandSubmissions ?? true;
+  const showNotificationsCard = siteConfig?.showCouncilCommandNotifications ?? true;
+  const showDocumentsTab = siteConfig?.showCouncilCommandInternalDocuments ?? true;
+  const showTasksTab = siteConfig?.showCouncilCommandTaskTracker ?? true;
+  const tabsVisible = showDocumentsTab || showTasksTab;
+  const defaultTabValue = showDocumentsTab ? "documents" : "tasks";
 
   useEffect(() => {
     let cancelled = false;
@@ -78,49 +71,6 @@ export function CouncilAdminPage() {
     };
   }, [session.isCouncilAdmin]);
 
-  useEffect(() => {
-    let cancelled = false;
-    if (!session.isSiteEditor) return;
-    setMemberVisibilityLoading(true);
-    setMemberVisibilityError(null);
-    void fetchSiteConfig()
-      .then((cfg) => {
-        if (cancelled) return;
-        setMemberVisibilityConfig(normalizeSectionVisibility(cfg));
-      })
-      .catch((err) => {
-        if (cancelled) return;
-        setMemberVisibilityError(err instanceof Error ? err.message : "Failed to load section visibility.");
-      })
-      .finally(() => {
-        if (!cancelled) setMemberVisibilityLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [session.isSiteEditor]);
-
-  const updateMemberVisibility = (key: keyof SiteConfig, value: boolean) => {
-    setMemberVisibilityConfig((prev) => (prev ? { ...prev, [key]: value } : prev));
-    setMemberVisibilityMessage(null);
-  };
-
-  const saveMemberVisibility = async () => {
-    if (!memberVisibilityConfig) return;
-    setMemberVisibilitySaving(true);
-    setMemberVisibilityError(null);
-    setMemberVisibilityMessage(null);
-    try {
-      const result = await saveSiteConfigOverride(memberVisibilityConfig);
-      setMemberVisibilityConfig(normalizeSectionVisibility(result.data));
-      setMemberVisibilityMessage("Council member section visibility saved.");
-    } catch (err) {
-      setMemberVisibilityError(err instanceof Error ? err.message : "Failed to save section visibility.");
-    } finally {
-      setMemberVisibilitySaving(false);
-    }
-  };
-
   return (
     <CouncilLeaderGate>
       <div className="relative min-h-screen">
@@ -146,7 +96,7 @@ export function CouncilAdminPage() {
           </p>
         </motion.div>
 
-        {session.isTreasuryAdmin ? (
+        {session.isTreasuryAdmin && showTreasuryCards ? (
           <motion.div
             initial={{ y: -12, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -202,6 +152,7 @@ export function CouncilAdminPage() {
             transition={{ delay: 0.22, duration: 0.45 }}
             className="space-y-4"
           >
+            {showOpsCards ? (
             <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
               <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -224,6 +175,8 @@ export function CouncilAdminPage() {
                 </div>
               </CardContent>
             </Card>
+            ) : null}
+            {showOpsCards ? (
             <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
               <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -238,7 +191,8 @@ export function CouncilAdminPage() {
                 </Button>
               </CardContent>
             </Card>
-            {session.isTreasuryAdmin ? (
+            ) : null}
+            {session.isTreasuryAdmin && showTreasuryCards ? (
               <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
                   <div>
@@ -259,6 +213,7 @@ export function CouncilAdminPage() {
           </motion.div>
         ) : (
         <>
+        {showEditorCards ? (
         <Card className="mb-6 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
           <CardContent className="p-5">
             <div className="flex flex-col gap-3">
@@ -270,12 +225,14 @@ export function CouncilAdminPage() {
             </div>
           </CardContent>
         </Card>
+        ) : null}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
           className="mb-6 grid gap-4 lg:grid-cols-2"
         >
+          {showEditorCards ? (
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5">
               <div>
@@ -312,68 +269,9 @@ export function CouncilAdminPage() {
               )}
             </CardContent>
           </Card>
+          ) : null}
 
-          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
-            <CardContent className="p-5">
-              <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                <div>
-                  <h3 className="text-base text-slate-900 sm:text-lg">Council Member Section Visibility</h3>
-                  <p className="text-sm text-slate-600">
-                    Choose which portal sections are visible to council members in the left navigation.
-                  </p>
-                </div>
-                {session.isSiteEditor ? (
-                  <Button
-                    type="button"
-                    onClick={saveMemberVisibility}
-                    disabled={memberVisibilityLoading || memberVisibilitySaving || !memberVisibilityConfig}
-                    className="w-full sm:w-auto"
-                  >
-                    {memberVisibilitySaving ? "Saving..." : "Save Visibility"}
-                  </Button>
-                ) : null}
-              </div>
-
-              {!session.isSiteEditor ? (
-                <Button type="button" variant="outline" className="w-full sm:w-auto border-black/15 bg-white/5 text-slate-400" disabled>
-                  <Lock className="mr-2 size-4" />
-                  Site Administration Only
-                </Button>
-              ) : memberVisibilityLoading ? (
-                <p className="text-sm text-slate-500">Loading visibility settings...</p>
-              ) : memberVisibilityConfig ? (
-                <div className="space-y-2">
-                  {[
-                    { key: "showChapterInfo", label: "Chapter Info" },
-                    { key: "showMeetingsDelegates", label: "Meetings & Delegates" },
-                    { key: "showProgramsEvents", label: "Programs & Events" },
-                    { key: "showResources", label: "Resources" },
-                    { key: "showForms", label: "Forms" },
-                    { key: "showForum", label: "Forum" },
-                    { key: "showChat", label: "Chat" },
-                    { key: "showSignatureEventComparison", label: "Signature Event Comparison" },
-                  ].map((item) => {
-                    const checked = Boolean(memberVisibilityConfig[item.key as keyof SiteConfig] ?? true);
-                    return (
-                      <div key={item.key} className="flex items-center justify-between rounded-lg border border-black/10 bg-white/5 px-3 py-2">
-                        <span className="text-sm text-slate-800">{item.label}</span>
-                        <Switch
-                          checked={checked}
-                          onCheckedChange={(next) => updateMemberVisibility(item.key as keyof SiteConfig, Boolean(next))}
-                          aria-label={`Toggle ${item.label} visibility`}
-                        />
-                      </div>
-                    );
-                  })}
-                  {memberVisibilityMessage ? <p className="text-xs font-semibold text-emerald-700">{memberVisibilityMessage}</p> : null}
-                  {memberVisibilityError ? <p className="text-xs font-semibold text-rose-700">{memberVisibilityError}</p> : null}
-                </div>
-              ) : (
-                <p className="text-sm text-rose-700">{memberVisibilityError || "Unable to load section visibility."}</p>
-              )}
-            </CardContent>
-          </Card>
-
+          {showOpsCards ? (
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -390,7 +288,9 @@ export function CouncilAdminPage() {
               </Button>
             </CardContent>
           </Card>
+          ) : null}
 
+          {showOpsCards ? (
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -413,7 +313,9 @@ export function CouncilAdminPage() {
               </div>
             </CardContent>
           </Card>
+          ) : null}
 
+          {showOpsCards ? (
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -430,8 +332,9 @@ export function CouncilAdminPage() {
               </Button>
             </CardContent>
           </Card>
+          ) : null}
 
-          {session.isTreasuryAdmin ? (
+          {session.isTreasuryAdmin && showTreasuryCards ? (
             <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
               <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -450,26 +353,26 @@ export function CouncilAdminPage() {
             </Card>
           ) : null}
 
-          {session.isPresident ? (
+          {session.isPresident && showPresidentsDeskCard ? (
             <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
               <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <h3 className="text-base text-slate-900 sm:text-lg">Site Maintenance</h3>
+                  <h3 className="text-base text-slate-900 sm:text-lg">The President&apos;s Desk</h3>
                   <p className="text-sm text-slate-600">
-                    President-only maintenance controls for portal operations.
+                    President-only dashboard for site access, controls, and executive oversight.
                   </p>
                 </div>
                 <Button asChild className="w-full sm:w-auto">
                   <Link to="/council-admin/site-maintenance">
                     <Wrench className="mr-2 size-4" />
-                    Open Maintenance
+                    Open The President&apos;s Desk
                   </Link>
                 </Button>
               </CardContent>
             </Card>
           ) : null}
 
-          {session.isPresident ? (
+          {session.isPresident && showContentManagerCard ? (
             <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
               <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -495,6 +398,7 @@ export function CouncilAdminPage() {
             </Card>
           ) : null}
 
+          {showEditorCards ? (
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -531,7 +435,9 @@ export function CouncilAdminPage() {
               )}
             </CardContent>
           </Card>
+          ) : null}
 
+          {showMemberDirectoryCard ? (
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -568,7 +474,9 @@ export function CouncilAdminPage() {
               )}
             </CardContent>
           </Card>
+          ) : null}
 
+          {showEditorCards ? (
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -592,7 +500,9 @@ export function CouncilAdminPage() {
               )}
             </CardContent>
           </Card>
+          ) : null}
 
+          {showEditorCards ? (
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -616,7 +526,9 @@ export function CouncilAdminPage() {
               )}
             </CardContent>
           </Card>
+          ) : null}
 
+          {showEditorCards ? (
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -640,7 +552,9 @@ export function CouncilAdminPage() {
               )}
             </CardContent>
           </Card>
+          ) : null}
 
+          {showEditorCards ? (
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -664,7 +578,9 @@ export function CouncilAdminPage() {
               )}
             </CardContent>
           </Card>
+          ) : null}
 
+          {showSubmissionsCard ? (
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -686,7 +602,9 @@ export function CouncilAdminPage() {
               </Button>
             </CardContent>
           </Card>
+          ) : null}
 
+          {showNotificationsCard ? (
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -710,15 +628,18 @@ export function CouncilAdminPage() {
               )}
             </CardContent>
           </Card>
+          ) : null}
         </motion.div>
 
-        <Tabs defaultValue="documents" className="space-y-6">
+        {tabsVisible ? (
+        <Tabs defaultValue={defaultTabValue} className="space-y-6">
           <TabsList className="bg-white/5 border border-black/10 backdrop-blur-xl w-full sm:w-auto flex-wrap justify-start">
-            <TabsTrigger value="documents" className="text-xs sm:text-sm">Internal Documents</TabsTrigger>
-            <TabsTrigger value="tasks" className="text-xs sm:text-sm">Task Tracker</TabsTrigger>
+            {showDocumentsTab ? <TabsTrigger value="documents" className="text-xs sm:text-sm">Internal Documents</TabsTrigger> : null}
+            {showTasksTab ? <TabsTrigger value="tasks" className="text-xs sm:text-sm">Task Tracker</TabsTrigger> : null}
           </TabsList>
 
           {/* Internal Documents */}
+          {showDocumentsTab ? (
           <TabsContent value="documents" className="space-y-6">
             {internalDocuments.map((section, sectionIndex) => (
               <motion.div
@@ -822,8 +743,10 @@ export function CouncilAdminPage() {
               </Card>
             </motion.div>
           </TabsContent>
+          ) : null}
 
           {/* Task Tracker */}
+          {showTasksTab ? (
           <TabsContent value="tasks" className="space-y-4">
             <motion.div
               initial={{ y: 20, opacity: 0 }}
@@ -880,7 +803,9 @@ export function CouncilAdminPage() {
               </div>
             </motion.div>
           </TabsContent>
+          ) : null}
         </Tabs>
+        ) : null}
         </>
         )}
         </div>
