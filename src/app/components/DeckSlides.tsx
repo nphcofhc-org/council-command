@@ -26,7 +26,7 @@ const CANDIDATE_3    = 'https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/NPHC
 const D9_TRENTON_URL = 'https://d9intrenton.my.canva.site/home/';
 const THANK_YOU_LETTER_IMAGE_URL = 'https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/2.png';
 const FUNDRAISING_TOTAL_IMAGE_URL = 'https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/3.png';
-const EXEC_EBOARD_IMAGE_URL = 'https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/NPHC%20Executive%20Council%20(2).png';
+const EXEC_EBOARD_VIDEO_URL = 'https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/NPHC%20Executive%20Council.mp4';
 
 // ─── Primitives ──────────────────────────────────────────────────────────────
 
@@ -243,9 +243,13 @@ export function Slide4Ratification({ isMobile = false }: { isMobile?: boolean })
 
       <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', gap: isMobile ? 8 : 10 }}>
         <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '10px' : '12px', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-          <img
-            src={EXEC_EBOARD_IMAGE_URL}
-            alt="NPHC Executive Council"
+          <video
+            key={EXEC_EBOARD_VIDEO_URL}
+            src={EXEC_EBOARD_VIDEO_URL}
+            controls
+            autoPlay
+            muted
+            playsInline
             style={{
               width: '100%',
               height: '100%',
@@ -258,7 +262,7 @@ export function Slide4Ratification({ isMobile = false }: { isMobile?: boolean })
           />
         </div>
         <a
-          href={EXEC_EBOARD_IMAGE_URL}
+          href={EXEC_EBOARD_VIDEO_URL}
           target="_blank"
           rel="noreferrer"
           style={{
@@ -271,7 +275,7 @@ export function Slide4Ratification({ isMobile = false }: { isMobile?: boolean })
             textDecoration: 'none',
           }}
         >
-          Open Executive Council Image
+          Open Executive Council Video
           <ExternalLink size={12} />
         </a>
       </div>
