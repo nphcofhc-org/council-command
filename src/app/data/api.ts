@@ -359,6 +359,14 @@ function transformSiteConfig(rows: Record<string, string>[]): SiteConfig {
     alertMessage: kv.alertMessage || "",
     alertLinkLabel: kv.alertLinkLabel || "",
     alertLinkUrl: kv.alertLinkUrl || "",
+    showChapterInfo: (kv.showChapterInfo || "true").toLowerCase() !== "false",
+    showMeetingsDelegates: (kv.showMeetingsDelegates || "true").toLowerCase() !== "false",
+    showProgramsEvents: (kv.showProgramsEvents || "true").toLowerCase() !== "false",
+    showResources: (kv.showResources || "true").toLowerCase() !== "false",
+    showForms: (kv.showForms || "true").toLowerCase() !== "false",
+    showForum: (kv.showForum || "true").toLowerCase() !== "false",
+    showChat: (kv.showChat || "true").toLowerCase() !== "false",
+    showSignatureEventComparison: (kv.showSignatureEventComparison || "true").toLowerCase() !== "false",
   };
 }
 

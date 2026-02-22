@@ -54,6 +54,14 @@ export interface SiteConfig {
   alertMessage: string;
   alertLinkLabel: string;
   alertLinkUrl: string;
+  showChapterInfo: boolean;
+  showMeetingsDelegates: boolean;
+  showProgramsEvents: boolean;
+  showResources: boolean;
+  showForms: boolean;
+  showForum: boolean;
+  showChat: boolean;
+  showSignatureEventComparison: boolean;
 }
 
 export interface QuickLink {

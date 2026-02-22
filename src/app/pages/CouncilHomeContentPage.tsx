@@ -43,6 +43,14 @@ function emptyConfig(): SiteConfig {
     alertMessage: "",
     alertLinkLabel: "",
     alertLinkUrl: "",
+    showChapterInfo: true,
+    showMeetingsDelegates: true,
+    showProgramsEvents: true,
+    showResources: true,
+    showForms: true,
+    showForum: true,
+    showChat: true,
+    showSignatureEventComparison: true,
   };
 }
 
