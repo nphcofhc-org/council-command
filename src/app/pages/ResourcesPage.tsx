@@ -1,22 +1,45 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Badge } from "../components/ui/badge";
-import { FileText, ExternalLink, GraduationCap, Building2, BookOpen } from "lucide-react";
+import {
+  FileText,
+  ExternalLink,
+  GraduationCap,
+  Building2,
+  BookOpen,
+  ListChecks,
+  DollarSign,
+  CalendarDays,
+  FileCheck2,
+  Receipt,
+  Megaphone,
+  ClipboardCheck,
+} from "lucide-react";
 import { Button } from "../components/ui/button";
 import { motion } from "motion/react";
 import { useResourcesData } from "../hooks/use-site-data";
 import { Link } from "react-router";
 
 const ART_INK = "https://images.unsplash.com/photo-1769181417562-be594f91fcc9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHdoaXRlJTIwYWJzdHJhY3QlMjBpbmslMjBicnVzaCUyMHN0cm9rZXN8ZW58MXx8fHwxNzcwNTEzMjIyfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
-const INACTIVE_SHARED_FORM_NAMES = new Set([
-  "Facility & Venue Request Form",
-  "Event Proposal & Budget Request Form",
-  "Event Post-Report & Financial Reconciliation",
-]);
-const INACTIVE_SHARED_FORM_LINKS = new Set([
-  "#/forms/event-proposal-budget",
-  "#/forms/event-post-report-reconciliation",
-]);
+const SHARED_FORM_ROUTE_BY_NAME: Record<string, string> = {
+  "budget submission form": "#/forms/budget",
+  "budget submission": "#/forms/budget",
+  "event submission form": "#/forms/events",
+  "event submission": "#/forms/events",
+  "event proposal & budget request form": "#/forms/event-proposal-budget",
+  "event proposal & budget request": "#/forms/event-proposal-budget",
+  "event post-report & financial reconciliation": "#/forms/event-post-report-reconciliation",
+  "event post-report & financial reconciliation form": "#/forms/event-post-report-reconciliation",
+  "reimbursement request form": "#/forms/reimbursement",
+  "reimbursement request": "#/forms/reimbursement",
+  "social media request form": "#/forms/social-media",
+  "social media request": "#/forms/social-media",
+  "committee report form": "#/forms/committee-report",
+  "committee report": "#/forms/committee-report",
+  "monthly delegate report template": "#/forms/committee-report",
+  "quarterly membership roster update": "#/council-admin/attendance/quarterly-roster-audit",
+  "chapter dues payment confirmation": "#/council-admin/site-maintenance",
+};
 
 export function ResourcesPage() {
   const { data } = useResourcesData();
@@ -27,12 +50,15 @@ export function ResourcesPage() {
 
   const toViewer = (url: string) => `/viewer?src=${encodeURIComponent(url)}`;
   const isInternalFile = (url: string) => url.trim().startsWith("/");
-  const isSharedFormInactive = (form: { name: string; link: string }) => {
+  const resolveSharedFormLink = (form: { name: string; link: string }) => {
     const name = String(form?.name || "").trim();
     const link = String(form?.link || "").trim();
-    if (INACTIVE_SHARED_FORM_NAMES.has(name)) return true;
+    const mapped = SHARED_FORM_ROUTE_BY_NAME[name.toLowerCase()];
+    return mapped || link;
+  };
+  const isSharedFormInactive = (form: { name: string; link: string }) => {
+    const link = resolveSharedFormLink(form);
     if (!link || link === "#") return true;
-    if (INACTIVE_SHARED_FORM_LINKS.has(link)) return true;
     return false;
   };
 
@@ -52,19 +78,74 @@ export function ResourcesPage() {
         >
           <div className="flex items-center gap-3 mb-1">
             <div className="w-8 h-px bg-primary" />
-            <span className="text-xs tracking-[0.2em] uppercase text-slate-500">Reference Library</span>
+            <span className="text-xs tracking-[0.2em] uppercase text-slate-500">Forms + Reference Library</span>
           </div>
           <h1 className="text-2xl sm:text-3xl text-slate-900 mb-1">
-            <span className="text-primary">Resources</span>
+            <span className="text-primary">Forms</span> &amp; Resources
           </h1>
           <p className="text-sm sm:text-base text-slate-600">
-            Forms, external links, training materials, and governance reference documents
+            Submission forms, shared templates, external links, training materials, and governance reference documents.
           </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ y: 12, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.35 }}
+          className="mb-6"
+        >
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <ListChecks className="size-5" />
+                Portal Forms & Requests
+              </CardTitle>
+              <CardDescription>
+                Primary submission forms and status tracking are now available here in the same hub as resources.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex flex-wrap gap-2">
+                <Button asChild variant="outline" className="border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10">
+                  <Link to="/forms/my">
+                    <ListChecks className="mr-2 size-4" />
+                    My Submissions
+                  </Link>
+                </Button>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                {[
+                  { label: "Budget Submission", to: "/forms/budget", icon: DollarSign },
+                  { label: "Event Submission", to: "/forms/events", icon: CalendarDays },
+                  { label: "Event Proposal & Budget", to: "/forms/event-proposal-budget", icon: FileCheck2 },
+                  { label: "Reimbursement Request", to: "/forms/reimbursement", icon: Receipt },
+                  { label: "Social Media Request", to: "/forms/social-media", icon: Megaphone },
+                  { label: "Committee Report", to: "/forms/committee-report", icon: FileText },
+                  { label: "Event Post-Report", to: "/forms/event-post-report-reconciliation", icon: ClipboardCheck },
+                ].map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Button
+                      key={item.to}
+                      asChild
+                      variant="outline"
+                      className="h-auto justify-start border-black/15 bg-white/5 px-3 py-3 text-left text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
+                    >
+                      <Link to={item.to}>
+                        <Icon className="mr-2 size-4 shrink-0" />
+                        <span className="whitespace-normal leading-snug">{item.label}</span>
+                      </Link>
+                    </Button>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
 
         <Tabs defaultValue="forms" className="space-y-6">
           <TabsList className="w-full sm:w-auto flex-wrap justify-start border border-black/10 bg-white/5 backdrop-blur-xl">
-            <TabsTrigger value="forms" className="text-xs sm:text-sm">Shared Forms</TabsTrigger>
+            <TabsTrigger value="forms" className="text-xs sm:text-sm">Shared Forms / Templates</TabsTrigger>
             <TabsTrigger value="national" className="text-xs sm:text-sm">National Organizations</TabsTrigger>
             <TabsTrigger value="training" className="text-xs sm:text-sm">Training & Onboarding</TabsTrigger>
           </TabsList>
@@ -87,6 +168,7 @@ export function ResourcesPage() {
                       {category.forms.map((form, index) => (
                         (() => {
                           const inactive = isSharedFormInactive(form);
+                          const resolvedLink = resolveSharedFormLink(form);
                           return (
                         <motion.div
                           key={form.id}
@@ -130,7 +212,7 @@ export function ResourcesPage() {
                               size="sm"
                               className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10 w-full sm:w-auto transition-all duration-200"
                             >
-                              <a href={form.link} target="_blank" rel="noreferrer">
+                              <a href={resolvedLink} target="_blank" rel="noreferrer">
                                 <ExternalLink className="size-3.5" />
                                 Open
                               </a>

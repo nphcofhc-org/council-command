@@ -8,7 +8,7 @@ import { MeetingProvider, useMeeting, SLIDE_VOTES } from './MeetingContext';
 import { MeetingSidebar } from './MeetingSidebar';
 import {
   Slide1Cover, Slide2Agenda, Slide3Vision, Slide4Ratification,
-  Slide5Financials, Slide6NewBusiness, Slide7SuccessRecap, Slide8Adjournment,
+  Slide5Financials, Slide6NewBusiness, Slide7SuccessRecap, Slide8BowlingRecap, Slide9Adjournment,
 } from './DeckSlides';
 
 // ─── Utils ───────────────────────────────────────────────────────────────────
@@ -28,7 +28,7 @@ function useIsMobile() {
 type SlideComp = React.ComponentType<{ isMobile?: boolean; meetingDateLabel?: string }>;
 type DeckSlide = { id: number; label: string; component: SlideComp };
 
-const VOTE_SLIDES = new Set([2, 4, 5, 8]);
+const VOTE_SLIDES = new Set([2, 4, 5, 9]);
 const BORDER_LIGHT = '#E0E0E0';
 const BORDER_DARK = '#282828';
 
@@ -79,9 +79,10 @@ function DeckInner({
       { id: 3, label: '2026 Vision: Four Pillars', component: Slide3Vision },
       { id: 4, label: 'Meet the E-Board', component: Slide4Ratification },
       { id: 5, label: 'Committee Chairs & Sign-Up', component: Slide5Financials },
-      { id: 6, label: 'Innovation & Programming', component: Slide6NewBusiness },
-      { id: 7, label: 'Success Recap', component: Slide7SuccessRecap },
-      { id: 8, label: 'Closing & Adjournment', component: Slide8Adjournment },
+      { id: 6, label: 'Signature Event', component: Slide6NewBusiness },
+      { id: 7, label: 'MLK Day of Service (Tina)', component: Slide7SuccessRecap },
+      { id: 8, label: 'Bowling Night Fundraiser (Azaria)', component: Slide8BowlingRecap },
+      { id: 9, label: 'Closing & Adjournment', component: Slide9Adjournment },
     ],
     [meetingDateLabel],
   );

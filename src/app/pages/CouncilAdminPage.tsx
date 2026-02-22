@@ -111,11 +111,11 @@ export function CouncilAdminPage() {
                 </CardTitle>
                 <CardDescription>Confidential balances for executive oversight.</CardDescription>
               </CardHeader>
-              <CardContent className="grid gap-4 sm:grid-cols-4">
+              <CardContent className="grid gap-4 sm:grid-cols-3">
                 <div className="rounded-lg border border-black/10 bg-white/5 p-4">
                   <p className="text-xs uppercase tracking-widest text-slate-500">Total</p>
                   <p className="text-2xl font-extrabold text-slate-900 mt-1">
-                    {((treasury?.balances?.lendingClub || 0) + (treasury?.balances?.cashApp || 0) + (treasury?.balances?.paypal || 0)).toLocaleString("en-US", { style: "currency", currency: "USD" })}
+                    {((treasury?.balances?.lendingClub || 0) + (treasury?.balances?.cashApp || 0)).toLocaleString("en-US", { style: "currency", currency: "USD" })}
                   </p>
                 </div>
                 <div className="rounded-lg border border-black/10 bg-white/5 p-4">
@@ -130,13 +130,7 @@ export function CouncilAdminPage() {
                     {(treasury?.balances?.cashApp || 0).toLocaleString("en-US", { style: "currency", currency: "USD" })}
                   </p>
                 </div>
-                <div className="rounded-lg border border-black/10 bg-white/5 p-4">
-                  <p className="text-xs uppercase tracking-widest text-slate-500">PayPal</p>
-                  <p className="text-xl font-bold text-slate-900 mt-1">
-                    {(treasury?.balances?.paypal || 0).toLocaleString("en-US", { style: "currency", currency: "USD" })}
-                  </p>
-                </div>
-                <p className="text-xs text-slate-500 sm:col-span-4">
+                <p className="text-xs text-slate-500 sm:col-span-3">
                   {treasury?.asOfLabel || "Loading treasury snapshot..."}
                   {treasury?.liveMode ? ` • Live sync (${treasury?.liveSource || "ingest"})` : ""}
                 </p>

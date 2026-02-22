@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Card, CardContent } from "../components/ui/card";
-import { Bell, Calendar, Clock, ExternalLink, ClipboardList, ChevronLeft } from "lucide-react";
+import { Bell, Calendar, Clock, ExternalLink, ClipboardList, ChevronLeft, CircleHelp } from "lucide-react";
 import googleBanner from "../../assets/08f5f2f8147d555bb4793ae6a060e3d0c28be71f.png";
 import { motion } from "motion/react";
 import { useHomePageData } from "../hooks/use-site-data";
 import { DynamicIcon } from "../components/icon-resolver";
 import { useMeetingsData } from "../hooks/use-site-data";
 import { useCouncilCalendarSchedule } from "../hooks/use-council-calendar";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/ui/accordion";
+import { HOME_FAQ_CATEGORIES } from "../data/faq";
 
 declare global {
   interface Window {
@@ -161,6 +163,99 @@ function FormsQuickPane() {
       </div>
     </>
   );
+}
+
+function renderFaqInline(text: string): ReactNode[] {
+  const parts: ReactNode[] = [];
+  const pattern = /(\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*|`[^`]+`)/g;
+  let lastIndex = 0;
+  let key = 0;
+
+  for (const match of text.matchAll(pattern)) {
+    const index = match.index ?? 0;
+    if (index > lastIndex) {
+      parts.push(text.slice(lastIndex, index));
+    }
+    const token = match[0] || "";
+    if (token.startsWith("[") && token.includes("](") && token.endsWith(")")) {
+      const splitIndex = token.indexOf("](");
+      const label = token.slice(1, splitIndex);
+      const href = token.slice(splitIndex + 2, -1);
+      parts.push(
+        <a key={`faq-inline-${key++}`} href={href} target="_blank" rel="noreferrer" className="text-primary hover:underline">
+          {label}
+        </a>,
+      );
+    } else if (token.startsWith("**") && token.endsWith("**")) {
+      parts.push(<strong key={`faq-inline-${key++}`} className="font-semibold text-slate-900">{token.slice(2, -2)}</strong>);
+    } else if (token.startsWith("`") && token.endsWith("`")) {
+      parts.push(
+        <code key={`faq-inline-${key++}`} className="rounded bg-black/5 px-1 py-0.5 text-[12px] text-slate-800">
+          {token.slice(1, -1)}
+        </code>,
+      );
+    } else {
+      parts.push(token);
+    }
+    lastIndex = index + token.length;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+  return parts;
+}
+
+function renderFaqAnswer(answer: string): ReactNode[] {
+  const blocks: Array<{ type: "p" | "ul"; lines: string[] }> = [];
+  let paragraph: string[] = [];
+  let bullets: string[] = [];
+
+  const flushParagraph = () => {
+    if (paragraph.length === 0) return;
+    blocks.push({ type: "p", lines: [paragraph.join(" ")] });
+    paragraph = [];
+  };
+  const flushBullets = () => {
+    if (bullets.length === 0) return;
+    blocks.push({ type: "ul", lines: [...bullets] });
+    bullets = [];
+  };
+
+  for (const rawLine of String(answer || "").split("\n")) {
+    const line = rawLine.trim();
+    if (!line) {
+      flushParagraph();
+      flushBullets();
+      continue;
+    }
+    if (line.startsWith("- ")) {
+      flushParagraph();
+      bullets.push(line.slice(2).trim());
+      continue;
+    }
+    flushBullets();
+    paragraph.push(line);
+  }
+  flushParagraph();
+  flushBullets();
+
+  return blocks.map((block, index) => {
+    if (block.type === "ul") {
+      return (
+        <ul key={`faq-block-${index}`} className="list-disc space-y-1 pl-5 text-sm text-slate-700">
+          {block.lines.map((line, i) => (
+            <li key={`faq-bullet-${index}-${i}`}>{renderFaqInline(line)}</li>
+          ))}
+        </ul>
+      );
+    }
+    return (
+      <p key={`faq-block-${index}`} className="text-sm text-slate-700 leading-relaxed">
+        {renderFaqInline(block.lines[0] || "")}
+      </p>
+    );
+  });
 }
 
 export function HomePage() {
@@ -934,6 +1029,74 @@ export function HomePage() {
       </section>
 
       {/* ── Instagram Feed ───────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden">
+        <div className="px-4 sm:px-8 lg:px-10 py-14 sm:py-20 relative z-10">
+          <motion.div
+            initial={{ x: -30, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6 }}
+            className="mb-8"
+          >
+            <div className="flex items-center gap-3 mb-1">
+              <div className="w-8 h-px bg-primary" />
+              <span className="text-xs tracking-[0.2em] uppercase text-slate-500">Support</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl text-slate-900">
+              Portal <span className="text-primary">FAQs</span>
+            </h2>
+            <p className="mt-2 text-sm text-slate-600 max-w-3xl">
+              Common questions for portal access, meetings, submissions, resources, and support. Use the Help button if you still need assistance.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ y: 30, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ delay: 0.12, duration: 0.6 }}
+          >
+            <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+              <CardContent className="p-0">
+                <Accordion type="single" collapsible defaultValue={HOME_FAQ_CATEGORIES[0]?.id} className="w-full">
+                  {HOME_FAQ_CATEGORIES.map((category) => (
+                    <AccordionItem key={category.id} value={category.id} className="border-b border-black/10 last:border-b-0">
+                      <AccordionTrigger className="px-5 sm:px-6 py-4 hover:no-underline">
+                        <div className="flex w-full items-center justify-between gap-3 pr-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <CircleHelp className="size-4 text-primary flex-shrink-0" />
+                            <span className="text-left text-sm sm:text-base text-slate-900">{category.title}</span>
+                          </div>
+                          <span className="rounded-full border border-primary/25 bg-primary/15 px-2.5 py-0.5 text-xs text-primary flex-shrink-0">
+                            {category.items.length}
+                          </span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-4 sm:px-6 pb-5">
+                        <Accordion type="single" collapsible className="rounded-xl border border-black/10 bg-white/5 px-3 sm:px-4">
+                          {category.items.map((item) => (
+                            <AccordionItem key={`${category.id}:${item.id}`} value={`${category.id}:${item.id}`} className="border-b border-black/10 last:border-b-0">
+                              <AccordionTrigger className="py-3 text-left text-sm text-slate-900 hover:no-underline">
+                                <span className="pr-3">{item.question}</span>
+                              </AccordionTrigger>
+                              <AccordionContent className="pb-4">
+                                <div className="space-y-3">
+                                  {renderFaqAnswer(item.answer)}
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          ))}
+                        </Accordion>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
       {(instagramHandle || instagramPostUrls.length > 0) ? (
         <section>
           <div className="max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20">

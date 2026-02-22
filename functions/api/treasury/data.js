@@ -10,6 +10,17 @@ function requireMethods(request, allowed) {
   return null;
 }
 
+function sanitizeAsOfLabel(value) {
+  const label = String(value || "").trim();
+  if (!label) return "";
+  const lower = label.toLowerCase();
+  // Hide legacy manual entry attribution naming the previous treasurer.
+  if (lower.includes("christopher henry") && lower.includes("treasurer")) {
+    return "Treasury snapshot pending update by Treasurer";
+  }
+  return label;
+}
+
 export async function onRequest(context) {
   const { request, env } = context;
 
@@ -50,7 +61,7 @@ export async function onRequest(context) {
       cashApp: liveBalances ? Number(liveBalances.cashApp || 0) : Number(fallbackBalances?.cashApp || 0),
       paypal: liveBalances ? Number(liveBalances.paypal || 0) : Number(fallbackBalances?.paypal || 0),
     },
-    asOfLabel: liveBalances?.asOfLabel || String(fallbackTreasury?.asOfLabel || ""),
+    asOfLabel: sanitizeAsOfLabel(liveBalances?.asOfLabel || fallbackTreasury?.asOfLabel || ""),
     liveMode: Boolean(live?.hasLiveData),
     liveSource: liveBalances?.source || null,
   };

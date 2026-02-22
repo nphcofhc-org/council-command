@@ -447,7 +447,7 @@ export const sharedForms: SharedFormCategory[] = [
   {
     category: "Financial Administration",
     forms: [
-      { id: "form-4",  name: "Reimbursement Request Form",                       description: "Request reimbursement for council-approved expenses", link: "#" },
+      { id: "form-4",  name: "Reimbursement Request Form",                       description: "Request reimbursement for council-approved expenses", link: "#/forms/reimbursement" },
       { id: "form-5",  name: "Chapter Dues Payment Confirmation",                description: "Submit confirmation of quarterly chapter dues payment", link: "#" },
       { id: "form-6",  name: "Sponsorship & Donation Receipt Template",          description: "Official receipt template for external contributions", link: "#" },
     ],

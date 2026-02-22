@@ -32,15 +32,28 @@ async function readKnownUsers(db, fallbackEmail) {
     )
     .run();
 
-  const sectionKeys = ["member_directory", "chapter_leadership"];
-  const rows = await db
+  const sectionKeys = ["member_directory", "chapter_leadership", "access_overrides"];
+  const [rows, activityRows] = await Promise.all([
+    db
     .prepare(
       `SELECT section_key, payload_json
        FROM portal_content_state
-       WHERE section_key IN (?1, ?2)`,
+       WHERE section_key IN (?1, ?2, ?3)`,
     )
-    .bind(sectionKeys[0], sectionKeys[1])
-    .all();
+    .bind(sectionKeys[0], sectionKeys[1], sectionKeys[2])
+    .all(),
+    db
+      .prepare(
+        `SELECT DISTINCT email
+         FROM portal_activity_log
+         WHERE email IS NOT NULL
+           AND TRIM(email) != ''
+         ORDER BY email ASC
+         LIMIT 500`,
+      )
+      .all()
+      .catch(() => ({ results: [] })),
+  ]);
 
   const emails = new Set();
   if (fallbackEmail) emails.add(normalizeEmail(fallbackEmail));
@@ -63,12 +76,26 @@ async function readKnownUsers(db, fallbackEmail) {
       continue;
     }
 
+    if (row.section_key === "access_overrides") {
+      const entries = Array.isArray(parsed.entries) ? parsed.entries : [];
+      for (const entry of entries) {
+        const email = normalizeEmail(entry?.email);
+        if (email) emails.add(email);
+      }
+      continue;
+    }
+
     const boards = Array.isArray(parsed.executiveBoard) ? parsed.executiveBoard : [];
     const chairs = Array.isArray(parsed.additionalChairs) ? parsed.additionalChairs : [];
     for (const entry of [...boards, ...chairs]) {
       const email = normalizeEmail(entry?.email);
       if (email) emails.add(email);
     }
+  }
+
+  for (const row of activityRows?.results || []) {
+    const email = normalizeEmail(row?.email);
+    if (email) emails.add(email);
   }
 
   return Array.from(emails).sort();

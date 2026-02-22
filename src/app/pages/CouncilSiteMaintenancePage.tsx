@@ -436,8 +436,7 @@ export function CouncilSiteMaintenancePage() {
 
   const treasuryTotal =
     (treasury?.balances?.lendingClub || 0) +
-    (treasury?.balances?.cashApp || 0) +
-    (treasury?.balances?.paypal || 0);
+    (treasury?.balances?.cashApp || 0);
 
   return (
     <PresidentGate>

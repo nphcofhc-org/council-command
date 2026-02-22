@@ -21,7 +21,7 @@ export const TREASURY = {
     lendingClub: 9101.25,
     cashApp: 412.5,
   },
-  asOfLabel: "Input as of 02.13.2026 by Christopher Henry, Treasurer",
+  asOfLabel: "Treasury snapshot pending update by Treasurer",
 };
 
 export const TREASURY_TRANSACTIONS: TreasuryTransaction[] = [
@@ -155,4 +155,3 @@ export const TREASURY_TRANSACTIONS: TreasuryTransaction[] = [
   { id: "23-20", date: "2023-03-27", description: "Mobile Deposit - ID: **58458448", amount: 200.0, type: "credit", category: "Deposit", account: "LendingClub" },
   { id: "23-21", date: "2023-03-27", description: "Payment Credit P2P", amount: 196.5, type: "credit", category: "Deposit", account: "LendingClub" },
 ];
-

@@ -195,6 +195,22 @@ export function MainLayout() {
       ? "border-amber-300/50 bg-amber-500/10 text-amber-900"
       : "border-sky-300/50 bg-sky-500/10 text-sky-900";
   const alertTitle = memberAlert.title || "Council Update";
+  const helpMailtoHref = (() => {
+    const subject = encodeURIComponent("NPHC Portal Help Request");
+    const body = encodeURIComponent(
+      [
+        "Hello NPHC Hudson County,",
+        "",
+        "I need help with the portal.",
+        "",
+        `Page: ${location.pathname || "/"}`,
+        `User: ${session.email || "Not signed in"}`,
+        "",
+        "Issue / question:",
+      ].join("\n"),
+    );
+    return `mailto:nphcofhudsoncounty@gmail.com?subject=${subject}&body=${body}`;
+  })();
 
   return (
     <div className="min-h-screen bg-background text-foreground lg:flex">
@@ -583,6 +599,19 @@ export function MainLayout() {
           editorMode={editorMode}
           onToggleEditorMode={toggleEditorMode}
         />
+      ) : null}
+
+      {!isFramed ? (
+        <div className="fixed bottom-4 right-4 z-[72]">
+          <a
+            href={helpMailtoHref}
+            className="nphc-holo-btn inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-white/85 px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-[0_16px_60px_rgba(0,0,0,0.2)] backdrop-blur-xl hover:border-primary/50 hover:text-primary transition"
+            aria-label="Contact portal help"
+          >
+            <MessageCircle className="size-4" />
+            Help
+          </a>
+        </div>
       ) : null}
 
       {/* Footer */}

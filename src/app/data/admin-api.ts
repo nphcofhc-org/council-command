@@ -70,10 +70,27 @@ export type ChapterDuesTrackerResponse = {
   updatedBy: string | null;
 };
 
+export type MembershipRosterAuditEntry = {
+  email: string;
+  displayName: string;
+  designation?: string;
+  status: "current" | "remove";
+};
+
+export type MembershipRosterAuditResponse = {
+  found: boolean;
+  data: {
+    entries: MembershipRosterAuditEntry[];
+  };
+  updatedAt: string | null;
+  updatedBy: string | null;
+};
+
 const SESSION_ENDPOINT = "/api/admin/session";
 const COMPLIANCE_ENDPOINT = "/api/admin/compliance";
 const LEADERSHIP_ENDPOINT = "/api/content/chapter-leadership";
 const MEMBER_DIRECTORY_ENDPOINT = "/api/content/member-directory";
+const MEMBER_ROSTER_AUDIT_ENDPOINT = "/api/content/member-roster-audit";
 const CHAPTER_DUES_ENDPOINT = "/api/content/chapter-dues";
 const SITE_MAINTENANCE_ENDPOINT = "/api/admin/site-maintenance";
 const ANALYTICS_TRACK_ENDPOINT = "/api/analytics/track";
@@ -279,6 +296,72 @@ export async function saveMemberDirectory(directory: MemberDirectory): Promise<M
     found: Boolean(data?.found),
     data: {
       entries: Array.isArray(data?.data?.entries) ? data.data.entries : [],
+    },
+    updatedAt: data?.updatedAt ? String(data.updatedAt) : null,
+    updatedBy: data?.updatedBy ? String(data.updatedBy) : null,
+  };
+}
+
+function normalizeRosterAuditEntry(raw: any): MembershipRosterAuditEntry | null {
+  const email = raw?.email ? String(raw.email).trim().toLowerCase() : "";
+  if (!email || !email.includes("@")) return null;
+  const displayName = String(raw?.displayName || "").trim() || email;
+  const designation = String(raw?.designation || "").trim();
+  const status = String(raw?.status || "").trim().toLowerCase() === "remove" ? "remove" : "current";
+  return {
+    email,
+    displayName,
+    designation: designation || undefined,
+    status,
+  };
+}
+
+export async function fetchMembershipRosterAudit(): Promise<MembershipRosterAuditResponse> {
+  const response = await fetch(MEMBER_ROSTER_AUDIT_ENDPOINT, {
+    method: "GET",
+    credentials: "same-origin",
+    headers: {
+      accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response));
+  }
+
+  const data = await response.json();
+  const rows = Array.isArray(data?.data?.entries) ? data.data.entries : [];
+  return {
+    found: Boolean(data?.found),
+    data: {
+      entries: rows.map(normalizeRosterAuditEntry).filter(Boolean) as MembershipRosterAuditEntry[],
+    },
+    updatedAt: data?.updatedAt ? String(data.updatedAt) : null,
+    updatedBy: data?.updatedBy ? String(data.updatedBy) : null,
+  };
+}
+
+export async function saveMembershipRosterAudit(entries: MembershipRosterAuditEntry[]): Promise<MembershipRosterAuditResponse> {
+  const response = await fetch(MEMBER_ROSTER_AUDIT_ENDPOINT, {
+    method: "PUT",
+    credentials: "same-origin",
+    headers: {
+      "content-type": "application/json",
+      accept: "application/json",
+    },
+    body: JSON.stringify({ entries }),
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response));
+  }
+
+  const data = await response.json();
+  const rows = Array.isArray(data?.data?.entries) ? data.data.entries : [];
+  return {
+    found: Boolean(data?.found),
+    data: {
+      entries: rows.map(normalizeRosterAuditEntry).filter(Boolean) as MembershipRosterAuditEntry[],
     },
     updatedAt: data?.updatedAt ? String(data.updatedAt) : null,
     updatedBy: data?.updatedBy ? String(data.updatedBy) : null,

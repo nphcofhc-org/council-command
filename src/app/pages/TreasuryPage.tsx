@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "motion/react";
-import { BarChart3, CreditCard, DollarSign, Lock, Wallet } from "lucide-react";
+import { BarChart3, Calculator, Copy, DollarSign, Download, FileText, Lock, Plus, RefreshCw, Save, Trash2, Wallet } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -21,8 +21,20 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
 import { useCouncilSession } from "../hooks/use-council-session";
-import { fetchTreasuryData, type TreasuryAccount, type TreasuryPayload, type TreasuryTransaction, type TreasuryTxnType } from "../data/treasury-api";
+import {
+  fetchTreasuryData,
+  fetchTreasuryReportingTools,
+  saveTreasuryReportingTools,
+  type TreasuryAccount,
+  type TreasuryOnePagerRecord,
+  type TreasuryPayload,
+  type TreasuryReportingToolsState,
+  type TreasuryStatementArchiveEntry,
+  type TreasuryTransaction,
+  type TreasuryTxnType,
+} from "../data/treasury-api";
 
 function money(n: number) {
   return n.toLocaleString("en-US", { style: "currency", currency: "USD" });
@@ -35,6 +47,137 @@ function monthKey(isoDate: string): string {
 }
 
 const PIE_COLORS = ["#18e0d0", "#22c55e", "#60a5fa", "#f59e0b", "#fb7185", "#a78bfa", "#f97316", "#34d399"];
+
+const EMPTY_REPORTING: TreasuryReportingToolsState = {
+  statements: [],
+  onePagers: [],
+};
+
+type StatementDraft = {
+  account: "LendingClub" | "Cash App";
+  label: string;
+  periodStart: string;
+  periodEnd: string;
+  statementDate: string;
+  url: string;
+  openingBalance: string;
+  closingBalance: string;
+  notes: string;
+};
+
+function emptyStatementDraft(): StatementDraft {
+  return {
+    account: "LendingClub",
+    label: "",
+    periodStart: "",
+    periodEnd: "",
+    statementDate: "",
+    url: "",
+    openingBalance: "",
+    closingBalance: "",
+    notes: "",
+  };
+}
+
+function amountOrNull(raw: string): number | null {
+  const s = String(raw || "").trim();
+  if (!s) return null;
+  const n = Number(s);
+  if (!Number.isFinite(n)) return null;
+  return Math.round(n * 100) / 100;
+}
+
+function isoDateSortDesc(a: string, b: string): number {
+  if (a < b) return 1;
+  if (a > b) return -1;
+  return 0;
+}
+
+function latestStatementKey(s: TreasuryStatementArchiveEntry): string {
+  return String(s.periodEnd || s.statementDate || s.periodStart || s.createdAt || "");
+}
+
+function buildTreasuryOnePagerText(params: {
+  year: string;
+  treasury: TreasuryPayload | null;
+  yearTxnsAll: TreasuryTransaction[];
+  recent30: TreasuryTransaction[];
+  latestTxn: TreasuryTransaction | null;
+  latestStatement: TreasuryStatementArchiveEntry | null;
+}) {
+  const { year, treasury, yearTxnsAll, recent30, latestTxn, latestStatement } = params;
+
+  const income = yearTxnsAll.filter((t) => t.type === "credit").reduce((sum, t) => sum + t.amount, 0);
+  const expenses = yearTxnsAll.filter((t) => t.type === "debit").reduce((sum, t) => sum + t.amount, 0);
+  const net = Math.round((income - expenses) * 100) / 100;
+  const recentCredits = recent30.filter((t) => t.type === "credit").reduce((sum, t) => sum + t.amount, 0);
+  const recentDebits = recent30.filter((t) => t.type === "debit").reduce((sum, t) => sum + t.amount, 0);
+  const recentNet = Math.round((recentCredits - recentDebits) * 100) / 100;
+
+  const topExpenseCategories = Array.from(
+    yearTxnsAll
+      .filter((t) => t.type === "debit")
+      .reduce((map, t) => {
+        map.set(t.category, (map.get(t.category) || 0) + t.amount);
+        return map;
+      }, new Map<string, number>()),
+  )
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
+
+  const statementDelta =
+    latestStatement && latestStatement.openingBalance !== null && latestStatement.closingBalance !== null
+      ? Math.round((latestStatement.closingBalance - latestStatement.openingBalance) * 100) / 100
+      : null;
+
+  return [
+    `Treasury One-Pager (${year})`,
+    `Generated: ${new Date().toLocaleString()}`,
+    "",
+    "Current Balances",
+    `- LendingClub: ${money(Number(treasury?.balances?.lendingClub || 0))}`,
+    `- Cash App: ${money(Number(treasury?.balances?.cashApp || 0))}`,
+    `- Total Cash On Hand: ${money(Number((treasury?.balances?.lendingClub || 0) + (treasury?.balances?.cashApp || 0)))}`,
+    treasury?.asOfLabel ? `- Balance As-Of Note: ${treasury.asOfLabel}` : "",
+    "",
+    `${year} Transaction Summary (loaded dataset)`,
+    `- Total Transactions: ${yearTxnsAll.length}`,
+    `- Income: ${money(Math.round(income * 100) / 100)}`,
+    `- Expenses: ${money(Math.round(expenses * 100) / 100)}`,
+    `- Net Flow: ${money(Math.abs(net))} ${net >= 0 ? "Surplus" : "Deficit"}`,
+    "",
+    "Recent Activity (Last 30 Days from loaded transactions)",
+    `- Transactions: ${recent30.length}`,
+    `- Credits: ${money(Math.round(recentCredits * 100) / 100)}`,
+    `- Debits: ${money(Math.round(recentDebits * 100) / 100)}`,
+    `- Net: ${money(Math.abs(recentNet))} ${recentNet >= 0 ? "Positive" : "Negative"}`,
+    latestTxn ? `- Latest Transaction: ${latestTxn.date} | ${latestTxn.account} | ${latestTxn.description} | ${latestTxn.type === "debit" ? "-" : "+"}${money(latestTxn.amount)}` : "- Latest Transaction: N/A",
+    "",
+    "Latest Statement Record",
+    latestStatement
+      ? `- ${latestStatement.account}: ${latestStatement.label}`
+      : "- No statement record saved yet.",
+    latestStatement?.periodStart ? `- Period Start: ${latestStatement.periodStart}` : "",
+    latestStatement?.periodEnd ? `- Period End: ${latestStatement.periodEnd}` : "",
+    latestStatement?.statementDate ? `- Statement Date: ${latestStatement.statementDate}` : "",
+    latestStatement?.url ? `- Statement Link: ${latestStatement.url}` : "",
+    statementDelta !== null ? `- Statement Balance Change: ${statementDelta >= 0 ? "+" : ""}${money(statementDelta)}` : "",
+    latestStatement?.reconciled ? "- Reconciliation Status: Marked Reconciled" : latestStatement ? "- Reconciliation Status: Pending Review" : "",
+    "",
+    "Top Expense Categories",
+    ...(
+      topExpenseCategories.length
+        ? topExpenseCategories.map(([name, value]) => `- ${name}: ${money(Math.round(value * 100) / 100)}`)
+        : ["- No expense categories in current dataset."]
+    ),
+    "",
+    "Deck Insert Note",
+    "- Use this one-pager in the meeting deck treasury slide or presenter notes.",
+    "- Refresh before the meeting to recalculate the latest transaction summary.",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
 
 export function TreasuryPage() {
   const { session, loading: sessionLoading } = useCouncilSession();
@@ -78,8 +221,7 @@ export function TreasuryPage() {
 
   const lendingClubBalance = treasury?.balances?.lendingClub || 0;
   const cashAppBalance = treasury?.balances?.cashApp || 0;
-  const paypalBalance = treasury?.balances?.paypal || 0;
-  const totalBalance = lendingClubBalance + cashAppBalance + paypalBalance;
+  const totalBalance = lendingClubBalance + cashAppBalance;
 
   const yearTxns = useMemo(() => {
     const needle = search.trim().toLowerCase();
@@ -197,9 +339,9 @@ export function TreasuryPage() {
                   <Wallet className="size-5" />
                   Current Balances
                 </CardTitle>
-                <CardDescription>Total cash on hand (LendingClub + Cash App + PayPal).</CardDescription>
+                <CardDescription>Total cash on hand (LendingClub + Cash App).</CardDescription>
               </CardHeader>
-              <CardContent className="grid gap-4 sm:grid-cols-4">
+              <CardContent className="grid gap-4 sm:grid-cols-3">
                 <div className="rounded-lg border border-black/10 bg-white/5 p-4">
                   <p className="text-xs uppercase tracking-widest text-slate-500">Total</p>
                   <p className="text-2xl font-extrabold text-slate-900 mt-1">{money(totalBalance)}</p>
@@ -212,11 +354,7 @@ export function TreasuryPage() {
                   <p className="text-xs uppercase tracking-widest text-slate-500">Cash App</p>
                   <p className="text-xl font-bold text-slate-900 mt-1">{money(cashAppBalance)}</p>
                 </div>
-                <div className="rounded-lg border border-black/10 bg-white/5 p-4">
-                  <p className="text-xs uppercase tracking-widest text-slate-500">PayPal</p>
-                  <p className="text-xl font-bold text-slate-900 mt-1">{money(paypalBalance)}</p>
-                </div>
-                <p className="text-xs text-slate-400 sm:col-span-4">
+                <p className="text-xs text-slate-400 sm:col-span-3">
                   {treasury?.asOfLabel || ""}
                   {treasury?.liveMode ? ` • Live sync (${treasury?.liveSource || "ingest"})` : ""}
                 </p>
@@ -229,7 +367,7 @@ export function TreasuryPage() {
                   <DollarSign className="size-5" />
                   Digital Payments
                 </CardTitle>
-                <CardDescription>Cash App and PayPal quick links for collection.</CardDescription>
+                <CardDescription>Cash App quick link for collection.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between gap-3">
@@ -246,23 +384,12 @@ export function TreasuryPage() {
                     loading="lazy"
                   />
                 </div>
-                <div className="rounded-lg border border-black/10 bg-white/5 p-3">
-                  <p className="text-xs uppercase tracking-widest text-slate-500">PayPal</p>
-                  <a
-                    href={treasury?.paypal?.payUrl || "#"}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-1 inline-block text-sm font-bold text-primary hover:underline"
-                  >
-                    {treasury?.paypal?.handle || "Open PayPal"}
-                  </a>
-                </div>
                 <Button
                   asChild
                   variant="outline"
                   className="w-full border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
                 >
-                  <a href={treasury?.cashApp?.payUrl || treasury?.paypal?.payUrl || "#"} target="_blank" rel="noreferrer">
+                  <a href={treasury?.cashApp?.payUrl || "#"} target="_blank" rel="noreferrer">
                     Open Payment Link
                   </a>
                 </Button>
@@ -439,7 +566,6 @@ export function TreasuryPage() {
                           <option value="all">All Accounts</option>
                           <option value="LendingClub">LendingClub</option>
                           <option value="Cash App">Cash App</option>
-                          <option value="PayPal">PayPal</option>
                         </select>
                       </div>
                       <div className="space-y-1 md:col-span-1">

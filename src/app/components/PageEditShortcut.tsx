@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { PencilLine, SquarePen, ToggleLeft, ToggleRight } from "lucide-react";
+import { PencilLine, Shield, SquarePen, ToggleLeft, ToggleRight } from "lucide-react";
 import type { CouncilSession } from "../data/admin-api";
 
 type Props = {
@@ -61,6 +61,17 @@ export function PageEditShortcut({ session, editorMode, onToggleEditorMode }: Pr
             {target ? <SquarePen className="size-4" /> : <PencilLine className="size-4" />}
             {target ? target.label : "No editor for this page"}
           </button>
+          {session.isPresident ? (
+            <button
+              type="button"
+              onClick={() => navigate("/council-admin/site-maintenance")}
+              className="nphc-holo-btn inline-flex items-center gap-2 rounded-xl border border-black/10 bg-white/60 px-3 py-2 text-xs font-semibold text-slate-900 hover:border-primary/50 hover:text-primary transition"
+              title="Open The President's Desk"
+            >
+              <Shield className="size-4" />
+              President&apos;s Desk
+            </button>
+          ) : null}
         </div>
       </div>
     </div>

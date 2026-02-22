@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { ArrowLeft, ClipboardCheck } from "lucide-react";
+import { ArrowLeft, CheckSquare, ClipboardCheck } from "lucide-react";
 import { motion } from "motion/react";
 import { CouncilLeaderGate } from "../components/CouncilLeaderGate";
 import { Card, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
@@ -49,6 +49,28 @@ export function CouncilAttendancePage() {
             </Card>
           </motion.div>
 
+          <motion.div initial={{ y: -6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.04, duration: 0.35 }}>
+            <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <CheckSquare className="size-5 text-primary" />
+                  Quarterly Membership Roster Update (Secretary Audit Sheet)
+                </CardTitle>
+                <CardDescription>
+                  Review all current members from the member directory and mark who remains current versus who should be removed.
+                </CardDescription>
+                <div className="pt-2">
+                  <Button asChild className="w-full sm:w-auto">
+                    <Link to="/council-admin/attendance/quarterly-roster-audit">
+                      <CheckSquare className="mr-2 size-4" />
+                      Open Quarterly Roster Audit Sheet
+                    </Link>
+                  </Button>
+                </div>
+              </CardHeader>
+            </Card>
+          </motion.div>
+
           <motion.div initial={{ y: 8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.08, duration: 0.35 }}>
             <MeetingRollCallManager meetingOptions={meetingOptions} />
           </motion.div>
@@ -57,4 +79,3 @@ export function CouncilAttendancePage() {
     </CouncilLeaderGate>
   );
 }
-
