@@ -1,6 +1,30 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
-import { ArrowLeft, BarChart3, Database, Loader2, Save, Shield, Users, Wrench, SlidersHorizontal, Mail, Eye } from "lucide-react";
+import {
+  ArrowLeft,
+  BarChart3,
+  Calendar,
+  ClipboardCheck,
+  Database,
+  ExternalLink,
+  Eye,
+  FileText,
+  FolderOpen,
+  Home,
+  Inbox,
+  Loader2,
+  Mail,
+  Save,
+  Shield,
+  SlidersHorizontal,
+  Target,
+  ToggleLeft,
+  ToggleRight,
+  TrendingUp,
+  Users,
+  Wallet,
+  Wrench,
+} from "lucide-react";
 import { PresidentGate } from "../components/PresidentGate";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
@@ -11,6 +35,10 @@ import { fetchLeadershipContent, fetchSiteMaintenancePayload, saveSiteMaintenanc
 import { fetchSiteConfig } from "../data/api";
 import { saveSiteConfigOverride } from "../data/content-api";
 import type { SiteConfig } from "../data/types";
+import { useCouncilSession } from "../hooks/use-council-session";
+import { useEditorMode } from "../hooks/use-editor-mode";
+import { fetchSubmissionsAsAdmin } from "../data/forms-api";
+import { fetchTreasuryData, type TreasuryPayload } from "../data/treasury-api";
 
 type AccessKey = "councilAdmin" | "treasuryAdmin" | "president";
 type AccessMatrix = Record<AccessKey, Record<string, boolean>>;
@@ -98,6 +126,8 @@ function hasAnyExplicitOverride(entry: AccessOverrideEntry): boolean {
 }
 
 export function CouncilSiteMaintenancePage() {
+  const { session } = useCouncilSession();
+  const { editorMode, setEditorMode } = useEditorMode();
   const [officers, setOfficers] = useState<OfficerColumn[]>([]);
   const [missingOfficerEmails, setMissingOfficerEmails] = useState<string[]>([]);
   const [matrix, setMatrix] = useState<AccessMatrix>(createEmptyMatrix());
@@ -114,6 +144,8 @@ export function CouncilSiteMaintenancePage() {
   const [commandVisibilitySaving, setCommandVisibilitySaving] = useState(false);
   const [commandVisibilityError, setCommandVisibilityError] = useState<string | null>(null);
   const [commandVisibilityMessage, setCommandVisibilityMessage] = useState<string | null>(null);
+  const [pendingSubmissions, setPendingSubmissions] = useState(0);
+  const [treasury, setTreasury] = useState<TreasuryPayload | null>(null);
 
   const normalizeCommandVisibility = (cfg: SiteConfig): SiteConfig => ({
     ...cfg,
@@ -223,6 +255,36 @@ export function CouncilSiteMaintenancePage() {
     };
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    if (!session.isCouncilAdmin) return;
+    void fetchSubmissionsAsAdmin({ status: "Submitted", limit: 200 })
+      .then((rows) => {
+        if (!cancelled) setPendingSubmissions(rows.length);
+      })
+      .catch(() => {
+        if (!cancelled) setPendingSubmissions(0);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [session.isCouncilAdmin]);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!session.isTreasuryAdmin) return;
+    void fetchTreasuryData()
+      .then((payload) => {
+        if (!cancelled) setTreasury(payload.treasury);
+      })
+      .catch(() => {
+        if (!cancelled) setTreasury(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [session.isTreasuryAdmin]);
+
   const dirty = useMemo(
     () => JSON.stringify(matrix) !== JSON.stringify(baseMatrix),
     [matrix, baseMatrix],
@@ -305,6 +367,11 @@ export function CouncilSiteMaintenancePage() {
     }
   };
 
+  const treasuryTotal =
+    (treasury?.balances?.lendingClub || 0) +
+    (treasury?.balances?.cashApp || 0) +
+    (treasury?.balances?.paypal || 0);
+
   return (
     <PresidentGate>
       <div className="relative min-h-screen p-4 sm:p-8">
@@ -327,7 +394,7 @@ export function CouncilSiteMaintenancePage() {
                 The President&apos;s Desk
               </CardTitle>
               <CardDescription>
-                President-only dashboard for site access, Council Command visibility, authenticated activity, and maintenance.
+                President-only command hub for site maintenance, access control, dashboards, content tools, and executive operations.
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-4">
@@ -355,6 +422,121 @@ export function CouncilSiteMaintenancePage() {
                   <CardTitle className="text-2xl">{metrics.pageViews7d}</CardTitle>
                 </CardHeader>
               </Card>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Database className="size-5 text-primary" />
+                One-Stop Control Hub
+              </CardTitle>
+              <CardDescription>
+                All site maintenance, controls, dashboard links, and operational tools in one place.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4 xl:grid-cols-4">
+                <div className="rounded-xl border border-black/10 bg-white/5 p-4 space-y-2">
+                  <p className="text-xs uppercase tracking-widest text-slate-500">President Controls</p>
+                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                    <Link to="/council-admin"><Wrench className="size-4" /> Council Command Center</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                    <Link to="/council-admin/site-maintenance"><Shield className="size-4" /> The President&apos;s Desk</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                    <Link to="/council-admin/content"><SlidersHorizontal className="size-4" /> Content Manager</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                    <Link to="/council-admin/notifications"><Mail className="size-4" /> Notification Settings</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                    <Link to="/council-admin/content/members"><Users className="size-4" /> Member Directory</Link>
+                  </Button>
+                </div>
+
+                <div className="rounded-xl border border-black/10 bg-white/5 p-4 space-y-2">
+                  <p className="text-xs uppercase tracking-widest text-slate-500">Operations & Dashboards</p>
+                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                    <Link to="/council-admin/submissions"><Inbox className="size-4" /> Submission Review</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                    <Link to="/council-admin/attendance"><ClipboardCheck className="size-4" /> Attendance</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                    <Link to="/council-admin/compliance"><ClipboardCheck className="size-4" /> Compliance</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                    <Link to="/council-admin/exec-council-meeting?deck=2026-02-23"><Calendar className="size-4" /> Meeting Deck (2/23)</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                    <Link to="/council-admin/exec-council-meeting?deck=2026-02-19"><FileText className="size-4" /> Deck Archive (2/19)</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                    <Link to="/council-admin/treasury"><Wallet className="size-4" /> Treasury Dashboard</Link>
+                  </Button>
+                </div>
+
+                <div className="rounded-xl border border-black/10 bg-white/5 p-4 space-y-2">
+                  <p className="text-xs uppercase tracking-widest text-slate-500">Page Editors</p>
+                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                    <Link to="/council-admin/content/home"><Home className="size-4" /> Home Editor</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                    <Link to="/council-admin/content/meetings"><Calendar className="size-4" /> Meetings Editor</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                    <Link to="/council-admin/content/programs"><TrendingUp className="size-4" /> Programs Editor</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                    <Link to="/council-admin/content/resources"><FolderOpen className="size-4" /> Resources Editor</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                    <Link to="/council-admin/content/decision-portal"><Target className="size-4" /> Decision Portal Editor</Link>
+                  </Button>
+                </div>
+
+                <div className="rounded-xl border border-black/10 bg-white/5 p-4 space-y-3">
+                  <p className="text-xs uppercase tracking-widest text-slate-500">Live Controls</p>
+                  {session.isSiteEditor ? (
+                    <>
+                      <Button
+                        type="button"
+                        variant={editorMode ? "default" : "outline"}
+                        className={editorMode ? "w-full justify-start gap-2" : "w-full justify-start gap-2 border-black/15 bg-white/5 text-slate-900"}
+                        onClick={() => setEditorMode(!editorMode)}
+                      >
+                        {editorMode ? <ToggleRight className="size-4" /> : <ToggleLeft className="size-4" />}
+                        {editorMode ? "Editor Mode On" : "Editor Mode Off"}
+                      </Button>
+                      <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
+                        <Link to="/">
+                          <ExternalLink className="size-4" />
+                          Open Council View
+                        </Link>
+                      </Button>
+                    </>
+                  ) : (
+                    <p className="text-xs text-slate-500">Site editor controls are unavailable for this account.</p>
+                  )}
+                  <div className="rounded-lg border border-black/10 bg-white/40 px-3 py-2 text-xs text-slate-700">
+                    <p className="font-semibold text-slate-900">Pending submissions</p>
+                    <p>{pendingSubmissions}</p>
+                  </div>
+                  <div className="rounded-lg border border-black/10 bg-white/40 px-3 py-2 text-xs text-slate-700">
+                    <p className="font-semibold text-slate-900">Treasury snapshot</p>
+                    <p>
+                      {session.isTreasuryAdmin
+                        ? treasuryTotal.toLocaleString("en-US", { style: "currency", currency: "USD" })
+                        : "Treasury access restricted"}
+                    </p>
+                    {session.isTreasuryAdmin && treasury?.asOfLabel ? (
+                      <p className="text-[11px] text-slate-500 mt-1">{treasury.asOfLabel}</p>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -531,34 +713,6 @@ export function CouncilSiteMaintenancePage() {
                 </CardContent>
               </Card>
 
-              <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Database className="size-4 text-primary" />
-                    President&apos;s Desk Controls
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
-                    <Link to="/council-admin"><Wrench className="size-4" /> Council Command Center</Link>
-                  </Button>
-                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
-                    <Link to="/council-admin/content"><SlidersHorizontal className="size-4" /> Content Manager (Leadership)</Link>
-                  </Button>
-                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
-                    <Link to="/council-admin/content/members"><Users className="size-4" /> Member Directory</Link>
-                  </Button>
-                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
-                    <Link to="/council-admin/notifications"><Mail className="size-4" /> Notification Settings</Link>
-                  </Button>
-                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
-                    <Link to="/council-admin/exec-council-meeting?deck=2026-02-23"><Users className="size-4" /> Exec Meeting Deck (2/23)</Link>
-                  </Button>
-                  <Button asChild variant="outline" className="w-full justify-start gap-2 border-black/15 bg-white/5">
-                    <Link to="/council-admin/treasury"><Shield className="size-4" /> Treasury Dashboard</Link>
-                  </Button>
-                </CardContent>
-              </Card>
             </div>
           </div>
 
