@@ -30,7 +30,7 @@ export function CouncilAdminPage() {
   const isInternalFile = (url: string) => url.trim().startsWith("/");
   const showOpsCards = siteConfig?.showCouncilCommandOperations ?? true;
   const showTreasuryCards = siteConfig?.showCouncilCommandTreasury ?? true;
-  const showPresidentsDeskCard = siteConfig?.showCouncilCommandPresidentsDesk ?? true;
+  const showPresidentsDeskCard = session.isPresident ? true : (siteConfig?.showCouncilCommandPresidentsDesk ?? true);
   const showContentManagerCard = siteConfig?.showCouncilCommandContentManager ?? true;
   const showEditorCards = siteConfig?.showCouncilCommandEditors ?? true;
   const showMemberDirectoryCard = siteConfig?.showCouncilCommandMemberDirectory ?? true;

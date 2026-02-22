@@ -102,6 +102,7 @@ export function MainLayout() {
   const navItems = [
     ...baseNavItems,
     ...(session.isCouncilAdmin || session.isSiteEditor ? [{ to: "/council-admin", label: "Council Command Center", icon: Shield }] : []),
+    ...(session.isPresident ? [{ to: "/council-admin/site-maintenance", label: "The President's Desk", icon: Shield }] : []),
   ];
 
   // Close mobile nav on route change
