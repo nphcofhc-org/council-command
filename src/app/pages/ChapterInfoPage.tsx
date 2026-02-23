@@ -308,18 +308,8 @@ export function ChapterInfoPage() {
               <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="text-lg sm:text-xl">Chapter Representatives & Delegates</CardTitle>
-                  <CardDescription className="text-sm">
-                    Delegate roster is temporarily hidden while the council list is being corrected.
-                  </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="rounded-xl border border-amber-300/60 bg-amber-500/10 p-4 sm:p-5">
-                    <p className="text-sm font-semibold text-amber-900">Roster update in progress</p>
-                    <p className="mt-1 text-sm text-amber-800/90">
-                      The previous delegate names were inaccurate, so they have been removed from view. This tab will remain available and can be repopulated once the correct chapter representative and delegate roster is entered.
-                    </p>
-                  </div>
-                </CardContent>
+                <CardContent className="min-h-8" />
               </Card>
             </motion.div>
           </TabsContent>
