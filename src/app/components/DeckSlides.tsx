@@ -26,7 +26,7 @@ const CANDIDATE_3    = 'https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/NPHC
 const D9_TRENTON_URL = 'https://d9intrenton.my.canva.site/home/';
 const THANK_YOU_LETTER_IMAGE_URL = 'https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/2.png';
 const FUNDRAISING_TOTAL_IMAGE_URL = 'https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/3.png';
-const EXEC_EBOARD_VIDEO_URL = 'https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/NPHC%20Executive%20Council.mp4';
+const EXEC_EBOARD_SLIDE_IMAGE_URL = 'https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/NPHC%20Executive%20Council%20(Presentation)%20(2).png';
 const JANUARY_MINUTES_FILE_URL = '/docs/January_Minutes_2026.pdf';
 
 // ─── Primitives ──────────────────────────────────────────────────────────────
@@ -242,13 +242,9 @@ export function Slide4Ratification({ isMobile = false }: { isMobile?: boolean })
 
       <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', gap: isMobile ? 8 : 10 }}>
         <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '10px' : '12px', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-          <video
-            key={EXEC_EBOARD_VIDEO_URL}
-            src={EXEC_EBOARD_VIDEO_URL}
-            controls
-            autoPlay
-            muted
-            playsInline
+          <img
+            src={EXEC_EBOARD_SLIDE_IMAGE_URL}
+            alt="NPHC Executive Council presentation slide"
             style={{
               width: '100%',
               height: '100%',
@@ -261,7 +257,7 @@ export function Slide4Ratification({ isMobile = false }: { isMobile?: boolean })
           />
         </div>
         <a
-          href={EXEC_EBOARD_VIDEO_URL}
+          href={EXEC_EBOARD_SLIDE_IMAGE_URL}
           target="_blank"
           rel="noreferrer"
           style={{
@@ -274,7 +270,7 @@ export function Slide4Ratification({ isMobile = false }: { isMobile?: boolean })
             textDecoration: 'none',
           }}
         >
-          Open Executive Council Video
+          Open Executive Council Slide
           <ExternalLink size={12} />
         </a>
       </div>
