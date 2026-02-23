@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useLocation, useNavigate, Link } from "react-router";
 import { useState, useEffect } from "react";
-import { Home, Users, Calendar, TrendingUp, FolderOpen, Shield, Menu, X, Target, ClipboardList, MessagesSquare, Bell, AlertTriangle, Info, MessageCircle } from "lucide-react";
+import { Home, Users, Calendar, TrendingUp, FolderOpen, Shield, Menu, X, Target, ClipboardList, MessagesSquare, Bell, AlertTriangle, Info, MessageCircle, LogOut } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useSiteConfig } from "../hooks/use-site-data";
 import { useCouncilSession } from "../hooks/use-council-session";
@@ -212,6 +212,7 @@ export function MainLayout() {
     );
     return `mailto:nphcofhudsoncounty@gmail.com?subject=${subject}&body=${body}`;
   })();
+  const logoutHref = "/cdn-cgi/access/logout";
 
   return (
     <div className="min-h-screen bg-background text-foreground lg:flex">
@@ -388,6 +389,15 @@ export function MainLayout() {
         </nav>
 
         <div className="px-6 py-4 border-t border-white/10">
+          {session.authenticated ? (
+            <a
+              href={logoutHref}
+              className="mb-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-xs font-semibold tracking-[0.12em] uppercase text-white/80 hover:text-white hover:border-primary/60 transition-colors"
+            >
+              <LogOut className="size-4" />
+              Logout
+            </a>
+          ) : null}
           <p className="text-white/55 text-xs">{footerText}</p>
           <p className="text-white/35 text-[11px] mt-1">{footerSubtext}</p>
           <a
@@ -501,6 +511,15 @@ export function MainLayout() {
                 </div>
 
                 <div className="px-6 mt-8 pt-4 border-t border-black/10">
+                  {session.authenticated ? (
+                    <a
+                      href={logoutHref}
+                      className="mb-3 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-black/10 bg-white/70 px-3 py-2 text-xs font-semibold tracking-[0.08em] uppercase text-slate-700 hover:text-primary hover:border-primary/60 transition-colors"
+                    >
+                      <LogOut className="size-4" />
+                      Logout
+                    </a>
+                  ) : null}
                   {session.isSiteEditor ? (
                     <button
                       type="button"
