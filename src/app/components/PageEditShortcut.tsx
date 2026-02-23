@@ -38,15 +38,15 @@ export function PageEditShortcut({ session, editorMode, onToggleEditorMode }: Pr
   if (!session.isSiteEditor && !session.isPresident) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 z-[72]">
+    <div className="fixed bottom-20 left-4 right-4 z-[72] sm:bottom-4 sm:right-auto">
       <div className="nphc-holo-surface rounded-2xl border border-black/10 bg-white/80 p-2 shadow-[0_16px_60px_rgba(0,0,0,0.2)] backdrop-blur-xl">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
           {session.isSiteEditor ? (
             <>
               <button
                 type="button"
                 onClick={onToggleEditorMode}
-                className="nphc-holo-btn inline-flex items-center gap-2 rounded-xl border border-black/10 bg-white/60 px-3 py-2 text-xs font-semibold text-slate-900 hover:border-primary/50 hover:text-primary transition"
+                className="nphc-holo-btn inline-flex w-full items-center justify-center gap-2 rounded-xl border border-black/10 bg-white/60 px-3 py-2 text-xs font-semibold text-slate-900 hover:border-primary/50 hover:text-primary transition sm:w-auto sm:justify-start"
               >
                 {editorMode ? <ToggleRight className="size-4 text-primary" /> : <ToggleLeft className="size-4 text-slate-500" />}
                 {editorMode ? "Editor On" : "Editor Off"}
@@ -58,7 +58,7 @@ export function PageEditShortcut({ session, editorMode, onToggleEditorMode }: Pr
                   if (target) navigate(target.to);
                 }}
                 disabled={!target}
-                className="nphc-holo-btn inline-flex items-center gap-2 rounded-xl border border-black/10 bg-white/60 px-3 py-2 text-xs font-semibold text-slate-900 hover:border-primary/50 hover:text-primary disabled:opacity-45 disabled:cursor-not-allowed transition"
+                className="nphc-holo-btn inline-flex w-full items-center justify-center gap-2 rounded-xl border border-black/10 bg-white/60 px-3 py-2 text-xs font-semibold text-slate-900 hover:border-primary/50 hover:text-primary disabled:opacity-45 disabled:cursor-not-allowed transition sm:w-auto sm:justify-start"
               >
                 {target ? <SquarePen className="size-4" /> : <PencilLine className="size-4" />}
                 {target ? target.label : "No editor for this page"}
@@ -69,7 +69,7 @@ export function PageEditShortcut({ session, editorMode, onToggleEditorMode }: Pr
             <button
               type="button"
               onClick={() => navigate("/council-admin/site-maintenance")}
-              className="nphc-holo-btn inline-flex items-center gap-2 rounded-xl border border-black/10 bg-white/60 px-3 py-2 text-xs font-semibold text-slate-900 hover:border-primary/50 hover:text-primary transition"
+              className="nphc-holo-btn inline-flex w-full items-center justify-center gap-2 rounded-xl border border-black/10 bg-white/60 px-3 py-2 text-xs font-semibold text-slate-900 hover:border-primary/50 hover:text-primary transition sm:w-auto sm:justify-start"
               title="Open The President's Desk"
             >
               <Shield className="size-4" />
