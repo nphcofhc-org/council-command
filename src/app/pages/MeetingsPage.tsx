@@ -6,7 +6,7 @@ import { Calendar, FileText, Clock, ExternalLink, Sparkles, Image as ImageIcon }
 import { Button } from "../components/ui/button";
 import { motion } from "motion/react";
 import { useLocation } from "react-router";
-import { useMeetingsData, useResourcesData } from "../hooks/use-site-data";
+import { useMeetingsData } from "../hooks/use-site-data";
 import { StatusBadge } from "../components/status-badge";
 import { Link } from "react-router";
 import { useCouncilCalendarSchedule } from "../hooks/use-council-calendar";
@@ -40,7 +40,6 @@ function normalizeJoinUrl(input: string | null | undefined): string | null {
 
 export function MeetingsPage() {
   const { data } = useMeetingsData();
-  const { data: resourcesData } = useResourcesData();
   const location = useLocation();
   const focus = new URLSearchParams(location.search || "").get("focus") || "";
   const nextGeneralRef = useRef<HTMLDivElement | null>(null);
@@ -52,7 +51,6 @@ export function MeetingsPage() {
   const upcomingMeetings = data?.upcomingMeetings || [];
   const meetingRecords = data?.meetingRecords || [];
   const delegateReports = data?.delegateReports || [];
-  const nationalOrgLinks = resourcesData?.nationalOrgs || [];
   const tab = new URLSearchParams(location.search || "").get("tab") || "";
   const initialTab = tab === "records" ? "records" : tab === "reports" ? "reports" : "upcoming";
   const toViewer = (url: string) => `/viewer?src=${encodeURIComponent(url)}`;
@@ -147,42 +145,6 @@ export function MeetingsPage() {
             Council meeting schedule, agendas, minutes, and delegate reporting for the current governance cycle
           </p>
         </motion.div>
-
-        {nationalOrgLinks.length > 0 ? (
-          <motion.div
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.05, duration: 0.35 }}
-            className="mb-6"
-          >
-            <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl">
-              <CardHeader>
-                <CardTitle className="text-base sm:text-lg">National Organization Sites</CardTitle>
-                <p className="text-sm text-slate-600">
-                  Quick access links for delegates to reference national headquarters resources.
-                </p>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {nationalOrgLinks.map((org) => (
-                    <Button
-                      key={org.id}
-                      asChild
-                      variant="outline"
-                      size="sm"
-                      className="border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
-                    >
-                      <a href={org.website} target="_blank" rel="noreferrer">
-                        <ExternalLink className="mr-2 size-3.5" />
-                        {org.name}
-                      </a>
-                    </Button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ) : null}
 
         <Tabs key={initialTab} defaultValue={initialTab} className="space-y-6">
           <TabsList className="w-full sm:w-auto flex-wrap justify-start border border-black/10 bg-white/5 backdrop-blur-xl" data-tour="meeting-tabs">

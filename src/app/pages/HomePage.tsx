@@ -5,7 +5,7 @@ import googleBanner from "../../assets/08f5f2f8147d555bb4793ae6a060e3d0c28be71f.
 import { motion } from "motion/react";
 import { useHomePageData } from "../hooks/use-site-data";
 import { DynamicIcon } from "../components/icon-resolver";
-import { useMeetingsData } from "../hooks/use-site-data";
+import { useMeetingsData, useResourcesData } from "../hooks/use-site-data";
 import { useCouncilCalendarSchedule } from "../hooks/use-council-calendar";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/ui/accordion";
 import { HOME_FAQ_CATEGORIES } from "../data/faq";
@@ -261,6 +261,7 @@ function renderFaqAnswer(answer: string): ReactNode[] {
 export function HomePage() {
   const { data } = useHomePageData();
   const { data: meetingsData } = useMeetingsData();
+  const { data: resourcesData } = useResourcesData();
   const { generalMeetings, execMeetings } = useCouncilCalendarSchedule("/2026-council-calendar.html");
   const [bannerCandidateIndex, setBannerCandidateIndex] = useState(0);
   const [memberEvents, setMemberEvents] = useState<any[]>([]);
@@ -583,6 +584,7 @@ export function HomePage() {
     })),
     ...updates.map((u: any) => ({ ...u })),
   ];
+  const nationalOrgLinks = resourcesData?.nationalOrgs || [];
 
   return (
     <div>
@@ -1191,6 +1193,33 @@ export function HomePage() {
           )}
         </div>
       </section>
+      ) : null}
+
+      {nationalOrgLinks.length > 0 ? (
+        <section>
+          <div className="max-w-7xl mx-auto px-4 sm:px-8 pb-10 sm:pb-12">
+            <div className="rounded-2xl border border-black/10 bg-white/50 px-4 py-4 shadow-[0_10px_35px_rgba(0,0,0,0.08)] backdrop-blur-xl">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-[11px] tracking-[0.22em] uppercase text-slate-500">National Organization Sites</p>
+                <p className="text-xs text-slate-500">Quick links (small footer section)</p>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {nationalOrgLinks.map((org) => (
+                  <a
+                    key={org.id}
+                    href={org.website}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 rounded-md border border-black/10 bg-white/70 px-2 py-1 text-[11px] text-slate-700 hover:border-primary/50 hover:text-primary transition"
+                  >
+                    <ExternalLink className="size-3" />
+                    <span className="max-w-[220px] truncate">{org.name}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
       ) : null}
     </div>
   );
