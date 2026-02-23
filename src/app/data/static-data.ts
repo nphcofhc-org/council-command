@@ -154,7 +154,7 @@ export const governingDocuments: GoverningDocument[] = [
     type: "National Governance",
     lastUpdated: "2020",
     status: "Active",
-    fileUrl: "/docs/nphc-of-hudson-county-comprehensive-data-brief-for-intranet-integration.docx",
+    fileUrl: "/docs/2020_NPHC_Signed_Constitution_Bylaws.pdf",
   },
   {
     id: "gov-2",
