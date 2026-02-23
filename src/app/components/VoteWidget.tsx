@@ -10,7 +10,7 @@ export function VoteWidget({
 }: {
   voteKey: string; label: string; description?: string; compact?: boolean; dropUp?: boolean;
 }) {
-  const { votes, myVotes, castVote, resetVote } = useMeeting();
+  const { votes, myVotes, castVote, resetVote, canControl, canModerate, votingOpen } = useMeeting();
   const v        = votes[voteKey] ?? { yay: 0, nay: 0 };
   const myVote   = myVotes[voteKey] ?? null;
   const total    = v.yay + v.nay;
@@ -18,6 +18,7 @@ export function VoteWidget({
   const nayPct   = total > 0 ? Math.round((v.nay / total) * 100) : 0;
   const hasVotes = total > 0;
   const status   = !hasVotes ? null : v.yay > v.nay ? 'pass' : v.nay > v.yay ? 'fail' : 'tie';
+  const votingEnabled = canControl && votingOpen;
 
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -165,7 +166,7 @@ export function VoteWidget({
           <Vote size={12} color="#606060" />
           <span style={{ color: '#606060', fontSize: '0.64rem', textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: 700 }}>Live Vote</span>
         </div>
-        {hasVotes && (
+        {hasVotes && canModerate && (
           <button onClick={() => resetVote(voteKey)} title="Reset votes" style={{ background: 'transparent', border: '1px solid #2A2A2A', borderRadius: 5, padding: '3px 6px', cursor: 'pointer', color: '#444', display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.58rem', fontFamily: 'inherit', fontWeight: 600, transition: 'all 0.2s' }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = '#444'; e.currentTarget.style.color = '#888'; }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = '#2A2A2A'; e.currentTarget.style.color = '#444'; }}
@@ -182,12 +183,18 @@ export function VoteWidget({
           Your vote: <span style={{ color: '#E0E0E0' }}>{myVote.toUpperCase()}</span>
         </div>
       ) : null}
+      {!votingOpen ? (
+        <div style={{ color: '#8A8A8A', fontSize: '0.64rem', fontWeight: 600, border: '1px solid #2A2A2A', borderRadius: 8, padding: '6px 8px', background: '#0D0D0D' }}>
+          Voting is closed until the presenter opens it.
+        </div>
+      ) : null}
 
       {/* YAY / NAY buttons */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
         <button
           onClick={() => castVote(voteKey, 'yay')}
-          style={{ background: myVote === 'yay' ? '#E5F0FF' : '#fff', color: '#0A0A0A', border: myVote === 'yay' ? '1px solid #93C5FD' : 'none', borderRadius: 9, padding: 'clamp(12px,2%,18px)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, transition: 'all 0.15s', fontFamily: 'inherit' }}
+          disabled={!votingEnabled}
+          style={{ background: myVote === 'yay' ? '#E5F0FF' : '#fff', color: '#0A0A0A', border: myVote === 'yay' ? '1px solid #93C5FD' : 'none', borderRadius: 9, padding: 'clamp(12px,2%,18px)', cursor: votingEnabled ? 'pointer' : 'not-allowed', opacity: votingEnabled ? 1 : 0.45, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, transition: 'all 0.15s', fontFamily: 'inherit' }}
           onMouseEnter={e => { e.currentTarget.style.background = '#F0F0F0'; }}
           onMouseLeave={e => { e.currentTarget.style.background = myVote === 'yay' ? '#E5F0FF' : '#fff'; }}
         >
@@ -200,7 +207,8 @@ export function VoteWidget({
         </button>
         <button
           onClick={() => castVote(voteKey, 'nay')}
-          style={{ background: myVote === 'nay' ? 'rgba(239,68,68,0.08)' : 'transparent', color: '#B0B0B0', border: myVote === 'nay' ? '1px solid #7F1D1D' : '1px solid #333', borderRadius: 9, padding: 'clamp(12px,2%,18px)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, transition: 'all 0.15s', fontFamily: 'inherit' }}
+          disabled={!votingEnabled}
+          style={{ background: myVote === 'nay' ? 'rgba(239,68,68,0.08)' : 'transparent', color: '#B0B0B0', border: myVote === 'nay' ? '1px solid #7F1D1D' : '1px solid #333', borderRadius: 9, padding: 'clamp(12px,2%,18px)', cursor: votingEnabled ? 'pointer' : 'not-allowed', opacity: votingEnabled ? 1 : 0.45, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, transition: 'all 0.15s', fontFamily: 'inherit' }}
           onMouseEnter={e => { e.currentTarget.style.borderColor = '#505050'; }}
           onMouseLeave={e => { e.currentTarget.style.borderColor = '#333'; }}
         >
@@ -249,6 +257,7 @@ export function VoteWidget({
 
 export const VOTE_ITEMS: { key: string; short: string }[] = [
   { key: 'agenda-adoption',     short: 'Agenda Adoption' },
+  { key: 'minutes-adoption',    short: 'Minutes Adoption' },
   { key: 'committee-slate',     short: 'Committee Participation' },
   { key: 'd9-sponsorship',      short: 'D9 Sponsorship' },
 ];

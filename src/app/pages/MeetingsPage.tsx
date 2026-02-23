@@ -50,6 +50,22 @@ export function MeetingsPage() {
   // Use CMS data only for join links/labels (not dates).
   const upcomingMeetings = data?.upcomingMeetings || [];
   const meetingRecords = data?.meetingRecords || [];
+  const effectiveMeetingRecords = useMemo(() => {
+    const januaryMinutesEntry = {
+      id: "record-2026-01-24-gb",
+      date: "January 24, 2026",
+      title: "General Body Meeting Minutes (January 2026)",
+      agendaFile: "",
+      minutesFile: "/docs/January_Minutes_2026.pdf",
+      status: "Published",
+    };
+    const hasJanuaryMinutes = meetingRecords.some((record) => {
+      const title = String(record.title || "").toLowerCase();
+      const minutesFile = String(record.minutesFile || "");
+      return title.includes("january") || minutesFile.includes("January_Minutes_2026.pdf");
+    });
+    return hasJanuaryMinutes ? meetingRecords : [januaryMinutesEntry, ...meetingRecords];
+  }, [meetingRecords]);
   const delegateReports = data?.delegateReports || [];
   const tab = new URLSearchParams(location.search || "").get("tab") || "";
   const initialTab = tab === "records" ? "records" : tab === "reports" ? "reports" : "upcoming";
@@ -393,7 +409,7 @@ export function MeetingsPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {meetingRecords.map((record, index) => (
+                        {effectiveMeetingRecords.map((record, index) => (
                           <motion.tr
                             key={record.id}
                             initial={{ x: -15, opacity: 0 }}
@@ -464,7 +480,7 @@ export function MeetingsPage() {
 
                   {/* Mobile Cards */}
                   <div className="md:hidden space-y-3">
-                    {meetingRecords.map((record, index) => (
+                    {effectiveMeetingRecords.map((record, index) => (
                       <motion.div
                         key={record.id}
                         initial={{ x: -15, opacity: 0 }}

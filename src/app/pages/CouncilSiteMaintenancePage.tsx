@@ -972,6 +972,59 @@ export function CouncilSiteMaintenancePage() {
               <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-base">
+                    <Eye className="size-4 text-primary" />
+                    Member Portal Section Visibility
+                  </CardTitle>
+                  <CardDescription>
+                    Control which major sections are visible to council members in the main portal navigation.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {commandVisibilityLoading ? (
+                    <div className="flex items-center gap-2 text-sm text-slate-600">
+                      <Loader2 className="size-4 animate-spin" />
+                      Loading member portal visibility...
+                    </div>
+                  ) : null}
+                  {commandVisibilityConfig ? (
+                    <div className="space-y-2">
+                      {[
+                        { key: "showChapterInfo", label: "Chapter Information" },
+                        { key: "showMeetingsDelegates", label: "Meetings & Delegates" },
+                        { key: "showProgramsEvents", label: "Programs & Events" },
+                        { key: "showResources", label: "Forms & Resources" },
+                        { key: "showForms", label: "Legacy Forms route (compatibility)" },
+                        { key: "showForum", label: "Forum" },
+                        { key: "showChat", label: "Chat" },
+                        { key: "showSignatureEventComparison", label: "Signature Event Comparison" },
+                      ].map((item) => (
+                        <div key={item.key} className="flex items-center justify-between gap-3 rounded-lg border border-black/10 bg-white/5 px-3 py-2">
+                          <span className="text-xs leading-tight text-slate-700">{item.label}</span>
+                          <Switch
+                            checked={Boolean(commandVisibilityConfig[item.key as keyof SiteConfig] ?? true)}
+                            onCheckedChange={(checked) => setCommandVisibility(item.key as keyof SiteConfig, Boolean(checked))}
+                            aria-label={item.label}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  <Button
+                    type="button"
+                    onClick={saveCommandVisibility}
+                    disabled={commandVisibilityLoading || commandVisibilitySaving || !commandVisibilityConfig}
+                    className="w-full gap-2"
+                  >
+                    {commandVisibilitySaving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+                    {commandVisibilitySaving ? "Saving..." : "Save Member Portal Visibility"}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
                     <BarChart3 className="size-4 text-primary" />
                     Top Pages (7d)
                   </CardTitle>

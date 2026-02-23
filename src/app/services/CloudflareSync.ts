@@ -47,12 +47,16 @@ export interface CFState {
   floorVotes: CFFloorVote[];
   floorVoteSelections: Record<string, Record<string, CFVoteSelection>>;
   committeeSignups: Record<string, CFCommitteeSignup[]>;
+  votingOpen: boolean;
+  presenterSlide: number;
 }
 
 // ─── API calls ───────────────────────────────────────────────────────────────
 
 export const CF = {
   getState:        (u: string)                          => call(u, '/api/state') as Promise<CFState>,
+  setVotingOpen:   (u: string, open: boolean)           => call(u, '/api/voting', 'POST', { open }),
+  setPresenterSlide: (u: string, slide: number)         => call(u, '/api/presenter/slide', 'POST', { slide }),
   castVote:        (u: string, key: string, opt: string, voterId: string, voterLabel: string) => call(u, '/api/vote', 'POST', { key, option: opt, voterId, voterLabel }),
   resetVote:       (u: string, key: string)              => call(u, '/api/vote/reset', 'POST', { key }),
   raiseHand:       (u: string, id: string, name: string, time: string) => call(u, '/api/hand/raise', 'POST', { id, name, time }),
@@ -87,7 +91,7 @@ const CORS = {
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-const empty = () => ({ votes: {}, voteSelections: {}, hands: [], motions: [], floorVotes: [], floorVoteSelections: {}, committeeSignups: {} });
+const empty = () => ({ votes: {}, voteSelections: {}, hands: [], motions: [], floorVotes: [], floorVoteSelections: {}, committeeSignups: {}, votingOpen: false, presenterSlide: 0 });
 
 const ok  = (d, s = 200) => new Response(JSON.stringify(d), { status: s, headers: { ...CORS, 'Content-Type': 'application/json' } });
 const err = (m, s = 400) => ok({ error: m }, s);
@@ -141,6 +145,22 @@ export default {
 
       const s = await env.MEETING_KV.get('state', 'json') ?? empty();
       const save = () => env.MEETING_KV.put('state', JSON.stringify(s));
+
+      if (typeof s.votingOpen !== 'boolean') s.votingOpen = false;
+      if (!Number.isFinite(Number(s.presenterSlide))) s.presenterSlide = 0;
+
+      if (p === '/api/voting' && req.method === 'POST') {
+        s.votingOpen = Boolean(b.open);
+        await save();
+        return ok({ ok: true, votingOpen: s.votingOpen });
+      }
+      if (p === '/api/presenter/slide' && req.method === 'POST') {
+        const slide = Number(b.slide);
+        if (!Number.isFinite(slide) || slide < 0) return err('Invalid slide index', 400);
+        s.presenterSlide = Math.floor(slide);
+        await save();
+        return ok({ ok: true, presenterSlide: s.presenterSlide });
+      }
 
       if (p === '/api/vote'             && req.method === 'POST') {
         if (!b.key || !['yay', 'nay'].includes(b.option)) return err('Invalid vote payload', 400);

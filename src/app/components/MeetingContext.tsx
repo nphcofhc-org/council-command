@@ -13,19 +13,22 @@ export interface CommitteeSignup { id: string; committeeId: string; memberId: st
 
 export const VOTE_LABELS: Record<string, { label: string; desc: string }> = {
   'agenda-adoption':      { label: 'Adoption of the Agenda',  desc: 'Motion to approve the order of business' },
+  'minutes-adoption':     { label: 'Adoption of the Minutes', desc: 'Motion to approve the prior general body meeting minutes' },
   'committee-slate':      { label: 'Committee Participation',   desc: 'Acknowledge committee sign-up slate' },
   'd9-sponsorship':       { label: '$500 D9 Sponsorship',      desc: 'Approve funding for Trenton delegation' },
 };
 
 export const SLIDE_VOTES: Record<number, string[]> = {
   1: ['agenda-adoption'],
-  4: ['committee-slate', 'd9-sponsorship'],
+  4: ['minutes-adoption'],
+  8: ['committee-slate', 'd9-sponsorship'],
 };
 
 // ─── Context type ────────────────────────────────────────────────────────────
 
 interface Ctx {
-  canControl: boolean;
+  canControl: boolean; // participant-level permissions (kept for existing UI compatibility)
+  canModerate: boolean;
   voterId: string;
   memberName:  string;
   setMemberName: (n: string) => void;
@@ -64,12 +67,17 @@ interface Ctx {
   myCommitteeId: string | null;
   joinCommittee: (committeeId: string, memberName?: string) => void;
   lastCommitteeJoin: CommitteeSignup | null;
+  votingOpen: boolean;
+  setVotingOpen: (open: boolean) => void;
+  presenterSlide: number;
+  setPresenterSlide: (slide: number) => void;
   // Reset all
   resetMeeting: () => void;
 }
 
 const MeetingContext = createContext<Ctx>({
   canControl: true,
+  canModerate: true,
   voterId: '',
   memberName: '', setMemberName: () => {},
   workerUrl: '', setWorkerUrl: () => {}, disconnectWorker: () => {},
@@ -79,6 +87,8 @@ const MeetingContext = createContext<Ctx>({
   motions: [], submitMotion: () => {}, secondMotion: () => {},
   floorVotes: [], floorVoteSelections: {}, myFloorVotes: {}, createFloorVote: () => {}, castFloorVote: () => {}, closeFloorVote: () => {},
   committeeSignups: {}, myCommitteeId: null, joinCommittee: () => {}, lastCommitteeJoin: null,
+  votingOpen: false, setVotingOpen: () => {},
+  presenterSlide: 0, setPresenterSlide: () => {},
   resetMeeting: () => {},
 });
 
@@ -128,10 +138,17 @@ type MeetingProviderProps = {
   children: React.ReactNode;
   voterEmail?: string | null;
   defaultMemberName?: string;
-  canControl?: boolean;
+  canParticipate?: boolean;
+  canModerate?: boolean;
 };
 
-export function MeetingProvider({ children, voterEmail, defaultMemberName, canControl = true }: MeetingProviderProps) {
+export function MeetingProvider({
+  children,
+  voterEmail,
+  defaultMemberName,
+  canParticipate = true,
+  canModerate = true,
+}: MeetingProviderProps) {
   const voterId = useMemo(() => normalizeVoterId(voterEmail) || resolveLocalVoterId(), [voterEmail]);
   const derivedDefaultName = defaultMemberName?.trim() || fallbackNameFromEmail(voterEmail);
 
@@ -154,6 +171,8 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
   const [committeeSignups, setCommitteeSignups] = useState<Record<string, CommitteeSignup[]>>({});
   const [myCommitteeId, setMyCommitteeId] = useState<string | null>(null);
   const [lastCommitteeJoin, setLastCommitteeJoin] = useState<CommitteeSignup | null>(null);
+  const [votingOpen, setVotingOpenState] = useState(false);
+  const [presenterSlide, setPresenterSlideState] = useState(0);
 
   const myHandIdRef = useRef(myHandId);
   myHandIdRef.current = myHandId;
@@ -210,6 +229,8 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
         ]),
       ),
     );
+    setVotingOpen(Boolean((s as any).votingOpen));
+    setPresenterSlideState(Number.isFinite(Number((s as any).presenterSlide)) ? Math.max(0, Math.floor(Number((s as any).presenterSlide))) : 0);
     setMyCommitteeId(() => {
       for (const [committeeId, entries] of Object.entries(incomingCommitteeSignups)) {
         if (Array.isArray(entries) && entries.some((entry) => String(entry?.memberId || "") === voterId)) {
@@ -275,7 +296,8 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
   // ── Votes ──────────────────────────────────────────────────────────────
 
   const castVote = (key: string, opt: VoteChoice) => {
-    if (!canControl) return;
+    if (!canParticipate) return;
+    if (!votingOpen) return;
     const voterLabel = (memberName.trim() || derivedDefaultName || voterId).slice(0, 120);
     setVoteSelections((prev) => {
       const bucket = { ...(prev[key] || {}) };
@@ -294,7 +316,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
   };
 
   const resetVote = (key: string) => {
-    if (!canControl) return;
+    if (!canModerate) return;
     setVotes(p => ({ ...p, [key]: { yay: 0, nay: 0 } }));
     setVoteSelections((prev) => {
       const next = { ...prev };
@@ -312,7 +334,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
   // ── Hands ──────────────────────────────────────────────────────────────
 
   const raiseHand = (name: string) => {
-    if (!canControl) return;
+    if (!canParticipate) return;
     if (myHandIdRef.current) return;
     const id = Date.now().toString();
     const time = ts();
@@ -322,7 +344,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
   };
 
   const lowerMyHand = () => {
-    if (!canControl) return;
+    if (!canParticipate) return;
     const id = myHandIdRef.current;
     if (!id) return;
     setHands(p => p.filter(h => h.id !== id));
@@ -331,7 +353,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
   };
 
   const lowerAllHands = () => {
-    if (!canControl) return;
+    if (!canModerate) return;
     setHands([]);
     setMyHandId(null);
     withCF(() => CF.lowerAllHands(workerUrl));
@@ -340,7 +362,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
   // ── Motions ────────────────────────────────────────────────────────────
 
   const submitMotion = (author: string, text: string) => {
-    if (!canControl) return;
+    if (!canParticipate) return;
     if (!text.trim()) return;
     const id = Date.now().toString();
     const time = ts();
@@ -350,7 +372,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
   };
 
   const secondMotion = (id: string) => {
-    if (!canControl) return;
+    if (!canParticipate) return;
     setMotions(p => p.map(m => m.id === id ? { ...m, seconded: true } : m));
     withCF(() => CF.secondMotion(workerUrl, id));
   };
@@ -358,7 +380,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
   // ── Floor votes ────────────────────────────────────────────────────────
 
   const createFloorVote = (question: string) => {
-    if (!canControl) return;
+    if (!canModerate) return;
     if (!question.trim()) return;
     const id = Date.now().toString();
     const createdAt = ts();
@@ -369,7 +391,8 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
   };
 
   const castFloorVote = (id: string, opt: VoteChoice) => {
-    if (!canControl) return;
+    if (!canParticipate) return;
+    if (!votingOpen) return;
     const voterLabel = (memberName.trim() || derivedDefaultName || voterId).slice(0, 120);
     setFloorVoteSelections((prev) => {
       const bucket = { ...(prev[id] || {}) };
@@ -388,7 +411,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
   };
 
   const closeFloorVote = (id: string) => {
-    if (!canControl) return;
+    if (!canModerate) return;
     setFloorVotes(p => p.map(v => v.id === id ? { ...v, closed: true } : v));
     withCF(() => CF.closeFloorVote(workerUrl, id));
   };
@@ -396,7 +419,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
   // ── Committee signups ──────────────────────────────────────────────────
 
   const joinCommittee = (committeeId: string, preferredName?: string) => {
-    if (!canControl) return;
+    if (!canParticipate) return;
     const normalizedCommittee = String(committeeId || "").trim();
     if (!normalizedCommittee) return;
     const memberId = voterId;
@@ -422,6 +445,20 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
     withCF(() => CF.joinCommittee(workerUrl, normalizedCommittee, memberId, resolvedName));
   };
 
+  const setVotingOpen = (open: boolean) => {
+    if (!canModerate) return;
+    const normalized = Boolean(open);
+    setVotingOpenState(normalized);
+    withCF(() => CF.setVotingOpen(workerUrl, normalized));
+  };
+
+  const setPresenterSlide = (slide: number) => {
+    if (!canModerate) return;
+    const normalized = Math.max(0, Math.floor(Number(slide) || 0));
+    setPresenterSlideState(normalized);
+    withCF(() => CF.setPresenterSlide(workerUrl, normalized));
+  };
+
   useEffect(() => {
     let latest: CommitteeSignup | null = null;
     for (const entries of Object.values(committeeSignups)) {
@@ -443,7 +480,7 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
   // ── Reset all ──────────────────────────────────────────────────────────
 
   const resetMeeting = () => {
-    if (!canControl) return;
+    if (!canModerate) return;
     setVotes({});
     setVoteSelections({});
     setMyVotes({});
@@ -456,12 +493,15 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
     setCommitteeSignups({});
     setMyCommitteeId(null);
     setLastCommitteeJoin(null);
+    setVotingOpenState(false);
+    setPresenterSlideState(0);
     withCF(() => CF.resetAll(workerUrl));
   };
 
   return (
     <MeetingContext.Provider value={{
-      canControl,
+      canControl: canParticipate,
+      canModerate,
       voterId,
       memberName, setMemberName,
       workerUrl, setWorkerUrl, disconnectWorker, connected, syncing, syncError, lastSynced,
@@ -470,6 +510,8 @@ export function MeetingProvider({ children, voterEmail, defaultMemberName, canCo
       motions, submitMotion, secondMotion,
       floorVotes, floorVoteSelections, myFloorVotes, createFloorVote, castFloorVote, closeFloorVote,
       committeeSignups, myCommitteeId, joinCommittee, lastCommitteeJoin,
+      votingOpen, setVotingOpen,
+      presenterSlide, setPresenterSlide,
       resetMeeting,
     }}>
       {children}

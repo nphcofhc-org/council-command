@@ -11,7 +11,7 @@ export function MeetingDeckPage() {
   const { session } = useCouncilSession();
   const { data: siteConfig } = useSiteConfig();
   const meetingDeckLive = Boolean(siteConfig?.meetingDeckLive);
-  const memberDeckCanControl = session.authenticated && meetingDeckLive;
+  const memberCanParticipate = session.authenticated && meetingDeckLive;
   const defaultMemberName = (session.email || "")
     .split("@")[0]
     .split(/[._-]+/)
@@ -52,7 +52,7 @@ export function MeetingDeckPage() {
                   }`}
                 >
                   {meetingDeckLive ? <Radio className="size-3.5" /> : <Lock className="size-3.5" />}
-                  {meetingDeckLive ? "Live Mode: Full Deck + Participation Enabled" : "Preview Mode: Cover + Agenda Only"}
+                  {meetingDeckLive ? "Live Mode: Members follow presenter and can participate when voting is opened" : "Preview Mode: Cover + Agenda Only"}
                 </div>
               </div>
             </CardHeader>
@@ -68,7 +68,9 @@ export function MeetingDeckPage() {
           <MeetingDeck
             voterEmail={session.email}
             defaultMemberName={defaultMemberName}
-            canControl={memberDeckCanControl}
+            canParticipate={memberCanParticipate}
+            canModerate={false}
+            canNavigate={false}
             meetingDateLabel="February 23, 2026"
             showJoinCelebration={session.isCouncilAdmin || session.isPresident}
             maxVisibleSlides={meetingDeckLive ? undefined : 2}
