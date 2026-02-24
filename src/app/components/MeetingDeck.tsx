@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ChevronLeft, ChevronRight, LayoutGrid, X,
-  Maximize2, Minimize2, Users, Hand, MessageSquare, Gavel, Pause, Play, RotateCcw
+  Maximize2, Minimize2, Users, Hand, MessageSquare, Gavel, Pause, Play, RotateCcw, FileText
 } from 'lucide-react';
 import { MeetingProvider, useMeeting, SLIDE_VOTES } from './MeetingContext';
 import { MeetingSidebar } from './MeetingSidebar';
@@ -103,6 +103,10 @@ function DeckInner({
     if (!Number.isFinite(maxVisibleSlides) || !maxVisibleSlides || maxVisibleSlides < 1) return slides;
     return slides.slice(0, Math.min(slides.length, Math.floor(maxVisibleSlides)));
   }, [slides, maxVisibleSlides]);
+  const agendaSlideIndex = useMemo(
+    () => visibleSlides.findIndex((s) => s.label === 'Order of Business'),
+    [visibleSlides],
+  );
 
   useEffect(() => {
     setCurrent((prev) => Math.min(prev, Math.max(0, visibleSlides.length - 1)));
@@ -154,6 +158,10 @@ function DeckInner({
 
   const prev = useCallback(() => { if (current > 0) goTo(current - 1); }, [current, goTo]);
   const next = useCallback(() => { if (current < visibleSlides.length - 1) goTo(current + 1); }, [current, goTo, visibleSlides.length]);
+  const openAgenda = useCallback(() => {
+    if (agendaSlideIndex < 0 || !canNavigate) return;
+    goTo(agendaSlideIndex);
+  }, [agendaSlideIndex, canNavigate, goTo]);
 
   useEffect(() => {
     if (!canNavigate) return;
@@ -242,8 +250,17 @@ function DeckInner({
             {isVoteSlide && (
               <span style={{ background: '#C62828', color: '#fff', fontSize: '0.52rem', fontWeight: 800, padding: '2px 7px', borderRadius: 99, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Vote</span>
             )}
-          </div>
-          <div style={{ display: 'flex', gap: 6 }}>
+            </div>
+            <div style={{ display: 'flex', gap: 6 }}>
+            <button
+              disabled={!canNavigate || agendaSlideIndex < 0}
+              onClick={openAgenda}
+              title="Go to Order of Business"
+              style={{ background: current === agendaSlideIndex ? 'rgba(0,0,0,0.06)' : 'transparent', border: `1px solid ${current === agendaSlideIndex ? '#CCC' : 'transparent'}`, borderRadius: 7, padding: '6px 8px', cursor: (!canNavigate || agendaSlideIndex < 0) ? 'not-allowed' : 'pointer', opacity: (!canNavigate || agendaSlideIndex < 0) ? 0.45 : 1, color: current === agendaSlideIndex ? '#222' : '#888', display: 'flex', alignItems: 'center', gap: 4 }}
+            >
+              <FileText size={13} />
+              <span style={{ fontSize: '0.7rem', fontWeight: 700 }}>Agenda</span>
+            </button>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, border: '1px solid #D6D6D6', borderRadius: 7, padding: '2px 6px', background: '#FFFFFF' }}>
               <span style={{ color: '#333', fontSize: '0.7rem', fontWeight: 800, letterSpacing: '0.06em' }}>
                 {timerLabel}
@@ -420,6 +437,15 @@ function DeckInner({
               {isVoteSlide && <span style={{ background: isCoverSlide ? '#C62828' : '#C62828', color: '#fff', fontSize: '0.54rem', fontWeight: 800, padding: '2px 8px', borderRadius: 99, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Vote</span>}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <button
+                disabled={!canNavigate || agendaSlideIndex < 0}
+                onClick={openAgenda}
+                title="Go to Order of Business"
+                style={{ background: current === agendaSlideIndex ? (isCoverSlide ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)') : 'transparent', border: `1px solid ${current === agendaSlideIndex ? (isCoverSlide ? '#3A3A3A' : '#C0C0C0') : 'transparent'}`, cursor: (!canNavigate || agendaSlideIndex < 0) ? 'not-allowed' : 'pointer', opacity: (!canNavigate || agendaSlideIndex < 0) ? 0.45 : 1, padding: '4px 8px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 5, color: current === agendaSlideIndex ? (isCoverSlide ? '#E0E0E0' : '#333') : (isCoverSlide ? '#555' : '#999'), transition: 'all 0.18s' }}
+              >
+                <FileText size={12} />
+                <span style={{ fontSize: '0.68rem', fontWeight: 600 }}>Agenda</span>
+              </button>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: isCoverSlide ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)', border: `1px solid ${isCoverSlide ? '#303030' : '#D8D8D8'}`, borderRadius: 6, padding: '2px 6px' }}>
                 <span style={{ color: isCoverSlide ? '#D0D0D0' : '#333', fontSize: '0.66rem', fontWeight: 800, letterSpacing: '0.06em' }}>
                   {timerLabel}
