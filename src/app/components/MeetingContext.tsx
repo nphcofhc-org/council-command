@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { CF, loadWorkerUrl, saveWorkerUrl, clearWorkerUrl } from '../services/CloudflareSync';
-import type { CFState, CFVoteSelection } from '../services/CloudflareSync';
+import type { CFState, CFVoteSelection, CFPresenceMember } from '../services/CloudflareSync';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -10,6 +10,7 @@ export interface HandRaise  { id: string; name: string; time: string; }
 export interface Motion     { id: string; author: string; text: string; time: string; seconded: boolean; }
 export interface FloorVote  { id: string; question: string; yay: number; nay: number; closed: boolean; createdAt: string; }
 export interface CommitteeSignup { id: string; committeeId: string; memberId: string; memberName: string; joinedAt: string; }
+export interface PresentMember { voterId: string; memberName: string; email: string; role: 'member' | 'moderator'; lastSeenAt: string; }
 
 export const VOTE_LABELS: Record<string, { label: string; desc: string }> = {
   'agenda-adoption':      { label: 'Adoption of the Agenda',  desc: 'Motion to approve the order of business' },
@@ -67,6 +68,7 @@ interface Ctx {
   myCommitteeId: string | null;
   joinCommittee: (committeeId: string, memberName?: string) => void;
   lastCommitteeJoin: CommitteeSignup | null;
+  presentMembers: PresentMember[];
   votingOpen: boolean;
   setVotingOpen: (open: boolean) => void;
   presenterSlide: number;
@@ -87,6 +89,7 @@ const MeetingContext = createContext<Ctx>({
   motions: [], submitMotion: () => {}, secondMotion: () => {},
   floorVotes: [], floorVoteSelections: {}, myFloorVotes: {}, createFloorVote: () => {}, castFloorVote: () => {}, closeFloorVote: () => {},
   committeeSignups: {}, myCommitteeId: null, joinCommittee: () => {}, lastCommitteeJoin: null,
+  presentMembers: [],
   votingOpen: false, setVotingOpen: () => {},
   presenterSlide: 0, setPresenterSlide: () => {},
   resetMeeting: () => {},
@@ -171,11 +174,13 @@ export function MeetingProvider({
   const [committeeSignups, setCommitteeSignups] = useState<Record<string, CommitteeSignup[]>>({});
   const [myCommitteeId, setMyCommitteeId] = useState<string | null>(null);
   const [lastCommitteeJoin, setLastCommitteeJoin] = useState<CommitteeSignup | null>(null);
+  const [presentMembers, setPresentMembers] = useState<PresentMember[]>([]);
   const [votingOpen, setVotingOpenState] = useState(false);
   const [presenterSlide, setPresenterSlideState] = useState(0);
 
   const myHandIdRef = useRef(myHandId);
   myHandIdRef.current = myHandId;
+  const lastHeartbeatAtRef = useRef(0);
 
   const ts = () => new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
@@ -194,6 +199,7 @@ export function MeetingProvider({
       : (s.votes ?? {});
     const incomingFloorSelections = s.floorVoteSelections ?? {};
     const incomingCommitteeSignups = s.committeeSignups ?? {};
+    const incomingPresence = Object.values((s as any).presence || {}) as CFPresenceMember[];
 
     setVotes(incomingVotes);
     setVoteSelections(incomingVoteSelections);
@@ -228,6 +234,24 @@ export function MeetingProvider({
           })) : [],
         ]),
       ),
+    );
+    setPresentMembers(
+      incomingPresence
+        .map((row) => ({
+          voterId: String(row?.voterId || ''),
+          memberName: String(row?.memberName || 'Member'),
+          email: String(row?.email || ''),
+          role: row?.role === 'moderator' ? 'moderator' : 'member',
+          lastSeenAt: String(row?.lastSeenAt || ''),
+        }))
+        .filter((row) => row.voterId)
+        .sort((a, b) => {
+          if (a.role !== b.role) return a.role === 'moderator' ? -1 : 1;
+          const aTs = Date.parse(a.lastSeenAt || '');
+          const bTs = Date.parse(b.lastSeenAt || '');
+          if (Number.isFinite(aTs) && Number.isFinite(bTs) && aTs !== bTs) return bTs - aTs;
+          return a.memberName.localeCompare(b.memberName);
+        }),
     );
     setVotingOpen(Boolean((s as any).votingOpen));
     setPresenterSlideState(Number.isFinite(Number((s as any).presenterSlide)) ? Math.max(0, Math.floor(Number((s as any).presenterSlide))) : 0);
@@ -267,6 +291,26 @@ export function MeetingProvider({
     const id = setInterval(() => poll(workerUrl), 3000);
     return () => clearInterval(id);
   }, [workerUrl, poll]);
+
+  useEffect(() => {
+    if (!workerUrl) return;
+    const sendHeartbeat = () => {
+      const now = Date.now();
+      if ((now - lastHeartbeatAtRef.current) < 9000) return;
+      lastHeartbeatAtRef.current = now;
+      const resolvedName = (memberName.trim() || derivedDefaultName || voterId).slice(0, 120);
+      CF.heartbeatPresence(workerUrl, {
+        voterId,
+        memberName: resolvedName || 'Member',
+        email: String(voterEmail || '').trim(),
+        role: canModerate ? 'moderator' : 'member',
+      }).catch((e: any) => setSyncError(e?.message || 'Presence heartbeat failed'));
+    };
+
+    sendHeartbeat();
+    const id = window.setInterval(sendHeartbeat, 10000);
+    return () => window.clearInterval(id);
+  }, [workerUrl, memberName, derivedDefaultName, voterId, voterEmail, canModerate]);
 
   // ── Context setters ────────────────────────────────────────────────────
 
@@ -510,6 +554,7 @@ export function MeetingProvider({
       motions, submitMotion, secondMotion,
       floorVotes, floorVoteSelections, myFloorVotes, createFloorVote, castFloorVote, closeFloorVote,
       committeeSignups, myCommitteeId, joinCommittee, lastCommitteeJoin,
+      presentMembers,
       votingOpen, setVotingOpen,
       presenterSlide, setPresenterSlide,
       resetMeeting,

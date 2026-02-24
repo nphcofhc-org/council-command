@@ -239,6 +239,7 @@ export function MeetingSidebar({
     motions, submitMotion, secondMotion,
     floorVotes, floorVoteSelections, createFloorVote, castFloorVote, closeFloorVote,
     votingOpen, setVotingOpen,
+    presentMembers,
   } = useMeeting();
 
   const [tab,              setTab]              = useState<Section>(externalTab ?? 'hand');
@@ -444,6 +445,39 @@ export function MeetingSidebar({
           onFocus={e => (e.target.style.borderColor = '#505050')}
           onBlur={e => (e.target.style.borderColor = '#2A2A2A')}
         />
+        <div style={{ marginTop: 9, border: '1px solid #1E1E1E', borderRadius: 8, background: '#111111', padding: '8px 9px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: presentMembers.length > 0 ? 7 : 0 }}>
+            <span style={{ color: '#8A8A8A', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+              Logged In Members
+            </span>
+            <span style={{ color: '#C8C8C8', fontSize: '0.62rem', fontWeight: 700 }}>
+              {presentMembers.length}
+            </span>
+          </div>
+          {presentMembers.length === 0 ? (
+            <div style={{ color: '#4A4A4A', fontSize: '0.66rem', fontStyle: 'italic' }}>
+              No connected members detected yet.
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5, maxHeight: 120, overflowY: 'auto', paddingRight: 2 }}>
+              {presentMembers.map((member) => (
+                <div key={member.voterId} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
+                  <div style={{ minWidth: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: member.role === 'moderator' ? '#FFFFFF' : '#7A7A7A', flexShrink: 0 }} />
+                    <span style={{ color: '#D0D0D0', fontSize: '0.68rem', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {member.memberName || member.email || 'Member'}
+                    </span>
+                  </div>
+                  {member.role === 'moderator' ? (
+                    <span style={{ color: '#A0A0A0', fontSize: '0.54rem', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', border: '1px solid #2E2E2E', borderRadius: 999, padding: '1px 6px' }}>
+                      Host
+                    </span>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ── Tabs ── */}

@@ -38,6 +38,7 @@ export interface CFHand      { id: string; name: string; time: string; }
 export interface CFMotion    { id: string; author: string; text: string; time: string; seconded: boolean; }
 export interface CFFloorVote { id: string; question: string; yay: number; nay: number; closed: boolean; createdAt: string; }
 export interface CFCommitteeSignup { id: string; committeeId: string; memberId: string; memberName: string; joinedAt: string; }
+export interface CFPresenceMember { voterId: string; memberName: string; email: string; role: 'member' | 'moderator'; lastSeenAt: string; }
 
 export interface CFState {
   votes:      Record<string, CFVoteData>;
@@ -49,12 +50,15 @@ export interface CFState {
   committeeSignups: Record<string, CFCommitteeSignup[]>;
   votingOpen: boolean;
   presenterSlide: number;
+  presence: Record<string, CFPresenceMember>;
 }
 
 // ─── API calls ───────────────────────────────────────────────────────────────
 
 export const CF = {
   getState:        (u: string)                          => call(u, '/api/state') as Promise<CFState>,
+  heartbeatPresence: (u: string, payload: { voterId: string; memberName: string; email?: string; role?: 'member' | 'moderator' }) =>
+    call(u, '/api/presence/heartbeat', 'POST', payload),
   setVotingOpen:   (u: string, open: boolean)           => call(u, '/api/voting', 'POST', { open }),
   setPresenterSlide: (u: string, slide: number)         => call(u, '/api/presenter/slide', 'POST', { slide }),
   castVote:        (u: string, key: string, opt: string, voterId: string, voterLabel: string) => call(u, '/api/vote', 'POST', { key, option: opt, voterId, voterLabel }),
@@ -91,7 +95,7 @@ const CORS = {
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-const empty = () => ({ votes: {}, voteSelections: {}, hands: [], motions: [], floorVotes: [], floorVoteSelections: {}, committeeSignups: {}, votingOpen: false, presenterSlide: 0 });
+const empty = () => ({ votes: {}, voteSelections: {}, hands: [], motions: [], floorVotes: [], floorVoteSelections: {}, committeeSignups: {}, votingOpen: false, presenterSlide: 0, presence: {} });
 
 const ok  = (d, s = 200) => new Response(JSON.stringify(d), { status: s, headers: { ...CORS, 'Content-Type': 'application/json' } });
 const err = (m, s = 400) => ok({ error: m }, s);
@@ -132,6 +136,18 @@ const recalcFloorVote = (state, id) => {
   floor.nay = nay;
 };
 
+const PRESENCE_TTL_MS = 45000;
+const prunePresence = (state) => {
+  if (!state.presence || typeof state.presence !== 'object') state.presence = {};
+  const now = Date.now();
+  for (const voterId of Object.keys(state.presence)) {
+    const ts = Date.parse(String(state.presence[voterId]?.lastSeenAt || ''));
+    if (!Number.isFinite(ts) || (now - ts) > PRESENCE_TTL_MS) {
+      delete state.presence[voterId];
+    }
+  }
+};
+
 export default {
   async fetch(req, env) {
     if (req.method === 'OPTIONS') return new Response(null, { headers: CORS });
@@ -140,7 +156,9 @@ export default {
 
     try {
       if (p === '/api/state' && req.method === 'GET') {
-        return ok(await env.MEETING_KV.get('state', 'json') ?? empty());
+        const current = await env.MEETING_KV.get('state', 'json') ?? empty();
+        prunePresence(current);
+        return ok(current);
       }
 
       const s = await env.MEETING_KV.get('state', 'json') ?? empty();
@@ -148,6 +166,25 @@ export default {
 
       if (typeof s.votingOpen !== 'boolean') s.votingOpen = false;
       if (!Number.isFinite(Number(s.presenterSlide))) s.presenterSlide = 0;
+      if (!s.presence || typeof s.presence !== 'object') s.presence = {};
+      prunePresence(s);
+
+      if (p === '/api/presence/heartbeat' && req.method === 'POST') {
+        const voterId = String(b.voterId || '').trim();
+        if (!voterId) return err('voterId is required', 400);
+        const memberName = String(b.memberName || 'Member').trim().slice(0, 120) || 'Member';
+        const email = String(b.email || '').trim().slice(0, 200);
+        const role = b.role === 'moderator' ? 'moderator' : 'member';
+        s.presence[voterId] = {
+          voterId,
+          memberName,
+          email,
+          role,
+          lastSeenAt: new Date().toISOString(),
+        };
+        await save();
+        return ok({ ok: true });
+      }
 
       if (p === '/api/voting' && req.method === 'POST') {
         s.votingOpen = Boolean(b.open);
