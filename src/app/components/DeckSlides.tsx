@@ -359,37 +359,43 @@ export function Slide2Agenda({ isMobile = false, meetingDateLabel = 'February 20
 const pillars = [
   { icon: Lightbulb, name: 'Innovation',   color: '#2563EB', desc: 'AI tools & Council Command to modernize NPHC operations.', items: ['Council Command platform', 'AI-assisted reporting', 'Digital donation tracking'] },
   { icon: Eye,       name: 'Visibility',   color: '#D97706', desc: 'Increasing community presence through strategic engagement.', items: ['Block Party / Cereal Drive', 'Social media strategy', 'MLK Service amplification'] },
-  { icon: Settings,  name: 'Optimization', color: '#059669', desc: 'Leveraging chapter resources to maximize efficiency.', items: ['Chapter resource mapping', 'Member talent utilization', 'Programming cost analysis'] },
+  { icon: Settings,  name: 'Optimization', color: '#059669', desc: 'Our strength is leveraging every chapter’s people, platforms, and partnerships to multiply impact across Hudson County.', items: ['Cross-chapter volunteer & talent coordination', 'Shared vendors, spaces, and in-kind support', 'Resource pooling for larger community impact'] },
   { icon: Link2,     name: 'Alignment',    color: '#7C3AED', desc: 'Transparency and coordination across all D9 organizations.', items: ['D9 Trenton delegation', 'Annual Council reporting', 'Board ratification'] },
 ];
 
 export function Slide3Vision({ isMobile = false }: { isMobile?: boolean }) {
   return (
-    <div style={{ width: '100%', height: '100%', background: BG, display: 'flex', flexDirection: 'column', padding: isMobile ? '16px' : 'clamp(16px,3.5%,38px)', boxSizing: 'border-box', overflow: 'hidden' }}>
+    <div style={{ width: '100%', height: '100%', background: 'linear-gradient(180deg,#FFFFFF 0%,#F7FAFF 52%,#F5F7FB 100%)', display: 'flex', flexDirection: 'column', padding: isMobile ? '16px' : 'clamp(16px,3.5%,38px)', boxSizing: 'border-box', overflow: 'hidden', position: 'relative' }}>
+      <div style={{ position: 'absolute', top: -50, right: -40, width: isMobile ? 150 : 220, height: isMobile ? 150 : 220, borderRadius: '50%', background: 'radial-gradient(circle,rgba(37,99,235,0.16),transparent 70%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: -60, left: -30, width: isMobile ? 180 : 240, height: isMobile ? 180 : 240, borderRadius: '50%', background: 'radial-gradient(circle,rgba(5,150,105,0.14),transparent 72%)', pointerEvents: 'none' }} />
       <div style={{ marginBottom: isMobile ? 12 : 10, flexShrink: 0 }}>
         <Label>Presidential Address</Label>
         <h1 style={{ color: BLACK, margin: '5px 0 0', fontSize: isMobile ? '1.7rem' : 'clamp(1.6rem,3.2vw,2.4rem)', fontWeight: 700 }}>
-          2026 Vision: <span style={{ color: SILVER_M, fontWeight: 300 }}>Elevating the Standard</span>
+          2026 Vision: <span style={{ color: '#0F172A', fontWeight: 300 }}>Elevating the Standard</span>
         </h1>
         <SilverLine />
+        <p style={{ color: '#475569', margin: '2px 0 0', fontSize: isMobile ? '0.8rem' : '0.72rem', fontWeight: 600, letterSpacing: '0.02em' }}>
+          Strength through coordinated chapter resources, shared leadership, and measurable impact.
+        </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: isMobile ? undefined : '1fr 1fr', gap: isMobile ? 8 : 10, flex: 1, overflow: isMobile ? 'auto' : 'hidden' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: isMobile ? undefined : '1fr 1fr', gap: isMobile ? 8 : 10, flex: 1, overflow: isMobile ? 'auto' : 'hidden', position: 'relative', zIndex: 1 }}>
         {pillars.map(({ icon: Icon, name, color, desc, items }, i) => (
-          <div key={name} style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 10, padding: isMobile ? '12px' : 'clamp(12px,2.2%,20px)', display: 'flex', flexDirection: 'column', gap: isMobile ? 6 : 7, overflow: 'hidden', position: 'relative' }}>
-            <div style={{ position: 'absolute', top: 0, left: 0, width: 3, height: '60%', background: `linear-gradient(180deg,${color}CC,transparent)`, borderRadius: '10px 0 0 0' }} />
+          <div key={name} style={{ background: `linear-gradient(180deg,#FFFFFF 0%,${color}08 100%)`, border: `1px solid ${color}2A`, borderRadius: 12, padding: isMobile ? '12px' : 'clamp(12px,2.2%,20px)', display: 'flex', flexDirection: 'column', gap: isMobile ? 6 : 7, overflow: 'hidden', position: 'relative', boxShadow: `0 8px 20px ${color}10` }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg,${color},${color}55,transparent)` }} />
+            <div style={{ position: 'absolute', top: -18, right: -18, width: 72, height: 72, borderRadius: '50%', background: `radial-gradient(circle,${color}18,transparent 70%)`, pointerEvents: 'none' }} />
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 6 }}>
-              <div style={{ width: isMobile ? 28 : 30, height: isMobile ? 28 : 30, borderRadius: 7, background: `${color}14`, border: `1px solid ${color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div style={{ width: isMobile ? 28 : 30, height: isMobile ? 28 : 30, borderRadius: 8, background: `${color}1D`, border: `1px solid ${color}42`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 0 0 3px ${color}10` }}>
                 <Icon size={isMobile ? 13 : 14} color={color} />
               </div>
-              <span style={{ color: BLACK, fontSize: isMobile ? '1.1rem' : 'clamp(0.95rem,1.7vw,1.2rem)', fontWeight: 700 }}>{name}</span>
-              {!isMobile && <span style={{ color: '#909090', fontSize: '0.68rem', marginLeft: 'auto' }}>0{i + 1}</span>}
+              <span style={{ color: '#0F172A', fontSize: isMobile ? '1.1rem' : 'clamp(0.95rem,1.7vw,1.2rem)', fontWeight: 800 }}>{name}</span>
+              {!isMobile && <span style={{ color: color, fontSize: '0.68rem', marginLeft: 'auto', fontWeight: 700 }}>0{i + 1}</span>}
             </div>
-            <p style={{ color: '#444', fontSize: isMobile ? '0.92rem' : 'clamp(0.72rem,1.25vw,0.95rem)', margin: '0 0 0 6px', lineHeight: 1.45 }}>{desc}</p>
+            <p style={{ color: '#334155', fontSize: isMobile ? '0.92rem' : 'clamp(0.72rem,1.25vw,0.95rem)', margin: '0 0 0 6px', lineHeight: 1.45, fontWeight: 500 }}>{desc}</p>
             {(!isMobile || items.length <= 2) && (
               <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: isMobile ? 3 : 4, paddingLeft: 6 }}>
                 {(isMobile ? items.slice(0, 2) : items).map(item => (
-                  <li key={item} style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#333', fontSize: isMobile ? '0.88rem' : 'clamp(0.68rem,1.15vw,0.88rem)' }}>
+                  <li key={item} style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#1F2937', fontSize: isMobile ? '0.88rem' : 'clamp(0.68rem,1.15vw,0.88rem)', fontWeight: 600 }}>
                     <ChevronRight size={9} color={color} style={{ flexShrink: 0 }} /> {item}
                   </li>
                 ))}
