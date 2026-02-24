@@ -618,10 +618,11 @@ export function MainLayout() {
           session={session}
           editorMode={editorMode}
           onToggleEditorMode={toggleEditorMode}
+          helpHref={session.isPresident ? helpMailtoHref : undefined}
         />
       ) : null}
 
-      {!isFramed ? (
+      {!isFramed && !session.isPresident ? (
         <div className="fixed bottom-3 right-3 z-[73] sm:bottom-4 sm:right-4">
           <a
             href={helpMailtoHref}

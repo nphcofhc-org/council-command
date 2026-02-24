@@ -1,12 +1,13 @@
 import { useMemo } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { PencilLine, Shield, SquarePen, ToggleLeft, ToggleRight } from "lucide-react";
+import { MessageCircle, PencilLine, Shield, SquarePen, ToggleLeft, ToggleRight } from "lucide-react";
 import type { CouncilSession } from "../data/admin-api";
 
 type Props = {
   session: CouncilSession;
   editorMode: boolean;
   onToggleEditorMode: () => void;
+  helpHref?: string;
 };
 
 type EditTarget = {
@@ -26,7 +27,7 @@ const EDIT_TARGETS: EditTarget[] = [
   { match: (p) => p === "/forum" || p.startsWith("/forum/"), to: "/council-admin/submissions", label: "Review Activity" },
 ];
 
-export function PageEditShortcut({ session, editorMode, onToggleEditorMode }: Props) {
+export function PageEditShortcut({ session, editorMode, onToggleEditorMode, helpHref }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -66,15 +67,27 @@ export function PageEditShortcut({ session, editorMode, onToggleEditorMode }: Pr
             </>
           ) : null}
           {session.isPresident ? (
-            <button
-              type="button"
-              onClick={() => navigate("/council-admin/site-maintenance")}
-              className="nphc-holo-btn inline-flex w-full items-center justify-center gap-2 rounded-xl border border-black/10 bg-white/60 px-2.5 py-2 text-[11px] font-semibold text-slate-900 hover:border-primary/50 hover:text-primary transition sm:w-auto sm:justify-start sm:px-3 sm:text-xs"
-              title="Open The President's Desk"
-            >
-              <Shield className="size-4" />
-              President&apos;s Desk
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={() => navigate("/council-admin/site-maintenance")}
+                className="nphc-holo-btn inline-flex w-full items-center justify-center gap-2 rounded-xl border border-black/10 bg-white/60 px-2.5 py-2 text-[11px] font-semibold text-slate-900 hover:border-primary/50 hover:text-primary transition sm:w-auto sm:justify-start sm:px-3 sm:text-xs"
+                title="Open The President's Desk"
+              >
+                <Shield className="size-4" />
+                President&apos;s Desk
+              </button>
+              {helpHref ? (
+                <a
+                  href={helpHref}
+                  className="nphc-holo-btn inline-flex w-full items-center justify-center gap-2 rounded-xl border border-black/10 bg-white/60 px-2.5 py-2 text-[11px] font-semibold text-slate-900 hover:border-primary/50 hover:text-primary transition sm:w-auto sm:justify-start sm:px-3 sm:text-xs"
+                  aria-label="Contact portal help"
+                >
+                  <MessageCircle className="size-4" />
+                  Help
+                </a>
+              ) : null}
+            </>
           ) : null}
         </div>
       </div>
