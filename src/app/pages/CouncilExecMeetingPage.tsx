@@ -30,7 +30,7 @@ export function CouncilExecMeetingPage() {
           initial={{ y: -10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.25 }}
-          className="absolute left-2 top-2 z-50 flex max-w-[calc(100vw-1rem)] flex-wrap items-center gap-2"
+          className="absolute left-2 top-2 z-50 hidden max-w-[calc(100vw-1rem)] flex-wrap items-center gap-2 sm:flex"
         >
           <Button asChild size="sm" variant="outline" className="gap-2 border-black/15 bg-white/90 text-slate-900 backdrop-blur">
             <Link to="/council-admin">
@@ -51,6 +51,28 @@ export function CouncilExecMeetingPage() {
           <Button asChild size="sm" variant={isArchiveDeck ? "default" : "outline"}>
             <Link to="/council-admin/exec-council-meeting?deck=2026-02-19">2/19 Copy</Link>
           </Button>
+        </motion.div>
+
+        <motion.div
+          initial={{ y: -8, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.2 }}
+          className="absolute left-2 right-2 top-14 z-50 flex items-center gap-2 sm:hidden"
+        >
+          <Button asChild size="sm" variant="outline" className="gap-2 border-black/15 bg-white/90 text-slate-900 backdrop-blur shrink-0">
+            <Link to="/council-admin">
+              <ArrowLeft className="size-4" />
+              Back
+            </Link>
+          </Button>
+          <div className="ml-auto flex items-center gap-2">
+            <Button asChild size="sm" variant={isArchiveDeck ? "outline" : "default"} className="h-9 px-3">
+              <Link to="/council-admin/exec-council-meeting?deck=2026-02-23">2/23</Link>
+            </Button>
+            <Button asChild size="sm" variant={isArchiveDeck ? "default" : "outline"} className="h-9 px-3">
+              <Link to="/council-admin/exec-council-meeting?deck=2026-02-19">2/19</Link>
+            </Button>
+          </div>
         </motion.div>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.05, duration: 0.25 }} className="h-screen w-full overflow-hidden">
