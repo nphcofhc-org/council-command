@@ -436,21 +436,57 @@ export function Slide4Ratification({ isMobile = false }: { isMobile?: boolean })
       </div>
 
       <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', gap: isMobile ? 8 : 10 }}>
-        <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '10px' : '12px', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-          <img
-            src={EXEC_EBOARD_SLIDE_IMAGE_URL}
-            alt="NPHC Executive Council presentation slide"
-            style={{
-              width: '100%',
-              height: '100%',
-              minHeight: isMobile ? 220 : 320,
-              objectFit: 'contain',
-              borderRadius: 10,
-              background: BLACK,
-              border: `1px solid ${BORDER2}`,
-            }}
-          />
+        <div
+          style={{
+            flex: 1,
+            minHeight: 0,
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : '1.2fr 0.8fr',
+            gap: isMobile ? 8 : 10,
+            overflow: 'hidden',
+          }}
+        >
+          <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '10px' : '12px', minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+            <img
+              src={EXEC_EBOARD_SLIDE_IMAGE_URL}
+              alt="NPHC Executive Council presentation slide"
+              style={{
+                width: '100%',
+                height: '100%',
+                minHeight: isMobile ? 220 : 320,
+                objectFit: 'contain',
+                borderRadius: 10,
+                background: BLACK,
+                border: `1px solid ${BORDER2}`,
+              }}
+            />
+          </div>
+
+          <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '10px' : '12px', minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 8, flexShrink: 0 }}>
+              <Label>Executive Council</Label>
+              <Badge>{`${eboardMembers.length} Seats`}</Badge>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: isMobile ? '1fr' : '1fr',
+                gap: 6,
+                overflow: 'auto',
+                paddingRight: 2,
+              }}
+            >
+              {eboardMembers.map((member) => (
+                <div key={member.id} style={{ background: BG_EL, border: `1px solid ${BORDER2}`, borderRadius: 10, padding: isMobile ? '9px 10px' : '8px 10px' }}>
+                  <div style={{ color: BLACK, fontSize: isMobile ? '0.9rem' : '0.74rem', fontWeight: 700, lineHeight: 1.2 }}>{member.name}</div>
+                  <div style={{ color: SILVER_M, fontSize: isMobile ? '0.8rem' : '0.66rem', fontWeight: 600, marginTop: 2, lineHeight: 1.25 }}>{member.role}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
+
         <a
           href={EXEC_EBOARD_SLIDE_IMAGE_URL}
           target="_blank"
