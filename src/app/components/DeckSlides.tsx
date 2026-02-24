@@ -512,13 +512,6 @@ export function Slide4Ratification({ isMobile = false }: { isMobile?: boolean })
 // ─── Slide 5: Adoption of Minutes ─────────────────────────────────────────────
 
 export function Slide5AdoptionOfMinutes({ isMobile = false }: { isMobile?: boolean }) {
-  const minutesHighlights = [
-    "December meeting minutes were adopted with no questions or corrections.",
-    "Unfinished Business included Summer BBQ alternatives and calendar revisions.",
-    "New Business included vacancies and bylaws review planning.",
-    "Committee reports included service, fundraising, and technology updates.",
-  ];
-
   return (
     <div style={{ width: '100%', height: '100%', background: BG_ALT, display: 'flex', flexDirection: 'column', padding: isMobile ? '16px' : 'clamp(14px,3%,36px)', boxSizing: 'border-box', overflow: 'hidden' }}>
       <div style={{ marginBottom: isMobile ? 12 : 10, flexShrink: 0 }}>
@@ -529,67 +522,51 @@ export function Slide5AdoptionOfMinutes({ isMobile = false }: { isMobile?: boole
         <SilverLine />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.15fr 0.85fr', gap: isMobile ? 10 : 14, flex: 1, minHeight: 0, overflow: isMobile ? 'auto' : 'hidden' }}>
-        <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '14px' : '16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div style={{ background: BG_EL, border: `1px solid ${BORDER2}`, borderRadius: 10, padding: isMobile ? '12px' : '12px 14px' }}>
-            <div style={{ color: SILVER, fontSize: isMobile ? '0.78rem' : '0.66rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-              Prior General Body Meeting
-            </div>
-            <div style={{ color: BLACK, fontSize: isMobile ? '1.05rem' : '0.92rem', fontWeight: 700, marginTop: 4 }}>
-              January 24, 2026
-            </div>
-            <p style={{ color: '#555', margin: '6px 0 0', fontSize: isMobile ? '0.84rem' : '0.68rem', lineHeight: 1.45 }}>
-              Minutes loaded from the official meeting archive. Adoption vote for the record is available below.
-            </p>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-            {minutesHighlights.map((item) => (
-              <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 7, color: '#444', fontSize: isMobile ? '0.86rem' : '0.7rem', lineHeight: 1.45 }}>
-                <ChevronRight size={11} color={SILVER} style={{ flexShrink: 0, marginTop: 3 }} />
-                {item}
-              </div>
-            ))}
-          </div>
-
-          <div style={{ marginTop: 'auto' }}>
-            <VoteWidget voteKey="minutes-adoption" label="Adoption of the Minutes" description={isMobile ? undefined : 'Motion to approve the January 24, 2026 General Body minutes'} />
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '12px' : '12px 14px' }}>
-            <Label>Minutes File</Label>
-            <h3 style={{ color: BLACK, margin: '6px 0 4px', fontSize: isMobile ? '1rem' : '0.86rem', fontWeight: 700 }}>
-              Open January Minutes PDF
-            </h3>
-            <p style={{ color: '#555', margin: 0, fontSize: isMobile ? '0.82rem' : '0.66rem', lineHeight: 1.45 }}>
-              Use the full minutes for reference during discussion and agenda alignment.
-            </p>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.35fr 0.65fr', gap: isMobile ? 10 : 14, flex: 1, minHeight: 0, overflow: isMobile ? 'auto' : 'hidden' }}>
+        <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '10px' : '12px', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+            <Label>Actual Minutes Document</Label>
             <a
               href={JANUARY_MINUTES_FILE_URL}
               target="_blank"
               rel="noreferrer"
-              style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: 6, color: SILVER_L, fontSize: isMobile ? '0.82rem' : '0.68rem', fontWeight: 700, textDecoration: 'none' }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: SILVER_L, fontSize: isMobile ? '0.78rem' : '0.66rem', fontWeight: 700, textDecoration: 'none' }}
             >
-              Open Minutes PDF
+              Open PDF
               <ExternalLink size={12} />
             </a>
           </div>
+          <div style={{ flex: 1, minHeight: isMobile ? 280 : 320, borderRadius: 10, overflow: 'hidden', border: `1px solid ${BORDER2}`, background: '#FFFFFF' }}>
+            <iframe
+              title="January 2026 Minutes PDF"
+              src={`${JANUARY_MINUTES_FILE_URL}#toolbar=0&navpanes=0&scrollbar=1`}
+              style={{ width: '100%', height: '100%', border: 'none', background: '#FFFFFF' }}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, minHeight: 0 }}>
+          <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '12px' : '12px 14px' }}>
+            <Label>Minutes Record</Label>
+            <h3 style={{ color: BLACK, margin: '6px 0 2px', fontSize: isMobile ? '1rem' : '0.86rem', fontWeight: 700 }}>
+              January 24, 2026 General Body
+            </h3>
+            <p style={{ color: '#555', margin: 0, fontSize: isMobile ? '0.82rem' : '0.66rem', lineHeight: 1.45 }}>
+              Displaying the official minutes document for review before adoption.
+            </p>
+          </div>
 
           <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '12px' : '12px 14px' }}>
-            <Label>Agenda Pull-Forward</Label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginTop: 8 }}>
-              {[
-                'Unfinished Business: Signature Event discussion (BBQ vs Block Party)',
-                'New Business: Financials & Compliance',
-                'New Business: Committee Sign-Up',
-              ].map((item) => (
-                <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, color: '#444', fontSize: isMobile ? '0.84rem' : '0.66rem', lineHeight: 1.4 }}>
-                  <ChevronRight size={10} color={SILVER} style={{ flexShrink: 0, marginTop: 2 }} /> {item}
-                </div>
-              ))}
-            </div>
+            <VoteWidget voteKey="minutes-adoption" label="Adoption of the Minutes" description={isMobile ? undefined : 'Motion to approve the January 24, 2026 General Body minutes'} />
+          </div>
+
+          <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '12px' : '12px 14px', marginTop: 'auto' }}>
+            <span style={{ color: SILVER_M, fontSize: isMobile ? '0.78rem' : '0.65rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              Presenter note
+            </span>
+            <p style={{ color: '#555', margin: '6px 0 0', fontSize: isMobile ? '0.8rem' : '0.66rem', lineHeight: 1.45 }}>
+              Scroll the embedded minutes as needed, then open the vote for adoption.
+            </p>
           </div>
         </div>
       </div>
