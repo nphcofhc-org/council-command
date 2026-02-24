@@ -94,7 +94,7 @@ function DeckInner({
       { id: 8, label: 'Unfinished Business: Signature Event', component: Slide8SignatureEvent },
       { id: 9, label: 'New Business: Financials, Compliance & Committee Sign-Up', component: Slide9NewBusiness },
       { id: 10, label: 'MLK Day of Service (Tina)', component: Slide10SuccessRecap },
-      { id: 11, label: 'Bowling Night Fundraiser (Azaria)', component: Slide11BowlingRecap },
+      { id: 11, label: 'Fundraising Committee Report (Azaria)', component: Slide11BowlingRecap },
       { id: 12, label: 'Closing & Adjournment', component: Slide12Adjournment },
     ],
     [meetingDateLabel],

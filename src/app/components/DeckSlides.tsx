@@ -679,13 +679,22 @@ export function Slide9NewBusiness({ isMobile = false }: { isMobile?: boolean }) 
   return (
     <div style={{ width: '100%', height: '100%', background: BG, display: 'flex', flexDirection: 'column', padding: isMobile ? '16px' : 'clamp(14px,3%,36px)', boxSizing: 'border-box', overflow: 'hidden' }}>
       <div style={{ marginBottom: isMobile ? 12 : 10, flexShrink: 0 }}>
-        <Label>New Business</Label>
-        <h1 style={{ color: BLACK, margin: '5px 0 0', fontSize: isMobile ? '1.5rem' : 'clamp(1.35rem,2.8vw,2rem)', fontWeight: 700 }}>Financials, Compliance & Committee Sign-Up</h1>
-        <SilverLine my={8} />
+        <Label>Meeting Agenda</Label>
+        <h1 style={{ color: BLACK, margin: '4px 0 0', fontSize: isMobile ? '1.85rem' : 'clamp(1.65rem,3.2vw,2.35rem)', fontWeight: 800, lineHeight: 1.05 }}>New Business</h1>
+        <p style={{ color: '#4B5563', margin: '5px 0 0', fontSize: isMobile ? '0.88rem' : '0.78rem', fontWeight: 600 }}>
+          Financials, Compliance & Committee Sign-Up
+        </p>
+        <SilverLine my={7} />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 10 : 14, flex: 1, minHeight: 0, overflow: isMobile ? 'auto' : 'hidden' }}>
         <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '14px' : 'clamp(12px,2%,18px)', display: 'flex', flexDirection: 'column', gap: isMobile ? 8 : 7, flexShrink: 0, overflow: 'auto' }}>
+          <div style={{ background: BG_EL, border: `1px solid ${BORDER2}`, borderRadius: 8, padding: isMobile ? '10px 12px' : '9px 12px' }}>
+            <div style={{ color: SILVER_L, fontSize: isMobile ? '0.88rem' : '0.72rem', fontWeight: 700 }}>Committee Sign-Up (Live)</div>
+            <div style={{ color: '#666', fontSize: isMobile ? '0.76rem' : '0.62rem', marginTop: 2 }}>
+              Join actions only. Committee descriptions were covered in Committee Reports.
+            </div>
+          </div>
           {committeeChairs.map((committee) => {
             const rows = committeeSignups[committee.id] || [];
             const isMine = myCommitteeId === committee.id;
@@ -694,8 +703,9 @@ export function Slide9NewBusiness({ isMobile = false }: { isMobile?: boolean }) 
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
                   <div>
                     <div style={{ color: SILVER_L, fontSize: isMobile ? '0.95rem' : '0.8rem', fontWeight: 700 }}>{committee.title}</div>
-                    <div style={{ color: '#666', fontSize: isMobile ? '0.76rem' : '0.64rem', marginTop: 2 }}>Chair: {committee.chair}</div>
-                    <div style={{ color: '#7A7A7A', fontSize: isMobile ? '0.74rem' : '0.62rem', marginTop: 1 }}>{committee.chapter}</div>
+                    <div style={{ color: '#666', fontSize: isMobile ? '0.74rem' : '0.62rem', marginTop: 2 }}>
+                      {rows.length === 0 ? 'No members joined yet.' : `${rows.length} joined`}
+                    </div>
                   </div>
                   <button
                     type="button"
@@ -716,10 +726,7 @@ export function Slide9NewBusiness({ isMobile = false }: { isMobile?: boolean }) 
                     {isMine ? 'Joined' : 'Join'}
                   </button>
                 </div>
-                <p style={{ color: '#555', fontSize: isMobile ? '0.8rem' : '0.66rem', margin: '6px 0 0', lineHeight: 1.4 }}>
-                  {committee.focus}
-                </p>
-                <div style={{ marginTop: 7, color: '#6A6A6A', fontSize: isMobile ? '0.74rem' : '0.62rem' }}>
+                <div style={{ marginTop: 6, color: '#6A6A6A', fontSize: isMobile ? '0.74rem' : '0.62rem', lineHeight: 1.35 }}>
                   {rows.length === 0 ? 'No members joined yet.' : `${rows.length} joined: ${rows.slice(-3).map((entry) => entry.memberName).join(', ')}`}
                 </div>
               </div>
@@ -961,8 +968,8 @@ export function Slide11BowlingRecap({ isMobile = false }: { isMobile?: boolean }
   return (
     <div style={{ width: '100%', height: '100%', background: BG, display: 'flex', flexDirection: 'column', padding: isMobile ? '16px' : 'clamp(14px,3%,36px)', boxSizing: 'border-box', overflow: 'hidden' }}>
       <div style={{ marginBottom: isMobile ? 12 : 12, flexShrink: 0 }}>
-        <Label>Success Recap</Label>
-        <h1 style={{ color: BLACK, margin: '5px 0 0', fontSize: isMobile ? '1.5rem' : 'clamp(1.35rem,2.8vw,2rem)', fontWeight: 700 }}>January Bowling Night</h1>
+        <Label>Fundraising Committee Report</Label>
+        <h1 style={{ color: BLACK, margin: '5px 0 0', fontSize: isMobile ? '1.5rem' : 'clamp(1.35rem,2.8vw,2rem)', fontWeight: 700 }}>January Bowling Night Recap</h1>
         <div style={{ color: '#666', marginTop: 4, fontSize: isMobile ? '0.85rem' : '0.75rem', fontWeight: 600 }}>Presenter: Azaria Cunningham</div>
         <SilverLine />
       </div>
@@ -1006,32 +1013,18 @@ export function Slide11BowlingRecap({ isMobile = false }: { isMobile?: boolean }
         </div>
 
         <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '10px' : '12px', display: 'flex', flexDirection: 'column', gap: 10, minHeight: 0 }}>
-          <Label>Event Images (Full View)</Label>
+          <Label>Bowling Event Images</Label>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr', gap: 10, flex: 1, minHeight: 0, overflow: 'auto' }}>
-            <a
-              href={THANK_YOU_LETTER_IMAGE_URL}
-              target="_blank"
-              rel="noreferrer"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 10, overflow: 'hidden', border: `1px solid ${BORDER}`, background: '#FFFFFF', padding: 8, minHeight: isMobile ? 180 : 200 }}
-            >
-              <img
-                src={THANK_YOU_LETTER_IMAGE_URL}
-                alt="Thank you letter and chapter image"
-                style={{ width: '100%', height: isMobile ? 180 : 200, objectFit: 'contain', background: '#FFFFFF' }}
-              />
-            </a>
-            <a
-              href={FUNDRAISING_TOTAL_IMAGE_URL}
-              target="_blank"
-              rel="noreferrer"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 10, overflow: 'hidden', border: `1px solid ${BORDER}`, background: '#FFFFFF', padding: 8, minHeight: isMobile ? 180 : 200 }}
-            >
-              <img
-                src={FUNDRAISING_TOTAL_IMAGE_URL}
-                alt="Fundraising event total screenshot"
-                style={{ width: '100%', height: isMobile ? 180 : 200, objectFit: 'contain', background: '#FFFFFF' }}
-              />
-            </a>
+            <img
+              src={THANK_YOU_LETTER_IMAGE_URL}
+              alt="Thank you letter and chapter image"
+              style={{ width: '100%', height: isMobile ? 190 : 210, objectFit: 'contain', display: 'block', background: 'transparent' }}
+            />
+            <img
+              src={FUNDRAISING_TOTAL_IMAGE_URL}
+              alt="Fundraising event total screenshot"
+              style={{ width: '100%', height: isMobile ? 190 : 210, objectFit: 'contain', display: 'block', background: 'transparent' }}
+            />
           </div>
         </div>
       </div>
