@@ -28,6 +28,7 @@ const THANK_YOU_LETTER_IMAGE_URL = 'https://pub-e0d3ae4075164c7aa7204024db626148
 const FUNDRAISING_TOTAL_IMAGE_URL = 'https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/3.png';
 const EXEC_EBOARD_SLIDE_IMAGE_URL = 'https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/NPHC%20Executive%20Council%20(Presentation)%20(2).png';
 const JANUARY_MINUTES_FILE_URL = '/docs/January_Minutes_2026.pdf';
+const SERVICE_COMMITTEE_REPORT_IMAGE_URL = 'https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/Final.png';
 const TREASURER_REPORT_EMBED_HTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -626,6 +627,20 @@ export function Slide7CommitteeReports({ isMobile = false }: { isMobile?: boolea
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '10px' : '10px 12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 8 }}>
+              <Label>Service Committee</Label>
+              <span style={{ color: '#666', fontSize: isMobile ? '0.72rem' : '0.62rem', fontWeight: 700 }}>Tina Jones</span>
+            </div>
+            <div style={{ borderRadius: 10, overflow: 'hidden', border: `1px solid ${BORDER2}`, background: '#FFFFFF' }}>
+              <img
+                src={SERVICE_COMMITTEE_REPORT_IMAGE_URL}
+                alt="Service Committee report visual"
+                style={{ width: '100%', height: isMobile ? 180 : 150, objectFit: 'contain', display: 'block', background: '#FFFFFF' }}
+              />
+            </div>
+          </div>
+
           <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '12px' : '12px 14px' }}>
             <Label>Success Recap</Label>
             <h3 style={{ color: BLACK, margin: '6px 0 4px', fontSize: isMobile ? '1rem' : '0.86rem', fontWeight: 700 }}>
