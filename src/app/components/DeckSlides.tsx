@@ -28,6 +28,195 @@ const THANK_YOU_LETTER_IMAGE_URL = 'https://pub-e0d3ae4075164c7aa7204024db626148
 const FUNDRAISING_TOTAL_IMAGE_URL = 'https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/3.png';
 const EXEC_EBOARD_SLIDE_IMAGE_URL = 'https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/NPHC%20Executive%20Council%20(Presentation)%20(2).png';
 const JANUARY_MINUTES_FILE_URL = '/docs/January_Minutes_2026.pdf';
+const TREASURER_REPORT_EMBED_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NPHC HC - Executive Financial Briefing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; }
+        .pillar-card { border-top: 4px solid; }
+        .pillar-innovation { border-color: #818cf8; }
+        .pillar-visibility { border-color: #fbbf24; }
+        .pillar-optimization { border-color: #34d399; }
+        .pillar-alignment { border-color: #a78bfa; }
+        .exec-summary-item { border-left: 2px solid #6366f1; padding-left: 1rem; }
+        .stat-glow { text-shadow: 0 0 15px rgba(99, 102, 241, 0.4); }
+        * { box-sizing: border-box; }
+        html, body { min-height: 100%; margin: 0; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-7xl mx-auto space-y-6">
+        
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h1 class="text-3xl font-extrabold text-white tracking-tight">NPHC of Hudson County, NJ</h1>
+                <p class="text-indigo-400 font-medium">Financial Reporting: February 23, 2026</p>
+            </div>
+            <div class="bg-indigo-600/20 px-4 py-2 rounded-lg border border-indigo-500/30">
+                <p class="text-[10px] text-indigo-300 font-bold uppercase tracking-widest">Performance Status</p>
+                <p class="text-emerald-400 font-bold text-sm">Outperforming 2025 Baseline</p>
+            </div>
+        </header>
+
+        <section class="glass-card p-6 border-2 border-indigo-500/50 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-2 bg-indigo-500 text-[10px] font-bold text-white rounded-bl-lg uppercase tracking-widest">
+                Executive Summary
+            </div>
+            <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                Key Discussion Items
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="exec-summary-item">
+                    <p class="text-xs text-slate-500 font-bold uppercase mb-1">Account Migration</p>
+                    <p class="text-sm text-slate-200"><span class="font-bold text-indigo-300">$420.00</span> transfer from legacy (Craig) to new Chapter Cash App.</p>
+                </div>
+                <div class="exec-summary-item">
+                    <p class="text-xs text-slate-500 font-bold uppercase mb-1">Fixed Operations</p>
+                    <p class="text-sm text-slate-200">Domain/Website Maintenance: <span class="font-bold text-indigo-300">$7.50/month</span>.</p>
+                </div>
+                <div class="exec-summary-item">
+                    <p class="text-xs text-slate-500 font-bold uppercase mb-1">National Obligations</p>
+                    <p class="text-sm text-slate-200">Annual NPHC Dues settled: <span class="font-bold text-indigo-300">$254.54</span> total.</p>
+                </div>
+                <div class="exec-summary-item">
+                    <p class="text-xs text-slate-500 font-bold uppercase mb-1">Outstanding Reimbursement</p>
+                    <p class="text-sm text-slate-200"><span class="font-bold text-rose-400">$76.82</span> balance for NPHC National Convention.</p>
+                </div>
+                <div class="exec-summary-item">
+                    <p class="text-xs text-slate-500 font-bold uppercase mb-1">Fundraising Spotlight</p>
+                    <p class="text-sm text-slate-200 italic text-indigo-300">"Bowling Event profits to be briefed by Fundraising Chair."</p>
+                </div>
+                <div class="exec-summary-item border-indigo-400 bg-indigo-500/5 p-2 rounded-r">
+                    <p class="text-xs text-indigo-400 font-bold uppercase mb-1">Action Required</p>
+                    <p class="text-sm text-white font-semibold">All Committee Chairs must submit 2026 budgets immediately.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="glass-card p-4 pillar-card pillar-innovation">
+                <h3 class="text-indigo-300 font-bold text-xs mb-1 uppercase tracking-wider">Innovation</h3>
+                <p class="text-[11px] text-slate-400">AI tools & modernizing operations.</p>
+            </div>
+            <div class="glass-card p-4 pillar-card pillar-visibility">
+                <h3 class="text-amber-300 font-bold text-xs mb-1 uppercase tracking-wider">Visibility</h3>
+                <p class="text-[11px] text-slate-400">Increasing community presence.</p>
+            </div>
+            <div class="glass-card p-4 pillar-card pillar-optimization">
+                <h3 class="text-emerald-300 font-bold text-xs mb-1 uppercase tracking-wider">Optimization</h3>
+                <p class="text-[11px] text-slate-400">Maximizing chapter efficiency.</p>
+            </div>
+            <div class="glass-card p-4 pillar-card pillar-alignment">
+                <h3 class="text-purple-300 font-bold text-xs mb-1 uppercase tracking-wider">Alignment</h3>
+                <p class="text-[11px] text-slate-400">Transparency across all D9 orgs.</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div class="lg:col-span-7 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="glass-card p-6 border-l-4 border-indigo-500">
+                        <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-1">LendingClub Balance</p>
+                        <div class="text-3xl font-bold stat-glow text-white">$9,101.25</div>
+                        <p class="text-[10px] text-slate-400 mt-2 italic">Verified via Feb 23 Statement</p>
+                    </div>
+                    <div class="glass-card p-6">
+                        <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-1">Cash App Liquidity</p>
+                        <div class="text-3xl font-bold text-slate-200">$335.00</div>
+                        <p class="text-[10px] text-indigo-400 mt-2 font-mono">$NPHCofHC</p>
+                    </div>
+                </div>
+                <div class="glass-card p-6 h-64">
+                    <canvas id="growthChart"></canvas>
+                </div>
+            </div>
+
+            <div class="lg:col-span-5">
+                <div class="glass-card p-6 h-full">
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Verified Transaction History</h3>
+                    <div class="space-y-4 overflow-y-auto max-h-[350px] pr-2">
+                        <div class="flex justify-between items-center p-3 bg-slate-800/50 rounded-lg">
+                            <div>
+                                <p class="text-xs font-bold text-white">Cloudflare (Domain)</p>
+                                <p class="text-[10px] text-slate-500">Fixed Monthly Fee</p>
+                            </div>
+                            <span class="text-rose-400 font-bold text-sm">($7.50)</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-slate-800/50 rounded-lg">
+                            <div>
+                                <p class="text-xs font-bold text-white">NPHCHQ Dues</p>
+                                <p class="text-[10px] text-slate-500">Annual Fee + Processing</p>
+                            </div>
+                            <span class="text-rose-400 font-bold text-sm">($254.54)</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+                            <div>
+                                <p class="text-xs font-bold text-emerald-400">Chapter Transfer</p>
+                                <p class="text-[10px] text-emerald-600">Account Migration (Feb 1)</p>
+                            </div>
+                            <span class="text-emerald-400 font-bold text-sm">+$420.00</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-slate-800/50 rounded-lg">
+                            <div>
+                                <p class="text-xs font-bold text-white">G. Kamara Reimb.</p>
+                                <p class="text-[10px] text-slate-500">Convention Balance</p>
+                            </div>
+                            <span class="text-rose-400 font-bold text-sm">($76.82)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="flex justify-between items-center p-4 glass-card border-t-4 border-indigo-500">
+            <p class="text-xs text-slate-400 font-medium tracking-tight">Report Prepared for Executive Council by Treasurer Gibrill Kamara</p>
+            <div class="flex gap-2">
+                <span class="px-3 py-1 bg-indigo-500/20 text-indigo-300 text-[10px] font-bold rounded-full uppercase">Feb 23, 2026</span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const chartCanvas = document.getElementById('growthChart');
+        if (chartCanvas && window.Chart) {
+          const ctx = chartCanvas.getContext('2d');
+          new Chart(ctx, {
+              type: 'line',
+              data: {
+                  labels: ['Nov 25', 'Dec 25', 'Jan 26', 'Feb 23'],
+                  datasets: [{
+                      label: 'Liquidity Trend',
+                      data: [7394, 7595, 8017, 9101],
+                      borderColor: '#818cf8',
+                      backgroundColor: 'rgba(129, 140, 248, 0.1)',
+                      fill: true,
+                      tension: 0.4,
+                      pointRadius: 4,
+                      pointBackgroundColor: '#fff'
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: { legend: { display: false } },
+                  scales: {
+                      y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b', font: { size: 10 } } },
+                      x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 10 } } }
+                  }
+              }
+          });
+        }
+    </script>
+</body>
+</html>`;
 
 // ─── Primitives ──────────────────────────────────────────────────────────────
 
@@ -369,58 +558,16 @@ export function Slide5AdoptionOfMinutes({ isMobile = false }: { isMobile?: boole
 // ─── Slide 6: Treasurer's Report ─────────────────────────────────────────────
 
 export function Slide6TreasurerReport({ isMobile = false }: { isMobile?: boolean }) {
-  const treasuryNotes = [
-    'Treasurer role transitioned to Gibrill Kamara; current figures should be updated by the Treasurer directly.',
-    'Treasury dashboard in The President’s Desk supports live snapshots and statement uploads for reconciliation.',
-    'Financials and compliance follow under New Business for approvals and reporting actions.',
-  ];
-
   return (
-    <div style={{ width: '100%', height: '100%', background: BG, display: 'flex', flexDirection: 'column', padding: isMobile ? '16px' : 'clamp(14px,3%,36px)', boxSizing: 'border-box', overflow: 'hidden' }}>
-      <div style={{ marginBottom: isMobile ? 12 : 10, flexShrink: 0 }}>
-        <Label>Finance</Label>
-        <h1 style={{ color: BLACK, margin: '5px 0 0', fontSize: isMobile ? '1.45rem' : 'clamp(1.3rem,2.8vw,1.95rem)', fontWeight: 700 }}>
-          Treasurer&apos;s Report
-        </h1>
-        <SilverLine />
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 10 : 14, flex: 1, minHeight: 0, overflow: isMobile ? 'auto' : 'hidden' }}>
-        <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '14px' : '16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            {[
-              { label: 'Treasurer', value: 'Gibrill Kamara' },
-              { label: 'Financial Secretary', value: 'Chris Gadsden' },
-              { label: 'Dashboard', value: 'President’s Desk / Treasury' },
-              { label: 'Statements', value: 'Upload + Reconcile' },
-            ].map(({ label, value }) => (
-              <div key={label} style={{ background: BG_EL, border: `1px solid ${BORDER2}`, borderRadius: 8, padding: isMobile ? '10px' : '10px 12px' }}>
-                <div style={{ color: '#888', fontSize: '0.66rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</div>
-                <div style={{ color: BLACK, fontSize: isMobile ? '0.92rem' : '0.78rem', fontWeight: 700, marginTop: 3 }}>{value}</div>
-              </div>
-            ))}
-          </div>
-          <div style={{ background: BG_EL, border: `1px solid ${BORDER2}`, borderRadius: 8, padding: isMobile ? '11px 12px' : '10px 12px' }}>
-            <p style={{ color: '#444', margin: 0, fontSize: isMobile ? '0.84rem' : '0.68rem', lineHeight: 1.45 }}>
-              Current treasury figures will be presented from the live treasury dashboard. This slide is a framing slide for the Treasurer&apos;s verbal report and follow-up approvals.
-            </p>
-          </div>
-        </div>
-
-        <div style={{ background: BG_CARD, border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? '14px' : '16px', display: 'flex', flexDirection: 'column', gap: 9 }}>
-          <Label>Talking Points</Label>
-          {treasuryNotes.map((item) => (
-            <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 7, color: '#444', fontSize: isMobile ? '0.86rem' : '0.7rem', lineHeight: 1.45 }}>
-              <ChevronRight size={11} color={SILVER} style={{ flexShrink: 0, marginTop: 3 }} />
-              {item}
-            </div>
-          ))}
-          <div style={{ marginTop: 'auto', background: BG_EL, border: `1px solid ${BORDER2}`, borderRadius: 8, padding: isMobile ? '11px 12px' : '10px 12px' }}>
-            <span style={{ color: SILVER_L, fontSize: isMobile ? '0.8rem' : '0.68rem', fontWeight: 700 }}>
-              New Business items will cover Financials & Compliance actions and any approvals requiring votes.
-            </span>
-          </div>
-        </div>
+    <div style={{ width: '100%', height: '100%', background: '#0f172a', padding: isMobile ? 8 : 10, boxSizing: 'border-box' }}>
+      <div style={{ width: '100%', height: '100%', borderRadius: isMobile ? 12 : 16, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 10px 30px rgba(0,0,0,0.22)' }}>
+        <iframe
+          title="Treasurer Report"
+          srcDoc={TREASURER_REPORT_EMBED_HTML}
+          sandbox="allow-scripts allow-same-origin"
+          loading="eager"
+          style={{ width: '100%', height: '100%', border: 'none', background: '#0f172a' }}
+        />
       </div>
     </div>
   );
