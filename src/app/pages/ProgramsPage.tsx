@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Badge } from "../components/ui/badge";
-import { Calendar, FileText, Users, MapPin, Clock, ExternalLink, PlayCircle, X } from "lucide-react";
+import { Calendar, FileText, Users, MapPin, Clock, ExternalLink, PlayCircle, X, Folder } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Link } from "react-router";
 import { motion } from "motion/react";
@@ -12,6 +12,17 @@ import type { ProgramEventHighlight } from "../data/types";
 
 const ART_MARBLE = "https://images.unsplash.com/photo-1678756466078-1ff0d7b09431?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25vY2hyb21lJTIwYWJzdHJhY3QlMjBtYXJibGUlMjB0ZXh0dXJlfGVufDF8fHx8MTc3MDUxMzIyM3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 const EVENTS_ENDPOINT = "/api/events/upcoming";
+const BOWLING_ARCHIVE_MEDIA_URLS = new Set([
+  "https://pub-490dff0563064ae89e191bee5e711eaf.r2.dev/1.mp4",
+  "https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/2.png",
+  "https://pub-e0d3ae4075164c7aa7204024db626148.r2.dev/3.png",
+]);
+
+function isBowlingArchivedHighlight(h: ProgramEventHighlight): boolean {
+  const title = String(h.title || "").toLowerCase();
+  const mediaUrl = String(h.mediaUrl || "").trim();
+  return title.includes("bowling") || BOWLING_ARCHIVE_MEDIA_URLS.has(mediaUrl);
+}
 
 export function ProgramsPage() {
   const { data } = useProgramsData();
@@ -25,9 +36,11 @@ export function ProgramsPage() {
   const eventHighlights = data?.eventHighlights || [];
   const eventFlyers = data?.eventFlyers || [];
   const signupForms = data?.signupForms || [];
-  const autoplayVideoHighlight = eventHighlights.find((h) => h.mediaType === "video") || null;
-  const imageHighlights = eventHighlights.filter((h) => h.mediaType === "image");
-  const nonImageHighlights = eventHighlights.filter((h) => h.mediaType !== "image");
+  const archivedBowlingHighlights = eventHighlights.filter(isBowlingArchivedHighlight);
+  const currentEventHighlights = eventHighlights.filter((h) => !isBowlingArchivedHighlight(h));
+  const autoplayVideoHighlight = currentEventHighlights.find((h) => h.mediaType === "video") || null;
+  const imageHighlights = currentEventHighlights.filter((h) => h.mediaType === "image");
+  const nonImageHighlights = currentEventHighlights.filter((h) => h.mediaType !== "image");
 
   useEffect(() => {
     let cancelled = false;
@@ -193,7 +206,7 @@ export function ProgramsPage() {
         ) : null}
 
         {/* Event Highlights */}
-        {eventHighlights.length > 0 ? (
+        {currentEventHighlights.length > 0 ? (
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl mb-6">
             <CardHeader>
               <CardTitle className="text-lg sm:text-xl">Event Highlights</CardTitle>
@@ -270,6 +283,88 @@ export function ProgramsPage() {
                   ))}
                 </div>
               ) : null}
+            </CardContent>
+          </Card>
+        ) : null}
+
+        {archivedBowlingHighlights.length > 0 ? (
+          <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl mb-6">
+            <CardHeader>
+              <CardTitle className="text-lg sm:text-xl">Archived Event Folders</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <details className="group rounded-xl border border-black/10 bg-white/5 open:bg-white/10">
+                <summary className="list-none cursor-pointer px-4 py-3 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="rounded-lg border border-black/10 bg-white/10 p-2">
+                      <Folder className="size-4 text-slate-800" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-slate-900 truncate">January Bowling Night (Archived)</p>
+                      <p className="text-xs text-slate-500">Passed event materials moved to folder</p>
+                    </div>
+                  </div>
+                  <Badge className="border border-black/10 bg-white/40 text-slate-700 hover:bg-white/40">
+                    {archivedBowlingHighlights.length} items
+                  </Badge>
+                </summary>
+                <div className="border-t border-black/10 p-4 space-y-4">
+                  {archivedBowlingHighlights.filter((h) => h.mediaType === "image").map((highlight) => (
+                    <div key={highlight.id} className="overflow-hidden rounded-xl border border-black/10 bg-white/5">
+                      <img
+                        src={highlight.mediaUrl}
+                        alt={highlight.title}
+                        className="w-full h-auto max-h-[70vh] object-contain bg-black/5"
+                        loading="lazy"
+                      />
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3">
+                        <div className="min-w-0">
+                          <p className="text-xs uppercase tracking-widest text-slate-500">Archived Image</p>
+                          <p className="mt-1 text-sm font-semibold text-slate-900">{highlight.title}</p>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="gap-2 border-black/15 bg-white/5 text-slate-900 hover:border-primary/60 hover:text-primary hover:bg-white/10"
+                          onClick={() => setActiveHighlight(highlight)}
+                        >
+                          <ExternalLink className="size-3.5" />
+                          Expand
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+
+                  {archivedBowlingHighlights.filter((h) => h.mediaType !== "image").length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {archivedBowlingHighlights.filter((h) => h.mediaType !== "image").map((highlight) => (
+                        <motion.button
+                          key={highlight.id}
+                          type="button"
+                          onClick={() => setActiveHighlight(highlight)}
+                          className="group overflow-hidden rounded-xl border border-black/10 bg-white/5 text-left hover:border-primary/35 hover:bg-white/10 transition-all"
+                        >
+                          <div className="aspect-[4/3] bg-black/5 overflow-hidden">
+                            <video
+                              src={highlight.mediaUrl}
+                              poster={highlight.thumbnailUrl}
+                              muted
+                              playsInline
+                              preload="metadata"
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                          <div className="p-3">
+                            <p className="text-xs uppercase tracking-widest text-slate-500">Archived Video</p>
+                            <p className="mt-1 text-sm font-semibold text-slate-900 line-clamp-2">{highlight.title}</p>
+                          </div>
+                        </motion.button>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              </details>
             </CardContent>
           </Card>
         ) : null}

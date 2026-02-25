@@ -381,6 +381,7 @@ export const upcomingEvents: CouncilEvent[] = [
 // ═════════════════════════════════════════════════════════════════════════════
 
 export const archivedEvents: ArchivedEvent[] = [
+  { id: "arch-0", title: "January Bowling Night Fundraiser", date: "January 2026", attendees: "See fundraising recap", status: "Completed" },
   { id: "arch-1", title: "MLK Day of Service 2026",    date: "January 20, 2026",   attendees: "85 participants",   status: "Completed" },
   { id: "arch-2", title: "Black History Month Kickoff", date: "February 1, 2026",   attendees: "120 participants",  status: "Completed" },
   { id: "arch-3", title: "Holiday Food Drive 2025",     date: "December 15, 2025",  attendees: "67 participants",   status: "Completed" },
