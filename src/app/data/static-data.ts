@@ -158,11 +158,11 @@ export const governingDocuments: GoverningDocument[] = [
   },
   {
     id: "gov-2",
-    title: "NPHC Hudson County Local Bylaws (2023)",
+    title: "NPHC Hudson County Local Bylaws (Revised 10.4.23)",
     type: "Local Governance",
-    lastUpdated: "2023",
+    lastUpdated: "October 4, 2023",
     status: "Active",
-    fileUrl: "/docs/nphc-of-hudson-county-centralized-intranet-portal-data-brief.xlsx",
+    fileUrl: "/docs/NPHC_Hudson_County_Bylaws_Revised_2023-10-04.pdf",
   },
   { id: "gov-3", title: "Council Accountability and Compliance Standards", type: "Compliance",         lastUpdated: "February 2026",   status: "Reference", fileUrl: "/docs/nphc-council-accountability-and-compliance-standards.docx" },
 ];
