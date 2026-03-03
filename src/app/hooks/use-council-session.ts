@@ -15,6 +15,8 @@ const DEV_FALLBACK_SESSION: CouncilSession = {
   isTreasuryAdmin: true,
   isSiteEditor: true,
   isPresident: true,
+  isTreasurer: true,
+  isFinancialSecretary: true,
 };
 
 const DEFAULT_SESSION: CouncilSession = {
@@ -24,6 +26,8 @@ const DEFAULT_SESSION: CouncilSession = {
   isTreasuryAdmin: false,
   isSiteEditor: false,
   isPresident: false,
+  isTreasurer: false,
+  isFinancialSecretary: false,
 };
 
 let cachedSession: CouncilSession | null = null;

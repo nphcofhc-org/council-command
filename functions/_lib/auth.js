@@ -46,6 +46,8 @@ function buildLeadershipAccessMaps(leadership) {
   const leadershipEmails = new Set();
   const treasuryAccessEmails = new Set();
   const presidentEmails = new Set();
+  const treasurerEmails = new Set();
+  const financialSecretaryEmails = new Set();
 
   const add = (emailRaw) => {
     const email = normalizeEmail(emailRaw);
@@ -59,12 +61,18 @@ function buildLeadershipAccessMaps(leadership) {
     if (email && title === "president") {
       presidentEmails.add(email);
     }
+    if (email && title === "treasurer") {
+      treasurerEmails.add(email);
+    }
+    if (email && title === "financial secretary") {
+      financialSecretaryEmails.add(email);
+    }
     if (email && EXEC_TREASURY_ACCESS_TITLES.has(title)) {
       treasuryAccessEmails.add(email);
     }
   }
 
-  return { leadershipEmails, treasuryAccessEmails, presidentEmails };
+  return { leadershipEmails, treasuryAccessEmails, presidentEmails, treasurerEmails, financialSecretaryEmails };
 }
 
 export function getAuthenticatedEmail(request) {
@@ -203,6 +211,8 @@ export async function getSessionState(request, env) {
   let isCouncilAdmin = isAuthenticated && (allowlist.includes(email) || isFallbackPresident);
   let isTreasuryAdmin = isFallbackPresident;
   let isPresident = isFallbackPresident;
+  let isTreasurer = false;
+  let isFinancialSecretary = false;
 
   // Prefer DB-backed leadership/role checks as the source of truth.
   // If no leadership data is configured yet, fall back to env allowlists to avoid lockouts.
@@ -223,6 +233,8 @@ export async function getSessionState(request, env) {
       if (hasPresidentEntries) {
         isPresident = maps.presidentEmails.has(email) || isFallbackPresident;
       }
+      isTreasurer = maps.treasurerEmails.has(email);
+      isFinancialSecretary = maps.financialSecretaryEmails.has(email);
     }
   }
   // Site editors are a tighter allowlist used for content updates.
@@ -240,6 +252,8 @@ export async function getSessionState(request, env) {
     isTreasuryAdmin,
     isSiteEditor,
     isPresident,
+    isTreasurer,
+    isFinancialSecretary,
   };
 
   if (isAuthenticated && env.DB) {
@@ -252,6 +266,11 @@ export async function getSessionState(request, env) {
         resolved.isCouncilAdmin = true;
         resolved.isTreasuryAdmin = true;
         resolved.isSiteEditor = true;
+      }
+
+      if (!resolved.isTreasuryAdmin) {
+        resolved.isTreasurer = false;
+        resolved.isFinancialSecretary = false;
       }
     } catch {
       // ignore override resolution errors

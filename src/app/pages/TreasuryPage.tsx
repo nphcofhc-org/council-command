@@ -190,8 +190,8 @@ export function TreasuryPage() {
   const [typeFilter, setTypeFilter] = useState<"all" | TreasuryTxnType>("all");
   const [accountFilter, setAccountFilter] = useState<"all" | TreasuryAccount>("all");
   const [search, setSearch] = useState<string>("");
-  const [voucherRole, setVoucherRole] = useState<"treasurer" | "president">("treasurer");
-  const [voucherStatus, setVoucherStatus] = useState<"DRAFT" | "SUBMITTED" | "FINALIZED">("DRAFT");
+  const [voucherRole, setVoucherRole] = useState<"treasurer" | "president" | "financial_secretary">("treasurer");
+  const [voucherStatus, setVoucherStatus] = useState<"DRAFT" | "SUBMITTED" | "PRESIDENT_APPROVED" | "FINALIZED" | "DENIED">("DRAFT");
   const [voucherPayee, setVoucherPayee] = useState("");
   const [voucherMethod, setVoucherMethod] = useState("");
   const [voucherAmount, setVoucherAmount] = useState("");
@@ -200,6 +200,22 @@ export function TreasuryPage() {
   const [presidentSignatureAt, setPresidentSignatureAt] = useState<string | null>(null);
   const [finSecRecorded, setFinSecRecorded] = useState(false);
   const [voucherFeedback, setVoucherFeedback] = useState<string | null>(null);
+
+
+  useEffect(() => {
+    if (sessionLoading) return;
+    if (session.isTreasurer) {
+      setVoucherRole("treasurer");
+      return;
+    }
+    if (session.isPresident) {
+      setVoucherRole("president");
+      return;
+    }
+    if (session.isFinancialSecretary) {
+      setVoucherRole("financial_secretary");
+    }
+  }, [session.isFinancialSecretary, session.isPresident, session.isTreasurer, sessionLoading]);
 
   const voucherNumber = useMemo(() => {
     const random = Math.floor(Math.random() * 900) + 100;
@@ -289,24 +305,53 @@ export function TreasuryPage() {
   const voucherReadyToSubmit = Boolean(voucherPayee.trim() && voucherMethod && voucherPurpose.trim() && Number(voucherAmount) > 0);
 
   const submitVoucherAsTreasurer = () => {
+    if (!session.isTreasurer) {
+      setVoucherFeedback("Only the Treasurer account can submit this voucher as Initiator.");
+      return;
+    }
     if (!voucherReadyToSubmit) {
       setVoucherFeedback("Complete payee, method, amount, and purpose before submitting a voucher.");
       return;
     }
     setTreasurerSignatureAt(new Date().toLocaleString());
     setVoucherStatus("SUBMITTED");
-    setVoucherFeedback("Voucher submitted. Switch role to President for countersignature and release.");
+    setVoucherFeedback("Voucher submitted for President approval.");
   };
 
   const countersignVoucherAsPresident = () => {
+    if (!session.isPresident) {
+      setVoucherFeedback("Only the President account can approve and release funds.");
+      return;
+    }
     if (voucherStatus !== "SUBMITTED") {
       setVoucherFeedback("Treasurer must submit the voucher before presidential countersignature.");
       return;
     }
     setPresidentSignatureAt(new Date().toLocaleString());
-    setVoucherStatus("FINALIZED");
-    setFinSecRecorded(true);
-    setVoucherFeedback("Voucher finalized. Financial Secretary ledger notice recorded.");
+    setVoucherStatus("PRESIDENT_APPROVED");
+    setVoucherFeedback("President approval complete. Waiting for Financial Secretary final review.");
+  };
+
+  const financialSecretaryDecision = (decision: "approve" | "deny") => {
+    if (!session.isFinancialSecretary) {
+      setVoucherFeedback("Only the Financial Secretary account can approve or deny this final step.");
+      return;
+    }
+    if (voucherStatus !== "PRESIDENT_APPROVED") {
+      setVoucherFeedback("President approval is required before Financial Secretary action.");
+      return;
+    }
+
+    if (decision === "approve") {
+      setFinSecRecorded(true);
+      setVoucherStatus("FINALIZED");
+      setVoucherFeedback("Voucher finalized by Financial Secretary and recorded in ledger.");
+      return;
+    }
+
+    setFinSecRecorded(false);
+    setVoucherStatus("DENIED");
+    setVoucherFeedback("Financial Secretary denied this voucher. Treasurer must revise and resubmit.");
   };
 
   if (!sessionLoading && !session.isTreasuryAdmin) {
@@ -475,11 +520,12 @@ export function TreasuryPage() {
                   Session
                   <select
                     value={voucherRole}
-                    onChange={(e) => setVoucherRole(e.target.value as "treasurer" | "president")}
+                    onChange={(e) => setVoucherRole(e.target.value as "treasurer" | "president" | "financial_secretary")}
                     className="rounded-md border border-black/15 bg-white px-2 py-1 text-[11px] text-slate-900"
                   >
-                    <option value="treasurer">Treasurer (Initiator)</option>
-                    <option value="president">President (Approver)</option>
+                    {session.isTreasurer ? <option value="treasurer">Treasurer (Initiator)</option> : null}
+                    {session.isPresident ? <option value="president">President (Approver)</option> : null}
+                    {session.isFinancialSecretary ? <option value="financial_secretary">Financial Secretary (Approve / Deny)</option> : null}
                   </select>
                 </div>
               </div>
@@ -523,13 +569,13 @@ export function TreasuryPage() {
                     type="button"
                     onClick={submitVoucherAsTreasurer}
                     className="mt-4 w-full"
-                    disabled={voucherRole !== "treasurer" || voucherStatus !== "DRAFT"}
+                    disabled={!session.isTreasurer || voucherRole !== "treasurer" || voucherStatus !== "DRAFT"}
                   >
                     Submit for Presidential Approval
                   </Button>
                 </div>
                 <div className="rounded-lg border border-dashed border-black/20 bg-white p-4">
-                  <p className="text-xs uppercase tracking-widest text-slate-500">2. Presidential Countersignature</p>
+                  <p className="text-xs uppercase tracking-widest text-slate-500">2. Presidential Approval</p>
                   <p className="mt-2 text-sm text-slate-700">
                     {presidentSignatureAt ? `Signed /s/ Council President • ${presidentSignatureAt}` : "Awaiting Treasurer submission."}
                   </p>
@@ -537,9 +583,35 @@ export function TreasuryPage() {
                     type="button"
                     onClick={countersignVoucherAsPresident}
                     className="mt-4 w-full"
-                    disabled={voucherRole !== "president" || voucherStatus !== "SUBMITTED"}
+                    disabled={!session.isPresident || voucherRole !== "president" || voucherStatus !== "SUBMITTED"}
                   >
-                    Approve & Release Funds
+                    Approve for Financial Secretary Review
+                  </Button>
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-dashed border-black/20 bg-white p-4">
+                <p className="text-xs uppercase tracking-widest text-slate-500">3. Financial Secretary Decision</p>
+                <p className="mt-2 text-sm text-slate-700">
+                  {finSecRecorded ? "Approved /s/ Financial Secretary • Recorded in ledger." : "Awaiting Financial Secretary approval or denial."}
+                </p>
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <Button
+                    type="button"
+                    onClick={() => financialSecretaryDecision("approve")}
+                    className="w-full"
+                    disabled={!session.isFinancialSecretary || voucherRole !== "financial_secretary" || voucherStatus !== "PRESIDENT_APPROVED"}
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => financialSecretaryDecision("deny")}
+                    className="w-full"
+                    disabled={!session.isFinancialSecretary || voucherRole !== "financial_secretary" || voucherStatus !== "PRESIDENT_APPROVED"}
+                  >
+                    Deny
                   </Button>
                 </div>
               </div>
