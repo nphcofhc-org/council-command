@@ -8,6 +8,8 @@ export type CouncilSession = {
   isTreasuryAdmin: boolean;
   isSiteEditor: boolean;
   isPresident: boolean;
+  isTreasurer: boolean;
+  isFinancialSecretary: boolean;
 };
 
 export type AccessOverrideEntry = {
@@ -138,6 +140,8 @@ export async function fetchCouncilSession(): Promise<CouncilSession> {
     isTreasuryAdmin: Boolean(data?.isTreasuryAdmin),
     isSiteEditor: Boolean(data?.isSiteEditor),
     isPresident: Boolean(data?.isPresident),
+    isTreasurer: Boolean(data?.isTreasurer),
+    isFinancialSecretary: Boolean(data?.isFinancialSecretary),
   };
 }
 

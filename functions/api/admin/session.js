@@ -11,5 +11,7 @@ export async function onRequestGet({ request, env }) {
     isTreasuryAdmin: Boolean(session.isTreasuryAdmin),
     isSiteEditor: Boolean(session.isSiteEditor),
     isPresident: Boolean(session.isPresident),
+    isTreasurer: Boolean(session.isTreasurer),
+    isFinancialSecretary: Boolean(session.isFinancialSecretary),
   });
 }
