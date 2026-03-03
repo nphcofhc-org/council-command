@@ -199,6 +199,15 @@ export function ReimbursementRequestPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
+              <div className="rounded-lg border border-primary/25 bg-primary/5 p-4 text-sm text-slate-700">
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2">Bylaw Workflow Notice</p>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>Outgoing electronic payments require a properly authorized voucher before funds move.</li>
+                  <li>The President must countersign disbursement vouchers prior to release.</li>
+                  <li>Financial Secretary receipt and ledger records remain required for electronic transactions.</li>
+                </ul>
+              </div>
+
               {!session.authenticated ? (
                 <div className="rounded-lg border border-amber-400/30 bg-amber-500/10 p-4 text-sm text-amber-100">
                   You must be authenticated to submit. If you see this message, refresh and complete Access login.

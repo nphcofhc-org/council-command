@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "motion/react";
-import { BarChart3, Calculator, Copy, DollarSign, Download, FileText, Lock, Plus, RefreshCw, Save, Trash2, Wallet } from "lucide-react";
+import { BarChart3, Calculator, Copy, DollarSign, Download, FileText, Landmark, Lock, Plus, RefreshCw, Save, ShieldCheck, Trash2, Wallet } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -190,6 +190,21 @@ export function TreasuryPage() {
   const [typeFilter, setTypeFilter] = useState<"all" | TreasuryTxnType>("all");
   const [accountFilter, setAccountFilter] = useState<"all" | TreasuryAccount>("all");
   const [search, setSearch] = useState<string>("");
+  const [voucherRole, setVoucherRole] = useState<"treasurer" | "president">("treasurer");
+  const [voucherStatus, setVoucherStatus] = useState<"DRAFT" | "SUBMITTED" | "FINALIZED">("DRAFT");
+  const [voucherPayee, setVoucherPayee] = useState("");
+  const [voucherMethod, setVoucherMethod] = useState("");
+  const [voucherAmount, setVoucherAmount] = useState("");
+  const [voucherPurpose, setVoucherPurpose] = useState("");
+  const [treasurerSignatureAt, setTreasurerSignatureAt] = useState<string | null>(null);
+  const [presidentSignatureAt, setPresidentSignatureAt] = useState<string | null>(null);
+  const [finSecRecorded, setFinSecRecorded] = useState(false);
+  const [voucherFeedback, setVoucherFeedback] = useState<string | null>(null);
+
+  const voucherNumber = useMemo(() => {
+    const random = Math.floor(Math.random() * 900) + 100;
+    return `NPHCHC-${new Date().getFullYear()}-${random}`;
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -270,6 +285,29 @@ export function TreasuryPage() {
   }, [yearTxns]);
 
   const years = ["2026", "2025", "2024", "2023"];
+
+  const voucherReadyToSubmit = Boolean(voucherPayee.trim() && voucherMethod && voucherPurpose.trim() && Number(voucherAmount) > 0);
+
+  const submitVoucherAsTreasurer = () => {
+    if (!voucherReadyToSubmit) {
+      setVoucherFeedback("Complete payee, method, amount, and purpose before submitting a voucher.");
+      return;
+    }
+    setTreasurerSignatureAt(new Date().toLocaleString());
+    setVoucherStatus("SUBMITTED");
+    setVoucherFeedback("Voucher submitted. Switch role to President for countersignature and release.");
+  };
+
+  const countersignVoucherAsPresident = () => {
+    if (voucherStatus !== "SUBMITTED") {
+      setVoucherFeedback("Treasurer must submit the voucher before presidential countersignature.");
+      return;
+    }
+    setPresidentSignatureAt(new Date().toLocaleString());
+    setVoucherStatus("FINALIZED");
+    setFinSecRecorded(true);
+    setVoucherFeedback("Voucher finalized. Financial Secretary ledger notice recorded.");
+  };
 
   if (!sessionLoading && !session.isTreasuryAdmin) {
     return (
@@ -397,6 +435,127 @@ export function TreasuryPage() {
             </Card>
           </div>
         </motion.div>
+
+        <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ShieldCheck className="size-5" />
+              Electronic Payments & Voucher Controls
+            </CardTitle>
+            <CardDescription>Built to align incoming/outgoing electronic payment handling with bylaw-required officer oversight.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid gap-4 lg:grid-cols-2">
+              <div className="rounded-xl border border-black/10 bg-white/5 p-4 sm:p-5 space-y-3">
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Receiving Electronic Payments (Incoming)</p>
+                <ul className="list-disc space-y-2 pl-5 text-sm text-slate-700">
+                  <li><strong>Financial Secretary</strong> receives all incoming funds and maintains receipts/transaction records.</li>
+                  <li>After receipt, funds transfer to the <strong>Treasurer</strong> for bank deposit.</li>
+                  <li>Itemized electronic revenue is included in the <strong>State of Council Financial Report</strong>.</li>
+                </ul>
+              </div>
+              <div className="rounded-xl border border-black/10 bg-white/5 p-4 sm:p-5 space-y-3">
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Making Electronic Payments (Outgoing)</p>
+                <ul className="list-disc space-y-2 pl-5 text-sm text-slate-700">
+                  <li>Treasurer issues payment <strong>only after an authorized voucher</strong> is submitted.</li>
+                  <li><strong>President countersigns</strong> vouchers prior to disbursement.</li>
+                  <li><strong>Dual control</strong> is recommended: one officer initiates, second officer approves/releases.</li>
+                  <li>Electronic methods must respect the council&apos;s <strong>multi-officer authorization protocol</strong>.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-black/10 bg-white/5 p-4 sm:p-6 space-y-5">
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Official Electronic Disbursement Voucher</p>
+                  <p className="text-lg font-extrabold text-slate-900">Voucher #{voucherNumber}</p>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  Session
+                  <select
+                    value={voucherRole}
+                    onChange={(e) => setVoucherRole(e.target.value as "treasurer" | "president")}
+                    className="rounded-md border border-black/15 bg-white px-2 py-1 text-[11px] text-slate-900"
+                  >
+                    <option value="treasurer">Treasurer (Initiator)</option>
+                    <option value="president">President (Approver)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-1">
+                  <Label>Payee Name</Label>
+                  <Input value={voucherPayee} onChange={(e) => setVoucherPayee(e.target.value)} placeholder="Individual or entity" />
+                </div>
+                <div className="space-y-1">
+                  <Label>Payment Method</Label>
+                  <select
+                    value={voucherMethod}
+                    onChange={(e) => setVoucherMethod(e.target.value)}
+                    className="w-full rounded-md border border-black/15 bg-white/60 px-3 py-2 text-sm text-slate-900"
+                  >
+                    <option value="">Select method</option>
+                    <option value="Cash App">Cash App</option>
+                    <option value="ACH">ACH Transfer</option>
+                    <option value="Business Bill Pay">Business Bill Pay</option>
+                    <option value="Check">Physical Check</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <Label>Amount (USD)</Label>
+                  <Input value={voucherAmount} onChange={(e) => setVoucherAmount(e.target.value)} type="number" step="0.01" min="0" placeholder="0.00" />
+                </div>
+                <div className="space-y-1 md:col-span-2">
+                  <Label>Budget Line / Purpose</Label>
+                  <Textarea value={voucherPurpose} onChange={(e) => setVoucherPurpose(e.target.value)} rows={2} placeholder="Describe purpose and supporting authority." />
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="rounded-lg border border-dashed border-black/20 bg-white p-4">
+                  <p className="text-xs uppercase tracking-widest text-slate-500">1. Treasurer Submission</p>
+                  <p className="mt-2 text-sm text-slate-700">
+                    {treasurerSignatureAt ? `Signed /s/ Authorized Treasurer • ${treasurerSignatureAt}` : "Electronic signature pending."}
+                  </p>
+                  <Button
+                    type="button"
+                    onClick={submitVoucherAsTreasurer}
+                    className="mt-4 w-full"
+                    disabled={voucherRole !== "treasurer" || voucherStatus !== "DRAFT"}
+                  >
+                    Submit for Presidential Approval
+                  </Button>
+                </div>
+                <div className="rounded-lg border border-dashed border-black/20 bg-white p-4">
+                  <p className="text-xs uppercase tracking-widest text-slate-500">2. Presidential Countersignature</p>
+                  <p className="mt-2 text-sm text-slate-700">
+                    {presidentSignatureAt ? `Signed /s/ Council President • ${presidentSignatureAt}` : "Awaiting Treasurer submission."}
+                  </p>
+                  <Button
+                    type="button"
+                    onClick={countersignVoucherAsPresident}
+                    className="mt-4 w-full"
+                    disabled={voucherRole !== "president" || voucherStatus !== "SUBMITTED"}
+                  >
+                    Approve & Release Funds
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-black/10 bg-slate-50 p-3 text-xs uppercase tracking-wider text-slate-500">
+                <span className="inline-flex items-center gap-1"><Landmark className="size-3.5" /> Status: {voucherStatus}</span>
+                <span>Financial Secretary Record: {finSecRecorded ? "Recorded in ledger" : "Awaiting final approval"}</span>
+              </div>
+
+              {voucherFeedback ? <p className="text-sm font-medium text-slate-700">{voucherFeedback}</p> : null}
+              <p className="text-xs text-slate-500">
+                Governance note: LendingClub online banking, ACH, and bill pay are treated as cash management services and do not waive voucher authorization or multi-officer approval requirements.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
           <CardHeader>
