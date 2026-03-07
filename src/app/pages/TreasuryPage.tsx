@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "motion/react";
-import { BarChart3, Calculator, Copy, DollarSign, Download, FileText, Landmark, Lock, Plus, RefreshCw, Save, ShieldCheck, Trash2, Wallet } from "lucide-react";
+import { BarChart3, Calculator, Check, Copy, DollarSign, Download, FileText, Landmark, Lock, Plus, RefreshCw, Save, ShieldCheck, Trash2, Wallet } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -52,6 +52,21 @@ const EMPTY_REPORTING: TreasuryReportingToolsState = {
   statements: [],
   onePagers: [],
 };
+
+const TREASURY_VOUCHER_STORAGE_KEY = "nphc-treasury-voucher-workflow-v1";
+
+type VoucherNotification = {
+  id: string;
+  role: "treasurer" | "president" | "financial_secretary";
+  title: string;
+  message: string;
+  createdAt: string;
+};
+
+function createVoucherNumber() {
+  const random = Math.floor(Math.random() * 900) + 100;
+  return `NPHCHC-${new Date().getFullYear()}-${random}`;
+}
 
 type StatementDraft = {
   account: "LendingClub" | "Cash App";
@@ -192,15 +207,23 @@ export function TreasuryPage() {
   const [search, setSearch] = useState<string>("");
   const [voucherRole, setVoucherRole] = useState<"treasurer" | "president" | "financial_secretary">("treasurer");
   const [voucherStatus, setVoucherStatus] = useState<"DRAFT" | "SUBMITTED" | "PRESIDENT_APPROVED" | "PAYMENT_SUBMITTED">("DRAFT");
+  const [voucherNumber, setVoucherNumber] = useState(() => createVoucherNumber());
   const [voucherPayee, setVoucherPayee] = useState("");
   const [voucherMethod, setVoucherMethod] = useState("");
   const [voucherAmount, setVoucherAmount] = useState("");
   const [voucherPurpose, setVoucherPurpose] = useState("");
+  const [voucherCashAppHandle, setVoucherCashAppHandle] = useState("");
+  const [voucherPaymentLink, setVoucherPaymentLink] = useState("");
+  const [voucherRecipientEmail, setVoucherRecipientEmail] = useState("");
+  const [voucherRoutingNumber, setVoucherRoutingNumber] = useState("");
+  const [voucherAccountNumber, setVoucherAccountNumber] = useState("");
+  const [voucherMailingAddress, setVoucherMailingAddress] = useState("");
   const [treasurerSignatureAt, setTreasurerSignatureAt] = useState<string | null>(null);
   const [presidentSignatureAt, setPresidentSignatureAt] = useState<string | null>(null);
   const [finSecSubmittedAt, setFinSecSubmittedAt] = useState<string | null>(null);
   const [voucherFeedback, setVoucherFeedback] = useState<string | null>(null);
-
+  const [voucherNotifications, setVoucherNotifications] = useState<VoucherNotification[]>([]);
+  const [voucherHydrated, setVoucherHydrated] = useState(false);
 
   useEffect(() => {
     if (sessionLoading) return;
@@ -217,10 +240,100 @@ export function TreasuryPage() {
     }
   }, [session.isFinancialSecretary, session.isPresident, session.isTreasurer, sessionLoading]);
 
-  const voucherNumber = useMemo(() => {
-    const random = Math.floor(Math.random() * 900) + 100;
-    return `NPHCHC-${new Date().getFullYear()}-${random}`;
+  useEffect(() => {
+    const raw = window.localStorage.getItem(TREASURY_VOUCHER_STORAGE_KEY);
+    if (!raw) {
+      setVoucherHydrated(true);
+      return;
+    }
+    try {
+      const parsed = JSON.parse(raw) as Partial<{
+        voucherNumber: string;
+        voucherStatus: "DRAFT" | "SUBMITTED" | "PRESIDENT_APPROVED" | "PAYMENT_SUBMITTED";
+        voucherPayee: string;
+        voucherMethod: string;
+        voucherAmount: string;
+        voucherPurpose: string;
+        voucherCashAppHandle: string;
+        voucherPaymentLink: string;
+        voucherRecipientEmail: string;
+        voucherRoutingNumber: string;
+        voucherAccountNumber: string;
+        voucherMailingAddress: string;
+        treasurerSignatureAt: string | null;
+        presidentSignatureAt: string | null;
+        finSecSubmittedAt: string | null;
+        voucherFeedback: string | null;
+        voucherNotifications: VoucherNotification[];
+      }>;
+      if (parsed.voucherNumber) setVoucherNumber(parsed.voucherNumber);
+      if (parsed.voucherStatus) setVoucherStatus(parsed.voucherStatus);
+      if (typeof parsed.voucherPayee === "string") setVoucherPayee(parsed.voucherPayee);
+      if (typeof parsed.voucherMethod === "string") setVoucherMethod(parsed.voucherMethod);
+      if (typeof parsed.voucherAmount === "string") setVoucherAmount(parsed.voucherAmount);
+      if (typeof parsed.voucherPurpose === "string") setVoucherPurpose(parsed.voucherPurpose);
+      if (typeof parsed.voucherCashAppHandle === "string") setVoucherCashAppHandle(parsed.voucherCashAppHandle);
+      if (typeof parsed.voucherPaymentLink === "string") setVoucherPaymentLink(parsed.voucherPaymentLink);
+      if (typeof parsed.voucherRecipientEmail === "string") setVoucherRecipientEmail(parsed.voucherRecipientEmail);
+      if (typeof parsed.voucherRoutingNumber === "string") setVoucherRoutingNumber(parsed.voucherRoutingNumber);
+      if (typeof parsed.voucherAccountNumber === "string") setVoucherAccountNumber(parsed.voucherAccountNumber);
+      if (typeof parsed.voucherMailingAddress === "string") setVoucherMailingAddress(parsed.voucherMailingAddress);
+      if ("treasurerSignatureAt" in parsed) setTreasurerSignatureAt(parsed.treasurerSignatureAt || null);
+      if ("presidentSignatureAt" in parsed) setPresidentSignatureAt(parsed.presidentSignatureAt || null);
+      if ("finSecSubmittedAt" in parsed) setFinSecSubmittedAt(parsed.finSecSubmittedAt || null);
+      if ("voucherFeedback" in parsed) setVoucherFeedback(parsed.voucherFeedback || null);
+      if (Array.isArray(parsed.voucherNotifications)) setVoucherNotifications(parsed.voucherNotifications);
+    } catch {
+      window.localStorage.removeItem(TREASURY_VOUCHER_STORAGE_KEY);
+    } finally {
+      setVoucherHydrated(true);
+    }
   }, []);
+
+  useEffect(() => {
+    if (!voucherHydrated) return;
+    window.localStorage.setItem(
+      TREASURY_VOUCHER_STORAGE_KEY,
+      JSON.stringify({
+        voucherNumber,
+        voucherStatus,
+        voucherPayee,
+        voucherMethod,
+        voucherAmount,
+        voucherPurpose,
+        voucherCashAppHandle,
+        voucherPaymentLink,
+        voucherRecipientEmail,
+        voucherRoutingNumber,
+        voucherAccountNumber,
+        voucherMailingAddress,
+        treasurerSignatureAt,
+        presidentSignatureAt,
+        finSecSubmittedAt,
+        voucherFeedback,
+        voucherNotifications,
+      }),
+    );
+  }, [
+    finSecSubmittedAt,
+    presidentSignatureAt,
+    treasurerSignatureAt,
+    voucherAccountNumber,
+    voucherAmount,
+    voucherCashAppHandle,
+    voucherFeedback,
+    voucherHydrated,
+    voucherMailingAddress,
+    voucherMethod,
+    voucherNotifications,
+    voucherNumber,
+    voucherPayee,
+    voucherPaymentLink,
+    voucherPurpose,
+    voucherRecipientEmail,
+    voucherRoutingNumber,
+    voucherStatus,
+  ]);
 
   useEffect(() => {
     let cancelled = false;
@@ -302,7 +415,80 @@ export function TreasuryPage() {
 
   const years = ["2026", "2025", "2024", "2023"];
 
-  const voucherReadyToSubmit = Boolean(voucherPayee.trim() && voucherMethod && voucherPurpose.trim() && Number(voucherAmount) > 0);
+  const voucherMethodRequirement = useMemo(() => {
+    if (voucherMethod === "Cash App") {
+      const ok = Boolean(voucherCashAppHandle.trim() || voucherPaymentLink.trim());
+      return {
+        ok,
+        message: "Add the recipient Cash App handle or payment link.",
+      };
+    }
+    if (voucherMethod === "ACH") {
+      const ok = Boolean(voucherRecipientEmail.trim() && voucherRoutingNumber.trim() && voucherAccountNumber.trim());
+      return {
+        ok,
+        message: "Add ACH recipient email, routing number, and account number.",
+      };
+    }
+    if (voucherMethod === "Business Bill Pay") {
+      const ok = Boolean(voucherMailingAddress.trim() || voucherRecipientEmail.trim());
+      return {
+        ok,
+        message: "Add a remittance address or billing contact email.",
+      };
+    }
+    if (voucherMethod === "Check") {
+      const ok = Boolean(voucherMailingAddress.trim());
+      return {
+        ok,
+        message: "Add the mailing address for the check remittance.",
+      };
+    }
+    return {
+      ok: false,
+      message: "Select a payment method.",
+    };
+  }, [voucherAccountNumber, voucherCashAppHandle, voucherMailingAddress, voucherMethod, voucherPaymentLink, voucherRecipientEmail, voucherRoutingNumber]);
+
+  const voucherReadyToSubmit = Boolean(
+    voucherPayee.trim() &&
+    voucherMethod &&
+    voucherPurpose.trim() &&
+    Number(voucherAmount) > 0 &&
+    voucherMethodRequirement.ok,
+  );
+
+  const pushVoucherNotifications = (notifications: Omit<VoucherNotification, "id" | "createdAt">[]) => {
+    const createdAt = new Date().toLocaleString();
+    setVoucherNotifications((current) => [
+      ...notifications.map((item, idx) => ({
+        ...item,
+        id: `${Date.now()}-${idx}-${item.role}`,
+        createdAt,
+      })),
+      ...current,
+    ].slice(0, 18));
+  };
+
+  const resetVoucherWorkflow = () => {
+    setVoucherNumber(createVoucherNumber());
+    setVoucherStatus("DRAFT");
+    setVoucherPayee("");
+    setVoucherMethod("");
+    setVoucherAmount("");
+    setVoucherPurpose("");
+    setVoucherCashAppHandle("");
+    setVoucherPaymentLink("");
+    setVoucherRecipientEmail("");
+    setVoucherRoutingNumber("");
+    setVoucherAccountNumber("");
+    setVoucherMailingAddress("");
+    setTreasurerSignatureAt(null);
+    setPresidentSignatureAt(null);
+    setFinSecSubmittedAt(null);
+    setVoucherFeedback("New voucher is ready for submission.");
+    setVoucherNotifications([]);
+  };
 
   const submitVoucherAsTreasurer = () => {
     if (!session.isTreasurer) {
@@ -310,12 +496,25 @@ export function TreasuryPage() {
       return;
     }
     if (!voucherReadyToSubmit) {
-      setVoucherFeedback("Complete payee, method, amount, and purpose before submitting a voucher.");
+      setVoucherFeedback(`Complete payee, method, amount, purpose, and payment details before submitting. ${voucherMethodRequirement.message}`);
       return;
     }
-    setTreasurerSignatureAt(new Date().toLocaleString());
+    const submittedAt = new Date().toLocaleString();
+    setTreasurerSignatureAt(submittedAt);
     setVoucherStatus("SUBMITTED");
     setVoucherFeedback("Voucher submitted for President approval.");
+    pushVoucherNotifications([
+      {
+        role: "treasurer",
+        title: "Voucher initiated",
+        message: `Voucher ${voucherNumber} was initiated and routed for President approval.`,
+      },
+      {
+        role: "president",
+        title: "Signature required",
+        message: `Voucher ${voucherNumber} requires formal approval for ${voucherPayee || "this payee"}.`,
+      },
+    ]);
   };
 
   const countersignVoucherAsPresident = () => {
@@ -327,9 +526,27 @@ export function TreasuryPage() {
       setVoucherFeedback("Treasurer must submit the voucher before presidential countersignature.");
       return;
     }
-    setPresidentSignatureAt(new Date().toLocaleString());
+    const approvedAt = new Date().toLocaleString();
+    setPresidentSignatureAt(approvedAt);
     setVoucherStatus("PRESIDENT_APPROVED");
     setVoucherFeedback("President approval complete. Financial Secretary has been alerted to submit the payment.");
+    pushVoucherNotifications([
+      {
+        role: "president",
+        title: "Voucher approved",
+        message: `Voucher ${voucherNumber} was formally approved at ${approvedAt}.`,
+      },
+      {
+        role: "financial_secretary",
+        title: "Payment submission required",
+        message: `Voucher ${voucherNumber} is ready for payment submission.`,
+      },
+      {
+        role: "treasurer",
+        title: "Voucher approved",
+        message: `Voucher ${voucherNumber} has cleared presidential approval.`,
+      },
+    ]);
   };
 
   const submitPaymentAsFinancialSecretary = () => {
@@ -345,6 +562,23 @@ export function TreasuryPage() {
     setFinSecSubmittedAt(submittedAt);
     setVoucherStatus("PAYMENT_SUBMITTED");
     setVoucherFeedback("Payment submitted by the Financial Secretary and recorded as disbursed.");
+    pushVoucherNotifications([
+      {
+        role: "financial_secretary",
+        title: "Payment submitted",
+        message: `Voucher ${voucherNumber} was paid and recorded at ${submittedAt}.`,
+      },
+      {
+        role: "president",
+        title: "Voucher paid",
+        message: `Voucher ${voucherNumber} has been paid and logged by the Financial Secretary.`,
+      },
+      {
+        role: "treasurer",
+        title: "Voucher paid",
+        message: `Voucher ${voucherNumber} has been submitted for payment and closed out.`,
+      },
+    ]);
   };
 
   const voucherTimeline = useMemo(() => {
@@ -572,18 +806,24 @@ export function TreasuryPage() {
                 <div>
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Official Electronic Disbursement Voucher</p>
                   <p className="text-lg font-extrabold text-slate-900">Voucher #{voucherNumber}</p>
+                  <p className="text-xs text-slate-500 mt-1">Electronic signatures and timestamps are preserved until a new voucher is started.</p>
                 </div>
-                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  Session
-                  <select
-                    value={voucherRole}
-                    onChange={(e) => setVoucherRole(e.target.value as "treasurer" | "president" | "financial_secretary")}
-                    className="rounded-md border border-black/15 bg-white px-2 py-1 text-[11px] text-slate-900"
-                  >
-                    {session.isTreasurer ? <option value="treasurer">Treasurer (Initiator)</option> : null}
-                    {session.isPresident ? <option value="president">President (Approver)</option> : null}
-                    {session.isFinancialSecretary ? <option value="financial_secretary">Financial Secretary (Payment Submission)</option> : null}
-                  </select>
+                <div className="flex items-center gap-2 flex-wrap text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  <div className="flex items-center gap-2">
+                    Session
+                    <select
+                      value={voucherRole}
+                      onChange={(e) => setVoucherRole(e.target.value as "treasurer" | "president" | "financial_secretary")}
+                      className="rounded-md border border-black/15 bg-white px-2 py-1 text-[11px] text-slate-900"
+                    >
+                      {session.isTreasurer ? <option value="treasurer">Treasurer (Initiator)</option> : null}
+                      {session.isPresident ? <option value="president">President (Approver)</option> : null}
+                      {session.isFinancialSecretary ? <option value="financial_secretary">Financial Secretary (Payment Submission)</option> : null}
+                    </select>
+                  </div>
+                  <Button type="button" variant="outline" size="sm" onClick={resetVoucherWorkflow} className="h-8 border-black/15 bg-white text-[11px] text-slate-700">
+                    Start New Voucher
+                  </Button>
                 </div>
               </div>
 
@@ -614,6 +854,62 @@ export function TreasuryPage() {
                   <Label>Budget Line / Purpose</Label>
                   <Textarea value={voucherPurpose} onChange={(e) => setVoucherPurpose(e.target.value)} rows={2} placeholder="Describe purpose and supporting authority." />
                 </div>
+              </div>
+
+              <div className="rounded-lg border border-black/10 bg-slate-50 p-4">
+                <p className="text-xs uppercase tracking-widest text-slate-500">Payment Destination Details</p>
+                <div className="mt-3 grid gap-4 md:grid-cols-2">
+                  {voucherMethod === "Cash App" ? (
+                    <>
+                      <div className="space-y-1">
+                        <Label>Cash App Handle</Label>
+                        <Input value={voucherCashAppHandle} onChange={(e) => setVoucherCashAppHandle(e.target.value)} placeholder="$cashtag" />
+                      </div>
+                      <div className="space-y-1">
+                        <Label>Cash App Payment Link</Label>
+                        <Input value={voucherPaymentLink} onChange={(e) => setVoucherPaymentLink(e.target.value)} placeholder="https://cash.app/..." />
+                      </div>
+                    </>
+                  ) : null}
+                  {voucherMethod === "ACH" ? (
+                    <>
+                      <div className="space-y-1">
+                        <Label>Recipient Email</Label>
+                        <Input value={voucherRecipientEmail} onChange={(e) => setVoucherRecipientEmail(e.target.value)} type="email" placeholder="recipient@example.org" />
+                      </div>
+                      <div className="space-y-1">
+                        <Label>Routing Number</Label>
+                        <Input value={voucherRoutingNumber} onChange={(e) => setVoucherRoutingNumber(e.target.value)} placeholder="9-digit routing number" />
+                      </div>
+                      <div className="space-y-1">
+                        <Label>Account Number</Label>
+                        <Input value={voucherAccountNumber} onChange={(e) => setVoucherAccountNumber(e.target.value)} placeholder="Account number for transfer" />
+                      </div>
+                    </>
+                  ) : null}
+                  {voucherMethod === "Business Bill Pay" ? (
+                    <>
+                      <div className="space-y-1">
+                        <Label>Billing Contact Email</Label>
+                        <Input value={voucherRecipientEmail} onChange={(e) => setVoucherRecipientEmail(e.target.value)} type="email" placeholder="billing@example.org" />
+                      </div>
+                      <div className="space-y-1 md:col-span-2">
+                        <Label>Remittance Address</Label>
+                        <Textarea value={voucherMailingAddress} onChange={(e) => setVoucherMailingAddress(e.target.value)} rows={2} placeholder="Mailing address for bill pay remittance" />
+                      </div>
+                    </>
+                  ) : null}
+                  {voucherMethod === "Check" ? (
+                    <div className="space-y-1 md:col-span-2">
+                      <Label>Mailing Address</Label>
+                      <Textarea value={voucherMailingAddress} onChange={(e) => setVoucherMailingAddress(e.target.value)} rows={2} placeholder="Address where the check should be mailed" />
+                    </div>
+                  ) : null}
+                  {!voucherMethod ? (
+                    <p className="text-sm text-slate-600 md:col-span-2">Select a payment method to show the required payment destination fields.</p>
+                  ) : null}
+                </div>
+                <p className="mt-3 text-xs text-slate-500">{voucherMethodRequirement.message}</p>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
@@ -674,12 +970,40 @@ export function TreasuryPage() {
               </div>
 
               <div className="rounded-lg border border-black/10 bg-slate-50 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs uppercase tracking-widest text-slate-500">Workflow Notifications</p>
+                  <Button type="button" variant="outline" size="sm" onClick={() => setVoucherNotifications([])} className="h-8 border-black/15 bg-white text-xs text-slate-700">
+                    Clear Feed
+                  </Button>
+                </div>
+                <div className="mt-3 space-y-3">
+                  {voucherNotifications.length ? voucherNotifications.map((notification) => {
+                    const activeNotification = notification.role === voucherRole;
+                    return (
+                      <div key={notification.id} className={`rounded-lg border p-3 ${activeNotification ? "border-primary/40 bg-primary/10" : "border-black/10 bg-white"}`}>
+                        <div className="flex items-center justify-between gap-3">
+                          <p className="text-sm font-semibold text-slate-900">{notification.title}</p>
+                          <span className="rounded-full border border-black/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600">
+                            {notification.role.replace("_", " ")}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-sm text-slate-700">{notification.message}</p>
+                        <p className="mt-1 text-xs text-slate-500">{notification.createdAt}</p>
+                      </div>
+                    );
+                  }) : (
+                    <p className="text-sm text-slate-600">Notifications will populate here as the voucher is initiated, approved, and paid.</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-black/10 bg-slate-50 p-4">
                 <p className="text-xs uppercase tracking-widest text-slate-500">Voucher Timeline</p>
                 <div className="mt-3 space-y-3">
                   {voucherTimeline.map((item, idx) => (
                     <div key={item.title} className="flex items-start gap-3">
                       <div className={`mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${item.done ? "bg-primary text-primary-foreground" : "border border-black/15 bg-white text-slate-500"}`}>
-                        {idx + 1}
+                        {item.done ? <Check className="size-3.5" /> : idx + 1}
                       </div>
                       <div className="min-w-0">
                         <p className="text-sm font-semibold text-slate-900">{item.title}</p>
