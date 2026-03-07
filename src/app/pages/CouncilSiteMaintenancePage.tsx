@@ -25,6 +25,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { PresidentGate } from "../components/PresidentGate";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/ui/accordion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -327,6 +328,33 @@ export function CouncilSiteMaintenancePage() {
     () => JSON.stringify(matrix) !== JSON.stringify(baseMatrix),
     [matrix, baseMatrix],
   );
+
+  const groupedRecentActivity = useMemo(() => {
+    const grouped = new Map<string, {
+      key: string;
+      label: string;
+      lastSeenAt: string | null;
+      events: Array<{ email: string | null; eventType: string; path: string | null; createdAt: string | null }>;
+    }>();
+
+    metrics.recentActivity.forEach((row, idx) => {
+      const email = row.email ? String(row.email).trim().toLowerCase() : "";
+      const key = email || `unknown-${idx}`;
+      const existing = grouped.get(key);
+      if (existing) {
+        existing.events.push(row);
+        return;
+      }
+      grouped.set(key, {
+        key,
+        label: email || "Unknown user",
+        lastSeenAt: row.createdAt || null,
+        events: [row],
+      });
+    });
+
+    return Array.from(grouped.values());
+  }, [metrics.recentActivity]);
 
   const setAccess = (key: AccessKey, email: string, checked: boolean) => {
     setMatrix((prev) => ({
@@ -1049,38 +1077,49 @@ export function CouncilSiteMaintenancePage() {
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardHeader>
               <CardTitle className="text-lg">Recent Authenticated Activity</CardTitle>
-              <CardDescription>Latest portal events from logged-in users.</CardDescription>
+              <CardDescription>Users are ordered by latest authenticated activity. Expand a user to review grouped events.</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm">
-                  <thead>
-                    <tr className="border-b border-black/10 text-xs uppercase tracking-widest text-slate-500">
-                      <th className="px-2 py-2">Time</th>
-                      <th className="px-2 py-2">User</th>
-                      <th className="px-2 py-2">Event</th>
-                      <th className="px-2 py-2">Path</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {metrics.recentActivity.map((row, idx) => (
-                      <tr key={`${row.createdAt || "na"}-${idx}`} className="border-b border-black/5">
-                        <td className="px-2 py-2 text-slate-500">
-                          {row.createdAt ? new Date(row.createdAt).toLocaleString() : "—"}
-                        </td>
-                        <td className="px-2 py-2 text-slate-800">{row.email || "Unknown"}</td>
-                        <td className="px-2 py-2 text-slate-700">{row.eventType || "page_view"}</td>
-                        <td className="px-2 py-2 text-slate-600">{row.path || "—"}</td>
-                      </tr>
-                    ))}
-                    {metrics.recentActivity.length === 0 ? (
-                      <tr>
-                        <td colSpan={4} className="px-2 py-4 text-center text-slate-500">No activity captured yet.</td>
-                      </tr>
-                    ) : null}
-                  </tbody>
-                </table>
-              </div>
+              {groupedRecentActivity.length === 0 ? (
+                <div className="rounded-xl border border-black/10 bg-white/5 px-4 py-6 text-center text-sm text-slate-500">
+                  No activity captured yet.
+                </div>
+              ) : (
+                <Accordion type="single" collapsible className="rounded-xl border border-black/10 bg-white/5 px-4 sm:px-5">
+                  {groupedRecentActivity.map((user) => (
+                    <AccordionItem key={user.key} value={user.key} className="border-b border-black/10 last:border-b-0">
+                      <AccordionTrigger className="py-4 hover:no-underline">
+                        <div className="flex min-w-0 flex-1 items-start justify-between gap-4 pr-2">
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold text-slate-900">{user.label}</p>
+                            <p className="mt-1 text-xs text-slate-500">
+                              Last activity: {user.lastSeenAt ? new Date(user.lastSeenAt).toLocaleString() : "—"}
+                            </p>
+                          </div>
+                          <span className="flex-shrink-0 rounded-full border border-black/10 bg-white/70 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+                            {user.events.length} event{user.events.length === 1 ? "" : "s"}
+                          </span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="pb-4">
+                        <div className="space-y-2">
+                          {user.events.map((row, idx) => (
+                            <div key={`${user.key}-${row.createdAt || "na"}-${idx}`} className="rounded-lg border border-black/10 bg-white/60 px-3 py-3">
+                              <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                                <p className="text-sm font-medium text-slate-800">{row.eventType || "page_view"}</p>
+                                <p className="text-xs text-slate-500">
+                                  {row.createdAt ? new Date(row.createdAt).toLocaleString() : "—"}
+                                </p>
+                              </div>
+                              <p className="mt-1 text-xs text-slate-600">Path: {row.path || "—"}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              )}
             </CardContent>
           </Card>
         </div>

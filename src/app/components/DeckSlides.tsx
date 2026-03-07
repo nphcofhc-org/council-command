@@ -1,9 +1,9 @@
 import {
   Lightbulb, Eye, Settings, Link2,
   FileText, Cpu, Sun, Package, Trophy, Heart, ChevronRight, Star, AlertCircle,
-  ExternalLink, DollarSign
+  ExternalLink, DollarSign, Download
 } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { VoteWidget, VoteSummary } from './VoteWidget';
 import { useMeeting } from './MeetingContext';
 
@@ -578,16 +578,59 @@ export function Slide5AdoptionOfMinutes({ isMobile = false }: { isMobile?: boole
 // ─── Slide 6: Treasurer's Report ─────────────────────────────────────────────
 
 export function Slide6TreasurerReport({ isMobile = false }: { isMobile?: boolean }) {
+  const reportFrameRef = useRef<HTMLIFrameElement | null>(null);
+
+  const handleExportPdf = () => {
+    const frameWindow = reportFrameRef.current?.contentWindow;
+    if (!frameWindow) return;
+    frameWindow.focus();
+    frameWindow.print();
+  };
+
   return (
     <div style={{ width: '100%', height: '100%', background: '#0f172a', padding: isMobile ? 8 : 10, boxSizing: 'border-box' }}>
-      <div style={{ width: '100%', height: '100%', borderRadius: isMobile ? 12 : 16, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 10px 30px rgba(0,0,0,0.22)' }}>
+      <div style={{ width: '100%', height: '100%', borderRadius: isMobile ? 12 : 16, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 10px 30px rgba(0,0,0,0.22)', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: isMobile ? '8px 10px' : '10px 12px', borderBottom: '1px solid rgba(255,255,255,0.08)', background: 'rgba(15,23,42,0.96)', flexShrink: 0 }}>
+          <div>
+            <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: isMobile ? '0.62rem' : '0.58rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase' }}>
+              Treasurer&apos;s Report
+            </div>
+            <div style={{ color: '#FFFFFF', fontSize: isMobile ? '0.9rem' : '0.78rem', fontWeight: 700 }}>
+              Export the current briefing as PDF
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={handleExportPdf}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              border: '1px solid rgba(255,255,255,0.14)',
+              background: 'rgba(255,255,255,0.08)',
+              color: '#FFFFFF',
+              borderRadius: 999,
+              padding: isMobile ? '7px 10px' : '7px 12px',
+              fontSize: isMobile ? '0.72rem' : '0.66rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+            }}
+            title="Open print dialog to save the Treasurer's Report as PDF"
+          >
+            <Download size={14} />
+            Export PDF
+          </button>
+        </div>
+        <div style={{ flex: 1, minHeight: 0 }}>
         <iframe
+          ref={reportFrameRef}
           title="Treasurer Report"
           srcDoc={TREASURER_REPORT_EMBED_HTML}
           sandbox="allow-scripts allow-same-origin"
           loading="eager"
           style={{ width: '100%', height: '100%', border: 'none', background: '#0f172a' }}
         />
+        </div>
       </div>
     </div>
   );
