@@ -19,6 +19,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "..
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../components/ui/dialog";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
@@ -61,6 +62,7 @@ type VoucherNotification = {
   title: string;
   message: string;
   createdAt: string;
+  acknowledgedRoles?: Array<"treasurer" | "president" | "financial_secretary">;
 };
 
 function createVoucherNumber() {
@@ -224,6 +226,7 @@ export function TreasuryPage() {
   const [voucherFeedback, setVoucherFeedback] = useState<string | null>(null);
   const [voucherNotifications, setVoucherNotifications] = useState<VoucherNotification[]>([]);
   const [voucherHydrated, setVoucherHydrated] = useState(false);
+  const [voucherNotificationModalOpen, setVoucherNotificationModalOpen] = useState(false);
 
   useEffect(() => {
     if (sessionLoading) return;
@@ -423,6 +426,13 @@ export function TreasuryPage() {
         message: "Add the recipient Cash App handle or payment link.",
       };
     }
+    if (voucherMethod === "Zeffy") {
+      const ok = Boolean(voucherRecipientEmail.trim());
+      return {
+        ok,
+        message: "Add the billing contact email used for Zeffy remittance.",
+      };
+    }
     if (voucherMethod === "ACH") {
       const ok = Boolean(voucherRecipientEmail.trim() && voucherRoutingNumber.trim() && voucherAccountNumber.trim());
       return {
@@ -488,6 +498,7 @@ export function TreasuryPage() {
     setFinSecSubmittedAt(null);
     setVoucherFeedback("New voucher is ready for submission.");
     setVoucherNotifications([]);
+    setVoucherNotificationModalOpen(false);
   };
 
   const submitVoucherAsTreasurer = () => {
@@ -502,7 +513,7 @@ export function TreasuryPage() {
     const submittedAt = new Date().toLocaleString();
     setTreasurerSignatureAt(submittedAt);
     setVoucherStatus("SUBMITTED");
-    setVoucherFeedback("Voucher submitted for President approval.");
+    setVoucherFeedback("Voucher submitted. President has been alerted for review, and the Treasurer confirmation is recorded on the timeline.");
     pushVoucherNotifications([
       {
         role: "treasurer",
@@ -645,6 +656,37 @@ export function TreasuryPage() {
     };
   }, [session.isFinancialSecretary, session.isPresident, session.isTreasurer, voucherRole, voucherStatus]);
 
+  const pendingVoucherNotification = useMemo(
+    () =>
+      voucherNotifications.find(
+        (notification) =>
+          notification.role === voucherRole &&
+          !(notification.acknowledgedRoles || []).includes(voucherRole),
+      ) || null,
+    [voucherNotifications, voucherRole],
+  );
+
+  useEffect(() => {
+    if (pendingVoucherNotification) setVoucherNotificationModalOpen(true);
+  }, [pendingVoucherNotification]);
+
+  const acknowledgeVoucherNotification = (notificationId: string, role: "treasurer" | "president" | "financial_secretary") => {
+    setVoucherNotifications((current) =>
+      current.map((notification) =>
+        notification.id === notificationId
+          ? {
+              ...notification,
+              acknowledgedRoles: Array.from(new Set([...(notification.acknowledgedRoles || []), role])),
+            }
+          : notification,
+      ),
+    );
+  };
+
+  const scrollToVoucher = () => {
+    document.getElementById("electronic-disbursement-voucher")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   if (!sessionLoading && !session.isTreasuryAdmin) {
     return (
       <div className="relative p-4 sm:p-8">
@@ -672,6 +714,44 @@ export function TreasuryPage() {
 
   return (
     <div className="relative">
+      <Dialog open={voucherNotificationModalOpen && !!pendingVoucherNotification} onOpenChange={setVoucherNotificationModalOpen}>
+        <DialogContent className="max-w-md border border-black/10 bg-white">
+          <DialogHeader>
+            <DialogTitle>{pendingVoucherNotification?.title || "Voucher Notification"}</DialogTitle>
+            <DialogDescription>
+              {pendingVoucherNotification?.message || "A voucher update requires your review."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="rounded-lg border border-black/10 bg-slate-50 p-3">
+            <p className="text-xs uppercase tracking-widest text-slate-500">Routed to</p>
+            <p className="mt-1 text-sm font-semibold text-slate-900">{pendingVoucherNotification?.role.replace("_", " ")}</p>
+            <p className="mt-1 text-xs text-slate-500">{pendingVoucherNotification?.createdAt}</p>
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                if (pendingVoucherNotification) acknowledgeVoucherNotification(pendingVoucherNotification.id, voucherRole);
+                setVoucherNotificationModalOpen(false);
+              }}
+            >
+              Dismiss
+            </Button>
+            <Button
+              type="button"
+              onClick={() => {
+                if (pendingVoucherNotification) acknowledgeVoucherNotification(pendingVoucherNotification.id, voucherRole);
+                setVoucherNotificationModalOpen(false);
+                scrollToVoucher();
+              }}
+            >
+              Open Voucher
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <header className="relative overflow-hidden py-12 sm:py-16 px-4 sm:px-8">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-28 -right-20 size-80 rounded-full bg-primary/12 blur-3xl" />
@@ -801,7 +881,7 @@ export function TreasuryPage() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-black/10 bg-white/5 p-4 sm:p-6 space-y-5">
+            <div id="electronic-disbursement-voucher" className="rounded-xl border border-black/10 bg-white/5 p-4 sm:p-6 space-y-5">
               <div className="flex items-center justify-between flex-wrap gap-3">
                 <div>
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Official Electronic Disbursement Voucher</p>
@@ -833,7 +913,7 @@ export function TreasuryPage() {
                   <Input value={voucherPayee} onChange={(e) => setVoucherPayee(e.target.value)} placeholder="Individual or entity" />
                 </div>
                 <div className="space-y-1">
-                  <Label>Payment Method</Label>
+                  <Label>Chapter Remittance Method</Label>
                   <select
                     value={voucherMethod}
                     onChange={(e) => setVoucherMethod(e.target.value)}
@@ -841,6 +921,7 @@ export function TreasuryPage() {
                   >
                     <option value="">Select method</option>
                     <option value="Cash App">Cash App</option>
+                    <option value="Zeffy">Zeffy</option>
                     <option value="ACH">ACH Transfer</option>
                     <option value="Business Bill Pay">Business Bill Pay</option>
                     <option value="Check">Physical Check</option>
@@ -851,8 +932,8 @@ export function TreasuryPage() {
                   <Input value={voucherAmount} onChange={(e) => setVoucherAmount(e.target.value)} type="number" step="0.01" min="0" placeholder="0.00" />
                 </div>
                 <div className="space-y-1 md:col-span-2">
-                  <Label>Budget Line / Purpose</Label>
-                  <Textarea value={voucherPurpose} onChange={(e) => setVoucherPurpose(e.target.value)} rows={2} placeholder="Describe purpose and supporting authority." />
+                  <Label>Budget Link / Purpose (Manual for now)</Label>
+                  <Textarea value={voucherPurpose} onChange={(e) => setVoucherPurpose(e.target.value)} rows={2} placeholder="Describe the budget purpose and supporting authority." />
                 </div>
               </div>
 
@@ -870,6 +951,12 @@ export function TreasuryPage() {
                         <Input value={voucherPaymentLink} onChange={(e) => setVoucherPaymentLink(e.target.value)} placeholder="https://cash.app/..." />
                       </div>
                     </>
+                  ) : null}
+                  {voucherMethod === "Zeffy" ? (
+                    <div className="space-y-1 md:col-span-2">
+                      <Label>Billing Contact Email</Label>
+                      <Input value={voucherRecipientEmail} onChange={(e) => setVoucherRecipientEmail(e.target.value)} type="email" placeholder="billing@example.org" />
+                    </div>
                   ) : null}
                   {voucherMethod === "ACH" ? (
                     <>
@@ -989,6 +1076,20 @@ export function TreasuryPage() {
                         </div>
                         <p className="mt-1 text-sm text-slate-700">{notification.message}</p>
                         <p className="mt-1 text-xs text-slate-500">{notification.createdAt}</p>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="h-8 border-black/15 bg-white text-xs text-slate-700"
+                            onClick={() => {
+                              acknowledgeVoucherNotification(notification.id, voucherRole);
+                              scrollToVoucher();
+                            }}
+                          >
+                            Review Voucher
+                          </Button>
+                        </div>
                       </div>
                     );
                   }) : (
