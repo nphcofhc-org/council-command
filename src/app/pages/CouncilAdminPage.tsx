@@ -186,6 +186,22 @@ export function CouncilAdminPage() {
               </CardContent>
             </Card>
             ) : null}
+            {showOpsCards ? (
+            <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+              <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h3 className="text-base text-slate-900 sm:text-lg">Financial Stability & Compliance Checklist</h3>
+                  <p className="text-sm text-slate-600">Open the compliance checklist directly from Council Command Center without switching into editor mode.</p>
+                </div>
+                <Button asChild className="w-full sm:w-auto">
+                  <Link to="/council-admin/compliance">
+                    <ClipboardCheck className="mr-2 size-4" />
+                    Open Compliance Checklist
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+            ) : null}
             {session.isTreasuryAdmin && showTreasuryCards ? (
               <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
@@ -243,7 +259,7 @@ export function CouncilAdminPage() {
           <Card className="shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h3 className="text-base text-slate-900 sm:text-lg">NPHC Compliance Checklist</h3>
+                <h3 className="text-base text-slate-900 sm:text-lg">Financial Stability & Compliance Checklist</h3>
                 <p className="text-sm text-slate-600">
                   Open the dedicated compliance tracking page to manage annual reporting readiness.
                 </p>
