@@ -191,14 +191,14 @@ export function TreasuryPage() {
   const [accountFilter, setAccountFilter] = useState<"all" | TreasuryAccount>("all");
   const [search, setSearch] = useState<string>("");
   const [voucherRole, setVoucherRole] = useState<"treasurer" | "president" | "financial_secretary">("treasurer");
-  const [voucherStatus, setVoucherStatus] = useState<"DRAFT" | "SUBMITTED" | "PRESIDENT_APPROVED" | "FINALIZED" | "DENIED">("DRAFT");
+  const [voucherStatus, setVoucherStatus] = useState<"DRAFT" | "SUBMITTED" | "PRESIDENT_APPROVED" | "PAYMENT_SUBMITTED">("DRAFT");
   const [voucherPayee, setVoucherPayee] = useState("");
   const [voucherMethod, setVoucherMethod] = useState("");
   const [voucherAmount, setVoucherAmount] = useState("");
   const [voucherPurpose, setVoucherPurpose] = useState("");
   const [treasurerSignatureAt, setTreasurerSignatureAt] = useState<string | null>(null);
   const [presidentSignatureAt, setPresidentSignatureAt] = useState<string | null>(null);
-  const [finSecRecorded, setFinSecRecorded] = useState(false);
+  const [finSecSubmittedAt, setFinSecSubmittedAt] = useState<string | null>(null);
   const [voucherFeedback, setVoucherFeedback] = useState<string | null>(null);
 
 
@@ -329,30 +329,87 @@ export function TreasuryPage() {
     }
     setPresidentSignatureAt(new Date().toLocaleString());
     setVoucherStatus("PRESIDENT_APPROVED");
-    setVoucherFeedback("President approval complete. Waiting for Financial Secretary final review.");
+    setVoucherFeedback("President approval complete. Financial Secretary has been alerted to submit the payment.");
   };
 
-  const financialSecretaryDecision = (decision: "approve" | "deny") => {
+  const submitPaymentAsFinancialSecretary = () => {
     if (!session.isFinancialSecretary) {
-      setVoucherFeedback("Only the Financial Secretary account can approve or deny this final step.");
+      setVoucherFeedback("Only the Financial Secretary account can submit the payment after presidential approval.");
       return;
     }
     if (voucherStatus !== "PRESIDENT_APPROVED") {
-      setVoucherFeedback("President approval is required before Financial Secretary action.");
+      setVoucherFeedback("President approval is required before the Financial Secretary can submit the payment.");
       return;
     }
-
-    if (decision === "approve") {
-      setFinSecRecorded(true);
-      setVoucherStatus("FINALIZED");
-      setVoucherFeedback("Voucher finalized by Financial Secretary and recorded in ledger.");
-      return;
-    }
-
-    setFinSecRecorded(false);
-    setVoucherStatus("DENIED");
-    setVoucherFeedback("Financial Secretary denied this voucher. Treasurer must revise and resubmit.");
+    const submittedAt = new Date().toLocaleString();
+    setFinSecSubmittedAt(submittedAt);
+    setVoucherStatus("PAYMENT_SUBMITTED");
+    setVoucherFeedback("Payment submitted by the Financial Secretary and recorded as disbursed.");
   };
+
+  const voucherTimeline = useMemo(() => {
+    const rows: Array<{ title: string; detail: string; time: string | null; done: boolean }> = [
+      {
+        title: "Voucher initiated by Treasurer",
+        detail: treasurerSignatureAt
+          ? "Treasurer submitted the electronic disbursement voucher."
+          : "Awaiting Treasurer submission.",
+        time: treasurerSignatureAt,
+        done: Boolean(treasurerSignatureAt),
+      },
+      {
+        title: "President formal approval",
+        detail: presidentSignatureAt
+          ? "President approved the voucher for payment processing."
+          : voucherStatus === "SUBMITTED"
+            ? "President signature required."
+            : "Pending prior step.",
+        time: presidentSignatureAt,
+        done: Boolean(presidentSignatureAt),
+      },
+      {
+        title: "Financial Secretary payment submission",
+        detail: finSecSubmittedAt
+          ? "Financial Secretary submitted the payment and completed the disbursement step."
+          : voucherStatus === "PRESIDENT_APPROVED"
+            ? "Financial Secretary payment submission required."
+            : "Pending prior step.",
+        time: finSecSubmittedAt,
+        done: Boolean(finSecSubmittedAt),
+      },
+    ];
+
+    return rows;
+  }, [finSecSubmittedAt, presidentSignatureAt, treasurerSignatureAt, voucherStatus]);
+
+  const voucherNextAction = useMemo(() => {
+    if (voucherStatus === "SUBMITTED") {
+      return {
+        role: "President",
+        message: "President signature is required before payment can move forward.",
+        activeForViewer: session.isPresident && voucherRole === "president",
+      };
+    }
+    if (voucherStatus === "PRESIDENT_APPROVED") {
+      return {
+        role: "Financial Secretary",
+        message: "Financial Secretary payment submission is required to complete this disbursement.",
+        activeForViewer: session.isFinancialSecretary && voucherRole === "financial_secretary",
+      };
+    }
+    if (voucherStatus === "PAYMENT_SUBMITTED") {
+      return {
+        role: "Completed",
+        message: "Voucher workflow is complete.",
+        activeForViewer: false,
+      };
+    }
+    return {
+      role: "Treasurer",
+      message: "Treasurer initiation is required to start the voucher workflow.",
+      activeForViewer: session.isTreasurer && voucherRole === "treasurer",
+    };
+  }, [session.isFinancialSecretary, session.isPresident, session.isTreasurer, voucherRole, voucherStatus]);
 
   if (!sessionLoading && !session.isTreasuryAdmin) {
     return (
@@ -503,8 +560,8 @@ export function TreasuryPage() {
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Making Electronic Payments (Outgoing)</p>
                 <ul className="list-disc space-y-2 pl-5 text-sm text-slate-700">
                   <li>Treasurer issues payment <strong>only after an authorized voucher</strong> is submitted.</li>
-                  <li><strong>President countersigns</strong> vouchers prior to disbursement.</li>
-                  <li><strong>Dual control</strong> is recommended: one officer initiates, second officer approves/releases.</li>
+                  <li><strong>President countersigns</strong> vouchers as the formal approval authority.</li>
+                  <li><strong>Financial Secretary submits payment</strong> after presidential approval and records the disbursement.</li>
                   <li>Electronic methods must respect the council&apos;s <strong>multi-officer authorization protocol</strong>.</li>
                 </ul>
               </div>
@@ -525,7 +582,7 @@ export function TreasuryPage() {
                   >
                     {session.isTreasurer ? <option value="treasurer">Treasurer (Initiator)</option> : null}
                     {session.isPresident ? <option value="president">President (Approver)</option> : null}
-                    {session.isFinancialSecretary ? <option value="financial_secretary">Financial Secretary (Approve / Deny)</option> : null}
+                    {session.isFinancialSecretary ? <option value="financial_secretary">Financial Secretary (Payment Submission)</option> : null}
                   </select>
                 </div>
               </div>
@@ -585,40 +642,58 @@ export function TreasuryPage() {
                     className="mt-4 w-full"
                     disabled={!session.isPresident || voucherRole !== "president" || voucherStatus !== "SUBMITTED"}
                   >
-                    Approve for Financial Secretary Review
+                    Formally Approve Voucher
                   </Button>
                 </div>
               </div>
 
               <div className="rounded-lg border border-dashed border-black/20 bg-white p-4">
-                <p className="text-xs uppercase tracking-widest text-slate-500">3. Financial Secretary Decision</p>
+                <p className="text-xs uppercase tracking-widest text-slate-500">3. Financial Secretary Payment Submission</p>
                 <p className="mt-2 text-sm text-slate-700">
-                  {finSecRecorded ? "Approved /s/ Financial Secretary • Recorded in ledger." : "Awaiting Financial Secretary approval or denial."}
+                  {finSecSubmittedAt ? `Submitted /s/ Financial Secretary • ${finSecSubmittedAt}` : "Awaiting Financial Secretary payment submission."}
                 </p>
-                <div className="mt-4 grid grid-cols-2 gap-2">
+                <div className="mt-4">
                   <Button
                     type="button"
-                    onClick={() => financialSecretaryDecision("approve")}
+                    onClick={submitPaymentAsFinancialSecretary}
                     className="w-full"
                     disabled={!session.isFinancialSecretary || voucherRole !== "financial_secretary" || voucherStatus !== "PRESIDENT_APPROVED"}
                   >
-                    Approve
+                    Submit Payment
                   </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => financialSecretaryDecision("deny")}
-                    className="w-full"
-                    disabled={!session.isFinancialSecretary || voucherRole !== "financial_secretary" || voucherStatus !== "PRESIDENT_APPROVED"}
-                  >
-                    Deny
-                  </Button>
+                </div>
+              </div>
+
+              <div className={`rounded-lg border p-4 ${voucherNextAction.activeForViewer ? "border-primary/40 bg-primary/10" : "border-black/10 bg-slate-50"}`}>
+                <p className="text-xs uppercase tracking-widest text-slate-500">Action Alert</p>
+                <p className="mt-2 text-sm font-semibold text-slate-900">{voucherNextAction.role}</p>
+                <p className="mt-1 text-sm text-slate-700">{voucherNextAction.message}</p>
+                {voucherNextAction.activeForViewer ? (
+                  <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-primary">Action required for this signed-in role.</p>
+                ) : null}
+              </div>
+
+              <div className="rounded-lg border border-black/10 bg-slate-50 p-4">
+                <p className="text-xs uppercase tracking-widest text-slate-500">Voucher Timeline</p>
+                <div className="mt-3 space-y-3">
+                  {voucherTimeline.map((item, idx) => (
+                    <div key={item.title} className="flex items-start gap-3">
+                      <div className={`mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${item.done ? "bg-primary text-primary-foreground" : "border border-black/15 bg-white text-slate-500"}`}>
+                        {idx + 1}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-slate-900">{item.title}</p>
+                        <p className="text-sm text-slate-700">{item.detail}</p>
+                        <p className="mt-1 text-xs text-slate-500">{item.time || "Pending"}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
               <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-black/10 bg-slate-50 p-3 text-xs uppercase tracking-wider text-slate-500">
                 <span className="inline-flex items-center gap-1"><Landmark className="size-3.5" /> Status: {voucherStatus}</span>
-                <span>Financial Secretary Record: {finSecRecorded ? "Recorded in ledger" : "Awaiting final approval"}</span>
+                <span>Financial Secretary Record: {finSecSubmittedAt ? "Payment submitted" : "Awaiting payment submission"}</span>
               </div>
 
               {voucherFeedback ? <p className="text-sm font-medium text-slate-700">{voucherFeedback}</p> : null}
