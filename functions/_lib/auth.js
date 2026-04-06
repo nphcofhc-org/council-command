@@ -9,6 +9,34 @@ const JWT_HEADER_CANDIDATES = [
   "x-cf-access-jwt-assertion",
 ];
 
+const BOOTSTRAP_COUNCIL_ADMIN_EMAILS = new Set([
+  "president@nphcofhudsoncounty.org",
+  "vp@nphcofhudsoncounty.org",
+  "secretary@nphcofhudsoncounty.org",
+  "treasurer@nphcofhudsoncounty.org",
+  "financialsecretary@nphcofhudsoncounty.org",
+  "parliamentarian@nphcofhudsoncounty.org",
+  "chaplain@nphcofhudsoncounty.org",
+]);
+
+const BOOTSTRAP_TREASURY_ADMIN_EMAILS = new Set([
+  "president@nphcofhudsoncounty.org",
+  "treasurer@nphcofhudsoncounty.org",
+  "financialsecretary@nphcofhudsoncounty.org",
+]);
+
+const BOOTSTRAP_PRESIDENT_EMAILS = new Set([
+  "president@nphcofhudsoncounty.org",
+]);
+
+const BOOTSTRAP_TREASURER_EMAILS = new Set([
+  "treasurer@nphcofhudsoncounty.org",
+]);
+
+const BOOTSTRAP_FINANCIAL_SECRETARY_EMAILS = new Set([
+  "financialsecretary@nphcofhudsoncounty.org",
+]);
+
 function normalizeEmail(value) {
   if (!value) return "";
   return String(value).trim().toLowerCase();
@@ -199,7 +227,7 @@ export async function getSessionState(request, env) {
     env.SITE_ADMIN_EMAILS ||
     env.SITE_EDITOR_EMAILS ||
     "";
-  const fallbackPresidentEmail = "president.nphcofhc@gmail.com";
+  const fallbackPresidentEmail = "president@nphcofhudsoncounty.org";
   const siteEditors = (() => {
     const parsed = parseSiteEditorEmails(siteEditorRaw);
     if (parsed.length > 0) return parsed;
@@ -237,6 +265,23 @@ export async function getSessionState(request, env) {
       isFinancialSecretary = maps.financialSecretaryEmails.has(email);
     }
   }
+  if (isAuthenticated) {
+    if (BOOTSTRAP_COUNCIL_ADMIN_EMAILS.has(email)) {
+      isCouncilAdmin = true;
+    }
+    if (BOOTSTRAP_TREASURY_ADMIN_EMAILS.has(email)) {
+      isTreasuryAdmin = true;
+    }
+    if (BOOTSTRAP_PRESIDENT_EMAILS.has(email)) {
+      isPresident = true;
+    }
+    if (BOOTSTRAP_TREASURER_EMAILS.has(email)) {
+      isTreasurer = true;
+    }
+    if (BOOTSTRAP_FINANCIAL_SECRETARY_EMAILS.has(email)) {
+      isFinancialSecretary = true;
+    }
+  }
   // Site editors are a tighter allowlist used for content updates.
   // This is intentionally separate from COUNCIL_ADMIN_EMAILS.
   const isSiteEditor = isAuthenticated && siteEditors.includes(email);
@@ -260,21 +305,22 @@ export async function getSessionState(request, env) {
     try {
       const overrides = await readAccessOverrides(env.DB);
       resolved = applyAccessOverrides(resolved, email, overrides);
-      // Keep role relationships coherent after overrides.
-      if (resolved.isSiteEditor) resolved.isCouncilAdmin = true;
-      if (resolved.isPresident) {
-        resolved.isCouncilAdmin = true;
-        resolved.isTreasuryAdmin = true;
-        resolved.isSiteEditor = true;
-      }
-
-      if (!resolved.isTreasuryAdmin) {
-        resolved.isTreasurer = false;
-        resolved.isFinancialSecretary = false;
-      }
     } catch {
       // ignore override resolution errors
     }
+  }
+
+  // Keep role relationships coherent after DB and/or override resolution.
+  if (resolved.isSiteEditor) resolved.isCouncilAdmin = true;
+  if (resolved.isPresident) {
+    resolved.isCouncilAdmin = true;
+    resolved.isTreasuryAdmin = true;
+    resolved.isSiteEditor = true;
+  }
+
+  if (!resolved.isTreasuryAdmin) {
+    resolved.isTreasurer = false;
+    resolved.isFinancialSecretary = false;
   }
 
   if (isFallbackPresident) {

@@ -2,7 +2,7 @@ import { json } from "../../_lib/http";
 import {
   ensureContentTable,
   readSection,
-  requireSiteEditor,
+  requireCouncilAdmin,
   requireDb,
   requireMethods,
   writeSection,
@@ -80,7 +80,7 @@ export async function onRequest(context) {
     });
   }
 
-  const auth = await requireSiteEditor(request, env);
+  const auth = await requireCouncilAdmin(request, env);
   if (!auth.ok) return auth.response;
 
   let body;

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { ArrowLeft, Save } from "lucide-react";
-import { CouncilAdminGate } from "../components/CouncilAdminGate";
+import { CouncilLeaderGate } from "../components/CouncilLeaderGate";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -18,17 +18,37 @@ import {
 
 function emptySettings(): NotificationSettings {
   return {
-    enabled: false,
+    enabled: true,
     defaultNotifyEmails: "",
-    treasurerEmail: "treasurer.nphcofhc@gmail.com",
+    treasurerEmail: "treasurer@nphcofhudsoncounty.org",
     rules: {
-      budget_submission: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: false },
-      reimbursement_request: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: true },
+      budget_submission: {
+        notifyEmails: "treasurer@nphcofhudsoncounty.org, executivecouncil@nphcofhudsoncounty.org",
+        sendConfirmation: true,
+        notifyOnStatusChange: false,
+      },
+      reimbursement_request: {
+        notifyEmails: "treasurer@nphcofhudsoncounty.org, executivecouncil@nphcofhudsoncounty.org",
+        sendConfirmation: true,
+        notifyOnStatusChange: true,
+      },
       social_media_request: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: false },
       committee_report: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: false },
-      event_submission: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: false },
-      event_proposal_budget_request: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: true },
-      event_post_report_financial_reconciliation: { notifyEmails: "", sendConfirmation: true, notifyOnStatusChange: true },
+      event_submission: {
+        notifyEmails: "treasurer@nphcofhudsoncounty.org, executivecouncil@nphcofhudsoncounty.org",
+        sendConfirmation: true,
+        notifyOnStatusChange: false,
+      },
+      event_proposal_budget_request: {
+        notifyEmails: "treasurer@nphcofhudsoncounty.org, executivecouncil@nphcofhudsoncounty.org",
+        sendConfirmation: true,
+        notifyOnStatusChange: true,
+      },
+      event_post_report_financial_reconciliation: {
+        notifyEmails: "treasurer@nphcofhudsoncounty.org, executivecouncil@nphcofhudsoncounty.org",
+        sendConfirmation: true,
+        notifyOnStatusChange: true,
+      },
     },
   };
 }
@@ -51,7 +71,7 @@ function ruleLabel(formKey: string): string {
   if (formKey === "reimbursement_request") return "Reimbursement Request";
   if (formKey === "social_media_request") return "Social Media Intake";
   if (formKey === "committee_report") return "Committee Report";
-  if (formKey === "event_submission") return "Event Submission";
+  if (formKey === "event_submission") return "Event Submission / Facility & Venue Request";
   if (formKey === "event_proposal_budget_request") return "Event Proposal & Budget Request";
   if (formKey === "event_post_report_financial_reconciliation") return "Event Post-Report & Financial Reconciliation";
   return formKey;
@@ -140,7 +160,7 @@ export function CouncilNotificationSettingsPage() {
   };
 
   return (
-    <CouncilAdminGate>
+    <CouncilLeaderGate>
       <div className="mx-auto max-w-5xl p-4 sm:p-8 space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <Link to="/council-admin" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-primary transition-colors">
@@ -280,7 +300,7 @@ export function CouncilNotificationSettingsPage() {
                   <Input
                     value={String(form.treasurerEmail || "")}
                     onChange={(e) => setForm((prev) => ({ ...prev, treasurerEmail: e.target.value }))}
-                    placeholder="treasurer.nphcofhc@gmail.com"
+                    placeholder="treasurer@nphcofhudsoncounty.org"
                   />
                 </div>
               </div>
@@ -338,6 +358,6 @@ export function CouncilNotificationSettingsPage() {
           </CardContent>
         </Card>
       </div>
-    </CouncilAdminGate>
+    </CouncilLeaderGate>
   );
 }

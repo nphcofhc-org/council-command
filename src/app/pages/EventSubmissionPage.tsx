@@ -230,7 +230,7 @@ export function EventSubmissionPage() {
           </Button>
           <div>
             <p className="text-xs uppercase tracking-widest text-slate-500">Form</p>
-            <h1 className="text-lg sm:text-xl font-extrabold text-slate-900">Event Submission</h1>
+            <h1 className="text-lg sm:text-xl font-extrabold text-slate-900">Event Submission / Facility &amp; Venue Request</h1>
           </div>
         </div>
 
@@ -239,10 +239,10 @@ export function EventSubmissionPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CalendarDays className="size-5" />
-                Submit an Upcoming Event
+                Submit an Upcoming Event or Venue Request
               </CardTitle>
               <CardDescription>
-                Share a chapter event so members can see it in the portal calendar. Submissions require approval before publishing.
+                Share a chapter event for the portal calendar and capture facility / venue planning details for executive review.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">

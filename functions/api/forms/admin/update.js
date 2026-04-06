@@ -25,6 +25,7 @@ function firstEmail(...values) {
 
 function requestorEmailFor(formKey, payload, createdBy) {
   if (formKey === "reimbursement_request") return firstEmail(payload?.emailAddress, payload?.email, createdBy);
+  if (formKey === "budget_submission") return firstEmail(payload?.contactEmail, payload?.email, payload?.submitterEmail, createdBy);
   return firstEmail(payload?.email, payload?.submitterEmail, createdBy);
 }
 
@@ -69,7 +70,7 @@ export async function onRequest(context) {
   try {
     const after = await readSubmissionById(env.DB, id);
     if (after.found && after.row && isEmailEnabled(env)) {
-      const settings = await getNotificationSettings(env.DB);
+      const settings = await getNotificationSettings(env.DB, env);
       if (settings.enabled) {
         const formKey = String(after.row.formKey || "");
         const payload = after.row.payload || {};

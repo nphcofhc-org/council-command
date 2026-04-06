@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sponsorship & Donation Receipt Template</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        background: #f7f4ec;
+        color: #111827;
+      }
+      .page {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 48px 24px 72px;
+      }
+      .sheet {
+        background: #ffffff;
+        border: 1px solid #d6d3d1;
+        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.08);
+        padding: 40px;
+      }
+      .eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 0.22em;
+        font-size: 11px;
+        color: #57534e;
+        margin: 0 0 10px;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 30px;
+      }
+      p {
+        line-height: 1.6;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px 24px;
+        margin: 28px 0;
+      }
+      .field {
+        border-bottom: 1px solid #a8a29e;
+        min-height: 28px;
+        padding-bottom: 6px;
+      }
+      .field label {
+        display: block;
+        font-size: 11px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #78716c;
+        margin-bottom: 8px;
+      }
+      .field span {
+        display: block;
+        min-height: 20px;
+      }
+      .full {
+        grid-column: 1 / -1;
+      }
+      .note {
+        margin-top: 28px;
+        padding: 14px 16px;
+        background: #f5f5f4;
+        border-left: 4px solid #0f766e;
+      }
+      .signature-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+        margin-top: 36px;
+      }
+      .signature {
+        padding-top: 26px;
+        border-top: 1px solid #a8a29e;
+        font-size: 13px;
+      }
+      @media print {
+        body {
+          background: #fff;
+        }
+        .page {
+          padding: 0;
+        }
+        .sheet {
+          box-shadow: none;
+          border: none;
+          padding: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="sheet">
+        <p class="eyebrow">NPHC of Hudson County</p>
+        <h1>Sponsorship & Donation Receipt</h1>
+        <p>
+          Use this template to acknowledge monetary or in-kind contributions received for council programming,
+          scholarships, service projects, or approved executive initiatives.
+        </p>
+
+        <div class="grid">
+          <div class="field">
+            <label>Receipt Number</label>
+            <span></span>
+          </div>
+          <div class="field">
+            <label>Date Received</label>
+            <span></span>
+          </div>
+          <div class="field full">
+            <label>Donor / Sponsor Name</label>
+            <span></span>
+          </div>
+          <div class="field full">
+            <label>Donor Address / Contact</label>
+            <span></span>
+          </div>
+          <div class="field">
+            <label>Contribution Type</label>
+            <span>Cash / Check / Electronic / In-Kind</span>
+          </div>
+          <div class="field">
+            <label>Amount or Fair Market Value</label>
+            <span></span>
+          </div>
+          <div class="field full">
+            <label>Campaign / Event / Purpose</label>
+            <span></span>
+          </div>
+          <div class="field full">
+            <label>Description of Goods / Services Received in Return</label>
+            <span>None, unless listed here.</span>
+          </div>
+        </div>
+
+        <div class="note">
+          <strong>Recordkeeping note:</strong> attach payment confirmation, deposit reference, or related support
+          documentation when filing this receipt in the portal or treasury files.
+        </div>
+
+        <div class="signature-row">
+          <div class="signature">Treasurer / Financial Secretary Signature</div>
+          <div class="signature">Council Representative Signature</div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

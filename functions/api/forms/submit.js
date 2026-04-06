@@ -15,7 +15,7 @@ function formLabel(formKey) {
   if (formKey === "reimbursement_request") return "Reimbursement Request";
   if (formKey === "social_media_request") return "Social Media Intake";
   if (formKey === "committee_report") return "Committee Report";
-  if (formKey === "event_submission") return "Event Submission";
+  if (formKey === "event_submission") return "Event Submission / Facility & Venue Request";
   if (formKey === "event_proposal_budget_request") return "Event Proposal & Budget Request";
   if (formKey === "event_post_report_financial_reconciliation") return "Event Post-Report & Financial Reconciliation";
   return formKey;
@@ -34,7 +34,22 @@ function requestorEmailFor(formKey, payload, createdBy) {
   if (formKey === "reimbursement_request") {
     return firstEmail(payload?.emailAddress, payload?.email, createdBy);
   }
+  if (formKey === "budget_submission") {
+    return firstEmail(payload?.contactEmail, payload?.email, payload?.submitterEmail, createdBy);
+  }
   return firstEmail(payload?.email, payload?.submitterEmail, createdBy);
+}
+
+function formatCurrencyish(value) {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return `$${value.toLocaleString()}`;
+  }
+  const raw = String(value ?? "").trim();
+  if (!raw) return "";
+  const normalized = raw.replace(/[$,\s]/g, "");
+  const numeric = Number(normalized);
+  if (Number.isFinite(numeric)) return `$${numeric.toLocaleString()}`;
+  return raw;
 }
 
 function summarizeLines(formKey, payload) {
@@ -58,7 +73,7 @@ function summarizeLines(formKey, payload) {
   if (formKey === "budget_submission") {
     return [
       `Project/Committee: ${String(p.projectName || p.committeeName || "").trim()}`,
-      `Requested Amount: ${typeof p.totalAmount === "number" ? `$${p.totalAmount.toLocaleString()}` : ""}`,
+      `Requested Amount: ${formatCurrencyish(p.requestedAmount || p.totalAmount)}`,
     ].filter(Boolean);
   }
   if (formKey === "committee_report") {
@@ -132,7 +147,7 @@ export async function onRequest(context) {
 
     // Notifications are best-effort: never block the submission if email fails.
     try {
-      const settings = await getNotificationSettings(env.DB);
+      const settings = await getNotificationSettings(env.DB, env);
       if (settings.enabled && isEmailEnabled(env)) {
         const rule = settings.rules?.[formKey] || {};
         const adminTo = splitEmails(rule.notifyEmails || settings.defaultNotifyEmails);

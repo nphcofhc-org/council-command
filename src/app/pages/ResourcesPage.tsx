@@ -26,6 +26,10 @@ const SHARED_FORM_ROUTE_BY_NAME: Record<string, string> = {
   "budget submission": "#/forms/budget",
   "event submission form": "#/forms/events",
   "event submission": "#/forms/events",
+  "facility and venue request form": "#/forms/events",
+  "facility & venue request form": "#/forms/events",
+  "facility and venue request": "#/forms/events",
+  "facility & venue request": "#/forms/events",
   "event proposal & budget request form": "#/forms/event-proposal-budget",
   "event proposal & budget request": "#/forms/event-proposal-budget",
   "event post-report & financial reconciliation": "#/forms/event-post-report-reconciliation",
@@ -38,7 +42,9 @@ const SHARED_FORM_ROUTE_BY_NAME: Record<string, string> = {
   "committee report": "#/forms/committee-report",
   "monthly delegate report template": "#/forms/committee-report",
   "quarterly membership roster update": "#/council-admin/attendance/quarterly-roster-audit",
-  "chapter dues payment confirmation": "#/council-admin/site-maintenance",
+  "chapter dues payment confirmation": "#/council-admin/chapter-dues",
+  "sponsorship & donation receipt template": "#/viewer?src=%2Fdocs%2Fsponsorship-donation-receipt-template.html",
+  "sponsorship and donation receipt template": "#/viewer?src=%2Fdocs%2Fsponsorship-donation-receipt-template.html",
 };
 
 export function ResourcesPage() {
@@ -116,7 +122,7 @@ export function ResourcesPage() {
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 {[
                   { label: "Budget Submission", to: "/forms/budget", icon: DollarSign },
-                  { label: "Event Submission", to: "/forms/events", icon: CalendarDays },
+                  { label: "Event Submission / Facility & Venue", to: "/forms/events", icon: CalendarDays },
                   { label: "Event Proposal & Budget", to: "/forms/event-proposal-budget", icon: FileCheck2 },
                   { label: "Reimbursement Request", to: "/forms/reimbursement", icon: Receipt },
                   { label: "Social Media Request", to: "/forms/social-media", icon: Megaphone },

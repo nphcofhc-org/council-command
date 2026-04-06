@@ -35,6 +35,7 @@ import { EventPostReportFinancialReconciliationPage } from "./pages/EventPostRep
 import { CouncilDataBriefPage } from "./pages/CouncilDataBriefPage";
 import { CouncilExecMeetingPage } from "./pages/CouncilExecMeetingPage";
 import { CouncilSiteMaintenancePage } from "./pages/CouncilSiteMaintenancePage";
+import { CouncilChapterDuesPage } from "./pages/CouncilChapterDuesPage";
 import { MeetingDeckPage } from "./pages/MeetingDeckPage";
 import { CouncilAttendancePage } from "./pages/CouncilAttendancePage";
 import { CouncilQuarterlyRosterAuditPage } from "./pages/CouncilQuarterlyRosterAuditPage";
@@ -81,6 +82,7 @@ export const router = createHashRouter([
       { path: "council-admin/data-brief", Component: CouncilDataBriefPage },
       { path: "council-admin/exec-council-meeting", Component: CouncilExecMeetingPage },
       { path: "council-admin/site-maintenance", Component: CouncilSiteMaintenancePage },
+      { path: "council-admin/chapter-dues", Component: CouncilChapterDuesPage },
       { path: "council-admin/treasury", Component: TreasuryPage },
       { path: "council-admin/notifications", Component: CouncilNotificationSettingsPage },
       { path: "council-admin/submissions", Component: CouncilSubmissionsPage },
